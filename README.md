@@ -1,2 +1,2 @@
 # autoX32
-Automation Recorder for autdio production with Ardour and Behnringer X32.
+Automation Recorder for audio production with Ardour and Behringer X32.
