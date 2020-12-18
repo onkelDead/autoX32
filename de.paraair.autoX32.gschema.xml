@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<schemalist>
+
+    <schema path="/de/paraair/autoX32/" id="de.paraair.autoX32">
+
+        <key name='mixer-host' type='s'>
+            <default>"192.168.178.43"</default>
+            <summary>Mixer IP</summary>
+            <description>
+                IP of Behringer X32.
+            </description>
+        </key>
+        <key name='mixer-autoconnect' type='b'>
+            <default>false</default>
+            <summary>Auto-connect Mixer</summary>
+            <description>
+                Auto connect Behringer X32.
+            </description>
+        </key>
+        <key name='daw-host' type='s'>
+            <default>"127.0.0.1"</default>
+            <summary>Ardour IP</summary>
+            <description>
+                IP of Ardour.
+            </description>
+        </key>
+        <key name='daw-port' type='s'>
+            <default>"3819"</default>
+            <summary>Ardour Port</summary>
+            <description>
+                Port of Ardour.
+            </description>
+        </key>    
+        <key name='daw-reply-port' type='s'>
+            <default>"3820"</default>
+            <summary>Ardour Reply Port</summary>
+            <description>
+                Reply Port of Ardour.
+            </description>
+        </key>    
+        <key name='daw-autoconnect' type='b'>
+            <default>false</default>
+            <summary>Autoconnect Ardour</summary>
+            <description>
+                Auto connect Ardour.
+            </description>
+        </key>  
+        <key name='window-width' type='i'>
+            <default>100</default>
+            <summary>Window width</summary>
+            <description>
+                Window width
+            </description>
+        </key>  
+        <key name='window-height' type='i'>
+            <default>100</default>
+            <summary>Window height</summary>
+            <description>
+                Window height
+            </description>
+        </key>  
+        <key name='window-left' type='i'>
+            <default>100</default>
+            <summary>Window left</summary>
+            <description>
+                Window left
+            </description>
+        </key>  
+        <key name='window-top' type='i'>
+            <default>100</default>
+            <summary>Window top</summary>
+            <description>
+                Window top
+            </description>
+        </key>  
+        <key name='recent-projects' type='as'>
+            <default>[]</default>
+            <summary>Recently used project locations</summary>
+            <description>
+                A list of recently used project locations
+            </description>
+        </key>
+    </schema>
+
+</schemalist>
+
