@@ -240,7 +240,7 @@ void OMainWnd::notify_daw(DAW_PATH path) {
 }
 
 void OMainWnd::OnMixerEvent() {
-    if (my_mixerqueue.size() > 0) {
+    while (my_mixerqueue.size() > 0) {
         OscCmd *cmd = my_mixerqueue.front();
         if (cmd->IsConfig()) {
             OscCmd* c = m_project.ProcessConfig(cmd);

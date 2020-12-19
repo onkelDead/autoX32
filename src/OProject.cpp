@@ -402,6 +402,9 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd) {
                     entry->prev = NULL;
                     trackstore->AddSamplePoint(entry);
                 }
+                else {
+                    entry = trackstore->m_playhead;
+                }
             } else {
                 entry = trackstore->GetEntry(m_daw_time.m_pos);
             }
