@@ -11,17 +11,15 @@
 
 #include "OscCmd.h"
 
-
 void OMainWnd::OnDawEvent() {
     if (my_dawqueue.size() > 0) {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
             case DAW_PATH::samples:
                 m_project.SetSample(m_daw.GetCurrentSample());
-                //m_project.ProcessPos(NULL);
-                m_timeview.UpdateDawTime(false);
-                m_timeview.queue_draw();
-                //m_trackslayout.queue_draw();
+                if (!m_button_play->get_active())
+                    m_project.ProcessPos(NULL);
+                UpdateDawTime(false);
                 break;
             case DAW_PATH::smpte:
                 m_timeview.m_timecode->set_text(m_daw.GetTimeCode());
@@ -29,7 +27,7 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::reply:
                 m_project.SetMaxSamples(m_daw.GetMaxSamples());
                 m_project.SetBitRate(m_daw.GetBitRate());
-                m_timeview.UpdateDawTime(false);
+                UpdateDawTime(false);
                 break;
             case DAW_PATH::play:
                 lock_play = true;

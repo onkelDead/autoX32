@@ -197,8 +197,8 @@ void OMainWnd::on_btn_loop_end_clicked() {
 }
 
 void OMainWnd::on_btn_zoom_loop_clicked() {
-
     m_timeview.SetZoomLoop();
+    UpdateDawTime(true);
     m_overview->queue_draw();
 }
 
@@ -253,10 +253,17 @@ void OMainWnd::on_btn_x32_clicked() {
 
 
 void OMainWnd::OnOverViewEvent() {
-    m_timeview.UpdateDawTime(false);
-    queue_draw();
+    UpdateDawTime(false);
+    m_overview->queue_draw();
 }
 
 void OMainWnd::notify_overview() {
     m_OverViewDispatcher.emit();
+}
+
+void OMainWnd::UpdateDawTime(bool redraw) {
+    daw_time* dt = m_project.GetDawTime();
+    gint pos = (dt->m_pos - dt->m_viewstart) * dt->scale;
+    m_playhead->set_margin_left(155 + pos);
+    m_timeview.UpdateDawTime(redraw);
 }

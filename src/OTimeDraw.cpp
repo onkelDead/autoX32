@@ -133,11 +133,11 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     m_daw_time->scale = (gfloat) width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
     gint pos = (m_daw_time->m_pos - m_daw_time->m_viewstart) * m_daw_time->scale;
 
-    //draw_text(cr, allocation.get_width(), 8, (char*)"Hello");
-    cr->set_source_rgb(.6, 0, 0);
-    cr->move_to(pos, 0);
-    cr->line_to(pos, height);
-    cr->stroke();
+//    //draw_text(cr, allocation.get_width(), 8, (char*)"Hello");
+//    cr->set_source_rgb(.6, 0, 0);
+//    cr->move_to(pos, 0);
+//    cr->line_to(pos, height);
+//    cr->stroke();
 
     pos = (m_range->m_loopstart - m_daw_time->m_viewstart) * m_daw_time->scale;
     cr->set_source_rgb(.0, .8, 0);

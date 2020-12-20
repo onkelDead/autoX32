@@ -177,12 +177,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
         cr->line_to(m_width, last_val);
         cr->stroke();
     }
-    cr->set_source_rgb(.6, 0, 0);
-    cr->move_to(pos, 0);
-    cr->line_to(pos, height);
-    cr->stroke();
-
-    //draw_text(cr, 100, 30, m_trackstore->m_cmd->m_name.data());
     
     return true;
 }

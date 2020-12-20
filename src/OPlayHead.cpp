@@ -116,6 +116,7 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
 //    gint pos = (m_daw_time->m_pos - m_daw_time->m_viewstart) * m_daw_time->scale;
 //
 //    //draw_text(cr, allocation.get_width(), 8, (char*)"Hello");
+    cr->set_line_width(.5);
     cr->set_source_rgb(1., 1., 1.);
     cr->move_to(5, 0);
     cr->line_to(5, height);

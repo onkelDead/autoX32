@@ -99,14 +99,48 @@ void OMainWnd::create_menu() {
 
 void OMainWnd::create_view() {
 
-    ui->get_widget<Gtk::Box>("main-box", m_mainbox);
-    ui->get_widget<Gtk::Box>("time-box", m_timebox);
-    ui->get_widget<Gtk::Box>("scroll-view", m_scrolledview);
+    Gtk::MenuBar *menubar = NULL;
+    Gtk::Toolbar *toolbar = NULL;
+    Gtk::Box *status  = NULL;
 
+    ui->get_widget<Gtk::Box>("main-box", m_mainbox);
+    
+    ui->get_widget<Gtk::MenuBar>("main-menu", menubar);
+    m_mainbox->add(*menubar);
+    
+    ui->get_widget<Gtk::Toolbar>("toolbar", toolbar);
+    m_mainbox->add(*toolbar);
+    
+    Gtk::Box *bbox = new Gtk::Box();
+    bbox->set_orientation(Gtk::ORIENTATION_VERTICAL);
+    
+    ui->get_widget<Gtk::Box>("time-box", m_timebox);
+    bbox->add(*m_timebox);
+    
+    ui->get_widget<Gtk::ScrolledWindow>("scrolled-view", m_scroll);
+    bbox->add(*m_scroll);
+    
+    m_overlay = new Gtk::Overlay();
+    m_playhead = new OPlayHead();
+    m_playhead->set_halign(Gtk::ALIGN_START);
+    m_playhead->set_hexpand(false);
+    m_playhead->set_size_request(1, -1);
+    m_playhead->set_margin_left(160);
+    m_overlay->add_overlay(*bbox);
+    m_overlay->add_overlay(*m_playhead);
+    m_overlay->set_overlay_pass_through(*bbox, true);
+    m_mainbox->add(*m_overlay);    
+    
+    ui->get_widget<Gtk::Box>("box-status", status);
+    m_mainbox->add(*status);    
+    
+    add(*m_mainbox);
+    
     m_timeview.set_vexpand(false);
     m_timeview.set_valign(Gtk::ALIGN_START);
     m_timebox->add(m_timeview);
 
+    ui->get_widget<Gtk::Box>("scroll-view", m_scrolledview);
     m_trackslayout.set_vexpand(true);
     m_trackslayout.set_valign(Gtk::ALIGN_FILL);
     m_scrolledview->add(m_trackslayout);
@@ -118,7 +152,6 @@ void OMainWnd::create_view() {
 
     box->add(*m_overview);
 
-    add(*m_mainbox);
 
     // setup toolbar buttons
     ui->get_widget < Gtk::ToggleToolButton > ("play-button", m_button_play);

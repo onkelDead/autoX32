@@ -88,6 +88,8 @@ public:
     void notify_overview();
     void remove_track(IOTrackView*);
     
+    void UpdateDawTime(bool redraw);
+    
     /// operations
     void LoadSettings();
     void AutoConnect();

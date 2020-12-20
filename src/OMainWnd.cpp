@@ -183,7 +183,7 @@ void OMainWnd::OpenProject(std::string location) {
         m_trackslayout.AddTrack(trackview);
     }
     m_project.ProcessPos(NULL);
-    m_timeview.UpdateDawTime(false);
+    UpdateDawTime(false);
     queue_draw();
 }
 
