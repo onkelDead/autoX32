@@ -16,10 +16,10 @@
 
 #include "OPlayHead.h"
 
-OPlayHead::OPlayHead() {
+OPlayHead::OPlayHead() : m_active(0){
 }
 
-OPlayHead::OPlayHead(const OPlayHead& orig) {
+OPlayHead::OPlayHead(const OPlayHead& orig) : m_active(0) {
 }
 
 OPlayHead::~OPlayHead() {
@@ -29,27 +29,27 @@ Gtk::SizeRequestMode OPlayHead::get_request_mode_vfunc() const {
     return Gtk::Widget::get_request_mode_vfunc();
 }
 
-void OPlayHead::get_preferred_width_vfunc(int& minimum_width, int& natural_width) const {
-    minimum_width = 30;
-    natural_width = 30;
-}
-
-void OPlayHead::get_preferred_height_for_width_vfunc(int /* width */,
-        int& minimum_height, int& natural_height) const {
-    minimum_height = 30;
-    natural_height = 30;
-}
-
-void OPlayHead::get_preferred_height_vfunc(int& minimum_height, int& natural_height) const {
-    minimum_height = 30;
-    natural_height = 30;
-}
-
-void OPlayHead::get_preferred_width_for_height_vfunc(int /* height */,
-        int& minimum_width, int& natural_width) const {
-    minimum_width = 30;
-    natural_width = 30;
-}
+//void OPlayHead::get_preferred_width_vfunc(int& minimum_width, int& natural_width) const {
+//    minimum_width = 2;
+//    natural_width = 2;
+//}
+//
+//void OPlayHead::get_preferred_height_for_width_vfunc(int /* width */,
+//        int& minimum_height, int& natural_height) const {
+//    minimum_height = 30;
+//    natural_height = 30;
+//}
+//
+//void OPlayHead::get_preferred_height_vfunc(int& minimum_height, int& natural_height) const {
+//    minimum_height = 30;
+//    natural_height = 30;
+//}
+//
+//void OPlayHead::get_preferred_width_for_height_vfunc(int /* height */,
+//        int& minimum_width, int& natural_width) const {
+//    minimum_width = 2;
+//    natural_width = 2;
+//}
 
 void OPlayHead::on_size_allocate(Gtk::Allocation& allocation) {
     set_allocation(allocation);
@@ -112,10 +112,10 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     int width = allocation.get_width();
 
     if (m_active) {
-        cr->set_line_width(.5);
-        cr->set_source_rgb(1., 1., 1.);
-        cr->move_to(5, 0);
-        cr->line_to(5, height);
+        cr->set_line_width(1.);
+        cr->set_source_rgb(1., 0, 0);
+        cr->move_to(0, 0);
+        cr->line_to(0, height);
         cr->stroke();
     }
 

@@ -270,7 +270,7 @@ void OMainWnd::UpdateDawTime(bool redraw) {
     }
     else if (pos >= 0) {
         m_playhead->set_active(true);
-        m_playhead->set_margin_left(155 + pos);
+        m_playhead->set_margin_left(160 + pos);
     }
     
     m_timeview.UpdateDawTime(redraw);

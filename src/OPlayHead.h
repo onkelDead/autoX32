@@ -31,10 +31,10 @@ protected:
 
     //Overrides:
     Gtk::SizeRequestMode get_request_mode_vfunc() const override;
-    void get_preferred_width_vfunc(int& minimum_width, int& natural_width) const override;
-    void get_preferred_height_for_width_vfunc(int width, int& minimum_height, int& natural_height) const override;
-    void get_preferred_height_vfunc(int& minimum_height, int& natural_height) const override;
-    void get_preferred_width_for_height_vfunc(int height, int& minimum_width, int& natural_width) const override;
+//    void get_preferred_width_vfunc(int& minimum_width, int& natural_width) const override;
+//    void get_preferred_height_for_width_vfunc(int width, int& minimum_height, int& natural_height) const override;
+//    void get_preferred_height_vfunc(int& minimum_height, int& natural_height) const override;
+//    void get_preferred_width_for_height_vfunc(int height, int& minimum_width, int& natural_width) const override;
     virtual void on_size_allocate(Gtk::Allocation& allocation) override;
     virtual void on_map() override;
     virtual void on_unmap() override;
