@@ -18,10 +18,10 @@ void OMainWnd::OnDawEvent() {
         switch (c) {
             case DAW_PATH::samples:
                 m_project.SetSample(m_daw.GetCurrentSample());
-                m_project.ProcessPos(NULL);
+                //m_project.ProcessPos(NULL);
                 m_timeview.UpdateDawTime(false);
                 m_timeview.queue_draw();
-                m_trackslayout.queue_draw();
+                //m_trackslayout.queue_draw();
                 break;
             case DAW_PATH::smpte:
                 m_timeview.m_timecode->set_text(m_daw.GetTimeCode());
@@ -34,11 +34,13 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::play:
                 lock_play = true;
                 m_button_play->set_active(true);
+                m_timer.start();
                 lock_play = false;
                 break;
             case DAW_PATH::stop:
                 lock_play = true;
                 m_button_play->set_active(false);
+                m_timer.stop();
                 lock_play = false;
                 break;
             default:
@@ -105,4 +107,8 @@ void OMainWnd::OnMixerEvent() {
 void OMainWnd::notify_mixer(OscCmd *cmd) {
     my_mixerqueue.push(cmd);
     m_MixerDispatcher.emit();
+}
+
+void OMainWnd::TimerEvent(void* data) {
+    m_project.ProcessPos(NULL);
 }

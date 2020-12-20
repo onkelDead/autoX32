@@ -32,6 +32,10 @@
 #include "OTimeView.h"
 #include "OTracksLayout.h"
 #include "OOverView.h"
+#include "OPlayHead.h"
+
+
+#include "OTimer.h"
 
 #define PACKAGE_STRING "autoX32"
 #define PACKAGE_VERSION "0.1"
@@ -138,6 +142,7 @@ private:
             Gtk::Image m_img_lock_playhead_off;
         Gtk::Box *m_timebox;
             OTimeView m_timeview;
+            Gtk::Box *m_tracksbox;
         Gtk::ScrolledWindow *m_scroll;
             Gtk::Viewport *m_viewport;
                 Gtk::Box *m_scrolledview;
@@ -147,6 +152,9 @@ private:
         Gtk::Box *m_statusbox;            
             Gtk::Statusbar m_Statusbar;
 
+        Gtk::Overlay *m_overlay;
+        OPlayHead *m_playhead;            
+        
     unsigned m_ContextId;
 
     bool lock_play;
@@ -163,8 +171,11 @@ private:
 
     /// objects
     OProject m_project;
+    OTimer m_timer;
     OX32* m_x32;
     ODAW m_daw;
+    
+    void TimerEvent(void*);
 
     void create_view();
     void create_menu();

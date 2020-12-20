@@ -10,6 +10,7 @@ autoX32_SOURCES = \
     src/OMainWnd.cpp \
     src/OMainWndUI.cpp \
     src/OMainWndProcess.cpp \
+    src/OPlayHead.cpp \
     src/OOverView.cpp \
     src/OscCmd.cpp \
     src/OTimeView.cpp \
@@ -30,6 +31,7 @@ autoX32_SOURCES = \
 noinst_HEADERS = \
     src/OTimeDraw.h \
     src/OMainWnd.h \
+    src/OPlayHead.h \
     src/OOverView.h \
     src/OTrackDraw.h \
     src/OTimeView.h \

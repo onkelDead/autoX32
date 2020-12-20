@@ -23,11 +23,10 @@
 #include "OscCmd.h"
 
 #include "embedded/main.h"
+#include "OTimer.h"
 
 OMainWnd::OMainWnd() :
-Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
-
-, m_x32(0) {
+Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0) {
 
     set_name("OMainWnd");
 
@@ -62,6 +61,10 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
 
     lock_play = false;
 
+    m_timer.setInterval(100);
+    m_timer.SetUserData(&m_project);
+    m_timer.setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
+    
     AutoConnect();
 
 }
