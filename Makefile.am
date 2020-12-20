@@ -8,9 +8,10 @@ bin_PROGRAMS = autoX32
 autoX32_SOURCES = \
     src/OMainWndEvents.cpp \
     src/OMainWnd.cpp \
+    src/OMainWndUI.cpp \
+    src/OMainWndProcess.cpp \
     src/OOverView.cpp \
     src/OscCmd.cpp \
-    src/OMainWndUI.cpp \
     src/OTimeView.cpp \
     src/OTracksLayout.cpp \
     src/OTrackEditDlg.cpp \
@@ -23,7 +24,8 @@ autoX32_SOURCES = \
     src/OProject.cpp \
     src/ODAW.cpp \
     src/OX32.cpp \
-src/autoX32.cpp
+    src/OTimer.cpp \
+    src/autoX32.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -38,7 +40,8 @@ noinst_HEADERS = \
     src/OTrackEditDlg.h \
     src/OTrackDlg.h \
     src/OConnectDlg.h \
-    src/OX32.h
+    src/OX32.h \
+    src/OTimer.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0

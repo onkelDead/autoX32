@@ -250,3 +250,13 @@ void OMainWnd::on_timeline_zoom_changed() {
 
 void OMainWnd::on_btn_x32_clicked() {
 }
+
+
+void OMainWnd::OnOverViewEvent() {
+    m_timeview.UpdateDawTime(false);
+    queue_draw();
+}
+
+void OMainWnd::notify_overview() {
+    m_OverViewDispatcher.emit();
+}
