@@ -25,7 +25,6 @@ OPlayHead::OPlayHead(const OPlayHead& orig) {
 OPlayHead::~OPlayHead() {
 }
 
-
 Gtk::SizeRequestMode OPlayHead::get_request_mode_vfunc() const {
     return Gtk::Widget::get_request_mode_vfunc();
 }
@@ -112,28 +111,13 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     int height = allocation.get_height();
     int width = allocation.get_width();
 
-//    m_daw_time->scale = (gfloat) width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
-//    gint pos = (m_daw_time->m_pos - m_daw_time->m_viewstart) * m_daw_time->scale;
-//
-//    //draw_text(cr, allocation.get_width(), 8, (char*)"Hello");
-    cr->set_line_width(.5);
-    cr->set_source_rgb(1., 1., 1.);
-    cr->move_to(5, 0);
-    cr->line_to(5, height);
-    cr->stroke();
-//
-//    pos = (m_range->m_loopstart - m_daw_time->m_viewstart) * m_daw_time->scale;
-//    cr->set_source_rgb(.0, .8, 0);
-//    cr->move_to(pos, height / 2);
-//    cr->line_to(pos, height);
-//    cr->stroke();
-//
-//
-//    pos = (m_range->m_loopend - m_daw_time->m_viewstart) * m_daw_time->scale;
-//    cr->set_source_rgb(.4, .4, 1);
-//    cr->move_to(pos, height / 2);
-//    cr->line_to(pos, height);
-//    cr->stroke();
+    if (m_active) {
+        cr->set_line_width(.5);
+        cr->set_source_rgb(1., 1., 1.);
+        cr->move_to(5, 0);
+        cr->line_to(5, height);
+        cr->stroke();
+    }
 
     return true;
 }

@@ -25,6 +25,8 @@ public:
     OPlayHead(const OPlayHead& orig);
     virtual ~OPlayHead();
 
+    void set_active(bool val) { m_active = val; }
+    
 protected:
 
     //Overrides:
@@ -43,7 +45,7 @@ protected:
     Glib::RefPtr<Gdk::Window> m_refGdkWindow;
     
 private:
-
+    bool m_active;
 };
 
 #endif /* OPLAYHEAD_H */

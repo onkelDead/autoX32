@@ -146,7 +146,7 @@ void OMainWnd::on_menu_recent(std::string location) {
 
     OpenProject(location);
     m_project.AddRecentProject(m_project.GetProjectLocation());
-    settings->set_string_array("recent-projects", m_project.m_recent_projects);    
+    settings->set_string_array("recent-projects", m_project.m_recent_projects);
     UpdateMenuRecent();
     show_all_children(true);
 }
@@ -168,7 +168,7 @@ void OMainWnd::on_menu_project_save_as() {
     m_project.Save();
     m_project.AddRecentProject(m_project.GetProjectLocation());
     settings->set_string_array("recent-projects", m_project.m_recent_projects);
-    UpdateMenuRecent();    
+    UpdateMenuRecent();
 }
 
 void OMainWnd::on_menu_project_close() {
@@ -251,7 +251,6 @@ void OMainWnd::on_timeline_zoom_changed() {
 void OMainWnd::on_btn_x32_clicked() {
 }
 
-
 void OMainWnd::OnOverViewEvent() {
     UpdateDawTime(false);
     m_overview->queue_draw();
@@ -264,6 +263,15 @@ void OMainWnd::notify_overview() {
 void OMainWnd::UpdateDawTime(bool redraw) {
     daw_time* dt = m_project.GetDawTime();
     gint pos = (dt->m_pos - dt->m_viewstart) * dt->scale;
-    m_playhead->set_margin_left(155 + pos);
+    if (pos < 0 ) {
+        m_playhead->set_active(false);
+        m_playhead->queue_draw();
+        pos = 0;
+    }
+    else if (pos >= 0) {
+        m_playhead->set_active(true);
+        m_playhead->set_margin_left(155 + pos);
+    }
+    
     m_timeview.UpdateDawTime(redraw);
 }

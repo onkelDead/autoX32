@@ -128,7 +128,7 @@ void OMainWnd::create_view() {
     m_playhead->set_margin_left(160);
     m_overlay->add_overlay(*bbox);
     m_overlay->add_overlay(*m_playhead);
-    m_overlay->set_overlay_pass_through(*bbox, true);
+    m_overlay->set_overlay_pass_through(*bbox, false);
     m_mainbox->add(*m_overlay);    
     
     ui->get_widget<Gtk::Box>("box-status", status);
