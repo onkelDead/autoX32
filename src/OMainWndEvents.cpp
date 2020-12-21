@@ -170,6 +170,7 @@ void OMainWnd::on_menu_project_save_as() {
     m_project.AddRecentProject(m_project.GetProjectLocation());
     settings->set_string_array("recent-projects", m_project.m_recent_projects);
     UpdateMenuRecent();
+    set_title("autoX32 - [" + m_project.GetProjectLocation() + "]");
 }
 
 void OMainWnd::on_menu_project_close() {
@@ -179,6 +180,8 @@ void OMainWnd::on_menu_project_close() {
     }
     m_project.Close();
     m_trackslayout.RemoveAllTackViews();
+    set_title("autoX32 - [untitled]");
+
 }
 
 void OMainWnd::on_btn_teach_clicked() {

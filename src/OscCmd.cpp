@@ -44,7 +44,7 @@ void OscCmd::SetPathStr(std::string path) {
 
 
 bool OscCmd::IsConfig() {
-    if (m_elements.at(3) == "config")
+    if (m_elements.size() > 3 &&  m_elements.at(3) == "config")
         return true;
     return false;
 }
@@ -71,11 +71,11 @@ void OscCmd::SplitPath(std::string s) {
 
     m_elements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
     
-    if (strcmp(m_elements.at(1).data(), "ch") == 0) {
+    if (m_elements.at(1) == "ch" || m_elements.at(1) == "bus") {
         char qn[64];
-        sprintf(qn, "/ch/%s/config/name", m_elements.at(2).data());
+        sprintf(qn, "/%s/%s/config/name", m_elements.at(1).data(), m_elements.at(2).data());
         m_configName = qn;
-        sprintf(qn, "/ch/%s/config/color", m_elements.at(2).data());
+        sprintf(qn, "/%s/%s/config/color", m_elements.at(1).data(), m_elements.at(2).data());
         m_configColor = qn;
     }
 }

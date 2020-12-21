@@ -23,8 +23,6 @@ OTrackEditDlg::OTrackEditDlg() {
 	m_button_ok->signal_clicked().connect(sigc::mem_fun(*this, &OTrackEditDlg::on_button_ok_clicked));
 	m_button_cancel->signal_clicked().connect(sigc::mem_fun(*this, &OTrackEditDlg::on_button_cancel_clicked));
 
-	//m_entry_oscpath.signal_changed().connect(sigc::mem_fun(*this, &OTrackEditDlg::on_entry_changed));
-
 	Gtk::Box *vbox = get_vbox();
 	m_label_oscpath.set_text("OSC path");
 	m_grid.attach(m_label_oscpath, 0, 0, 1, 1);

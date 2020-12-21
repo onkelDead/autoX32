@@ -91,6 +91,7 @@ void OMainWnd::OnMixerEvent() {
                         v->SetTrackStore(ts);
                         v->SetDawTime(m_project.GetDawTime());
                         v->SetRecord(true);
+                        v->UpdateConfig();
                         m_trackslayout.AddTrack(v);
                         show_all_children(true);
                         m_x32->Send(cmd->GetConfigName());

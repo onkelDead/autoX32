@@ -27,6 +27,8 @@ namespace sigc {
 
 void OMainWnd::create_about_dlg() {
     // create about dialog
+    
+    m_Dialog.set_name("AboutDlg");
     m_Dialog.set_transient_for(*this);
 
     m_Dialog.set_logo(Gdk::Pixbuf::create_from_inline(-1, autoX32_inline, FALSE));
@@ -46,6 +48,7 @@ void OMainWnd::create_about_dlg() {
 
     m_Dialog.signal_response().connect(
             sigc::mem_fun(*this, &OMainWnd::on_about_dialog_response));
+ 
 
 }
 
@@ -99,6 +102,8 @@ void OMainWnd::create_menu() {
 
 void OMainWnd::create_view() {
 
+    set_title("autoX32 - [untitled]");
+    
     Gtk::MenuBar *menubar = NULL;
     Gtk::Toolbar *toolbar = NULL;
     Gtk::Box *status  = NULL;

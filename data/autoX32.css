@@ -1,0 +1,93 @@
+/*
+  Copyright 2017 Detlef Urban <onkel@paraair.de>
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
+#track {
+    background-image: -gtk-gradient (linear,
+        left top,
+        left bottom,
+        from (rgb(60,60,60)),
+        color-stop (1, darker (rgb(50,50,50))),
+        to (rgb(50,50,50))); 
+}
+
+#white  {
+    background-color: rgb(255,255,255);
+}
+
+#black  {
+    background-color: rgb(0,0,0);
+}
+
+#o-timeline {
+    background-color: rgb(255,255,0);
+    color:            rgb(0,255,255);
+}
+
+#o-timecode {
+    background-color: rgb(0,0,0);
+    color:            rgb(0,255,0);
+}
+
+#eq_high_gain {
+    color:            rgb(128,140,255);
+}
+
+#OMainWnd, #OTrackDlg, #OConnectDlg, AboutDlg {
+    background-color: rgb(50,50,50);
+    color: rgb(228,228,228);
+}
+
+#OTrackControl, #OColorButton, #OOverView {
+    background-color: rgb(50,50,60);
+}
+
+menu, menuitem {
+    background-color: rgb(50,50,50);
+    color: rgb(255, 255, 255);
+}
+
+menuitem:hover {
+    background-color: rgb(50,50,150);
+}
+
+menuitem:disabled {
+    color: rgb(127, 127, 127);
+}
+
+#OMainToolbar {
+    background-image: -gtk-gradient (linear,
+        left top,
+        left bottom,
+        from (rgb(55,55,55)),
+        color-stop (0.5, darker (rgb(75,75,75))),
+        to (rgb(55,55,55)));
+    background-color: rgb(55,55,55);
+    color: rgb(228,228,228);
+    border-top-width: 0;
+    border-color: rgb(55,55,55);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0;
+    font-size: 75%;
+}
+
+entry, colorchooser {
+    color: #ffffff;
+}
+
+.separator {
+    color: rgb(32,32,32);
+}

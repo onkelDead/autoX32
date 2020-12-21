@@ -174,6 +174,8 @@ void OMainWnd::NewProject() {
 void OMainWnd::OpenProject(std::string location) {
     m_project.Load(location);
 
+    set_title("autoX32 - [" + location + "]");
+    
     std::map<std::string, OTrackStore*> tracks = m_project.GetTracks();
 
     for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
