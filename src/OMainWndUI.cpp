@@ -125,7 +125,7 @@ void OMainWnd::create_view() {
     m_playhead->set_halign(Gtk::ALIGN_START);
     m_playhead->set_hexpand(false);
     m_playhead->set_size_request(1, -1);
-    m_playhead->set_margin_left(160);
+    m_playhead->set_margin_start(160);
     
     m_overlay->add_overlay(*bbox);
     m_overlay->add_overlay(*m_playhead);

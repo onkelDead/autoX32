@@ -113,5 +113,5 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 
 void OMainWnd::TimerEvent(void* data) {
     m_project.ProcessPos(NULL, &m_timer);
-    UpdateDawTime(true);
+    UpdatePlayhead();
 }

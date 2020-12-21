@@ -112,6 +112,7 @@ void OProject::Load(std::string location) {
         m_daw_range.m_loopend = atoi((const char *) xmlGetProp(node, BAD_CAST "end"));
         m_daw_range.m_dirty = false;
     }
+    xmlXPathFreeObject(result);
 
     result = xmlXPathEvalExpression(BAD_CAST "//project/zoom", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
@@ -120,6 +121,7 @@ void OProject::Load(std::string location) {
         m_daw_time.m_viewstart = atoi((const char *) xmlGetProp(node, BAD_CAST "start"));
         m_daw_time.m_viewend = atoi((const char *) xmlGetProp(node, BAD_CAST "end"));
     }
+    xmlXPathFreeObject(result);
 
 
     result = xmlXPathEvalExpression(BAD_CAST "//project/cmd", context);
@@ -142,6 +144,7 @@ void OProject::Load(std::string location) {
             }
         }
     }
+    xmlXPathFreeObject(result);
 
     result = xmlXPathEvalExpression(BAD_CAST "//project/track", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
@@ -157,6 +160,7 @@ void OProject::Load(std::string location) {
             }
         }
     }
+    xmlXPathFreeObject(result);
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);

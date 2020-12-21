@@ -89,6 +89,7 @@ public:
     void remove_track(IOTrackView*);
     
     void UpdateDawTime(bool redraw);
+    void UpdatePlayhead();
     
     /// operations
     void LoadSettings();

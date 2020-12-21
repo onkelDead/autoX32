@@ -264,19 +264,22 @@ void OMainWnd::notify_overview() {
 void OMainWnd::UpdateDawTime(bool redraw) {
     if (!lock_daw_time) {
         lock_daw_time = true;
-        daw_time* dt = m_project.GetDawTime();
-        gint pos = (m_timer.GetSamplePos() - dt->m_viewstart) * dt->scale;
-        if (pos < 0 ) {
-            m_playhead->set_active(false);
-            m_playhead->queue_draw();
-            pos = 0;
-        }
-        else if (pos >= 0) {
-            m_playhead->set_active(true);
-            m_playhead->set_margin_left(160 + pos);
-        }
-
+        UpdatePlayhead();
         m_timeview.UpdateDawTime(redraw);
         lock_daw_time = false;
+    }
+}
+
+void OMainWnd::UpdatePlayhead() {
+    daw_time* dt = m_project.GetDawTime();
+    gint pos = (m_timer.GetSamplePos() - dt->m_viewstart) * dt->scale;
+    if (pos < 0) {
+        m_playhead->set_active(false);
+        m_playhead->queue_draw();
+        pos = 0;
+    } else if (pos >= 0 && pos < 0xffff) {
+        
+        m_playhead->set_active(true);
+        m_playhead->set_margin_start(160 + pos);
     }
 }
