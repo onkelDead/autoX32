@@ -14,9 +14,10 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <sys/time.h>
 #include "OTimer.h"
 
-OTimer::OTimer() {
+OTimer::OTimer() : m_eclapse(0) {
 }
 
 OTimer::OTimer(std::function<void(void*) > func, const long &interval, void* userData) {
@@ -31,10 +32,22 @@ OTimer::~OTimer(){
 
 void OTimer::start() {
     m_running = true;
+    gettimeofday(&m_starttime, NULL);
     m_thread = std::thread([&]() {
         while (m_running) {
+            
+            struct timeval now;
+            struct timeval diff;
+            gettimeofday(&now, NULL);
+            timersub(&now, &m_starttime, &diff );
+
+            m_eclapse = diff.tv_usec / 1000 + diff.tv_sec * 1000;
+
+
             auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
             m_func(m_userData);
+            //printf("%d %d\n", m_eclapse ,m_samplepos );
+            m_samplepos += m_secdivide * m_interval;
             std::this_thread::sleep_until(delta);
         }
     });
@@ -72,4 +85,18 @@ long OTimer::getInterval() {
 OTimer* OTimer::setInterval(const long &interval) {
     m_interval = interval;
     return this;
+}
+
+void OTimer::SetSecDivide(int val) {
+    m_secdivide = val;
+}
+
+void OTimer::SetSamplePos(int val) {
+    //printf("SetSamplePos: %d %d\n", val, m_samplepos - val);
+    m_samplepos = val;
+    
+}
+
+int OTimer::GetSamplePos() {
+    return m_samplepos;
 }

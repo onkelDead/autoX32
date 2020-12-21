@@ -129,15 +129,11 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
 
     int height = allocation.get_height();
     int width = allocation.get_width();
+    
+    int m_currentSample = m_timer->GetSamplePos();
 
     m_daw_time->scale = (gfloat) width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
-    gint pos = (m_daw_time->m_pos - m_daw_time->m_viewstart) * m_daw_time->scale;
-
-//    //draw_text(cr, allocation.get_width(), 8, (char*)"Hello");
-//    cr->set_source_rgb(.6, 0, 0);
-//    cr->move_to(pos, 0);
-//    cr->line_to(pos, height);
-//    cr->stroke();
+    gint pos = (m_currentSample - m_daw_time->m_viewstart) * m_daw_time->scale;
 
     pos = (m_range->m_loopstart - m_daw_time->m_viewstart) * m_daw_time->scale;
     cr->set_source_rgb(.0, .8, 0);
@@ -178,17 +174,6 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
     layout->show_in_cairo_context(cr);
 }
 
-void OTimeDraw::set_samples(gint new_val) {
-    if (new_val > m_daw_time->m_maxsamples) {
-        SetMaxSamples(new_val);
-    }
-    m_daw_time->m_pos = new_val;
-    if (m_daw_time->m_pos < 0)
-        m_daw_time->m_pos = 0;
-    queue_draw();
-
-}
-
 void OTimeDraw::SetMaxSamples(gint max_samples) {
     m_daw_time->m_maxsamples = max_samples;
     if (m_range->m_loopend == -1) {
@@ -203,37 +188,19 @@ bool OTimeDraw::on_button_press_event(GdkEventButton* event) {
         menu_popup.popup(3, event->time);
         return true;
     }
-    m_daw_time->m_pos = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
-    signal_pos_changed.emit();
-    return true;
-}
-
-bool OTimeDraw::on_scroll_event(GdkEventScroll* event) {
-    if (m_zoom) {
-        if (event->direction == GDK_SCROLL_UP) { // zoom in
-            zoom_in();
-        } else { // zoom out
-            zoom_out();
-        }
-        return true;
-    }
-    m_daw_time->m_pos += (event->direction == GDK_SCROLL_UP ? (m_scroll_step * m_daw_time->m_bitrate) : -(m_scroll_step * m_daw_time->m_bitrate));
-    if (m_daw_time->m_pos < 0)
-        m_daw_time->m_pos = 0;
-    if (m_daw_time->m_pos > m_daw_time->m_maxsamples)
-        m_daw_time->m_pos = m_daw_time->m_maxsamples;
+    m_timer->SetSamplePos(event->x / m_daw_time->scale + m_daw_time->m_viewstart);
     signal_pos_changed.emit();
     return true;
 }
 
 void OTimeDraw::on_menu_popup_start() {
-    m_range->m_loopstart = m_daw_time->m_pos;
+    m_range->m_loopstart = m_timer->GetSamplePos();
     m_range->m_dirty = true;
     queue_draw();
 }
 
 void OTimeDraw::on_menu_popup_end() {
-    m_range->m_loopend = m_daw_time->m_pos;
+    m_range->m_loopend = m_timer->GetSamplePos();
     m_range->m_dirty = true;
     queue_draw();
 }
@@ -243,13 +210,13 @@ void OTimeDraw::EnableZoom(bool val) {
 }
 
 void OTimeDraw::SetLoopStart() {
-    m_range->m_loopstart = m_daw_time->m_pos;
+    m_range->m_loopstart = m_timer->GetSamplePos();
     m_range->m_dirty = true;
     queue_draw();
 }
 
 void OTimeDraw::SetLoopEnd() {
-    m_range->m_loopend = m_daw_time->m_pos;
+    m_range->m_loopend = m_timer->GetSamplePos();
     m_range->m_dirty = true;
     queue_draw();
 }
@@ -262,28 +229,12 @@ void OTimeDraw::SetDawTime(daw_time* dt) {
     m_daw_time = dt;
 }
 
+void OTimeDraw::SetTimer(IOTimer* timer) {
+    m_timer = timer;
+}
+
 void OTimeDraw::SetRange(daw_range* range) {
     m_range = range;
-}
-
-void OTimeDraw::zoom_in() {
-    m_daw_time->m_viewstart += m_daw_time->m_pos / 10;
-    m_daw_time->m_viewend -= (m_daw_time->m_viewend - m_daw_time->m_pos) / 10;
-    if (m_daw_time->m_viewstart > m_daw_time->m_viewend)
-        m_daw_time->m_viewstart = m_daw_time->m_viewend;
-    signal_zoom_changed.emit();
-}
-
-void OTimeDraw::zoom_out() {
-    m_daw_time->m_viewstart -= m_daw_time->m_pos / 10;
-    m_daw_time->m_viewend += (m_daw_time->m_viewend - m_daw_time->m_pos) / 10;
-    if (m_daw_time->m_viewstart < 0)
-        m_daw_time->m_viewstart = 0;
-    if (m_daw_time->m_viewend > m_daw_time->m_maxsamples)
-        m_daw_time->m_viewend = m_daw_time->m_maxsamples;
-
-    signal_zoom_changed.emit();
-
 }
 
 void OTimeDraw::SetZoomLoop() {

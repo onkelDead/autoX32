@@ -22,37 +22,50 @@
 #include <functional>
 #include <thread>
 
-class OTimer {
-
+#include "IOTimer.h"
+ 
+class OTimer : public IOTimer {
 public:
-	OTimer();
+    OTimer();
 
-	OTimer(std::function<void(void*)> func, const long &interval, void* userData);
+    OTimer(std::function<void(void*) > func, const long &interval, void* userData);
 
-        virtual ~OTimer();
+    virtual ~OTimer();
 
-	void start();
-	void stop();
-	void restart();
-	
-	bool isRunning();
+    void start();
+    void stop();
+    void restart();
 
-	OTimer *setFunc(std::function<void(void*)> func);
-        
-        OTimer *SetUserData(void*);
-        
-	long getInterval();
+    bool isRunning();
 
-	OTimer *setInterval(const long &interval);
+    OTimer *setFunc(std::function<void(void*) > func);
+
+    OTimer *SetUserData(void*);
+
+    long getInterval();
+
+    OTimer *setInterval(const long &interval);
+    
+    void SetSecDivide(int);
+    
+    virtual void SetSamplePos(int);
+    virtual int GetSamplePos();
 
 private:
-	std::function<void(void*)> m_func;
-	long m_interval;
 
-	std::thread m_thread;
-	bool m_running = false;
-        
-        void* m_userData;
+    struct timeval m_starttime;
+    int m_eclapse; 
+    int m_secdivide;
+    
+    int m_samplepos;
+    
+    std::function<void(void*) > m_func;
+    long m_interval;
+
+    std::thread m_thread;
+    bool m_running = false;
+
+    void* m_userData;
 };
 
 #endif /* OTIMER_H */

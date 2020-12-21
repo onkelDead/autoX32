@@ -160,6 +160,8 @@ private:
     unsigned m_ContextId;
 
     bool lock_play;
+    
+    bool lock_daw_time;
 
     /// dialogs
     Gtk::AboutDialog m_Dialog;

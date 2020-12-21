@@ -32,7 +32,6 @@ OProject::OProject() : m_mixer(0) {
     m_daw_range.m_dirty = false;
     m_daw_time.m_bitrate = 0;
     m_daw_time.m_maxsamples = 1;
-    m_daw_time.m_pos = 0;
     m_daw_time.scale = 1;
     m_daw_time.m_viewstart = 0;
     m_daw_time.m_viewend = -1;
@@ -42,7 +41,6 @@ OProject::OProject(std::string location) : m_mixer(0) {
 
     m_daw_time.m_bitrate = 0;
     m_daw_time.m_maxsamples = 1;
-    m_daw_time.m_pos = 0;
     m_daw_time.scale = 1;
     m_daw_time.m_viewstart = 0;
     m_daw_time.m_viewend = -1;
@@ -284,10 +282,6 @@ void OProject::SetBitRate(gint rate) {
     m_daw_time.m_bitrate = rate;
 }
 
-gint OProject::GetCurrentSample() {
-    return m_daw_time.m_pos;
-}
-
 void OProject::SetMaxSamples(gint max_samples) {
 
     m_daw_time.m_maxsamples = max_samples;
@@ -295,22 +289,6 @@ void OProject::SetMaxSamples(gint max_samples) {
         m_daw_range.m_loopend = max_samples;
     }
     m_daw_time.m_viewend = max_samples;
-}
-
-void OProject::SetSample(gint new_val) {
-    if (new_val > m_daw_time.m_maxsamples) {
-        SetMaxSamples(new_val);
-    }
-
-    if (m_lock_playhead) {
-        int left_offset = new_val - m_daw_time.m_pos;
-        m_daw_time.m_viewstart += left_offset;
-        m_daw_time.m_viewend += left_offset;
-    }
-
-    m_daw_time.m_pos = new_val;
-    if (m_daw_time.m_pos < 0)
-        m_daw_time.m_pos = 0;
 }
 
 void OProject::SetPlaying(bool val) {
@@ -362,13 +340,15 @@ void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
     trackstore->m_playhead = entry;
 }
 
-bool OProject::ProcessPos(OscCmd* cmd) {
+bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     bool ret_code = false;
+    int current = timer->GetSamplePos();
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         
         OTrackStore* trackstore = it->second;
 
-        track_entry* entry = trackstore->GetEntry(m_daw_time.m_pos);
+        
+        track_entry* entry = trackstore->GetEntry(current);
 
         if (entry != trackstore->m_playhead) {
             if (trackstore->m_record && m_playing) {
@@ -383,21 +363,21 @@ bool OProject::ProcessPos(OscCmd* cmd) {
             }
         }
         if (cmd && it->first == cmd->GetPathStr()) {
-            AddEntry(trackstore, cmd);
+            AddEntry(trackstore, cmd, current);
             ret_code = true;
         }
     }
     return ret_code;
 }
 
-void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd) {
+void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int samplepos) {
     if (trackstore) {
         if (trackstore->m_record) {
             track_entry *entry = NULL;
             if (m_playing) {
-                if (m_daw_time.m_pos != trackstore->m_playhead->sample) {
+                if (samplepos != trackstore->m_playhead->sample) {
                     entry = new track_entry;
-                    entry->sample = m_daw_time.m_pos;
+                    entry->sample = samplepos;
                     entry->next = NULL;
                     entry->prev = NULL;
                     trackstore->AddSamplePoint(entry);
@@ -406,7 +386,7 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd) {
                     entry = trackstore->m_playhead;
                 }
             } else {
-                entry = trackstore->GetEntry(m_daw_time.m_pos);
+                entry = trackstore->GetEntry(samplepos);
             }
 
             if (entry) {

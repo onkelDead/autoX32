@@ -6,7 +6,6 @@
 
 #include <iostream>
 #include <gtkmm.h>
-
 #include "OMainWnd.h"
 
 #include "OscCmd.h"
@@ -16,10 +15,14 @@ void OMainWnd::OnDawEvent() {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
             case DAW_PATH::samples:
-                m_project.SetSample(m_daw.GetCurrentSample());
-                if (!m_button_play->get_active())
-                    m_project.ProcessPos(NULL);
-                UpdateDawTime(false);
+                //m_project.SetSample(m_daw.GetCurrentSample());
+                if (!m_button_play->get_active()) {
+                    m_timer.SetSamplePos(m_daw.GetCurrentSample());
+                }
+                m_project.ProcessPos(NULL, &m_timer);
+                if (!m_button_play->get_active()) {
+                    UpdateDawTime(false);
+                }
                 break;
             case DAW_PATH::smpte:
                 m_timeview.m_timecode->set_text(m_daw.GetTimeCode());
@@ -27,6 +30,7 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::reply:
                 m_project.SetMaxSamples(m_daw.GetMaxSamples());
                 m_project.SetBitRate(m_daw.GetBitRate());
+                m_timer.SetSecDivide(m_daw.GetBitRate() / 1000);
                 UpdateDawTime(false);
                 break;
             case DAW_PATH::play:
@@ -66,7 +70,7 @@ void OMainWnd::OnMixerEvent() {
             }
         } else {
 
-            bool changed = m_project.ProcessPos(cmd);
+            bool changed = m_project.ProcessPos(cmd, &m_timer);
 
             OTrackView *tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
             if (tv) {
@@ -108,5 +112,6 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 }
 
 void OMainWnd::TimerEvent(void* data) {
-    m_project.ProcessPos(NULL);
+    m_project.ProcessPos(NULL, &m_timer);
+    UpdateDawTime(true);
 }

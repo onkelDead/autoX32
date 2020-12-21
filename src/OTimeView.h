@@ -21,6 +21,8 @@
 #include "OTimeDraw.h"
 #include "IOTimeView.h"
 
+#include "IOTimer.h"
+
 class OTimeView : public Gtk::Box, IOTimeView {
 public:
     OTimeView();
@@ -29,6 +31,7 @@ public:
 
     void SetRange(daw_range* range);
     void SetDawTime(daw_time*);
+    void SetTimer(IOTimer*);
     void UpdateDawTime(bool redraw);
 
     void SetScrollStep(int step);    

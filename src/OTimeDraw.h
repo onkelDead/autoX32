@@ -21,12 +21,12 @@
 #include "IOTimeView.h"
 #include "OTypes.h"
 
+#include "IOTimer.h"
+
 class OTimeDraw : public Gtk::Widget {
 public:
     OTimeDraw();
     virtual ~OTimeDraw();
-
-    void set_samples(gint new_val);
 
     void SetMaxSamples(gint max_samples);
 
@@ -42,6 +42,7 @@ public:
     void SetScrollStep(gint val);
     
     void SetDawTime(daw_time*);
+    void SetTimer(IOTimer*);
     void SetRange(daw_range*);
 
 protected:
@@ -68,6 +69,9 @@ private:
     bool m_zoom;
 
     gint m_scroll_step;
+    
+    IOTimer* m_timer;
+    
     daw_time* m_daw_time;
     daw_range* m_range;
 
@@ -75,7 +79,6 @@ private:
     sigc::signal<void> signal_pos_changed;
     
     virtual bool on_button_press_event(GdkEventButton* event) override;
-    virtual bool on_scroll_event(GdkEventScroll* event) override;
 
     void zoom_in();
     void zoom_out();

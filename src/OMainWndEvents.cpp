@@ -148,6 +148,7 @@ void OMainWnd::on_menu_recent(std::string location) {
     m_project.AddRecentProject(m_project.GetProjectLocation());
     settings->set_string_array("recent-projects", m_project.m_recent_projects);
     UpdateMenuRecent();
+    UpdateDawTime(false);
     show_all_children(true);
 }
 
@@ -240,7 +241,7 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 
 void OMainWnd::on_timeline_pos_changed() {
 
-    m_daw.SetPosition(m_project.GetCurrentSample(), m_button_play->get_active());
+    m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
     m_trackslayout.redraw();
 }
 
@@ -261,17 +262,21 @@ void OMainWnd::notify_overview() {
 }
 
 void OMainWnd::UpdateDawTime(bool redraw) {
-    daw_time* dt = m_project.GetDawTime();
-    gint pos = (dt->m_pos - dt->m_viewstart) * dt->scale;
-    if (pos < 0 ) {
-        m_playhead->set_active(false);
-        m_playhead->queue_draw();
-        pos = 0;
+    if (!lock_daw_time) {
+        lock_daw_time = true;
+        daw_time* dt = m_project.GetDawTime();
+        gint pos = (m_timer.GetSamplePos() - dt->m_viewstart) * dt->scale;
+        if (pos < 0 ) {
+            m_playhead->set_active(false);
+            m_playhead->queue_draw();
+            pos = 0;
+        }
+        else if (pos >= 0) {
+            m_playhead->set_active(true);
+            m_playhead->set_margin_left(160 + pos);
+        }
+
+        m_timeview.UpdateDawTime(redraw);
+        lock_daw_time = false;
     }
-    else if (pos >= 0) {
-        m_playhead->set_active(true);
-        m_playhead->set_margin_left(160 + pos);
-    }
-    
-    m_timeview.UpdateDawTime(redraw);
 }

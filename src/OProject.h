@@ -23,7 +23,7 @@
 #include <libxml/xpath.h>
 
 #include "OscCmd.h"
-
+#include "OTimer.h"
 #include "OTrackStore.h"
 #include "IOProject.h"
 
@@ -49,9 +49,7 @@ public:
     gint GetLoopStart();
     daw_time* GetDawTime();
     void SetMaxSamples(gint max_samples);
-    void SetSample(gint new_val);
     void SetBitRate(gint);
-    virtual gint GetCurrentSample();
     void LockPlayhead(bool);
     
     void SetPlaying(bool val);
@@ -67,11 +65,11 @@ public:
     void SetMixer(IOX32*);
     bool AnyTouch();
     
-    bool ProcessPos(OscCmd*);
+    bool ProcessPos(OscCmd*, OTimer*);
     void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
 
     OTrackStore* NewTrack(OscCmd*);
-    void AddEntry(OTrackStore*, OscCmd*);
+    void AddEntry(OTrackStore*, OscCmd*, int);
     
     OscCmd* ProcessConfig(OscCmd*);
 

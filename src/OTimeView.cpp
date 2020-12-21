@@ -53,6 +53,11 @@ void OTimeView::SetDawTime(daw_time* dt) {
     m_timedraw->SetDawTime(dt);
 }
 
+void OTimeView::SetTimer(IOTimer* timer) {
+    m_timedraw->SetTimer(timer);
+}
+
+
 void OTimeView::UpdateDawTime(bool redraw) {
     char t[32];
     daw_time* dt = m_daw_time;

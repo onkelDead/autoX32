@@ -34,7 +34,7 @@ enum DAW_PATH {
 
 
 typedef struct daw_time_type {
-    int m_pos;
+    //int m_pos;
     int m_maxsamples;
     float scale;
     int m_bitrate;

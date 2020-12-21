@@ -145,8 +145,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
         cr->fill();
     }
 
-    gint pos = (m_daw_time->m_pos - m_daw_time->m_viewstart) * m_daw_time->scale - 1;
-
     cr->set_line_width(1);
     track_entry *it = m_trackstore->m_tracks;
 

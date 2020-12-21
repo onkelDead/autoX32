@@ -40,6 +40,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
 
     m_timeview.SetRange(m_project.GetTimeRange());
     m_timeview.SetDawTime(m_project.GetDawTime());
+    m_timeview.SetTimer(&m_timer);
 
     create_view();
     create_menu();
@@ -60,8 +61,9 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
     m_x32 = new OX32();
 
     lock_play = false;
+    lock_daw_time = false;
 
-    m_timer.setInterval(100);
+    m_timer.setInterval(20);
     m_timer.SetUserData(&m_project);
     m_timer.setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
     
@@ -182,7 +184,7 @@ void OMainWnd::OpenProject(std::string location) {
         trackview->UpdateConfig();
         m_trackslayout.AddTrack(trackview);
     }
-    m_project.ProcessPos(NULL);
+    m_project.ProcessPos(NULL, &m_timer);
     UpdateDawTime(false);
     queue_draw();
 }
