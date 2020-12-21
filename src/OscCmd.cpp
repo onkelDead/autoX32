@@ -53,6 +53,10 @@ std::string OscCmd::GetConfigName() {
     return m_configName;
 }
 
+std::string OscCmd::GetConfigColor() {
+    return m_configColor;
+}
+
 void OscCmd::SplitPath(std::string s) {
     m_elements.clear();
     std::string::size_type prev_pos = 0, pos = 0;
@@ -71,5 +75,58 @@ void OscCmd::SplitPath(std::string s) {
         char qn[64];
         sprintf(qn, "/ch/%s/config/name", m_elements.at(2).data());
         m_configName = qn;
+        sprintf(qn, "/ch/%s/config/color", m_elements.at(2).data());
+        m_configColor = qn;
+    }
+}
+
+void OscCmd::SetColorIndex(int index) {
+    switch(index) {
+        case 0:
+        case 8:
+            m_color.set_rgba_u(0, 0, 0);
+            break;
+        case 1:
+            m_color.set_rgba_u(32768, 0, 0);
+            break;
+        case 2:
+            m_color.set_rgba_u(0, 32768, 0);
+            break;
+        case 3:
+            m_color.set_rgba_u(32768, 32768, 0);
+            break;
+        case 4:
+            m_color.set_rgba_u(0, 0, 32768);
+            break;
+        case 5:
+            m_color.set_rgba_u(32768, 0, 32768);
+            break;
+        case 6:
+            m_color.set_rgba_u(0, 32768, 32768);
+            break;
+        case 7:
+            m_color.set_rgba_u(32768, 32768, 32768);
+            break;
+        case 9:
+            m_color.set_rgba_u(65535, 0, 0);
+            break;  
+        case 10:
+            m_color.set_rgba_u(0, 65535, 0);
+            break;     
+        case 11:
+            m_color.set_rgba_u(65535, 65535, 0);
+            break;       
+        case 12:
+            m_color.set_rgba_u(0, 0, 65535);
+            break; 
+        case 13:
+            m_color.set_rgba_u(65535, 0, 65535);
+            break;   
+        case 14:
+            m_color.set_rgba_u(0, 65535, 65535);
+            break;            
+        case 15:
+            m_color.set_rgba_u(65535, 65535, 65535);
+            break;
     }
 }

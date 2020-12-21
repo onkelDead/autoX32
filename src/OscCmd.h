@@ -28,13 +28,17 @@ public:
     std::string GetPathStr();
     void SetPathStr(std::string m_path);
     
-    std::string GetConfigName();
+    std::string GetConfigName();    
+    std::string GetConfigColor();
+    
+    void SetColorIndex(int);
     
     std::string m_name;
     std::string m_path;
     std::string m_types;
 
     Gdk::RGBA m_color;
+    int m_colorindex;
     
     float last_float;
     int last_int;
@@ -46,6 +50,7 @@ private:
     void SplitPath(std::string s);
     std::vector<std::string> m_elements;
     std::string m_configName;
+    std::string m_configColor;
 };
 
 #endif /* SRC_OSCCMD_H_ */

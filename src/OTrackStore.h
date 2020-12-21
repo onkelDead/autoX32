@@ -34,6 +34,7 @@ public:
     void AddSamplePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
+    
 
     track_entry* GetEntry(int);
     void RemoveEntry(track_entry*);
@@ -45,7 +46,7 @@ public:
     track_entry* m_tracks;
     track_entry* m_playhead;
     OscCmd* m_cmd;
-    std::string m_name;
+    int m_colorindex;
     
     bool m_dirty;
     

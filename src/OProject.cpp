@@ -155,7 +155,6 @@ void OProject::Load(std::string location) {
                 const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
-                ts->m_name = cmd->m_name;
                 ts->LoadData(m_projectFile.data());
             }
         }
@@ -413,9 +412,13 @@ OscCmd* OProject::ProcessConfig(OscCmd* cmd) {
     for (std::map<std::string, OscCmd*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
         if (it->second->GetConfigName() == cmd->GetPathStr()) {
             it->second->m_name = cmd->last_str;
-            m_tracks[it->second->GetPathStr()]->m_name = cmd->last_str;
             return it->second;
         }
+        if (it->second->GetConfigColor() == cmd->GetPathStr()) {
+            it->second->SetColorIndex(cmd->last_int);
+            return it->second;
+        }        
+        
     }
     return NULL;
 }

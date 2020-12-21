@@ -94,6 +94,7 @@ void OMainWnd::OnMixerEvent() {
                         m_trackslayout.AddTrack(v);
                         show_all_children(true);
                         m_x32->Send(cmd->GetConfigName());
+                        m_x32->Send(cmd->GetConfigColor());
                         my_mixerqueue.pop();
                         return;
                     }
