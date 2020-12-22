@@ -51,10 +51,7 @@ std::map<std::string, OTrackView *> OTracksLayout::GetTrackMap() {
 }
 
 void OTracksLayout::redraw() {
-    for (std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin(); it != m_trackmap.end(); ++it) {
-        if (it->second)
-            it->second->queue_draw();
-    }
+    queue_draw();
 }
 
 void OTracksLayout::StopRecord() {

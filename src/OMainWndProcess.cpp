@@ -116,4 +116,9 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 void OMainWnd::TimerEvent(void* data) {
     m_project.ProcessPos(NULL, &m_timer);
     UpdatePlayhead();
+    char load[32];
+
+    sprintf(load, "Load: %.2f%%", m_timer.GetLoad());
+
+    m_lbl_status->set_text(load);
 }

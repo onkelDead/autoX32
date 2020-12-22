@@ -43,10 +43,17 @@ void OTimer::start() {
 
             m_eclapse = diff.tv_usec / 1000 + diff.tv_sec * 1000;
 
-
             auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
             m_func(m_userData);
-            //printf("%d %d\n", m_eclapse ,m_samplepos );
+
+            struct timeval post;
+            struct timeval duration;
+            
+            gettimeofday(&post, NULL);
+            timersub(&post, &now, &duration );
+            
+            m_load = ((float)duration.tv_usec / 1000.) / ((float)m_interval) * 100;
+            
             m_samplepos += m_secdivide * m_interval;
             std::this_thread::sleep_until(delta);
         }
@@ -57,6 +64,7 @@ void OTimer::start() {
 void OTimer::stop() {
     m_running = false;
     m_thread.~thread();
+    m_load = 0.;
 }
 
 void OTimer::restart() {
@@ -99,4 +107,8 @@ void OTimer::SetSamplePos(int val) {
 
 int OTimer::GetSamplePos() {
     return m_samplepos;
+}
+
+float OTimer::GetLoad() {
+    return m_load;
 }

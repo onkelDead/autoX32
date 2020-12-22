@@ -191,13 +191,16 @@ void OMainWnd::on_menu_prefs() {
     ODlgPrefs *pDialog = nullptr;
     builder->get_widget_derived("dlg-prefs", pDialog);
 
-    pDialog->SetShowTrackPath(settings->get_boolean("show-path-on-track"));
-    
     // fill dialog with data
+    pDialog->SetShowTrackPath(settings->get_boolean("show-path-on-track"));
+    pDialog->SetResolution(settings->get_int("track-resolution"));
+
     pDialog->run();
     if (pDialog->m_result) {
         settings->set_boolean("show-path-on-track", pDialog->GetShowTrackPath());
-    }    
+        settings->set_int("track-resolution", pDialog->GetResolution());
+        m_timer.setInterval(pDialog->GetResolution());
+    }
     queue_draw();
 }
 
@@ -262,7 +265,7 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 void OMainWnd::on_timeline_pos_changed() {
 
     m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
-    m_trackslayout.redraw();
+    //m_trackslayout.queue_draw();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
@@ -295,11 +298,18 @@ void OMainWnd::UpdatePlayhead() {
     gint pos = (m_timer.GetSamplePos() - dt->m_viewstart) * dt->scale;
     if (pos < 0) {
         m_playhead->set_active(false);
-        m_playhead->queue_draw();
         pos = 0;
     } else if (pos >= 0 && pos < 0xffff) {
-        
-        m_playhead->set_active(true);
-        m_playhead->set_margin_start(160 + pos);
+        if (m_btn_lock_playhead->get_active() && m_button_play->get_active()) {
+            gint offset = m_playhead->get_margin_start() - 160 - pos;
+            dt->m_viewend -= offset / dt->scale;
+            dt->m_viewstart -= offset / dt->scale;
+            queue_draw();
+            m_playhead->set_active(true);
+        } else {
+            m_playhead->set_active(true);
+            m_playhead->set_margin_start(160 + pos);
+        }
     }
+
 }

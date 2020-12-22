@@ -170,6 +170,7 @@ void OMainWnd::create_view() {
     ui->get_widget < Gtk::ToolButton > ("loop-end", m_btn_loop_end);
     ui->get_widget < Gtk::ToolButton > ("zoom-loop", m_btn_zoom_loop);
     ui->get_widget < Gtk::ToggleToolButton > ("lock-playhead", m_btn_lock_playhead);
+    ui->get_widget < Gtk::Label > ("lbl-status", m_lbl_status);
 
     m_img_play_off.set(Gdk::Pixbuf::create_from_inline(-1, play_off_inline, FALSE));
     m_img_play_on.set(Gdk::Pixbuf::create_from_inline(-1, play_on_inline, FALSE));

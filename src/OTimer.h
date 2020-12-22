@@ -50,6 +50,8 @@ public:
     
     virtual void SetSamplePos(int);
     virtual int GetSamplePos();
+    
+    float GetLoad();
 
 private:
 
@@ -58,6 +60,8 @@ private:
     int m_secdivide;
     
     int m_samplepos;
+    
+    float m_load;
     
     std::function<void(void*) > m_func;
     long m_interval;

@@ -27,6 +27,9 @@ public:
     void SetShowTrackPath(bool);
     bool GetShowTrackPath();
     
+    void SetResolution(int resolution);
+    int GetResolution();
+    
     bool m_result;
 
 protected:
@@ -38,7 +41,7 @@ private:
     Gtk::Button* m_btn_ok;
     
     Gtk::CheckButton* m_chk_showtrackpath;
-
+    Gtk::Entry* m_txt_resolution;
 };
 
 #endif /* ODLGPREFS_H */

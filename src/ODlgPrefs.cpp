@@ -46,6 +46,8 @@ ODlgPrefs::ODlgPrefs(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& 
     m_btn_ok->signal_clicked().connect(sigc::mem_fun(*this, &ODlgPrefs::on_btn_ok_clicked));    
     
     builder->get_widget< Gtk::CheckButton >("chk-show-track-path", m_chk_showtrackpath);
+    builder->get_widget< Gtk::Entry >("txt-resolution", m_txt_resolution);
+    
     
 }
 
@@ -69,4 +71,14 @@ void ODlgPrefs::SetShowTrackPath(bool val) {
 
 bool ODlgPrefs::GetShowTrackPath() {
     return m_chk_showtrackpath->get_active();
+}
+
+void ODlgPrefs::SetResolution(int res) {
+    char txt[16];
+    sprintf(txt, "%d", res);
+    m_txt_resolution->set_text(txt);
+}
+
+int ODlgPrefs::GetResolution() {
+    return atoi(m_txt_resolution->get_text().data());
 }

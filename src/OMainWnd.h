@@ -158,7 +158,7 @@ private:
                     OOverView* m_overview;
         
         Gtk::Box *m_statusbox;            
-            Gtk::Statusbar m_Statusbar;
+        Gtk::Label *m_lbl_status;
 
         Gtk::Overlay *m_overlay;
         OPlayHead *m_playhead;            

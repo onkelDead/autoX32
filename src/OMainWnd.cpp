@@ -63,7 +63,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
     lock_play = false;
     lock_daw_time = false;
 
-    m_timer.setInterval(20);
+    m_timer.setInterval(settings->get_int("track-resolution"));
     m_timer.SetUserData(&m_project);
     m_timer.setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
     
@@ -148,21 +148,17 @@ void OMainWnd::AutoConnect() {
 bool OMainWnd::ConnectMixer(std::string host) {
     if (m_x32->IsConnected()) {
         m_x32->Disconnect();
-        m_Statusbar.pop(m_ContextId);
     }
     if (!m_x32->Connect(host, this)) {
-        m_Statusbar.push("Connected", m_ContextId);
         m_project.SetMixer(m_x32);
         return true;
     }
-    m_Statusbar.push("Connection failed", m_ContextId);
     m_project.SetMixer(NULL);
     return false;
 }
 
 bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replyport) {
     if (!m_daw.connect(ip.data(), port.data(), replyport.data(), this)) {
-        m_Statusbar.push("Connected", m_ContextId);
         m_daw.ShortMessage("/refresh");
         m_daw.ShortMessage("/strip/list");
         m_button_play->set_sensitive(true);

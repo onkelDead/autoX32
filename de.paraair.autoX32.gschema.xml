@@ -87,6 +87,13 @@
             <description>
                 If enabled, the tracks paths will be shown on tracks view.
             </description>
+        </key> 
+        <key name='track-resolution' type='i'>
+            <default>50</default>
+            <summary>Resolution of automation</summary>
+            <description>
+                Sets the resolition of track automation in milliseconds
+            </description>
         </key>         
     </schema>
 
