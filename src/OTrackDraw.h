@@ -53,7 +53,7 @@ protected:
     virtual void on_unrealize() override;
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     virtual void draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
-            int rectangle_width, int rectangle_height, const char* text);
+            int rectangle_width, int rectangle_height, std::string text);
 
     Glib::RefPtr<Gdk::Window> m_refGdkWindow;
 protected:

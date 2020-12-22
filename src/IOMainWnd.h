@@ -27,7 +27,7 @@ public:
     virtual void notify_mixer(OscCmd*) = 0;
     virtual void notify_overview() = 0;
     virtual void remove_track(IOTrackView*) = 0;
-
+    virtual Gio::Settings* GetSettings() = 0;
 private:
 
 };

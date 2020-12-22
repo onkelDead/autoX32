@@ -18,6 +18,7 @@ autoX32_SOURCES = \
     src/OTrackEditDlg.cpp \
     src/OTrackDlg.cpp \
     src/OConnectDlg.cpp \
+    src/ODlgPrefs.cpp \
     src/OTrackView.cpp \
     src/OTrackStore.cpp \
     src/OTimeDraw.cpp \
@@ -42,6 +43,7 @@ noinst_HEADERS = \
     src/OTrackEditDlg.h \
     src/OTrackDlg.h \
     src/OConnectDlg.h \
+    src/ODlgPrefs.h \
     src/OX32.h \
     src/OTimer.h
 

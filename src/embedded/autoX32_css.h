@@ -46,7 +46,7 @@ static char autoX32_inline_css[] =
 "    color:            rgb(128,140,255);"
 "}"
 ""
-"#OMainWnd, #OTrackDlg, #OConnectDlg, AboutDlg {"
+"#OMainWnd, #OTrackDlg, #OConnectDlg, #AboutDlg, #ODlgPrefs {"
 "    background-color: rgb(50,50,50);"
 "    color: rgb(228,228,228);"
 "}"

@@ -22,6 +22,8 @@
 
 #include "embedded/connectDlg.h"
 #include "embedded/trackdlg.h"
+#include "embedded/main.h"
+#include "ODlgPrefs.h"
 
 void OMainWnd::on_menu_file_connection() {
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(connectDlg_inline_glade);
@@ -182,6 +184,21 @@ void OMainWnd::on_menu_project_close() {
     m_trackslayout.RemoveAllTackViews();
     set_title("autoX32 - [untitled]");
 
+}
+
+void OMainWnd::on_menu_prefs() {
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(main_inline_glade);
+    ODlgPrefs *pDialog = nullptr;
+    builder->get_widget_derived("dlg-prefs", pDialog);
+
+    pDialog->SetShowTrackPath(settings->get_boolean("show-path-on-track"));
+    
+    // fill dialog with data
+    pDialog->run();
+    if (pDialog->m_result) {
+        settings->set_boolean("show-path-on-track", pDialog->GetShowTrackPath());
+    }    
+    queue_draw();
 }
 
 void OMainWnd::on_btn_teach_clicked() {

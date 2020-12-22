@@ -81,7 +81,13 @@
                 A list of recently used project locations
             </description>
         </key>
+        <key name='show-path-on-track' type='b'>
+            <default>false</default>
+            <summary>Show track path</summary>
+            <description>
+                If enabled, the tracks paths will be shown on tracks view.
+            </description>
+        </key>         
     </schema>
 
 </schemalist>
-

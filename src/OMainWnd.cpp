@@ -75,6 +75,10 @@ OMainWnd::~OMainWnd() {
 
 }
 
+Gio::Settings* OMainWnd::GetSettings() {
+    return settings.get();
+}
+
 bool OMainWnd::SaveProject() {
     Gtk::MessageDialog dialog(*this, "Project is modified.\nShall I save your changes?",
             false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_YES_NO);

@@ -95,6 +95,9 @@ void OMainWnd::create_menu() {
     m_project_close = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_close"));
     m_project_close->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_close));
 
+    m_prefs = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_prefs"));
+    m_prefs->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_prefs));
+    
     m_recents = Glib::RefPtr<Gtk::Menu>::cast_dynamic(ui->get_object("menu-recent"));
 
     UpdateMenuRecent();

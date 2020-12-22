@@ -64,6 +64,8 @@ public:
     void on_menu_project_close();
     void on_menu_recent(std::string);
     
+    void on_menu_prefs();
+    
     /// button/UI events
     void on_button_play_clicked();
     void on_button_back_clicked();
@@ -102,6 +104,8 @@ public:
     bool SelectProjectLocation(bool);
     bool Shutdown();
 
+    Gio::Settings* GetSettings();
+    
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
 
@@ -122,6 +126,7 @@ private:
             Glib::RefPtr<Gtk::MenuItem> m_project_save;
             Glib::RefPtr<Gtk::MenuItem> m_project_save_as;
             Glib::RefPtr<Gtk::MenuItem> m_project_close;
+            Glib::RefPtr<Gtk::MenuItem> m_prefs;
             Glib::RefPtr<Gtk::Menu> m_recents;
             Glib::RefPtr<Gtk::MenuItem> m_about;
             

@@ -176,11 +176,14 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
         cr->stroke();
     }
     
+    if (m_parent->GetSettings()->get_boolean("show-path-on-track"))
+        draw_text(cr, 2, 2, m_trackstore->m_cmd->GetPathStr());
+    
     return true;
 }
 
 void OTrackDraw::draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
-        int rectangle_width, int rectangle_height, const char* text) {
+        int rectangle_width, int rectangle_height, std::string text) {
     Pango::FontDescription font;
 
     font.set_size(7 * Pango::SCALE);
@@ -191,13 +194,8 @@ void OTrackDraw::draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
 
     layout->set_font_description(font);
 
-    int text_width;
-    int text_height;
-
-    layout->get_pixel_size(text_width, text_height);
-
     cr->set_source_rgb(.8, .8, .8);
-    cr->move_to((rectangle_width - text_width) / 2, rectangle_height);
+    cr->move_to((rectangle_width ) / 2, rectangle_height);
 
     layout->show_in_cairo_context(cr);
 }
