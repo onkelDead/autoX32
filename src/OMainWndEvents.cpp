@@ -265,14 +265,10 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 void OMainWnd::on_timeline_pos_changed() {
 
     m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
-    //m_trackslayout.queue_draw();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
     m_trackslayout.redraw();
-}
-
-void OMainWnd::on_btn_x32_clicked() {
 }
 
 void OMainWnd::OnOverViewEvent() {
@@ -311,5 +307,4 @@ void OMainWnd::UpdatePlayhead() {
             m_playhead->set_margin_start(160 + pos);
         }
     }
-
 }

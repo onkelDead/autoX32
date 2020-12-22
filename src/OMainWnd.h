@@ -28,13 +28,10 @@
 #include "OX32.h"
 #include "ODAW.h"
 #include "OProject.h"
-
 #include "OTimeView.h"
 #include "OTracksLayout.h"
 #include "OOverView.h"
 #include "OPlayHead.h"
-
-
 #include "OTimer.h"
 
 #define PACKAGE_STRING "autoX32"
@@ -63,9 +60,9 @@ public:
     void on_menu_project_save_as();
     void on_menu_project_close();
     void on_menu_recent(std::string);
-    
+
     void on_menu_prefs();
-    
+
     /// button/UI events
     void on_button_play_clicked();
     void on_button_back_clicked();
@@ -75,11 +72,9 @@ public:
     void on_btn_loop_end_clicked();
     void on_btn_zoom_loop_clicked();
     void on_btn_lock_playhead_clicked();
-    
-    
+
     void on_timeline_zoom_changed();
     void on_timeline_pos_changed();
-    void on_btn_x32_clicked();
 
     /// thread events
     void OnDawEvent();
@@ -89,15 +84,16 @@ public:
     void OnOverViewEvent();
     void notify_overview();
     void remove_track(IOTrackView*);
-    
+
     void UpdateDawTime(bool redraw);
     void UpdatePlayhead();
-    
+
     /// operations
     void LoadSettings();
     void AutoConnect();
     bool ConnectMixer(std::string);
-    bool ConnectDaw(std::string, std::string, std::string);
+    
+    bool ConnectDaw(std::string host, std::string port, std::string reply_port);
     void NewProject();
     void OpenProject(std::string location);
     bool SaveProject();
@@ -105,7 +101,7 @@ public:
     bool Shutdown();
 
     Gio::Settings* GetSettings();
-    
+
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
 
@@ -117,56 +113,54 @@ private:
 
     Glib::RefPtr<Gtk::Builder> ui;
 
+    // private menu members
     Gtk::Box *m_mainbox;
-        Gtk::MenuBar* m_menubar;
-            Glib::RefPtr<Gtk::MenuItem> m_connection;
-            Glib::RefPtr<Gtk::MenuItem> m_quit_m;
-            Glib::RefPtr<Gtk::MenuItem> m_project_new;
-            Glib::RefPtr<Gtk::MenuItem> m_project_open;
-            Glib::RefPtr<Gtk::MenuItem> m_project_save;
-            Glib::RefPtr<Gtk::MenuItem> m_project_save_as;
-            Glib::RefPtr<Gtk::MenuItem> m_project_close;
-            Glib::RefPtr<Gtk::MenuItem> m_prefs;
-            Glib::RefPtr<Gtk::Menu> m_recents;
-            Glib::RefPtr<Gtk::MenuItem> m_about;
-            
-        Gtk::Box *m_Toolbox;
-            Gtk::ToggleToolButton* m_button_play;
-            Gtk::Image m_img_play_on;
-            Gtk::Image m_img_play_off;
-            Gtk::ToolButton* m_button_back;
-            Gtk::Image m_img_back;
-            Gtk::ToggleToolButton *m_btn_teach;
-            Gtk::Image m_img_teach_on;
-            Gtk::Image m_img_teach_off;
-            Gtk::ToolButton *m_btn_loop_start;
-            Gtk::Image m_img_loop_start;
-            Gtk::ToolButton *m_btn_loop_end;
-            Gtk::Image m_img_loop_end;
-            Gtk::ToolButton *m_btn_zoom_loop;
-            Gtk::Image m_img_zoom_loop;
-            Gtk::ToggleToolButton *m_btn_lock_playhead;
-            Gtk::Image m_img_lock_playhead_on;
-            Gtk::Image m_img_lock_playhead_off;
-        Gtk::Box *m_timebox;
-            OTimeView m_timeview;
-            Gtk::Box *m_tracksbox;
-        Gtk::ScrolledWindow *m_scroll;
-            Gtk::Viewport *m_viewport;
-                Gtk::Box *m_scrolledview;
-                    OTracksLayout m_trackslayout;
-                    OOverView* m_overview;
-        
-        Gtk::Box *m_statusbox;            
-        Gtk::Label *m_lbl_status;
+    Gtk::MenuBar* m_menubar;
+    Glib::RefPtr<Gtk::MenuItem> m_connection;
+    Glib::RefPtr<Gtk::MenuItem> m_quit_m;
+    Glib::RefPtr<Gtk::MenuItem> m_project_new;
+    Glib::RefPtr<Gtk::MenuItem> m_project_open;
+    Glib::RefPtr<Gtk::MenuItem> m_project_save;
+    Glib::RefPtr<Gtk::MenuItem> m_project_save_as;
+    Glib::RefPtr<Gtk::MenuItem> m_project_close;
+    Glib::RefPtr<Gtk::MenuItem> m_prefs;
+    Glib::RefPtr<Gtk::Menu> m_recents;
+    Glib::RefPtr<Gtk::MenuItem> m_about;
 
-        Gtk::Overlay *m_overlay;
-        OPlayHead *m_playhead;            
-        
-    unsigned m_ContextId;
+    Gtk::Box *m_Toolbox;
+    Gtk::ToggleToolButton* m_button_play;
+    Gtk::Image m_img_play_on;
+    Gtk::Image m_img_play_off;
+    Gtk::ToolButton* m_button_back;
+    Gtk::Image m_img_back;
+    Gtk::ToggleToolButton *m_btn_teach;
+    Gtk::Image m_img_teach_on;
+    Gtk::Image m_img_teach_off;
+    Gtk::ToolButton *m_btn_loop_start;
+    Gtk::Image m_img_loop_start;
+    Gtk::ToolButton *m_btn_loop_end;
+    Gtk::Image m_img_loop_end;
+    Gtk::ToolButton *m_btn_zoom_loop;
+    Gtk::Image m_img_zoom_loop;
+    Gtk::ToggleToolButton *m_btn_lock_playhead;
+    Gtk::Image m_img_lock_playhead_on;
+    Gtk::Image m_img_lock_playhead_off;
+    Gtk::Box *m_timebox;
+    OTimeView m_timeview;
+    Gtk::Box *m_tracksbox;
+    Gtk::ScrolledWindow *m_scroll;
+    Gtk::Viewport *m_viewport;
+    Gtk::Box *m_scrolledview;
+    OTracksLayout m_trackslayout;
+    OOverView* m_overview;
+
+    Gtk::Box *m_statusbox;
+    Gtk::Label *m_lbl_status;
+
+    Gtk::Overlay *m_overlay;
+    OPlayHead *m_playhead;
 
     bool lock_play;
-    
     bool lock_daw_time;
 
     /// dialogs
@@ -184,7 +178,7 @@ private:
     OTimer m_timer;
     OX32* m_x32;
     ODAW m_daw;
-    
+
     void TimerEvent(void*);
 
     void create_view();
