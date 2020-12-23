@@ -231,18 +231,19 @@ void OMainWnd::on_button_play_clicked() {
     m_button_play->set_icon_widget(m_button_play->get_active() ? m_img_play_on : m_img_play_off);
     m_button_play->show_all();
 
-    if (lock_play)
-        return;
+    m_last_playhead_update = 0;
 
     if (!m_button_play->get_active()) {
-        m_last_playhead_update = 0;
         m_project.SetPlaying(false);
+        if (m_project.GetProjectLocation() != "") 
+            m_project.Save();
         m_trackslayout.StopRecord();
-        m_daw.Stop();
+        if (!lock_play)
+            m_daw.Stop();
     } else {
-        m_last_playhead_update = 0;
         m_project.SetPlaying(true);
-        m_daw.Play();
+        if (!lock_play)
+            m_daw.Play();
     }
 }
 

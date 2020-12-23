@@ -241,6 +241,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton* event) {
         int start = m_daw_time->m_viewstart;
         m_daw_time->m_viewstart += ((float) m_left / (float) m_width) * (m_daw_time->m_viewend - m_daw_time->m_viewstart);
         m_daw_time->m_viewend = m_daw_time->m_viewstart + ((float) (m_right - m_left) / (float) m_width) * (m_daw_time->m_viewend - start);
+        m_daw_time->scale = (gfloat) m_width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
         m_parent->notify_overview();
     }
     m_refGdkWindow.get()->set_cursor(m_default_cursor);

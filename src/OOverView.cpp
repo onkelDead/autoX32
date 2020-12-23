@@ -157,6 +157,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                         return true;
                     m_left = m_last_x;
                     m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxsamples;
+                    m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
                     m_parent->notify_overview();
                 }
                 if (m_current_cursor == Gdk::CursorType::RIGHT_SIDE) {
@@ -165,6 +166,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                         return true;
                     m_right = m_last_x;
                     m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxsamples;
+                    m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
                     m_parent->notify_overview();
                 }
                 if (m_current_cursor == Gdk::CursorType::SB_H_DOUBLE_ARROW) {
@@ -177,6 +179,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                         m_left += offset;
                         m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxsamples;
                         m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxsamples;
+                        m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
                         m_parent->notify_overview();
                     }
                 }
