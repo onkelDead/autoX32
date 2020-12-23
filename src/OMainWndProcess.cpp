@@ -25,13 +25,18 @@ void OMainWnd::OnDawEvent() {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
             case DAW_PATH::samples:
-                //m_project.SetSample(m_daw.GetCurrentSample());
-                if (!m_button_play->get_active()) {
-                    m_timer.SetSamplePos(m_daw.GetCurrentSample());
+                if (!lock_daw_sample_event) {
+                    if (!m_timer.isRunning()) {
+                        m_timer.SetSamplePos(m_daw.GetCurrentSample());
+                        UpdatePlayhead();
+                    }
+                    m_project.ProcessPos(NULL, &m_timer);
+                    if (!m_button_play->get_active()) {
+                        UpdateDawTime(false);
+                    }
                 }
-                m_project.ProcessPos(NULL, &m_timer);
-                if (!m_button_play->get_active()) {
-                    UpdateDawTime(false);
+                else {
+                    lock_daw_sample_event = false;
                 }
                 break;
             case DAW_PATH::smpte:
@@ -124,11 +129,15 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 }
 
 void OMainWnd::TimerEvent(void* data) {
+    
+    // update UI-PlayHead every 50ms
+    if (m_timer.GetRunTime() > m_last_playhead_update + 50) {
+        UpdatePlayhead();
+        m_last_playhead_update = m_timer.GetRunTime();
+        // show timer process load percentage
+        char load[32];
+        sprintf(load, "Load: %.2f%%", m_timer.GetLoad());
+        m_lbl_status->set_text(load);
+    }
     m_project.ProcessPos(NULL, &m_timer);
-    UpdatePlayhead();
-    char load[32];
-
-    sprintf(load, "Load: %.2f%%", m_timer.GetLoad());
-
-    m_lbl_status->set_text(load);
 }

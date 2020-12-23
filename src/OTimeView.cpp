@@ -57,7 +57,6 @@ void OTimeView::SetTimer(IOTimer* timer) {
     m_timedraw->SetTimer(timer);
 }
 
-
 void OTimeView::UpdateDawTime(bool redraw) {
     char t[32];
     daw_time* dt = m_daw_time;
@@ -92,9 +91,8 @@ void OTimeView::EnableZoom(bool val) {
 
 void OTimeView::SetZoomLoop() {
     m_timedraw->SetZoomLoop();
-    UpdateDawTime(true);
+    //UpdateDawTime(true);
 }
-
 
 void OTimeView::SetLoopStart() {
     m_timedraw->SetLoopStart();
@@ -112,4 +110,8 @@ void OTimeView::on_timedraw_zoom_changed() {
     UpdateDawTime(false);
     m_timedraw->queue_draw();
     signal_zoom_changed.emit();
+}
+
+int OTimeView::GetClickSamplePos() {
+    return m_timedraw->GetClickSamplePos();
 }

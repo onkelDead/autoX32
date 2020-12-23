@@ -16,8 +16,9 @@
 
 #include <sys/time.h>
 #include "OTimer.h"
+#include "OTypes.h"
 
-OTimer::OTimer() : m_eclapse(0) {
+OTimer::OTimer() : m_run_time_milli_sec(0) {
 }
 
 OTimer::OTimer(std::function<void(void*) > func, const long &interval, void* userData) {
@@ -41,7 +42,7 @@ void OTimer::start() {
             gettimeofday(&now, NULL);
             timersub(&now, &m_starttime, &diff );
 
-            m_eclapse = diff.tv_usec / 1000 + diff.tv_sec * 1000;
+            m_run_time_milli_sec = diff.tv_usec / 1000 + diff.tv_sec * 1000;
 
             auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
             m_func(m_userData);
@@ -111,4 +112,8 @@ int OTimer::GetSamplePos() {
 
 float OTimer::GetLoad() {
     return m_load;
+}
+
+int OTimer::GetRunTime() {
+    return m_run_time_milli_sec;
 }

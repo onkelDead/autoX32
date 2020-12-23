@@ -52,6 +52,8 @@ public:
     virtual void on_timedraw_pos_changed();    
     virtual void on_timedraw_zoom_changed();    
     
+    int GetClickSamplePos();
+    
 protected:
     Glib::RefPtr<Gtk::Builder> ui;
 private:

@@ -39,6 +39,8 @@ public:
     void SetSignalZoomChange(IOTimeView *t);
     void SetSignalPosChange(IOTimeView *t);
 
+    int GetClickSamplePos();
+    
     void SetScrollStep(gint val);
     
     void SetDawTime(daw_time*);
@@ -74,9 +76,13 @@ private:
     
     daw_time* m_daw_time;
     daw_range* m_range;
+    
+    int m_view_width;
 
     sigc::signal<void> signal_zoom_changed;
     sigc::signal<void> signal_pos_changed;
+    
+    int m_click_sample_pos;
     
     virtual bool on_button_press_event(GdkEventButton* event) override;
 

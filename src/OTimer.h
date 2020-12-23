@@ -51,12 +51,14 @@ public:
     virtual void SetSamplePos(int);
     virtual int GetSamplePos();
     
+    int GetRunTime();
+    
     float GetLoad();
 
 private:
 
     struct timeval m_starttime;
-    int m_eclapse; 
+    int m_run_time_milli_sec; 
     int m_secdivide;
     
     int m_samplepos;

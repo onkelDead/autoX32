@@ -235,19 +235,23 @@ void OMainWnd::on_button_play_clicked() {
         return;
 
     if (!m_button_play->get_active()) {
+        m_last_playhead_update = 0;
         m_project.SetPlaying(false);
         m_trackslayout.StopRecord();
         m_daw.Stop();
     } else {
+        m_last_playhead_update = 0;
         m_project.SetPlaying(true);
         m_daw.Play();
     }
 }
 
 void OMainWnd::on_button_back_clicked() {
-
+    m_timer.SetSamplePos(m_project.GetLoopStart());
+    m_project.ProcessPos(NULL, &m_timer);
+    lock_daw_sample_event = true;
     m_daw.SetPosition(m_project.GetLoopStart(), m_button_play->get_active());
-
+    UpdatePlayhead();
 }
 
 void OMainWnd::on_button_test_clicked() {
@@ -263,8 +267,11 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 }
 
 void OMainWnd::on_timeline_pos_changed() {
-
+    m_timer.SetSamplePos(m_timeview.GetClickSamplePos());
+    m_project.ProcessPos(NULL, &m_timer);
+    lock_daw_sample_event = true;
     m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
+    UpdatePlayhead();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {

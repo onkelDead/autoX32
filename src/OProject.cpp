@@ -349,7 +349,6 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         
         OTrackStore* trackstore = it->second;
-
         
         track_entry* entry = trackstore->GetEntry(current);
 
@@ -370,8 +369,6 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
             ret_code = true;
         }
     }
-    
-
     
     return ret_code;
 }

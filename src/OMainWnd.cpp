@@ -26,7 +26,7 @@
 #include "OTimer.h"
 
 OMainWnd::OMainWnd() :
-Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0) {
+Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0), m_last_playhead_update(0) {
 
     set_name("OMainWnd");
 
@@ -62,6 +62,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
 
     lock_play = false;
     lock_daw_time = false;
+    lock_daw_sample_event = false;
 
     m_timer.setInterval(settings->get_int("track-resolution"));
     m_timer.SetUserData(&m_project);

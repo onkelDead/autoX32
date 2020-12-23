@@ -162,6 +162,7 @@ private:
 
     bool lock_play;
     bool lock_daw_time;
+    bool lock_daw_sample_event;
 
     /// dialogs
     Gtk::AboutDialog m_Dialog;
@@ -180,6 +181,7 @@ private:
     ODAW m_daw;
 
     void TimerEvent(void*);
+    int m_last_playhead_update;
 
     void create_view();
     void create_menu();

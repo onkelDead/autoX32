@@ -128,11 +128,10 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     auto refStyleContext = get_style_context();
 
     int height = allocation.get_height();
-    int width = allocation.get_width();
+    m_view_width = allocation.get_width();
     
     int m_currentSample = m_timer->GetSamplePos();
 
-    m_daw_time->scale = (gfloat) width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
     gint pos = (m_currentSample - m_daw_time->m_viewstart) * m_daw_time->scale;
 
     pos = (m_range->m_loopstart - m_daw_time->m_viewstart) * m_daw_time->scale;
@@ -188,7 +187,7 @@ bool OTimeDraw::on_button_press_event(GdkEventButton* event) {
         menu_popup.popup(3, event->time);
         return true;
     }
-    m_timer->SetSamplePos(event->x / m_daw_time->scale + m_daw_time->m_viewstart);
+    m_click_sample_pos = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
     signal_pos_changed.emit();
     return true;
 }
@@ -240,6 +239,7 @@ void OTimeDraw::SetRange(daw_range* range) {
 void OTimeDraw::SetZoomLoop() {
     m_daw_time->m_viewstart = m_range->m_loopstart;
     m_daw_time->m_viewend = m_range->m_loopend;
+    m_daw_time->scale = (gfloat) m_view_width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
     signal_zoom_changed.emit();
 
 }
@@ -250,4 +250,8 @@ void OTimeDraw::SetSignalZoomChange(IOTimeView* t) {
 
 void OTimeDraw::SetSignalPosChange(IOTimeView* t) {
     signal_pos_changed.connect(sigc::mem_fun(*t, &IOTimeView::on_timedraw_pos_changed));
+}
+
+int OTimeDraw::GetClickSamplePos() {
+    return m_click_sample_pos;
 }
