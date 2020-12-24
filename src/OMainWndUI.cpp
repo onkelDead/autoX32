@@ -21,10 +21,6 @@
 #include "embedded/autoX32.h"
 #include "embedded/autoX32_css.h"
 
-namespace sigc {
-    SIGC_FUNCTORS_HAVE_RESULT_TYPE
-}
-
 void OMainWnd::create_about_dlg() {
     // create about dialog
     

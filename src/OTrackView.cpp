@@ -26,7 +26,7 @@
 
 OTrackView::OTrackView(IOMainWnd* wnd) : Gtk::Box(), ui{Gtk::Builder::create_from_string(trackview_inline_glade)}
 {
-    
+    m_parent = wnd;
     set_name("OTrackView");
 
     ui->get_widget < Gtk::Box > ("track-box", m_box);
@@ -156,11 +156,11 @@ void OTrackView::on_menu_popup_remove() {
             false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_OK_CANCEL);
     int result = dialog.run();
     if (result == Gtk::RESPONSE_OK) {    
-        
+        m_parent->remove_track(this);
     }
 }
 
 void OTrackView::BindRemove(IOMainWnd* wnd) {
-    menu_popup_remove.signal_activate().connect(sigc::bind<>(sigc::mem_fun(*wnd, &IOMainWnd::remove_track), this));
+    menu_popup_remove.signal_activate().connect(sigc::mem_fun(*this, &OTrackView::on_menu_popup_remove));
     
 }

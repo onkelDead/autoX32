@@ -53,6 +53,9 @@ protected:
     Glib::RefPtr<Gtk::Builder> ui;
 
 private:
+    
+    IOMainWnd *m_parent;
+    
     Gtk::Box *m_box;
     Gtk::Box *m_boxcontrol;
     Gtk::Toolbar *m_toolbar;
