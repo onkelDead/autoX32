@@ -40,6 +40,7 @@ void OTracksLayout::AddTrack(OTrackView *v) {
     v->set_valign(Gtk::ALIGN_START);
     add(*v);
     m_trackmap[v->GetCmd()->GetPathStr()] = v;
+    v->show();
 }
 
 OTrackView* OTracksLayout::GetTrackview(std::string path) {

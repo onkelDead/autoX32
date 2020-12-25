@@ -155,7 +155,9 @@ void OProject::Load(std::string location) {
                 const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
+                ts->Lock();
                 ts->LoadData(m_projectFile.data());
+                ts->Unlock();
             }
         }
     }
@@ -263,11 +265,14 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        OTrackStore* ts = it->second;
+        ts->Lock();
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
         xmlTextWriterEndElement(writer);
         it->second->SaveData(m_projectFile.data());
         printf ("Project::Save: track %s saved\n", it->first.data());
+        ts->Unlock();
     }
 }
 
@@ -296,18 +301,6 @@ void OProject::SetMaxSamples(gint max_samples) {
 
 void OProject::SetPlaying(bool val) {
     m_playing = val;
-}
-
-bool OProject::AnyTouch() {
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        if (it->second->m_touch)
-            return true;
-    }
-    return false;
-}
-
-std::map<std::string, OscCmd*> OProject::GetMixerCommands() {
-    return m_known_mixer_commands;
 }
 
 OscCmd* OProject::GetCommand(char* path) {
@@ -349,7 +342,7 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         
         OTrackStore* trackstore = it->second;
-        
+        trackstore->Lock();
         track_entry* entry = trackstore->GetEntry(current);
 
         if (entry != trackstore->m_playhead) {
@@ -368,6 +361,7 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
             AddEntry(trackstore, cmd, current);
             ret_code = true;
         }
+        trackstore->Unlock();
     }
     
     return ret_code;

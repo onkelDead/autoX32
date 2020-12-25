@@ -35,12 +35,12 @@ public:
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     
+    void Lock();
+    void Unlock();
 
     track_entry* GetEntry(int);
     void RemoveEntry(track_entry*);
     
-    bool lock_process;
-
     bool m_record;
     bool m_touch;
     track_entry* m_tracks;
@@ -52,6 +52,7 @@ public:
     
 private:
 
+    std::mutex m_mutex;
 };
 
 #endif /* OTRACKSTORE_H */

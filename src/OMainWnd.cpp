@@ -181,7 +181,6 @@ void OMainWnd::OpenProject(std::string location) {
 
     for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
         OTrackView* trackview = new OTrackView(this);
-        trackview->BindRemove(this);
         trackview->SetDawTime(m_project.GetDawTime());
         trackview->SetTrackStore(it->second);
         trackview->UpdateConfig();

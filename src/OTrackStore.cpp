@@ -18,14 +18,12 @@
 #include "OTrackStore.h"
 
 OTrackStore::OTrackStore() : m_cmd(0), m_tracks(0), m_playhead(0) {
-    lock_process = false;
     m_record = false;
     m_touch = false;
     m_dirty = true;
 }
 
 OTrackStore::OTrackStore(OscCmd* cmd) : m_tracks(0), m_cmd(0), m_playhead(0) {
-    lock_process = false;
     m_record = false;
     m_touch = false;
     m_cmd = cmd;
@@ -33,11 +31,13 @@ OTrackStore::OTrackStore(OscCmd* cmd) : m_tracks(0), m_cmd(0), m_playhead(0) {
 }
 
 OTrackStore::~OTrackStore() {
+    Lock();
     do {
         track_entry* track = m_tracks->next;
         delete m_tracks;
         m_tracks = track;
     } while (m_tracks);
+    Unlock();
 }
 
 void OTrackStore::Init() {
@@ -56,15 +56,20 @@ void OTrackStore::Init() {
     m_playhead = m_tracks;
 }
 
+void OTrackStore::Lock() {
+    m_mutex.lock();
+}
+
+void OTrackStore::Unlock() {
+    m_mutex.unlock();
+}
+
 track_entry* OTrackStore::GetEntry(int pos) {
     bool changed = false;
 
     if (m_tracks == NULL || m_playhead == NULL) {
         return NULL;
     }
-
-    while (lock_process);
-    lock_process = true;
 
     track_entry* entry = m_playhead;
 
@@ -80,13 +85,10 @@ track_entry* OTrackStore::GetEntry(int pos) {
         }
     }
 
-    lock_process = false;
     return entry;
 }
 
 void OTrackStore::AddSamplePoint(track_entry* e) {
-    while (lock_process);
-    lock_process = true;
     if (m_tracks == NULL) {
         m_tracks = e;
         m_playhead = e;
@@ -97,15 +99,11 @@ void OTrackStore::AddSamplePoint(track_entry* e) {
             e->next->prev = e;
         m_playhead->next = e;
         m_playhead = e;
-        //printf("add sample %d offset %d\n", e->sample, e->sample - e->prev->sample);
     }
     m_dirty = true;
-    lock_process = false;
 }
 
 void OTrackStore::RemoveEntry(track_entry* entry) {
-    while (lock_process);
-    lock_process = true;
     if (entry->prev)
         entry->prev->next = entry->next;
     if (entry->next)
@@ -114,7 +112,6 @@ void OTrackStore::RemoveEntry(track_entry* entry) {
     entry->sample = -1;
     delete entry;
     m_dirty = true;
-    lock_process = false;
 }
 
 void OTrackStore::SaveData(const char* filepath) {

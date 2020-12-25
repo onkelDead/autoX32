@@ -74,6 +74,7 @@ void OMainWnd::notify_daw(DAW_PATH path) {
 
 void OMainWnd::OnMixerEvent() {
     while (my_mixerqueue.size() > 0) {
+        bool cmd_used = false;
         OscCmd *cmd = my_mixerqueue.front();
         if (cmd->IsConfig()) {
             OscCmd* c = m_project.ProcessConfig(cmd);
@@ -84,41 +85,38 @@ void OMainWnd::OnMixerEvent() {
                 }
             }
         } else {
-
-            bool changed = m_project.ProcessPos(cmd, &m_timer);
+            m_project.ProcessPos(cmd, &m_timer);
 
             OTrackView *tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
             if (tv) {
                 if (tv->GetTouch()) {
                     tv->SetRecord(true);
                 }
-                if (changed)
-                    tv->queue_draw();
             } else {
                 if (m_btn_teach->get_active()) {
-                    if (m_trackslayout.GetTrackview(cmd->GetPathStr()) == NULL) {
-                        m_project.AddCommand(cmd);
-                        cmd->m_name = cmd->GetPathStr();
-                        OTrackView *v = new OTrackView(this);
-                        v->BindRemove(this);
-                        OTrackStore* ts = m_project.NewTrack(cmd);
-                        ts->Init();
-                        v->SetTrackStore(ts);
-                        v->SetDawTime(m_project.GetDawTime());
-                        v->SetRecord(true);
-                        v->UpdateConfig();
-                        m_trackslayout.AddTrack(v);
-                        show_all_children(true);
-                        m_x32->Send(cmd->GetConfigName());
-                        m_x32->Send(cmd->GetConfigColor());
-                        my_mixerqueue.pop();
-                        return;
-                    }
+                    m_project.AddCommand(cmd);
+                    cmd->m_name = cmd->GetPathStr();
+                    OTrackView *trackview = new OTrackView(this);
+                    OTrackStore* trackstore = m_project.NewTrack(cmd);
+                    trackstore->Lock();
+                    trackstore->Init();
+                    trackview->SetTrackStore(trackstore);
+                    trackview->SetDawTime(m_project.GetDawTime());
+                    trackview->SetRecord(true);
+                    trackview->UpdateConfig();
+                    m_trackslayout.AddTrack(trackview);
+                    trackstore->Unlock();
+                    m_x32->Send(cmd->GetConfigName());
+                    m_x32->Send(cmd->GetConfigColor());
+                    my_mixerqueue.pop();
+                    cmd_used = true;
                 }
             }
         }
-
-        delete cmd;
+        
+        if (!cmd_used)
+            delete cmd;
+        
         my_mixerqueue.pop();
     }
 }

@@ -69,6 +69,8 @@ OTrackView::OTrackView(IOMainWnd* wnd) : Gtk::Box(), ui{Gtk::Builder::create_fro
     set_valign(Gtk::ALIGN_START);
     add(*m_box);
     show_all_children(true);
+    
+    BindRemove(wnd);
 }
 
 OTrackView::~OTrackView() {

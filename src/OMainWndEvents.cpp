@@ -80,30 +80,49 @@ void OMainWnd::on_about_dialog_response(int response_id) {
 }
 
 bool OMainWnd::on_key_press_event(GdkEventKey *key_event) {
-    if (key_event->keyval == GDK_KEY_Control_L) {
-        m_timeview.SetScrollStep(1);
-        return true;
-    }
-
-    if (key_event->keyval == GDK_KEY_Shift_L) {
-        m_timeview.EnableZoom(true);
-
-        return true;
-    }
+//    if (key_event->keyval == GDK_KEY_Control_L) {
+//        m_timeview.SetScrollStep(1);
+//        return true;
+//    }
+//
+//    if (key_event->keyval == GDK_KEY_Shift_L) {
+//        m_timeview.EnableZoom(true);
+//
+//        return true;
+//    }
 
     return Gtk::Window::on_key_press_event(key_event);
 }
 
 bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
-    if (key_event->keyval == GDK_KEY_Control_L) {
-        m_timeview.SetScrollStep(5);
+//    if (key_event->keyval == GDK_KEY_Control_L) {
+//        m_timeview.SetScrollStep(5);
+//        return true;
+//    }
+//    if (key_event->keyval == GDK_KEY_Shift_L) {
+//        m_timeview.EnableZoom(false);
+//        return true;
+//    }
+//    
+    if (key_event->keyval == GDK_KEY_space) {
+        on_button_play_clicked();
         return true;
     }
-    if (key_event->keyval == GDK_KEY_Shift_L) {
-        m_timeview.EnableZoom(false);
+    
+    if (key_event->keyval == GDK_KEY_Home) {
+        on_button_back_clicked();
+        return true;
+    }
 
+    if (key_event->keyval == GDK_KEY_t) {
+        m_btn_teach->set_active(!m_btn_teach->get_active());
         return true;
     }
+    if (key_event->keyval == GDK_KEY_z) {
+        on_btn_zoom_loop_clicked();
+        return true;
+    }
+    
     return Gtk::Window::on_key_release_event(key_event);
 }
 

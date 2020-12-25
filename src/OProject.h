@@ -54,7 +54,6 @@ public:
     
     void SetPlaying(bool val);
 
-    std::map<std::string, OscCmd*> GetMixerCommands();
     virtual OscCmd* GetCommand(char* path);
     virtual void AddCommand(OscCmd*);
 
@@ -63,7 +62,6 @@ public:
     std::map<std::string, OTrackStore*> GetTracks();
     
     void SetMixer(IOX32*);
-    bool AnyTouch();
     
     bool ProcessPos(OscCmd*, OTimer*);
     void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
