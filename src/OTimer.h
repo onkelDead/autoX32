@@ -22,6 +22,7 @@
 #include <functional>
 #include <thread>
 
+#include "OTypes.h"
 #include "IOTimer.h"
  
 class OTimer : public IOTimer {
@@ -55,6 +56,10 @@ public:
     
     float GetLoad();
 
+    char load[32];
+    
+    ui_event ue;
+    
 private:
 
     struct timeval m_starttime;

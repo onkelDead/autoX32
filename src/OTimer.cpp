@@ -17,6 +17,7 @@
 #include <sys/time.h>
 #include "OTimer.h"
 #include "OTypes.h"
+#include "OMainWnd.h"
 
 OTimer::OTimer() : m_run_time_milli_sec(0) {
 }
@@ -33,6 +34,10 @@ OTimer::~OTimer(){
 
 void OTimer::start() {
     m_running = true;
+    
+    ue.what = UI_EVENTS::load;
+    ue.with = load;
+            
     gettimeofday(&m_starttime, NULL);
     m_thread = std::thread([&]() {
         while (m_running) {

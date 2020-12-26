@@ -17,7 +17,7 @@
 #include <queue>
 #include <mutex>
 
-#include "OscCmd.h"
+#include "OTypes.h"
 
 class OQueue {
 public:
@@ -25,12 +25,12 @@ public:
     OQueue(const OQueue& orig);
     virtual ~OQueue();
     
-    void push(OscCmd*);
-    void front_pop(OscCmd**);
+    void push(ui_event*);
+    void front_pop(ui_event**);
     
 private:
 
-    std::queue<OscCmd*> m_queue;
+    std::queue<ui_event*> m_queue;
     mutable std::mutex m_mutex;
     
 };

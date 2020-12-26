@@ -30,12 +30,11 @@ void OMainWnd::OnDawEvent() {
                         m_timer.SetSamplePos(m_daw.GetCurrentSample());
                         UpdatePlayhead();
                     }
-                    m_project.ProcessPos(NULL, &m_timer);
+//                    m_project.ProcessPos(NULL, &m_timer);
                     if (!m_button_play->get_active()) {
                         UpdateDawTime(false);
                     }
-                }
-                else {
+                } else {
                     lock_daw_sample_event = false;
                 }
                 break;
@@ -85,14 +84,13 @@ void OMainWnd::OnMixerEvent() {
                     tv->UpdateConfig();
                 }
             }
-        } else 
-        {
+        } else {
             OTrackView *tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
             if (tv) {
                 if (tv->GetTouch()) {
                     tv->SetRecord(true);
                 }
-            } 
+            }
             if (m_btn_teach->get_active()) {
                 if (!m_project.GetTracks()[cmd->m_path]) {
                     OscCmd *c = new OscCmd(*cmd);
@@ -106,49 +104,63 @@ void OMainWnd::OnMixerEvent() {
                     m_x32->Send(c->GetConfigName());
                     m_x32->Send(c->GetConfigColor());
                     cmd_used = true;
-                    m_new_ts_queue.push(trackstore);
+                    ui_event *ue = new ui_event;
+                    ue->what = UI_EVENTS::new_track;
+                    ue->with = trackstore;
+                    m_new_ts_queue.push(ue);
                     m_MixerDispatcher.emit();
                 }
             }
         }
         m_project.ProcessPos(cmd, &m_timer);
-        
-//        if (!cmd_used)
-            delete cmd;
-        
+
+        //        if (!cmd_used)
+        delete cmd;
+
         my_mixerqueue.pop();
     }
+    m_project.ProcessPos(NULL, &m_timer);
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
     my_mixerqueue.push(cmd);
-//    m_MixerDispatcher.emit();
+    //    m_MixerDispatcher.emit();
 }
 
 void OMainWnd::TimerEvent(void* data) {
-    
+    ui_event e;
     // update UI-PlayHead every 50ms
     if (m_timer.GetRunTime() > m_last_playhead_update + 50) {
         UpdatePlayhead();
         m_last_playhead_update = m_timer.GetRunTime();
-        // show timer process load percentage
-//        char load[32];
-//        sprintf(load, "Load: %.2f%%", m_timer.GetLoad());
-//        m_lbl_status->set_text(load);
+//         show timer process load percentage
+        sprintf(m_timer.load, "Load: %.2f%%", m_timer.GetLoad());
+
+        m_new_ts_queue.push(&m_timer.ue);
+        m_MixerDispatcher.emit();
     }
     OnMixerEvent();
 }
 
 void OMainWnd::OnViewEvent() {
-    
-    OTrackStore* trackstore = m_new_ts_queue.front();    
-    m_new_ts_queue.pop();
-    if (!m_trackslayout.GetTrackview(trackstore->m_cmd->m_path)) {
-        OTrackView *trackview = new OTrackView(this);
-        trackview->SetTrackStore(trackstore);
-        trackview->SetDawTime(m_project.GetDawTime());
-        trackview->SetRecord(true);
-        trackview->UpdateConfig();
-        m_trackslayout.AddTrack(trackview);
+    ui_event* e;
+    m_new_ts_queue.front_pop(&e);
+    if (e) {
+
+        if (e->what == UI_EVENTS::new_track) {
+            OTrackStore* trackstore = (OTrackStore*) e->with;
+            if (!m_trackslayout.GetTrackview(trackstore->m_cmd->m_path)) {
+                OTrackView *trackview = new OTrackView(this);
+                trackview->SetTrackStore(trackstore);
+                trackview->SetDawTime(m_project.GetDawTime());
+                trackview->SetRecord(true);
+                trackview->UpdateConfig();
+                m_trackslayout.AddTrack(trackview);
+            }
+            delete e;
+        }
+        if (e->what == UI_EVENTS::load) {
+            m_lbl_status->set_text((char*)e->with);
+        }
     }
 }

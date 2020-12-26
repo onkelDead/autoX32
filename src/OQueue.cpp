@@ -22,12 +22,12 @@ OQueue::OQueue(const OQueue& orig) {
 OQueue::~OQueue() {
 }
 
-void OQueue::push(OscCmd* t) {
+void OQueue::push(ui_event* t) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_queue.push(t);
 }
 
-void OQueue::front_pop(OscCmd** result) {
+void OQueue::front_pop(ui_event** result) {
     std::lock_guard<std::mutex> lock(m_mutex);
     if (m_queue.empty()) {
         *result = NULL;

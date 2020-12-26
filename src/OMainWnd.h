@@ -33,12 +33,15 @@
 #include "OOverView.h"
 #include "OPlayHead.h"
 #include "OTimer.h"
+#include "OQueue.h"
 
 #define PACKAGE_STRING "autoX32"
 #define PACKAGE_VERSION "0.1"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
 #define AUTOX32_SCHEMA_ID "de.paraair.autoX32"
+
+
 
 class OMainWnd : public Gtk::Window, IOMainWnd {
 public:
@@ -174,7 +177,7 @@ private:
     Glib::Dispatcher m_MixerDispatcher;
     std::queue<OscCmd*> my_mixerqueue;
     Glib::Dispatcher m_OverViewDispatcher;
-    std::queue<OTrackStore*> m_new_ts_queue;
+    OQueue m_new_ts_queue;
 
     /// objects
     OProject m_project;

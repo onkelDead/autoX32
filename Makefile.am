@@ -27,7 +27,8 @@ autoX32_SOURCES = \
     src/ODAW.cpp \
     src/OX32.cpp \
     src/OTimer.cpp \
-    src/autoX32.cpp
+    src/autoX32.cpp \
+    src/OQueue.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -45,7 +46,8 @@ noinst_HEADERS = \
     src/OConnectDlg.h \
     src/ODlgPrefs.h \
     src/OX32.h \
-    src/OTimer.h
+    src/OTimer.h \
+    src/OQueue.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0

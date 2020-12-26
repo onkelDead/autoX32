@@ -32,6 +32,16 @@ enum DAW_PATH {
         stop
 };
 
+enum UI_EVENTS {
+    load,
+    new_track
+};
+
+
+typedef struct ui_event_type {
+    UI_EVENTS what;
+    void* with;
+} ui_event;
 
 typedef struct daw_time_type {
     //int m_pos;
