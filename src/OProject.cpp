@@ -340,7 +340,7 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     bool ret_code = false;
     int current = timer->GetSamplePos();
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        
+       
         OTrackStore* trackstore = it->second;
         trackstore->Lock();
         track_entry* entry = trackstore->GetEntry(current);

@@ -21,12 +21,14 @@
 
 class OscCmd {
 public:
-    OscCmd();
     OscCmd(const char*, const char*);
+    OscCmd(const OscCmd &);
     virtual ~OscCmd();
 
     std::string GetPathStr();
     void SetPathStr(std::string m_path);
+    
+    void Parse();
     
     std::string GetConfigName();    
     std::string GetConfigColor();

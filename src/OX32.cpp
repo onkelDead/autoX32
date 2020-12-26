@@ -149,10 +149,8 @@ void OX32::ProcessOscCmd(char* entry, size_t len) {
     lo_message msg = lo_message_deserialise(entry, len, &result);
     int argc = lo_message_get_argc(msg);
     lo_arg **argv = lo_message_get_argv(msg);
-    OscCmd* cmd = new OscCmd();
+    OscCmd* cmd = new OscCmd(entry, lo_message_get_types(msg));
 
-    cmd->SetPathStr(entry);
-    cmd->m_types = lo_message_get_types(msg);
     if (argc > 0) {
         switch (cmd->m_types.data()[0]) {
             case 'f':

@@ -16,16 +16,18 @@
 
 #include "OscCmd.h"
 
-OscCmd::OscCmd() : m_path(""), m_types(""), last_float(0) {
-    m_color.set_rgba_u(32768, 32768, 32768);
-    m_path = "";
-}
-
 OscCmd::OscCmd(const char* path, const char* types) {
     m_color.set_rgba_u(32768, 32768, 32768);
     m_path = path;
     m_types = types;
     last_float = 0.;
+}
+
+OscCmd::OscCmd(const OscCmd &src) {
+    m_color.set_rgba_u(32768, 32768, 32768);
+    m_path = src.m_path;
+    m_types = src.m_types;
+    last_float = src.last_float;
 }
 
 OscCmd::~OscCmd() {
@@ -38,10 +40,12 @@ std::string OscCmd::GetPathStr() {
 
 void OscCmd::SetPathStr(std::string path) {
     m_path = path;
-    if (path != "")
-        SplitPath(path);
 }
 
+void OscCmd::Parse() {
+    if (m_path != "")
+        SplitPath(m_path);
+}
 
 bool OscCmd::IsConfig() {
     if (m_elements.size() > 3 &&  m_elements.at(3) == "config")

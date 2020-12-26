@@ -82,6 +82,7 @@ public:
     void OnMixerEvent();
     void notify_mixer(OscCmd*);
     void OnOverViewEvent();
+    void OnViewEvent();
     void notify_overview();
     void remove_track(IOTrackView*);
 
@@ -173,6 +174,7 @@ private:
     Glib::Dispatcher m_MixerDispatcher;
     std::queue<OscCmd*> my_mixerqueue;
     Glib::Dispatcher m_OverViewDispatcher;
+    std::queue<OTrackStore*> m_new_ts_queue;
 
     /// objects
     OProject m_project;

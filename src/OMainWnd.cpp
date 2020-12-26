@@ -52,7 +52,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
 
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
-    m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
+    m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnViewEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
