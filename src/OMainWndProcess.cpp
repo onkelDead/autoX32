@@ -113,7 +113,6 @@ void OMainWnd::OnMixerEvent() {
         }
         m_project.ProcessPos(cmd, &m_timer);
 
-        //        if (!cmd_used)
         delete cmd;
 
         my_mixerqueue.pop();
@@ -128,15 +127,15 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 
 void OMainWnd::TimerEvent(void* data) {
     ui_event e;
-    // update UI-PlayHead every 50ms
+
+    // update UI-PlayHead/Load every 50ms
     if (m_timer.GetRunTime() > m_last_playhead_update + 50) {
         UpdatePlayhead();
         m_last_playhead_update = m_timer.GetRunTime();
 //         show timer process load percentage
         sprintf(m_timer.load, "Load: %.2f%%", m_timer.GetLoad());
-//
-//        m_new_ts_queue.push(&m_timer.ue);
-//        m_MixerDispatcher.emit();
+        m_new_ts_queue.push(&m_timer.ue);
+        m_MixerDispatcher.emit();
     }
     OnMixerEvent();
 }
