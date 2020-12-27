@@ -43,7 +43,7 @@ OTrackStore::~OTrackStore() {
 }
 
 void OTrackStore::Init() {
-	m_tracks = new track_entry;
+	m_tracks = NewEntry();
 	m_tracks->next = NULL;
 	m_tracks->prev = NULL;
 	m_tracks->sample = 0;
@@ -64,6 +64,10 @@ void OTrackStore::Lock() {
 
 void OTrackStore::Unlock() {
 	m_mutex.unlock();
+}
+
+track_entry* OTrackStore::NewEntry() {
+	return new track_entry;
 }
 
 track_entry* OTrackStore::GetEntry(int pos) {
@@ -165,7 +169,7 @@ void OTrackStore::LoadData(const char *filepath) {
 
 	while (!feof(io)) {
 		size_t s;
-		track_entry *it = new track_entry;
+		track_entry *it = NewEntry();
 		it->prev = 0;
 		it->next = 0;
 
