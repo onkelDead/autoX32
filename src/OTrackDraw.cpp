@@ -29,7 +29,6 @@ OTrackDraw::OTrackDraw(IOMainWnd* wnd) : m_current_cursor(Gdk::CursorType::ARROW
     m_btn_down = 0;
     m_daw_time = 0;
     m_trackstore = NULL;
-    m_playhead = NULL;
     m_last_x = 0;
 }
 

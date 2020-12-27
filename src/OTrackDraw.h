@@ -71,7 +71,6 @@ private:
     IOMainWnd* m_parent;
     
     float GetHeight(lo_arg it, char t);
-    track_entry* m_playhead;
     OTrackStore* m_trackstore;
 
     bool m_in_drag;
