@@ -26,10 +26,10 @@ void OMainWnd::OnDawEvent() {
         switch (c) {
             case DAW_PATH::samples:
                 if (!lock_daw_sample_event) {
-                    if (!m_timer.GetActive()) {
+//                    if (!m_timer.GetActive()) {
                         m_timer.SetSamplePos(m_daw.GetCurrentSample());
-                        UpdatePlayhead();
-                    }
+                        //UpdatePlayhead();
+//                    }
                     if (!m_button_play->get_active()) {
                         UpdateDawTime(false);
                     }
