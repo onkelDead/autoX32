@@ -26,11 +26,10 @@ void OMainWnd::OnDawEvent() {
         switch (c) {
             case DAW_PATH::samples:
                 if (!lock_daw_sample_event) {
-                    if (!m_timer.isRunning()) {
+                    if (!m_timer.GetActive()) {
                         m_timer.SetSamplePos(m_daw.GetCurrentSample());
                         UpdatePlayhead();
                     }
-//                    m_project.ProcessPos(NULL, &m_timer);
                     if (!m_button_play->get_active()) {
                         UpdateDawTime(false);
                     }
@@ -50,13 +49,13 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::play:
                 lock_play = true;
                 m_button_play->set_active(true);
-                m_timer.start();
+                m_timer.SetActive(true);
                 lock_play = false;
                 break;
             case DAW_PATH::stop:
                 lock_play = true;
                 m_button_play->set_active(false);
-                m_timer.stop();
+                m_timer.SetActive(false);
                 lock_play = false;
                 break;
             default:
@@ -135,9 +134,9 @@ void OMainWnd::TimerEvent(void* data) {
         m_last_playhead_update = m_timer.GetRunTime();
 //         show timer process load percentage
         sprintf(m_timer.load, "Load: %.2f%%", m_timer.GetLoad());
-
-        m_new_ts_queue.push(&m_timer.ue);
-        m_MixerDispatcher.emit();
+//
+//        m_new_ts_queue.push(&m_timer.ue);
+//        m_MixerDispatcher.emit();
     }
     OnMixerEvent();
 }

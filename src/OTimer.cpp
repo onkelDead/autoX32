@@ -41,14 +41,14 @@ void OTimer::start() {
     gettimeofday(&m_starttime, NULL);
     m_thread = std::thread([&]() {
         while (m_running) {
-            
             struct timeval now;
-            struct timeval diff;
-            gettimeofday(&now, NULL);
-            timersub(&now, &m_starttime, &diff );
+            if (m_active) {
+                struct timeval diff_since_start;
+                gettimeofday(&now, NULL);
+                timersub(&now, &m_starttime, &diff_since_start );
 
-            m_run_time_milli_sec = diff.tv_usec / 1000 + diff.tv_sec * 1000;
-
+                m_run_time_milli_sec = diff_since_start.tv_usec / 1000 + diff_since_start.tv_sec * 1000;
+            }
             auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
             m_func(m_userData);
 
@@ -60,7 +60,10 @@ void OTimer::start() {
             
             m_load = ((float)duration.tv_usec / 1000.) / ((float)m_interval) * 100;
             
-            m_samplepos += m_secdivide * m_interval;
+            if (m_active)
+                m_samplepos += m_secdivide * m_interval;
+            
+            
             std::this_thread::sleep_until(delta);
         }
     });
@@ -121,4 +124,12 @@ float OTimer::GetLoad() {
 
 int OTimer::GetRunTime() {
     return m_run_time_milli_sec;
+}
+
+void OTimer::SetActive(bool val) {
+    m_active = val;
+}
+
+bool OTimer::GetActive() {
+    return m_active;
 }

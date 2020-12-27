@@ -67,7 +67,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
     m_timer.setInterval(settings->get_int("track-resolution"));
     m_timer.SetUserData(&m_project);
     m_timer.setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
-    
+    m_timer.start();
     AutoConnect();
 
 }

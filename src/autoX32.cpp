@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
     OMainWnd window;
 
-    window.LoadSettings();
+    window.LoadSettings(); 
 
     return app->run(window);
 }

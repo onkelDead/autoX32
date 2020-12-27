@@ -60,6 +60,9 @@ public:
     
     ui_event ue;
     
+    bool GetActive();
+    void SetActive(bool);
+    
 private:
 
     struct timeval m_starttime;
@@ -75,6 +78,7 @@ private:
 
     std::thread m_thread;
     bool m_running = false;
+    bool m_active = false;
 
     void* m_userData;
 };
