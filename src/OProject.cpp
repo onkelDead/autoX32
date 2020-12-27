@@ -70,6 +70,10 @@ bool OProject::GetDirty() {
     return dirty;
 }
 
+bool OProject::GetPlaying() {
+	return m_playing;
+}
+
 std::string OProject::GetProjectLocation() {
     return m_location;
 }
@@ -318,6 +322,10 @@ void OProject::RemoveCommand(OscCmd* cmd) {
     m_known_mixer_commands.erase(cmd->GetPathStr());
     delete cmd;
     m_dirty = true;
+}
+
+OTrackStore* OProject::GetTrack(std::string path) {
+	return m_tracks[path];
 }
 
 std::map<std::string, OTrackStore*> OProject::GetTracks() {

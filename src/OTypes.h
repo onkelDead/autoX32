@@ -35,7 +35,8 @@ enum DAW_PATH {
 enum UI_EVENTS {
 	nothing,
     load,
-    new_track
+    new_track,
+	draw_trackview
 };
 
 

@@ -47,6 +47,7 @@ public:
     
     bool GetDirty();
 
+    bool GetPlaying();
     daw_range* GetTimeRange();
     int GetLoopStart();
     daw_time* GetDawTime();
@@ -61,6 +62,7 @@ public:
 
     void RemoveCommand(OscCmd*);
     
+    OTrackStore *GetTrack(std::string);
     std::map<std::string, OTrackStore*> GetTracks();
     
     void SetMixer(IOX32*);

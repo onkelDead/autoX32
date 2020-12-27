@@ -84,34 +84,46 @@ void OMainWnd::OnMixerEvent() {
                 }
             }
         } else {
-            OTrackView *tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
-            if (tv) {
-                if (tv->GetTouch()) {
-                    tv->SetRecord(true);
-                }
-            }
-            if (m_btn_teach->get_active()) {
-                if (!m_project.GetTracks()[cmd->m_path]) {
-                    OscCmd *c = new OscCmd(*cmd);
-                    c->Parse();
-                    m_project.AddCommand(c);
-                    cmd->m_name = cmd->GetPathStr();
-                    OTrackStore* trackstore = m_project.NewTrack(c);
-                    trackstore->Lock();
-                    trackstore->Init();
-                    trackstore->Unlock();
-                    m_x32->Send(c->GetConfigName());
-                    m_x32->Send(c->GetConfigColor());
-                    cmd_used = true;
-                    ui_event *ue = new ui_event;
-                    ue->what = UI_EVENTS::new_track;
-                    ue->with = trackstore;
-                    m_new_ts_queue.push(ue);
-                    m_MixerDispatcher.emit();
-                }
+        	OTrackStore *trackstore = m_project.GetTrack(cmd->m_path);
+        	OTrackView *tv = NULL;;
+        	if (trackstore) {
+				tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
+				if (tv) {
+					if (tv->GetTouch()) {
+						tv->SetRecord(true);
+					}
+				}
+        	}
+        	else {
+				if (m_btn_teach->get_active()) {
+					OscCmd *c = new OscCmd(*cmd);
+					c->Parse();
+					m_project.AddCommand(c);
+					cmd->m_name = cmd->GetPathStr();
+					OTrackStore* trackstore = m_project.NewTrack(c);
+					trackstore->Lock();
+					trackstore->Init();
+					trackstore->Unlock();
+					m_x32->Send(c->GetConfigName());
+					m_x32->Send(c->GetConfigColor());
+					cmd_used = true;
+					ui_event *ue = new ui_event;
+					ue->what = UI_EVENTS::new_track;
+					ue->with = trackstore;
+					m_new_ts_queue.push(ue);
+					m_MixerDispatcher.emit();
+				}
+        	}
+            if (m_project.ProcessPos(cmd, &m_timer)) {
+            	if (tv && !m_project.GetPlaying()) {
+					ui_event *ue = new ui_event;
+					ue->what = UI_EVENTS::draw_trackview;
+					ue->with = tv;
+					m_new_ts_queue.push(ue);
+					m_MixerDispatcher.emit();
+            	}
             }
         }
-        m_project.ProcessPos(cmd, &m_timer);
 
         delete cmd;
 
@@ -159,6 +171,10 @@ void OMainWnd::OnViewEvent() {
         }
         if (e->what == UI_EVENTS::load) {
             m_lbl_status->set_text((char*)e->with);
+        }
+        if (e->what == UI_EVENTS::draw_trackview) {
+        	((OTrackView*)e->with)->queue_draw();
+        	delete e;
         }
     }
 }
