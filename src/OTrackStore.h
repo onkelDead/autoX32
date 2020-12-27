@@ -30,7 +30,8 @@ public:
     void Init();
     
     void SetOscCommand(OscCmd* cmd);
-    void SetPos();
+
+
     void AddSamplePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
@@ -38,6 +39,7 @@ public:
     void Lock();
     void Unlock();
 
+    track_entry* NewEntry();
     track_entry* GetEntry(int);
     void RemoveEntry(track_entry*);
     

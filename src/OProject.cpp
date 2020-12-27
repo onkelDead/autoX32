@@ -373,7 +373,7 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int samplepos) {
             track_entry *entry = NULL;
             if (m_playing) {
                 if (samplepos != trackstore->m_playhead->sample) {
-                    entry = new track_entry;
+                    entry = trackstore->NewEntry();
                     entry->sample = samplepos;
                     entry->next = NULL;
                     entry->prev = NULL;

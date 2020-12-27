@@ -28,11 +28,12 @@ enum DAW_PATH {
 	smpte,
 	samples,
 	reply,
-        play,
-        stop
+	play,
+	stop
 };
 
 enum UI_EVENTS {
+	nothing,
     load,
     new_track
 };
