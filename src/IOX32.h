@@ -21,6 +21,7 @@
 
 class IOX32 {
 public:
+	virtual ~IOX32() {}
     virtual void SendFloat(std::string, float) = 0;
     virtual void SendInt(std::string, int ) = 0;
     virtual void Send(std::string) = 0;

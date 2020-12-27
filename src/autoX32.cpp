@@ -24,6 +24,5 @@ int main(int argc, char *argv[]) {
 
     window.LoadSettings(); 
 
-    return app->run(window);
+    return app->run((Gtk::Window&)window);
 }
-    

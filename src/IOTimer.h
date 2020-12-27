@@ -19,6 +19,7 @@
 
 class IOTimer {
 public:
+	virtual ~IOTimer() {}
     virtual int GetSamplePos() = 0;
     virtual void SetSamplePos(int) = 0;
 };

@@ -17,6 +17,7 @@
 #include <iostream>
 #include "ODlgPrefs.h"
 #include "embedded/autoX32_css.h"
+#include <ostream>
 
 
 ODlgPrefs::ODlgPrefs(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder) : Gtk::Dialog(cobject) 

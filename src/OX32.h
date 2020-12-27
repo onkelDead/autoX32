@@ -30,6 +30,7 @@
 #include <mutex>
 
 #include <gtkmm.h>
+#include <sigc++/connection.h>
 
 #include "IOMainWnd.h"
 #include "IOX32.h"

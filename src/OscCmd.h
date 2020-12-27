@@ -18,6 +18,7 @@
 #define SRC_OSCCMD_H_
 
 #include <gtkmm.h>
+#include <gdkmm/rgba.h>
 
 class OscCmd {
 public:

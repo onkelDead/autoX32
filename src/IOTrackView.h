@@ -25,6 +25,7 @@ extern "C" {
     
 class IOTrackView {
 public:
+	virtual ~IOTrackView() {}
     virtual OscCmd* GetCmd() = 0;
 };
 

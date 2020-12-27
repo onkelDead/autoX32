@@ -18,7 +18,8 @@
 #define SRC_OMAINWND_H_
 
 #include <queue>
-#include <giomm-2.4/giomm/settingsschemasource.h>
+#include <giomm/settingsschemasource.h>
+#include <gtkmm/widget.h>
 
 #include "IOMainWnd.h"
 #include "OResource.h"

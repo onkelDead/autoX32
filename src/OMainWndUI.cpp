@@ -16,6 +16,8 @@
 
 #include <iostream>
 #include <gtkmm.h>
+#include <glib-2.0/glib/gtypes.h>
+
 #include "OMainWnd.h"
 
 #include "embedded/autoX32.h"
@@ -27,7 +29,7 @@ void OMainWnd::create_about_dlg() {
     m_Dialog.set_name("AboutDlg");
     m_Dialog.set_transient_for(*this);
 
-    m_Dialog.set_logo(Gdk::Pixbuf::create_from_inline(-1, autoX32_inline, FALSE));
+    m_Dialog.set_logo(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*) autoX32_inline, FALSE));
 
     m_Dialog.set_program_name(PACKAGE_STRING);
     m_Dialog.set_version(PACKAGE_VERSION);
@@ -168,16 +170,16 @@ void OMainWnd::create_view() {
     ui->get_widget < Gtk::ToggleToolButton > ("lock-playhead", m_btn_lock_playhead);
     ui->get_widget < Gtk::Label > ("lbl-status", m_lbl_status);
 
-    m_img_play_off.set(Gdk::Pixbuf::create_from_inline(-1, play_off_inline, FALSE));
-    m_img_play_on.set(Gdk::Pixbuf::create_from_inline(-1, play_on_inline, FALSE));
-    m_img_teach_off.set(Gdk::Pixbuf::create_from_inline(-1, teach_off_inline, FALSE));
-    m_img_teach_on.set(Gdk::Pixbuf::create_from_inline(-1, teach_on_inline, FALSE));
-    m_img_loop_start.set(Gdk::Pixbuf::create_from_inline(-1, loop_start_inline, FALSE));
-    m_img_loop_end.set(Gdk::Pixbuf::create_from_inline(-1, loop_end_inline, FALSE));
-    m_img_zoom_loop.set(Gdk::Pixbuf::create_from_inline(-1, zoom_loop_inline, FALSE));
-    m_img_lock_playhead_off.set(Gdk::Pixbuf::create_from_inline(-1, lock_playhead_off_inline, FALSE));
-    m_img_lock_playhead_on.set(Gdk::Pixbuf::create_from_inline(-1, lock_playhead_on_inline, FALSE));
-    m_img_back.set(Gdk::Pixbuf::create_from_inline(-1, go_start_inline, FALSE));
+    m_img_play_off.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)play_off_inline, FALSE));
+    m_img_play_on.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)play_on_inline, FALSE));
+    m_img_teach_off.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)teach_off_inline, FALSE));
+    m_img_teach_on.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)teach_on_inline, FALSE));
+    m_img_loop_start.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)loop_start_inline, FALSE));
+    m_img_loop_end.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)loop_end_inline, FALSE));
+    m_img_zoom_loop.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)zoom_loop_inline, FALSE));
+    m_img_lock_playhead_off.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)lock_playhead_off_inline, FALSE));
+    m_img_lock_playhead_on.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)lock_playhead_on_inline, FALSE));
+    m_img_back.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)go_start_inline, FALSE));
 
     m_button_play->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_play_clicked));
     m_button_play->set_icon_widget(m_img_play_off);

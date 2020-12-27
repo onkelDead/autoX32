@@ -25,6 +25,8 @@
 #include "embedded/main.h"
 #include "OTimer.h"
 
+const Glib::ustring str_recent_projects = "recent-projects";
+
 OMainWnd::OMainWnd() :
 Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0), m_last_playhead_update(0) {
 
@@ -91,7 +93,7 @@ bool OMainWnd::SaveProject() {
                 NewProject();
                 m_project.Save();
                 m_project.AddRecentProject(m_project.GetProjectLocation());
-                settings->set_string_array("recent-projects", m_project.m_recent_projects);
+                settings->set_string_array(str_recent_projects, m_project.m_recent_projects);
                 UpdateMenuRecent();
                 return true;
             }

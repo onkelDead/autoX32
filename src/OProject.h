@@ -21,6 +21,8 @@
 #include <libxml/xmlwriter.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
+#include <map>
+#include <vector>
 
 #include "OscCmd.h"
 #include "OTimer.h"
@@ -46,10 +48,10 @@ public:
     bool GetDirty();
 
     daw_range* GetTimeRange();
-    gint GetLoopStart();
+    int GetLoopStart();
     daw_time* GetDawTime();
-    void SetMaxSamples(gint max_samples);
-    void SetBitRate(gint);
+    void SetMaxSamples(int max_samples);
+    void SetBitRate(int);
     void LockPlayhead(bool);
     
     void SetPlaying(bool val);
@@ -88,7 +90,7 @@ private:
     daw_time m_daw_time;
     
     bool m_lock_playhead;
-    
+
     IOX32* m_mixer;
 
     std::map<std::string, OscCmd*> m_known_mixer_commands;

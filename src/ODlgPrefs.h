@@ -18,6 +18,7 @@
 #define ODLGPREFS_H
 
 #include <gtkmm.h>
+#include <gtkmm/dialog.h>
 
 class ODlgPrefs : public Gtk::Dialog {
 public:

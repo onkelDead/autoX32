@@ -14,10 +14,11 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <gtkmm/button.h>
 #include "OTrackEditDlg.h"
 
-OTrackEditDlg::OTrackEditDlg() {
-	m_button_ok = add_button("_Ok", 1);
+OTrackEditDlg::OTrackEditDlg() : m_result(0), m_track(0){
+	m_button_ok = new Gtk::Button("_Ok", 1);
 	m_button_ok->set_sensitive(false);
 	m_button_cancel = add_button("_Cancel", 0);
 	m_button_ok->signal_clicked().connect(sigc::mem_fun(*this, &OTrackEditDlg::on_button_ok_clicked));

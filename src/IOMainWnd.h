@@ -17,12 +17,17 @@
 #ifndef IOMAINWND_H
 #define IOMAINWND_H
 
+#include <giomm/settingsschemasource.h>
+#include <giomm/settings.h>
+
+
 #include "OTypes.h"
 #include "OscCmd.h"
 #include "IOTrackView.h"
 
 class IOMainWnd {
 public:
+	virtual ~IOMainWnd() {}
     virtual void notify_daw(DAW_PATH) = 0;
     virtual void notify_mixer(OscCmd*) = 0;
     virtual void notify_overview() = 0;

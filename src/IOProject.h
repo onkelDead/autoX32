@@ -21,6 +21,7 @@
 
 class IOProject {
 public:
+	virtual ~IOProject() {}
     virtual OscCmd* GetCommand(char* path) = 0;    
     virtual void AddCommand(OscCmd*) = 0;    
 };

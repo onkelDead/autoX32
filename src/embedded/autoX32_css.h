@@ -86,7 +86,7 @@ static char autoX32_inline_css[] =
 "}"
 ""
 "entry, colorchooser {"
-"    color: #ffffff;"
+"    color: #FFFFFF;"
 "}"
 ""
 ".separator {"

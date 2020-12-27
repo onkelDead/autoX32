@@ -18,6 +18,8 @@
 #define SRC_OTIMELINE_H_
 
 #include <gtkmm.h>
+#include <gdkmm/event.h>
+
 #include "IOTimeView.h"
 #include "OTypes.h"
 

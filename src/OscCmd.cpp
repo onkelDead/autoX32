@@ -16,18 +16,21 @@
 
 #include "OscCmd.h"
 
-OscCmd::OscCmd(const char* path, const char* types) {
+OscCmd::OscCmd(const char* path, const char* types) : m_colorindex(0) {
     m_color.set_rgba_u(32768, 32768, 32768);
     m_path = path;
     m_types = types;
     last_float = 0.;
+    last_int = 0;
+
 }
 
-OscCmd::OscCmd(const OscCmd &src) {
+OscCmd::OscCmd(const OscCmd &src) : m_colorindex(0) {
     m_color.set_rgba_u(32768, 32768, 32768);
     m_path = src.m_path;
     m_types = src.m_types;
     last_float = src.last_float;
+    last_int = src.last_int;
 }
 
 OscCmd::~OscCmd() {

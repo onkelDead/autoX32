@@ -18,6 +18,8 @@
 #define OTRACKVIEW_H
 
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
+
 #include "OscCmd.h"
 
 #include "OTimeDraw.h"

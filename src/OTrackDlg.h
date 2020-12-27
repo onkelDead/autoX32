@@ -18,6 +18,7 @@
 #define OTRACKDLG_H
 
 #include <gtkmm.h>
+#include <gtkmm/dialog.h>
 
 class OTrackDlg : public Gtk::Dialog {
 public:

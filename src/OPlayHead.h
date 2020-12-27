@@ -18,6 +18,7 @@
 #define OPLAYHEAD_H
 
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
 
 class OPlayHead : public Gtk::Widget {
 public:

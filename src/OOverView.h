@@ -18,6 +18,7 @@
 #define OOVERVIEW_H
 
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
 
 #include "OTypes.h"
 #include "IOMainWnd.h"

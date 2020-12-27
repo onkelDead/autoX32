@@ -40,10 +40,10 @@ OTrackView::OTrackView(IOMainWnd* wnd) : Gtk::Box(), ui{Gtk::Builder::create_fro
     m_boxcontrol->set_name("OTrackControl");
     m_toolbar->set_name("OTrackControl");
     
-    m_img_rec_off.set(Gdk::Pixbuf::create_from_inline(-1, rec_off_inline, FALSE));
-    m_img_rec_on.set(Gdk::Pixbuf::create_from_inline(-1, rec_on_inline, FALSE));
-    m_img_touch_off.set(Gdk::Pixbuf::create_from_inline(-1, touch_off_inline, FALSE));
-    m_img_touch_on.set(Gdk::Pixbuf::create_from_inline(-1, touch_on_inline, FALSE));
+    m_img_rec_off.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*)rec_off_inline, FALSE));
+    m_img_rec_on.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*)rec_on_inline, FALSE));
+    m_img_touch_off.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*)touch_off_inline, FALSE));
+    m_img_touch_on.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*)touch_on_inline, FALSE));
     m_btn_x32_rec->signal_clicked().connect(sigc::mem_fun(*this, &OTrackView::on_button_x32_rec_clicked));
     m_btn_x32_rec->set_icon_widget(m_img_rec_off);
     m_btn_x32_rec->show_all();

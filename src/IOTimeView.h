@@ -23,6 +23,7 @@ extern "C" {
 
 class IOTimeView {
 public:
+	virtual ~IOTimeView() {}
     virtual void on_timedraw_pos_changed() = 0;    
     virtual void on_timedraw_zoom_changed() = 0;    
 };

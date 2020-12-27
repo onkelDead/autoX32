@@ -37,13 +37,15 @@ OProject::OProject() : m_mixer(0) {
     m_daw_time.m_viewend = -1;
 }
 
-OProject::OProject(std::string location) : m_mixer(0) {
+OProject::OProject(std::string location) : m_mixer(0), m_dirty(0) {
 
     m_daw_time.m_bitrate = 0;
     m_daw_time.m_maxsamples = 1;
     m_daw_time.scale = 1;
     m_daw_time.m_viewstart = 0;
     m_daw_time.m_viewend = -1;
+    m_playing = false;
+    m_lock_playhead = false;
 
     std::string name = basename(location.data());
 
@@ -52,8 +54,6 @@ OProject::OProject(std::string location) : m_mixer(0) {
 }
 
 OProject::~OProject() {
-
-
 }
 
 void OProject::SetMixer(IOX32* mixer) {
@@ -282,15 +282,15 @@ OTrackStore* OProject::NewTrack(OscCmd* cmd) {
     return ts;
 }
 
-gint OProject::GetLoopStart() {
+int OProject::GetLoopStart() {
     return m_daw_range.m_loopstart;
 }
 
-void OProject::SetBitRate(gint rate) {
+void OProject::SetBitRate(int rate) {
     m_daw_time.m_bitrate = rate;
 }
 
-void OProject::SetMaxSamples(gint max_samples) {
+void OProject::SetMaxSamples(int max_samples) {
 
     m_daw_time.m_maxsamples = max_samples;
     if (m_daw_range.m_loopend == -1) {

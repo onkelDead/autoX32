@@ -18,6 +18,7 @@
 #define OCONNECTDLG_H
 
 #include <gtkmm.h>
+#include <gtkmm/builder.h>
 
 class OConnectDlg : public Gtk::Dialog {
 public:

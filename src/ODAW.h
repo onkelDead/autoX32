@@ -31,6 +31,7 @@
 #include <mutex>
 
 #include <gtkmm.h>
+#include <glib-2.0/glib/gtypes.h>
 
 #define FEEDBACK_MASTER 16
 #define FEEDBACK_TIMECODE 64

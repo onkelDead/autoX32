@@ -4,9 +4,9 @@
 #pragma align 4 (go_start_inline)
 #endif
 #ifdef __GNUC__
-static const guint8 go_start_inline[] __attribute__ ((__aligned__ (4))) = 
+static const guint8 go_start_inline[] __attribute__ ((__aligned__ (4))) =
 #else
-static const guint8 go_start_inline[] = 
+static const guint8 go_start_inline[] =
 #endif
 { ""
   /* Pixbuf magic (0x47646b50) */

@@ -19,7 +19,7 @@
 
 #include "OOverView.h"
 
-OOverView::OOverView(IOMainWnd* wnd) {
+OOverView::OOverView(IOMainWnd* wnd) : m_daw_time(0), m_current_cursor(Gdk::CursorType::ARROW), m_left(0), m_right(0), m_width(0) {
     m_parent = wnd;
     m_in_drag = false;
     m_last_x = 0;

@@ -18,6 +18,8 @@
 #define OTIMEVIEW_H
 
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
+
 #include "OTimeDraw.h"
 #include "IOTimeView.h"
 

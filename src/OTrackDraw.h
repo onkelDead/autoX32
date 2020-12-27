@@ -19,6 +19,7 @@
 
 #include <set>
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
 #include <lo/lo.h>
 #include "OscCmd.h"
 #include "OTimeDraw.h"

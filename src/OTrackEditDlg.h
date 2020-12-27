@@ -18,6 +18,7 @@
 #define SRC_OTRACKEDITDLG_H_
 
 #include <gtkmm.h>
+#include <gtkmm/widget.h>
 #include "OscCmd.h"
 
 class OTrackEditDlg: public Gtk::Dialog {

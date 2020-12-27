@@ -18,10 +18,12 @@
 #include <libgen.h>
 #include <string.h>
 #include <gdkmm-3.0/gdkmm/cursor.h>
+#include <gtkmm/widget.h>
+#include <pangomm/layout.h>
 #include "OTrackDraw.h"
 #include "OX32.h"
 
-OTrackDraw::OTrackDraw(IOMainWnd* wnd) {
+OTrackDraw::OTrackDraw(IOMainWnd* wnd) : m_current_cursor(Gdk::CursorType::ARROW), m_left(0), m_right(0), m_width(0){
     m_parent = wnd;
     m_in_drag = false;
     m_btn_down = 0;
