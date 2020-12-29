@@ -24,8 +24,6 @@
 #include "IOMainWnd.h"
 #include "OResource.h"
 
-#include "OTrackEditDlg.h"
-
 #include "OX32.h"
 #include "ODAW.h"
 #include "OProject.h"
@@ -91,14 +89,11 @@ public:
     void notify_overview();
     void remove_track(IOTrackView*);
 
-    void UpdateDawTime(bool redraw);
-    void UpdatePlayhead();
-
     /// operations
     void LoadSettings();
     void AutoConnect();
     bool ConnectMixer(std::string);
-    
+
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
     void NewProject();
     void OpenProject(std::string location);
@@ -106,6 +101,10 @@ public:
     bool SelectProjectLocation(bool);
     bool Shutdown();
 
+    void UpdateDawTime(bool redraw);
+    void UpdatePlayhead();
+
+    /// application settings
     Gio::Settings* GetSettings();
 
 protected:
@@ -170,13 +169,12 @@ private:
     Gtk::Overlay *m_overlay;
     OPlayHead *m_playhead;
 
-    bool lock_play;
-    bool lock_daw_time;
-    bool lock_daw_sample_event;
+    bool m_lock_play;
+    bool m_lock_daw_time;
+    bool m_lock_daw_sample_event;
 
     /// dialogs
     Gtk::AboutDialog m_Dialog;
-    OTrackEditDlg m_track_edit_dlg;
 
     Glib::Dispatcher m_DawDispatcher;
     std::queue<DAW_PATH> my_dawqueue;
@@ -188,11 +186,11 @@ private:
     /// objects
     OProject m_project;
     OTimer m_timer;
-    OX32* m_x32;
+    OX32* m_x32 = nullptr;
     ODAW m_daw;
 
     void TimerEvent(void*);
-    int m_last_playhead_update;
+    int m_last_playhead_update = 0;
 
     void create_view();
     void create_menu();

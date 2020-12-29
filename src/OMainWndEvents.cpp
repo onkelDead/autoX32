@@ -38,7 +38,7 @@ void OMainWnd::on_menu_file_connection() {
     pDialog->SetX32Host(settings->get_string("mixer-host"));
     pDialog->SetX32AutoConnect(settings->get_boolean("mixer-autoconnect"));
     pDialog->run();
-    if (pDialog->m_result) {
+    if (pDialog->GetResult()) {
 
         if (ConnectDaw(pDialog->GetArdourHost(), pDialog->GetArdourPort(), pDialog->GetArdourReplyPort())) {
             settings->set_string("daw-host", pDialog->GetArdourHost());
@@ -238,11 +238,11 @@ void OMainWnd::on_button_play_clicked() {
         if (m_project.GetProjectLocation() != "") 
             m_project.Save();
         m_trackslayout.StopRecord();
-        if (!lock_play)
+        if (!m_lock_play)
             m_daw.Stop();
     } else {
         m_project.SetPlaying(true);
-        if (!lock_play)
+        if (!m_lock_play)
             m_daw.Play();
     }
 }
@@ -250,7 +250,7 @@ void OMainWnd::on_button_play_clicked() {
 void OMainWnd::on_button_back_clicked() {
     m_timer.SetSamplePos(m_project.GetLoopStart());
     m_project.ProcessPos(NULL, &m_timer);
-    lock_daw_sample_event = true;
+    m_lock_daw_sample_event = true;
     m_daw.SetPosition(m_project.GetLoopStart(), m_button_play->get_active());
     UpdatePlayhead();
 }
@@ -275,7 +275,7 @@ void OMainWnd::on_btn_cut_clicked() {
 void OMainWnd::on_timeline_pos_changed() {
     m_timer.SetSamplePos(m_timeview.GetClickSamplePos());
     m_project.ProcessPos(NULL, &m_timer);
-    lock_daw_sample_event = true;
+    m_lock_daw_sample_event = true;
     m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
     UpdatePlayhead();
 }
@@ -294,11 +294,11 @@ void OMainWnd::notify_overview() {
 }
 
 void OMainWnd::UpdateDawTime(bool redraw) {
-    if (!lock_daw_time) {
-        lock_daw_time = true;
+    if (!m_lock_daw_time) {
+        m_lock_daw_time = true;
         UpdatePlayhead();
         m_timeview.UpdateDawTime(redraw);
-        lock_daw_time = false;
+        m_lock_daw_time = false;
     }
 }
 

@@ -35,13 +35,16 @@ public:
     Gdk::RGBA GetColor();
     void SetColor(Gdk::RGBA);
     
-    bool m_result;
+    bool GetResult();
+
     
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;    
     Glib::RefPtr<Gtk::Builder> ui;
     
 private:
+
+    bool m_result = false;
 
     Gtk::Button* m_btn_cancel;
     Gtk::Button* m_btn_ok;

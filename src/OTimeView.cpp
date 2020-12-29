@@ -22,8 +22,7 @@
 
 OTimeView::OTimeView() :
 		Gtk::Box(), m_box(0), ui { Gtk::Builder::create_from_string(
-				timeview_inline_glade) }, m_daw_time(0), m_timecode(0), m_viewstart(
-				0), m_viewend(0) {
+				timeview_inline_glade) }, m_daw_time(0) {
 	ui->get_widget < Gtk::Box > ("time-box", m_box);
 	ui->get_widget < Gtk::Label > ("o-timecode", m_timecode);
 	ui->get_widget < Gtk::Label > ("o-viewstart", m_viewstart);
@@ -38,11 +37,6 @@ OTimeView::OTimeView() :
 	m_timedraw->SetSignalZoomChange(this);
 
 	add(*m_box);
-}
-
-OTimeView::OTimeView(const OTimeView &orig) :
-		Gtk::Box(), m_box(0), m_daw_time(0), m_timecode(0), m_timedraw(0), m_viewstart(
-				0), m_viewend(0) {
 }
 
 OTimeView::~OTimeView() {
@@ -61,11 +55,14 @@ void OTimeView::SetTimer(IOTimer *timer) {
 	m_timedraw->SetTimer(timer);
 }
 
+void OTimeView::SetTimeCode(std::string code) {
+	m_timecode->set_text(code);
+}
+
 void OTimeView::UpdateDawTime(bool redraw) {
 	char t[32];
-	daw_time *dt = m_daw_time;
 
-	float fmillis = ((float) dt->m_viewstart / (float) dt->m_bitrate) * 1000;
+	float fmillis = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_bitrate) * 1000;
 	int millis = (int) (fmillis / 10) % 100;
 	int sec = (int) (fmillis / 1000) % 60;
 	int min = (int) (fmillis / 60000) % 60;
@@ -73,7 +70,7 @@ void OTimeView::UpdateDawTime(bool redraw) {
 	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, millis);
 	m_viewstart->set_text(t);
 
-	fmillis = ((float) dt->m_viewend / (float) dt->m_bitrate) * 1000;
+	fmillis = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_bitrate) * 1000;
 	millis = (int) (fmillis / 10) % 100;
 	sec = (int) (fmillis / 1000) % 60;
 	min = (int) (fmillis / 60000) % 60;
@@ -83,10 +80,6 @@ void OTimeView::UpdateDawTime(bool redraw) {
 
 	if (redraw)
 		m_timedraw->queue_draw();
-}
-
-void OTimeView::SetScrollStep(int step) {
-	m_timedraw->SetScrollStep(step);
 }
 
 void OTimeView::EnableZoom(bool val) {

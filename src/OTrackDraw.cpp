@@ -23,14 +23,8 @@
 #include "OTrackDraw.h"
 #include "OX32.h"
 
-OTrackDraw::OTrackDraw(IOMainWnd *wnd) :
-		m_current_cursor(Gdk::CursorType::ARROW), m_left(0), m_right(0), m_width(0), m_selected(false) {
-	m_parent = wnd;
-	m_in_drag = false;
-	m_btn_down = 0;
-	m_daw_time = 0;
-	m_trackstore = NULL;
-	m_last_x = 0;
+OTrackDraw::OTrackDraw(IOMainWnd *wnd, daw_time *daw_time) :
+		m_current_cursor(Gdk::CursorType::ARROW), m_parent(wnd), m_daw_time(daw_time) {
 }
 
 OTrackDraw::~OTrackDraw() {
@@ -66,14 +60,14 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	cr->set_line_width(1);
 	track_entry *it = m_trackstore->m_tracks;
 
-	cr->set_source_rgba(m_trackstore->m_cmd->m_color.get_red(), m_trackstore->m_cmd->m_color.get_green(), m_trackstore->m_cmd->m_color.get_blue(), m_trackstore->m_cmd->m_color.get_alpha());
+	cr->set_source_rgba(m_trackstore->m_cmd->GetColor().get_red(), m_trackstore->m_cmd->GetColor().get_green(), m_trackstore->m_cmd->GetColor().get_blue(), m_trackstore->m_cmd->GetColor().get_alpha());
 
 	while (it->next && it->next->sample < m_daw_time->m_viewstart) {
 		it = it->next;
 	}
 
 	if (it) {
-		last_val = height - height * GetHeight(it->val, GetCmd()->m_types.data()[0]);
+		last_val = height - height * GetHeight(it->val, GetCmd()->GetTypes().data()[0]);
 		cr->move_to(0, last_val);
 		it = it->next;
 		while (it) {
@@ -81,7 +75,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 			cr->line_to(pos, last_val);
 			cr->stroke();
 			cr->move_to(pos, last_val);
-			last_val = height - height * GetHeight(it->val, GetCmd()->m_types.data()[0]);
+			last_val = height - height * GetHeight(it->val, GetCmd()->GetTypes().data()[0]);
 			cr->line_to(pos, last_val);
 			cr->stroke();
 			cr->move_to(pos, last_val);
@@ -94,10 +88,10 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	}
 
 	if (m_parent->GetSettings()->get_boolean("show-path-on-track"))
-		draw_text(cr, 2, 2, m_trackstore->m_cmd->GetPathStr());
+		draw_text(cr, 2, 2, m_trackstore->m_cmd->GetPath());
 
 	if (m_selected) {
-		cr->set_source_rgb(1.,0. ,0. );
+		cr->set_source_rgb(1., 0., 0.);
 		cr->move_to(0, 0);
 		cr->line_to(m_width, 0);
 		cr->stroke();
@@ -145,6 +139,7 @@ OscCmd* OTrackDraw::GetCmd() {
 bool OTrackDraw::on_button_press_event(GdkEventButton *event) {
 	if (event->button == 1) {
 		m_btn_down = 1;
+		m_down_x = m_last_x;
 	}
 	if (event->button == 2) {
 		if (m_current_cursor != Gdk::CursorType::FLEUR) {
@@ -170,8 +165,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
 			m_daw_time->m_viewend = m_daw_time->m_viewstart + ((float) (m_right - m_left) / (float) m_width) * (m_daw_time->m_viewend - start);
 			m_daw_time->scale = (gfloat) m_width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
 			m_parent->notify_overview();
-		}
-		else {
+		} else {
 			m_selected = !m_selected;
 			queue_draw();
 		}
@@ -185,18 +179,28 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
 bool OTrackDraw::on_motion_notify_event(GdkEventMotion *motion_event) {
 	if (motion_event->type == GDK_MOTION_NOTIFY) {
 		GdkEventMotion *e = (GdkEventMotion*) motion_event;
+		// Position->x changed
 		if (m_last_x != (gint) e->x) {
 			int offset = (gint) e->x - m_last_x;
+
+			// react on left button pressed
 			if (m_btn_down == 1) {
-				if (!m_in_drag) {
+				int down_offset = (gint) e->x - m_down_x;
+				// select time range not started
+				if (!m_in_drag && abs(down_offset) > 10) {
+					// have to fip cursor
+					m_in_drag = true;
 					if (m_current_cursor != Gdk::CursorType::SIZING) {
 						m_refGdkWindow.get()->set_cursor(m_zoom_cursor);
 						m_current_cursor = Gdk::CursorType::SIZING;
 					}
-					m_left = m_right = (gint) e->x;
-					m_in_drag = true;
+				}
+				if (down_offset < 0) {
+					m_left = (gint) e->x;
+					m_right = m_down_x;
 				} else {
 					m_right = (gint) e->x;
+					m_left = m_down_x;
 				}
 				queue_draw();
 			}

@@ -88,3 +88,7 @@ Gdk::RGBA OTrackDlg::GetColor() {
 void OTrackDlg::SetColor(Gdk::RGBA color) {
     m_btn_color->set_rgba(color);
 }
+
+bool OTrackDlg::GetResult() {
+	return m_result;
+}

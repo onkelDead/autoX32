@@ -68,16 +68,17 @@ public:
     void SetKeepOn(int);
 
 private:
-    int m_keep_on;
+    int m_keep_on = 1;
 
-    lo_server_thread m_server;
-    lo_address m_client;
+    gint m_sample = 0;
+    gint m_bitrate = 0;
+    gint m_maxsamples = 0;
 
-    IOMainWnd* m_parent;
+    lo_server_thread m_server = nullptr;
+    lo_address m_client = nullptr;
+
+    IOMainWnd* m_parent = nullptr;
     std::string timecode;
-    gint m_sample;
-    gint m_bitrate;
-    gint m_maxsamples;
 };
 
 #endif /* SRC_ODAW_H_ */

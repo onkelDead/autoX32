@@ -31,9 +31,7 @@ int daw_handler(const char *path, const char *types, lo_arg **argv, int argc,
 	return 0;
 }
 
-ODAW::ODAW() :
-		m_sample(0), m_bitrate(0), m_maxsamples(0), m_keep_on(1), m_server(0), m_client(
-				0), m_parent(0) {
+ODAW::ODAW() {
 }
 
 ODAW::~ODAW() {

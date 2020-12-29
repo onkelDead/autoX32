@@ -16,10 +16,10 @@
 
 #include "OPlayHead.h"
 
-OPlayHead::OPlayHead() : m_active(0){
+OPlayHead::OPlayHead() {
 }
 
-OPlayHead::OPlayHead(const OPlayHead& orig) : m_active(0) {
+OPlayHead::OPlayHead(const OPlayHead& orig) {
 }
 
 OPlayHead::~OPlayHead() {
@@ -29,27 +29,6 @@ Gtk::SizeRequestMode OPlayHead::get_request_mode_vfunc() const {
     return Gtk::Widget::get_request_mode_vfunc();
 }
 
-//void OPlayHead::get_preferred_width_vfunc(int& minimum_width, int& natural_width) const {
-//    minimum_width = 2;
-//    natural_width = 2;
-//}
-//
-//void OPlayHead::get_preferred_height_for_width_vfunc(int /* width */,
-//        int& minimum_height, int& natural_height) const {
-//    minimum_height = 30;
-//    natural_height = 30;
-//}
-//
-//void OPlayHead::get_preferred_height_vfunc(int& minimum_height, int& natural_height) const {
-//    minimum_height = 30;
-//    natural_height = 30;
-//}
-//
-//void OPlayHead::get_preferred_width_for_height_vfunc(int /* height */,
-//        int& minimum_width, int& natural_width) const {
-//    minimum_width = 2;
-//    natural_width = 2;
-//}
 
 void OPlayHead::on_size_allocate(Gtk::Allocation& allocation) {
     set_allocation(allocation);

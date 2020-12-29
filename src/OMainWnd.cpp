@@ -28,7 +28,7 @@
 const Glib::ustring str_recent_projects = "recent-projects";
 
 OMainWnd::OMainWnd() :
-Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0), m_last_playhead_update(0) {
+Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 
     set_name("OMainWnd");
 
@@ -60,11 +60,11 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} , m_x32(0
 
     show_all_children(true);
 
-    m_x32 = new OX32();
+    m_x32 = new OX32(this);
 
-    lock_play = false;
-    lock_daw_time = false;
-    lock_daw_sample_event = false;
+    m_lock_play = false;
+    m_lock_daw_time = false;
+    m_lock_daw_sample_event = false;
 
     m_timer.setInterval(settings->get_int("track-resolution"));
     m_timer.SetUserData(&m_project);
@@ -152,7 +152,7 @@ bool OMainWnd::ConnectMixer(std::string host) {
     if (m_x32->IsConnected()) {
         m_x32->Disconnect();
     }
-    if (!m_x32->Connect(host, this)) {
+    if (!m_x32->Connect(host)) {
         m_project.SetMixer(m_x32);
         return true;
     }
@@ -182,15 +182,15 @@ void OMainWnd::OpenProject(std::string location) {
     std::map<std::string, OTrackStore*> tracks = m_project.GetTracks();
 
     for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-        OTrackView* trackview = new OTrackView(this);
-        trackview->SetDawTime(m_project.GetDawTime());
+        OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
         trackview->SetTrackStore(it->second);
         trackview->UpdateConfig();
         m_trackslayout.AddTrack(trackview);
     }
     m_project.ProcessPos(NULL, &m_timer);
     UpdateDawTime(false);
-    queue_draw();
+    on_btn_zoom_loop_clicked();
+//    queue_draw();
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {
@@ -209,7 +209,7 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 
 void OMainWnd::remove_track(IOTrackView* view) {
     OscCmd* cmd = view->GetCmd();
-    printf("remove %s\n", cmd->m_path.data());
-    m_trackslayout.RemoveTrackView(cmd->GetPathStr());
+    printf("remove %s\n", cmd->GetPath().data());
+    m_trackslayout.RemoveTrackView(cmd->GetPath());
     m_project.RemoveCommand(cmd);
 }

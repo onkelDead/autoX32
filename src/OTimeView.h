@@ -28,7 +28,6 @@
 class OTimeView : public Gtk::Box, IOTimeView {
 public:
     OTimeView();
-    OTimeView(const OTimeView& orig);
     virtual ~OTimeView();
 
     void SetRange(daw_range* range);
@@ -36,32 +35,33 @@ public:
     void SetTimer(IOTimer*);
     void UpdateDawTime(bool redraw);
 
-    void SetScrollStep(int step);    
     void EnableZoom(bool);
     void SetZoomLoop();
     void SetLoopStart();
     void SetLoopEnd();
+    void SetTimeCode(std::string);
+    int GetClickSamplePos();
         
-    Glib::Dispatcher m_DawTime;
 
     sigc::signal<void> signal_zoom_changed;
     sigc::signal<void> signal_pos_changed;
     sigc::signal<void> signal_range_changed;
-    Gtk::Label *m_timecode;
-    Gtk::Label *m_viewstart;
-    Gtk::Label *m_viewend;
-    
+
     virtual void on_timedraw_pos_changed();    
     virtual void on_timedraw_zoom_changed();    
-    
-    int GetClickSamplePos();
     
 protected:
     Glib::RefPtr<Gtk::Builder> ui;
 private:
+
     Gtk::Box *m_box;
     OTimeDraw *m_timedraw;
     daw_time* m_daw_time;
+
+    Gtk::Label *m_timecode = nullptr;;
+    Gtk::Label *m_viewstart = nullptr;
+    Gtk::Label *m_viewend = nullptr;
+
 };
 
 #endif /* OTIMEVIEW_H */

@@ -56,7 +56,7 @@ public:
     
     float GetLoad();
 
-    char load[32];
+    char load[32] = { "" };
     
     ui_event ue;
     
@@ -66,21 +66,21 @@ public:
 private:
 
     struct timeval m_starttime;
-    int m_run_time_milli_sec; 
-    int m_secdivide;
+    int m_run_time_milli_sec = 0;
+    int m_secdivide = 0;
     
-    int m_samplepos;
+    int m_samplepos = 0;
     
-    float m_load;
+    float m_load = 0.;
     
     std::function<void(void*) > m_func;
-    long m_interval;
+    long m_interval = 50;
 
     std::thread m_thread;
     bool m_running = false;
     bool m_active = false;
 
-    void* m_userData;
+    void* m_userData = nullptr;
 };
 
 #endif /* OTIMER_H */

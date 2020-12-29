@@ -17,19 +17,11 @@
 #include <libgen.h>
 #include "OTrackStore.h"
 
-OTrackStore::OTrackStore() :
-		m_cmd(0), m_tracks(0), m_playhead(0), m_colorindex(0) {
-	m_record = false;
-	m_touch = false;
-	m_dirty = true;
+OTrackStore::OTrackStore() {
 }
 
 OTrackStore::OTrackStore(OscCmd *cmd) :
-		m_tracks(0), m_cmd(0), m_playhead(0), m_colorindex(0) {
-	m_record = false;
-	m_touch = false;
-	m_cmd = cmd;
-	m_dirty = true;
+		m_cmd(cmd) {
 }
 
 OTrackStore::~OTrackStore() {
@@ -47,12 +39,12 @@ void OTrackStore::Init() {
 	m_tracks->next = NULL;
 	m_tracks->prev = NULL;
 	m_tracks->sample = 0;
-	switch (m_cmd->m_types.data()[0]) {
+	switch (m_cmd->GetTypes().data()[0]) {
 	case 'f':
-		m_tracks->val.f = m_cmd->last_float;
+		m_tracks->val.f = m_cmd->GetLastFloat();
 		break;
 	case 'i':
-		m_tracks->val.i = m_cmd->last_int;
+		m_tracks->val.i = m_cmd->GetLastInt();
 		break;
 	}
 	m_playhead = m_tracks;
@@ -121,7 +113,7 @@ void OTrackStore::RemoveEntry(track_entry *entry) {
 }
 
 void OTrackStore::SaveData(const char *filepath) {
-	std::string oscpath = m_cmd->GetPathStr();
+	std::string oscpath = m_cmd->GetPath();
 	int i;
 	int l = oscpath.length();
 	char *s = strdup(oscpath.data());
@@ -151,7 +143,7 @@ void OTrackStore::SaveData(const char *filepath) {
 }
 
 void OTrackStore::LoadData(const char *filepath) {
-	std::string oscpath = m_cmd->GetPathStr();
+	std::string oscpath = m_cmd->GetPath();
 	int i;
 	int l = oscpath.length();
 	char *s = strdup(oscpath.data());

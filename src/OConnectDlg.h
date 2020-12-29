@@ -42,13 +42,14 @@ public:
     std::string GetX32Host();
     bool GetX32AutoConnect();
     
-    bool m_result;
+    bool GetResult();
     
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;    
     Glib::RefPtr<Gtk::Builder> ui;
     
 private:
+    bool m_result = 0;
     Gtk::Button* m_btn_cancel;
     Gtk::Button* m_btn_ok;
 

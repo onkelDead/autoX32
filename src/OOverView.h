@@ -25,10 +25,9 @@
 
 class OOverView : public Gtk::Widget {
 public:
-    OOverView(IOMainWnd*);
+    OOverView(IOMainWnd*, daw_time*);
     virtual ~OOverView();
 
-    daw_time* m_daw_time;
 
 protected:
     //Overrides:
@@ -51,9 +50,16 @@ protected:
 
 private:
     
-    IOMainWnd* m_parent;
+    bool m_in_drag = false;
+    gint m_width = 0;
+    gint m_left = 0;
+    gint m_right = 0;
+    gint m_last_x = 0;
+
+    daw_time* m_daw_time = nullptr;
+    IOMainWnd* m_parent = nullptr;
     
-    Gdk::CursorType m_current_cursor;
+    Gdk::CursorType m_current_cursor = Gdk::CursorType::ARROW;
     Glib::RefPtr<Gdk::Cursor> m_default_cursor;
     Glib::RefPtr<Gdk::Cursor> m_left_cursor;
     Glib::RefPtr<Gdk::Cursor> m_right_cursor;
@@ -61,11 +67,6 @@ private:
     
     void UpdateCursor();
     
-    bool m_in_drag;
-    gint m_width;
-    gint m_left;
-    gint m_right;
-    gint m_last_x;
 };
 
 #endif /* OOVERVIEW_H */

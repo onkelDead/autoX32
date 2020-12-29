@@ -39,7 +39,7 @@ void OTracksLayout::AddTrack(OTrackView *v) {
     v->set_halign(Gtk::ALIGN_FILL);
     v->set_valign(Gtk::ALIGN_START);
     add(*v);
-    m_trackmap[v->GetCmd()->GetPathStr()] = v;
+    m_trackmap[v->GetCmd()->GetPath()] = v;
     v->show();
 }
 

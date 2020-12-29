@@ -25,7 +25,7 @@ void OMainWnd::OnDawEvent() {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
             case DAW_PATH::samples:
-                if (!lock_daw_sample_event) {
+                if (!m_lock_daw_sample_event) {
                     if (!m_timer.GetActive()) {
                         m_timer.SetSamplePos(m_daw.GetCurrentSample());
                         UpdatePlayhead();
@@ -34,11 +34,11 @@ void OMainWnd::OnDawEvent() {
                         UpdateDawTime(false);
                     }
                 } else {
-                    lock_daw_sample_event = false;
+                    m_lock_daw_sample_event = false;
                 }
                 break;
             case DAW_PATH::smpte:
-                m_timeview.m_timecode->set_text(m_daw.GetTimeCode());
+                m_timeview.SetTimeCode(m_daw.GetTimeCode());
                 break;
             case DAW_PATH::reply:
                 m_project.SetMaxSamples(m_daw.GetMaxSamples());
@@ -47,16 +47,16 @@ void OMainWnd::OnDawEvent() {
                 UpdateDawTime(false);
                 break;
             case DAW_PATH::play:
-                lock_play = true;
+                m_lock_play = true;
                 m_button_play->set_active(true);
                 m_timer.SetActive(true);
-                lock_play = false;
+                m_lock_play = false;
                 break;
             case DAW_PATH::stop:
-                lock_play = true;
+                m_lock_play = true;
                 m_button_play->set_active(false);
                 m_timer.SetActive(false);
-                lock_play = false;
+                m_lock_play = false;
                 break;
             default:
                 break;
@@ -78,16 +78,16 @@ void OMainWnd::OnMixerEvent() {
         if (cmd->IsConfig()) {
             OscCmd* c = m_project.ProcessConfig(cmd);
             if (c) {
-                OTrackView *tv = m_trackslayout.GetTrackview(c->GetPathStr());
+                OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
                 if (tv) {
                     tv->UpdateConfig();
                 }
             }
         } else {
-        	OTrackStore *trackstore = m_project.GetTrack(cmd->m_path);
+        	OTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
         	OTrackView *tv = NULL;;
         	if (trackstore) {
-				tv = m_trackslayout.GetTrackview(cmd->GetPathStr());
+				tv = m_trackslayout.GetTrackview(cmd->GetPath());
 				if (tv) {
 					if (tv->GetTouch()) {
 						tv->SetRecord(true);
@@ -99,13 +99,13 @@ void OMainWnd::OnMixerEvent() {
 					OscCmd *c = new OscCmd(*cmd);
 					c->Parse();
 					m_project.AddCommand(c);
-					cmd->m_name = cmd->GetPathStr();
+					cmd->SetName(cmd->GetPath());
 					OTrackStore* trackstore = m_project.NewTrack(c);
 					trackstore->Lock();
 					trackstore->Init();
 					trackstore->Unlock();
-					m_x32->Send(c->GetConfigName());
-					m_x32->Send(c->GetConfigColor());
+					m_x32->Send(c->GetConfigRequestName());
+					m_x32->Send(c->GetConfigRequestColor());
 					cmd_used = true;
 					ui_event *ue = new ui_event;
 					ue->what = UI_EVENTS::new_track;
@@ -159,10 +159,9 @@ void OMainWnd::OnViewEvent() {
 
         if (e->what == UI_EVENTS::new_track) {
             OTrackStore* trackstore = (OTrackStore*) e->with;
-            if (!m_trackslayout.GetTrackview(trackstore->m_cmd->m_path)) {
-                OTrackView *trackview = new OTrackView(this);
+            if (!m_trackslayout.GetTrackview(trackstore->m_cmd->GetPath())) {
+                OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(trackstore);
-                trackview->SetDawTime(m_project.GetDawTime());
                 trackview->SetRecord(true);
                 trackview->UpdateConfig();
                 m_trackslayout.AddTrack(trackview);

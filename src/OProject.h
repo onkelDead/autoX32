@@ -81,19 +81,19 @@ public:
 
 private:
 
-    bool m_dirty;
+    bool m_dirty = false;
     
     std::string m_location;
     std::string m_projectFile;
     
-    bool m_playing;
+    bool m_playing = false;
     
     daw_range m_daw_range;
     daw_time m_daw_time;
     
-    bool m_lock_playhead;
+    bool m_lock_playhead = false;
 
-    IOX32* m_mixer;
+    IOX32* m_mixer = nullptr;
 
     std::map<std::string, OscCmd*> m_known_mixer_commands;
     std::map<std::string, OTrackStore*> m_tracks;

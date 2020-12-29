@@ -31,12 +31,11 @@
 
 class OTrackView : public Gtk::Box, public IOTrackView {
 public:
-    OTrackView(IOMainWnd*);
+    OTrackView(IOMainWnd*, daw_time*);
     virtual ~OTrackView();
 
     OscCmd* GetCmd();
 
-    void SetDawTime(daw_time*);
     void SetTrackStore(OTrackStore*);
 
     virtual void Resize(bool);
@@ -58,9 +57,9 @@ protected:
 
 private:
     
-    bool m_in_resize;
+    bool m_in_resize = 0;
     int m_last_y;
-    int m_height;
+    int m_height = 80;
 
     IOMainWnd *m_parent;
     

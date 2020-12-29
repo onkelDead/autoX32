@@ -41,11 +41,11 @@
 
 class OX32 : public IOX32 {
 public:
-    OX32();
+    OX32(IOMainWnd*);
     virtual ~OX32();
 
     /// connect to X32 mixer via OSC
-    int Connect(std::string, IOMainWnd* wnd);
+    int Connect(std::string);
     int Disconnect();
 
     int IsConnected();
@@ -60,7 +60,7 @@ private:
 
     void do_work(IOX32*);
 
-    int m_X32_socket_fd;
+    int m_X32_socket_fd = -1;
     struct sockaddr_in m_Socket; // X socket IP we send/receive
     struct sockaddr *m_SocketPtr = (struct sockaddr*) &m_Socket; // X socket IP pointer we send/receive
     struct timeval m_timeout; // used for select()
@@ -68,13 +68,13 @@ private:
     fd_set m_ReceiveFd; 
 
     char m_ReceiveBuffer[XBRMAX];
-    size_t m_ReceiveBufferLen;
+    size_t m_ReceiveBufferLen = 0;
 
     char m_SendBuffer[XBSMAX];
-    size_t m_SendBufferLen;
-    int m_IsConnected;
+    size_t m_SendBufferLen = 0;
+    int m_IsConnected = 0;
 
-    std::thread* m_WorkerThread;
+    std::thread* m_WorkerThread = nullptr;
 
     IOMainWnd* m_parent;
 

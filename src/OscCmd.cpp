@@ -16,33 +16,78 @@
 
 #include "OscCmd.h"
 
-OscCmd::OscCmd(const char* path, const char* types) : m_colorindex(0) {
+OscCmd::OscCmd(const char* path, const char* types) : m_path(path), m_types(types)  {
     m_color.set_rgba_u(32768, 32768, 32768);
-    m_path = path;
-    m_types = types;
-    last_float = 0.;
-    last_int = 0;
 
 }
 
-OscCmd::OscCmd(const OscCmd &src) : m_colorindex(0) {
+OscCmd::OscCmd(OscCmd &src) {
     m_color.set_rgba_u(32768, 32768, 32768);
     m_path = src.m_path;
     m_types = src.m_types;
-    last_float = src.last_float;
-    last_int = src.last_int;
+    m_last_float = src.GetLastFloat();
+    m_last_int = src.GetLastInt();
+    m_colorindex = src.m_colorindex;
 }
 
 OscCmd::~OscCmd() {
 
 }
 
-std::string OscCmd::GetPathStr() {
+std::string OscCmd::GetPath() {
     return m_path;
 }
 
-void OscCmd::SetPathStr(std::string path) {
+void OscCmd::SetPath(std::string path) {
     m_path = path;
+}
+
+std::string OscCmd::GetName() {
+	return m_name;
+}
+
+void OscCmd::SetName(std::string name) {
+	m_name = name;
+}
+
+std::string OscCmd::GetTypes() {
+	return m_types;
+}
+
+void OscCmd::SetTypes(std::string types) {
+	m_types = types;
+}
+
+float OscCmd::GetLastFloat() {
+	return m_last_float;
+}
+
+void OscCmd::SetLastFloat(float val) {
+	m_last_float = val;
+}
+
+int OscCmd::GetLastInt() {
+	return m_last_int;
+}
+
+void OscCmd::SetLastInt(int val) {
+	m_last_int = val;
+}
+
+std::string OscCmd::GetLastStr() {
+	return m_last_str;
+}
+
+void OscCmd::SetLastStr(std::string str) {
+	m_last_str = str;
+}
+
+Gdk::RGBA OscCmd::GetColor() {
+	return m_color;
+}
+
+void OscCmd::SetColor(Gdk::RGBA color) {
+	m_color = color;
 }
 
 void OscCmd::Parse() {
@@ -56,12 +101,12 @@ bool OscCmd::IsConfig() {
     return false;
 }
 
-std::string OscCmd::GetConfigName() {
-    return m_configName;
+std::string OscCmd::GetConfigRequestName() {
+    return m_config_request_name;
 }
 
-std::string OscCmd::GetConfigColor() {
-    return m_configColor;
+std::string OscCmd::GetConfigRequestColor() {
+    return m_config_request_color;
 }
 
 void OscCmd::SplitPath(std::string s) {
@@ -81,9 +126,9 @@ void OscCmd::SplitPath(std::string s) {
     if (m_elements.at(1) == "ch" || m_elements.at(1) == "bus") {
         char qn[64];
         sprintf(qn, "/%s/%s/config/name", m_elements.at(1).data(), m_elements.at(2).data());
-        m_configName = qn;
+        m_config_request_name = qn;
         sprintf(qn, "/%s/%s/config/color", m_elements.at(1).data(), m_elements.at(2).data());
-        m_configColor = qn;
+        m_config_request_color = qn;
     }
 }
 

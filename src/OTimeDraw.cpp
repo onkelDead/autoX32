@@ -17,14 +17,10 @@
 #include "OTimeDraw.h"
 #include "OTypes.h"
 
-OTimeDraw::OTimeDraw() :
-		m_daw_time(0), m_click_sample_pos(0), m_range(0), m_timer(0), m_view_width(
-				0) {
-	m_zoom = false;
+OTimeDraw::OTimeDraw() {
 
 	set_has_window(true);
 	set_name("o-timeline");
-	m_scroll_step = 5;
 
 	menu_popup_start.set_label("Set loop start");
 	menu_popup.append(menu_popup_start);
@@ -136,10 +132,6 @@ void OTimeDraw::SetLoopEnd() {
 	m_range->m_loopend = m_timer->GetSamplePos();
 	m_range->m_dirty = true;
 	queue_draw();
-}
-
-void OTimeDraw::SetScrollStep(gint val) {
-	m_scroll_step = val;
 }
 
 void OTimeDraw::SetDawTime(daw_time *dt) {

@@ -43,14 +43,14 @@ public:
     track_entry* GetEntry(int);
     void RemoveEntry(track_entry*);
     
-    bool m_record;
-    bool m_touch;
-    track_entry* m_tracks;
-    track_entry* m_playhead;
-    OscCmd* m_cmd;
-    int m_colorindex;
+    bool m_record = false;
+    bool m_touch = false;
+    track_entry* m_tracks = nullptr;
+    track_entry* m_playhead = nullptr;
+    OscCmd* m_cmd = nullptr;
+    int m_colorindex = 0;
     
-    bool m_dirty;
+    bool m_dirty = false;
     
 private:
 

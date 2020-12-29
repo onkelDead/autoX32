@@ -23,37 +23,55 @@
 class OscCmd {
 public:
     OscCmd(const char*, const char*);
-    OscCmd(const OscCmd &);
+    OscCmd(OscCmd &);
     virtual ~OscCmd();
 
-    std::string GetPathStr();
-    void SetPathStr(std::string m_path);
+    std::string GetPath();
+    void SetPath(std::string m_path);
+
+    std::string GetName();
+    void SetName(std::string);
     
+    std::string GetTypes();
+    void SetTypes(std::string);
+
+    float GetLastFloat();
+    void SetLastFloat(float);
+
+    int GetLastInt();
+    void SetLastInt(int);
+
+    std::string GetLastStr();
+    void SetLastStr(std::string);
+
+    Gdk::RGBA GetColor();
+    void SetColor(Gdk::RGBA);
+
     void Parse();
     
-    std::string GetConfigName();    
-    std::string GetConfigColor();
+    std::string GetConfigRequestName();
+    std::string GetConfigRequestColor();
     
     void SetColorIndex(int);
     
-    std::string m_name;
-    std::string m_path;
-    std::string m_types;
-
-    Gdk::RGBA m_color;
-    int m_colorindex;
-    
-    float last_float;
-    int last_int;
-    char last_str[64];
-
     bool IsConfig();
     
 private:
     void SplitPath(std::string s);
     std::vector<std::string> m_elements;
-    std::string m_configName;
-    std::string m_configColor;
+    std::string m_config_request_name;
+    std::string m_config_request_color;
+
+    std::string m_path = "";
+    std::string m_name = "";
+    std::string m_types = "";
+    int m_colorindex = 0;
+    Gdk::RGBA m_color;
+
+    float m_last_float = 0.;
+    int m_last_int = 0;
+    std::string m_last_str = "";
+
 };
 
 #endif /* SRC_OSCCMD_H_ */

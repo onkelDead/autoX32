@@ -16,14 +16,11 @@
 
 #include "OTrackSizer.h"
 
-OTrackSizer::OTrackSizer(IOTrackView *parent) {
-	// TODO Auto-generated constructor stub
-	m_parent = parent;
-
+OTrackSizer::OTrackSizer(IOTrackView *parent) :
+		m_parent(parent) {
 }
 
 OTrackSizer::~OTrackSizer() {
-	// TODO Auto-generated destructor stub
 }
 
 void OTrackSizer::on_realize() {
@@ -36,17 +33,6 @@ void OTrackSizer::on_realize() {
 bool OTrackSizer::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	const Gtk::Allocation allocation = get_allocation();
 	auto refStyleContext = get_style_context();
-
-
-	int height = allocation.get_height();
-	int width = allocation.get_width();
-
-	cr->set_line_width(1);
-
-	cr->set_source_rgb(1.,0. ,0. );
-	cr->move_to(0, 0);
-	cr->line_to(width, height);
-	cr->stroke();
 
 	return true;
 }
@@ -67,5 +53,4 @@ bool OTrackSizer::on_button_release_event(GdkEventButton *event) {
 	}
 	return false;
 }
-
 

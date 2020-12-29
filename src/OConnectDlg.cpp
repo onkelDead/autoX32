@@ -119,3 +119,7 @@ std::string OConnectDlg::GetX32Host() {
 bool OConnectDlg::GetX32AutoConnect() {
     return m_chk_x32_autoconnect->get_active();
 }
+
+bool OConnectDlg::GetResult() {
+	return m_result;
+}

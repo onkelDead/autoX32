@@ -18,17 +18,14 @@
 #include <string.h>
 #include "OX32.h"
 
-OX32::OX32() :
-		m_X32_socket_fd(-1), m_ReceiveBufferLen(0), m_SendBufferLen(0), m_IsConnected(
-				0), m_WorkerThread(NULL), m_parent(0) {
+OX32::OX32(IOMainWnd* wnd) : m_parent(wnd) {
 }
 
 OX32::~OX32() {
 	delete m_WorkerThread;
 }
 
-int OX32::Connect(std::string host, IOMainWnd *wnd) {
-	m_parent = wnd;
+int OX32::Connect(std::string host) {
 	int p_status; // poll status
 
 	if ((m_X32_socket_fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
@@ -57,8 +54,7 @@ int OX32::Connect(std::string host, IOMainWnd *wnd) {
 	while (m_IsConnected) {
 		time_t now;
 		time(&now);
-		if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0,
-				m_SocketPtr, Xip_len) < 0) {
+		if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr, Xip_len) < 0) {
 			perror("couldn't send data to X32");
 			return 1;
 		}
@@ -66,18 +62,17 @@ int OX32::Connect(std::string host, IOMainWnd *wnd) {
 			FD_ZERO(&m_ReceiveFd);
 			FD_SET(m_X32_socket_fd, &m_ReceiveFd);
 			p_status = select(m_X32_socket_fd + 1, &m_ReceiveFd, NULL, NULL,
-					NULL);
+			NULL);
 		} while (0);
 		if (p_status < 0) {
 			printf("Polling for data failed\n");
 			return 1; // exit on receive error
 		} else if (p_status > 0) { // We have received data - process it!
 			m_ReceiveBufferLen = recvfrom(m_X32_socket_fd, m_ReceiveBuffer,
-					XBRMAX, 0, m_SocketPtr, &Xip_len);
+			XBRMAX, 0, m_SocketPtr, &Xip_len);
 			if (strcmp(m_ReceiveBuffer, "/xinfo") == 0) {
 				int result;
-				lo_message msg = lo_message_deserialise(m_ReceiveBuffer,
-						m_ReceiveBufferLen, &result);
+				lo_message msg = lo_message_deserialise(m_ReceiveBuffer, m_ReceiveBufferLen, &result);
 				printf("%s ", m_ReceiveBuffer);
 				lo_message_free(msg);
 				break; // Connected!
@@ -106,8 +101,7 @@ bool OX32::on_timeout() {
 	socklen_t Xip_len = sizeof(m_Socket);
 	lo_message msg = lo_message_new();
 	lo_message_serialise(msg, "/xremote", m_SendBuffer, &m_SendBufferLen);
-	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr,
-			sizeof(m_Socket)) < 0) {
+	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr, sizeof(m_Socket)) < 0) {
 		perror("coundn't send data to X32");
 		m_IsConnected = 0;
 	}
@@ -133,12 +127,12 @@ void OX32::do_work(IOX32 *caller) {
 			FD_ZERO(&m_ReceiveFd);
 			FD_SET(m_X32_socket_fd, &m_ReceiveFd);
 			p_status = select(m_X32_socket_fd + 1, &m_ReceiveFd, NULL, NULL,
-					NULL);
+			NULL);
 		} while (0);
 
 		if (p_status > 0) {
 			if ((m_ReceiveBufferLen = recvfrom(m_X32_socket_fd, m_ReceiveBuffer,
-					XBRMAX, 0, m_SocketPtr, &Xip_len)) > 0) {
+			XBRMAX, 0, m_SocketPtr, &Xip_len)) > 0) {
 				gettimeofday(&t_rec, NULL); // get precise time
 				ProcessOscCmd(m_ReceiveBuffer, m_ReceiveBufferLen);
 			}
@@ -156,15 +150,15 @@ void OX32::ProcessOscCmd(char *entry, size_t len) {
 	OscCmd *cmd = new OscCmd(entry, lo_message_get_types(msg));
 
 	if (argc > 0) {
-		switch (cmd->m_types.data()[0]) {
+		switch (cmd->GetTypes().data()[0]) {
 		case 'f':
-			cmd->last_float = argv[0]->f;
+			cmd->SetLastFloat(argv[0]->f);
 			break;
 		case 'i':
-			cmd->last_int = argv[0]->i;
+			cmd->SetLastInt(argv[0]->i);
 			break;
 		case 's':
-			strcpy(cmd->last_str, &argv[0]->s);
+			cmd->SetLastStr(&argv[0]->s);
 			break;
 		}
 	}
@@ -181,8 +175,7 @@ void OX32::SendFloat(std::string path, float val) {
 	lo_message msg = lo_message_new();
 	lo_message_add_float(msg, val);
 	lo_message_serialise(msg, path.data(), m_SendBuffer, &m_SendBufferLen);
-	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr,
-			sizeof(m_Socket)) < 0) {
+	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr, sizeof(m_Socket)) < 0) {
 		perror("coundn't send data to X32");
 		m_IsConnected = 0;
 	}
@@ -193,8 +186,7 @@ void OX32::SendInt(std::string path, int val) {
 	lo_message msg = lo_message_new();
 	lo_message_add_int32(msg, val);
 	lo_message_serialise(msg, path.data(), m_SendBuffer, &m_SendBufferLen);
-	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr,
-			sizeof(m_Socket)) < 0) {
+	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr, sizeof(m_Socket)) < 0) {
 		perror("coundn't send data to X32");
 		m_IsConnected = 0;
 	}
@@ -204,8 +196,7 @@ void OX32::SendInt(std::string path, int val) {
 void OX32::Send(std::string path) {
 	lo_message msg = lo_message_new();
 	lo_message_serialise(msg, path.data(), m_SendBuffer, &m_SendBufferLen);
-	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr,
-			sizeof(m_Socket)) < 0) {
+	if (sendto(m_X32_socket_fd, m_SendBuffer, m_SendBufferLen, 0, m_SocketPtr, sizeof(m_Socket)) < 0) {
 		perror("coundn't send data to X32");
 		m_IsConnected = 0;
 	}

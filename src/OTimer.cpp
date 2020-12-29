@@ -19,18 +19,11 @@
 #include "OTypes.h"
 #include "OMainWnd.h"
 
-OTimer::OTimer() :
-		m_run_time_milli_sec(0), m_interval(50), m_load(0), m_samplepos(0), m_secdivide(
-				0), m_userData(0) {
+OTimer::OTimer() {
 }
 
-OTimer::OTimer(std::function<void(void*)> func, const long &interval,
-		void *userData) :
-		m_run_time_milli_sec(0), m_samplepos(0), m_secdivide(0) {
-	m_userData = userData;
-	m_func = func;
-	m_interval = interval;
-	m_load = 0.;
+OTimer::OTimer(std::function<void(void*)> func, const long &interval, void *userData) :
+		m_userData(userData), m_func(func), m_interval(interval) {
 }
 
 OTimer::~OTimer() {

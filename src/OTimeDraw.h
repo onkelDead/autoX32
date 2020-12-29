@@ -45,8 +45,6 @@ public:
 
     int GetClickSamplePos();
     
-    void SetScrollStep(gint val);
-    
     void SetDawTime(daw_time*);
     void SetTimer(IOTimer*);
     void SetRange(daw_range*);
@@ -56,36 +54,28 @@ protected:
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     virtual void draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
             int rectangle_width, int rectangle_height, char* text);
+    virtual bool on_button_press_event(GdkEventButton* event) override;
 
 
 private:
 
-    bool m_zoom;
+    bool m_zoom = false;
+    int m_view_width = 0;
+    int m_click_sample_pos = 0;
+    
+    IOTimer* m_timer = nullptr;
+    daw_time* m_daw_time = nullptr;;
+    daw_range* m_range = nullptr;
 
-    gint m_scroll_step;
-    
-    IOTimer* m_timer;
-    
-    daw_time* m_daw_time;
-    daw_range* m_range;
-    
-    int m_view_width;
+    Gtk::Menu menu_popup;
+    Gtk::MenuItem menu_popup_start;
+    Gtk::MenuItem menu_popup_end;
 
     sigc::signal<void> signal_zoom_changed;
     sigc::signal<void> signal_pos_changed;
     
-    int m_click_sample_pos;
-    
-    virtual bool on_button_press_event(GdkEventButton* event) override;
-
-    void zoom_in();
-    void zoom_out();
-
     void on_menu_popup_start();
     void on_menu_popup_end();
-    Gtk::Menu menu_popup;
-    Gtk::MenuItem menu_popup_start;
-    Gtk::MenuItem menu_popup_end;
 };
 
 #endif /* SRC_OTIMELINE_H_ */
