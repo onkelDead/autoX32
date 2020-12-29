@@ -23,12 +23,14 @@ autoX32_SOURCES = \
     src/OTrackStore.cpp \
     src/OTimeDraw.cpp \
     src/OTrackDraw.cpp \
+    src/OTrackSizer.cpp \
     src/OProject.cpp \
     src/ODAW.cpp \
     src/OX32.cpp \
     src/OTimer.cpp \
     src/autoX32.cpp \
-    src/OQueue.cpp
+    src/OQueue.cpp \
+    src/OCustomWidget.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -36,6 +38,7 @@ noinst_HEADERS = \
     src/OPlayHead.h \
     src/OOverView.h \
     src/OTrackDraw.h \
+    src/OTrackSizer.h \
     src/OTimeView.h \
     src/OTrackStore.h \
     src/ODAW.h \
@@ -47,7 +50,8 @@ noinst_HEADERS = \
     src/ODlgPrefs.h \
     src/OX32.h \
     src/OTimer.h \
-    src/OQueue.h
+    src/OQueue.h \
+    src/OCustomWidget.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0

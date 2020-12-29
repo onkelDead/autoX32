@@ -80,33 +80,14 @@ void OMainWnd::on_about_dialog_response(int response_id) {
 }
 
 bool OMainWnd::on_key_press_event(GdkEventKey *key_event) {
-//    if (key_event->keyval == GDK_KEY_Control_L) {
-//        m_timeview.SetScrollStep(1);
-//        return true;
-//    }
-//
-//    if (key_event->keyval == GDK_KEY_Shift_L) {
-//        m_timeview.EnableZoom(true);
-//
-//        return true;
-//    }
 
     return Gtk::Window::on_key_press_event(key_event);
 }
 
 bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
-//    if (key_event->keyval == GDK_KEY_Control_L) {
-//        m_timeview.SetScrollStep(5);
-//        return true;
-//    }
-//    if (key_event->keyval == GDK_KEY_Shift_L) {
-//        m_timeview.EnableZoom(false);
-//        return true;
-//    }
-//    
     if (key_event->keyval == GDK_KEY_space) {
-        on_button_play_clicked();
-        return true;
+//        m_button_play->set_active(!m_button_play->get_active());
+//        return true;
     }
     
     if (key_event->keyval == GDK_KEY_Home) {
@@ -286,6 +267,11 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
     m_project.LockPlayhead(m_btn_lock_playhead->get_active());
 }
 
+void OMainWnd::on_btn_cut_clicked() {
+	m_btn_cut->set_icon_widget(m_btn_cut->get_active() ? m_img_cut_on : m_img_cut_off);
+	m_btn_cut->show_all();
+}
+
 void OMainWnd::on_timeline_pos_changed() {
     m_timer.SetSamplePos(m_timeview.GetClickSamplePos());
     m_project.ProcessPos(NULL, &m_timer);
@@ -335,3 +321,4 @@ void OMainWnd::UpdatePlayhead() {
         }
     }
 }
+

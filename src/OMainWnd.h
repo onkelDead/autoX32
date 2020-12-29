@@ -76,6 +76,7 @@ public:
     void on_btn_loop_end_clicked();
     void on_btn_zoom_loop_clicked();
     void on_btn_lock_playhead_clicked();
+    void on_btn_cut_clicked();
 
     void on_timeline_zoom_changed();
     void on_timeline_pos_changed();
@@ -150,6 +151,10 @@ private:
     Gtk::ToggleToolButton *m_btn_lock_playhead;
     Gtk::Image m_img_lock_playhead_on;
     Gtk::Image m_img_lock_playhead_off;
+    Gtk::ToggleToolButton *m_btn_cut;
+    Gtk::Image m_img_cut_on;
+    Gtk::Image m_img_cut_off;
+
     Gtk::Box *m_timebox;
     OTimeView m_timeview;
     Gtk::Box *m_tracksbox;

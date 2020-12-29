@@ -36,6 +36,8 @@ extern "C" {
 #include "embedded/touch_off.h"
 #include "embedded/touch_on.h"
 #include "embedded/zoom_loop.h"
+#include "embedded/cut_on.h"
+#include "embedded/cut_off.h"
 
 #ifdef __cplusplus
 }

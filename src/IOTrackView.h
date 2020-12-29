@@ -17,9 +17,7 @@
 #ifndef IOTRACKVIEW_H
 #define IOTRACKVIEW_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 #include "OscCmd.h"
     
@@ -27,12 +25,9 @@ class IOTrackView {
 public:
 	virtual ~IOTrackView() {}
     virtual OscCmd* GetCmd() = 0;
+	virtual void Resize(bool) = 0;
 };
 
-
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif /* IOTRACKVIEW_H */

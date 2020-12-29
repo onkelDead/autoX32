@@ -23,6 +23,7 @@
 #include "OscCmd.h"
 
 #include "OTimeDraw.h"
+#include "OTrackSizer.h"
 #include "OTrackDraw.h"
 #include "OTrackStore.h"
 #include "IOMainWnd.h"
@@ -38,8 +39,8 @@ public:
     void SetDawTime(daw_time*);
     void SetTrackStore(OTrackStore*);
 
-    void BindRemove(IOMainWnd*);
-    
+    virtual void Resize(bool);
+
     void on_button_x32_rec_clicked();
     void on_button_x32_touch_clicked();
     
@@ -53,15 +54,25 @@ public:
     
 protected:
     Glib::RefPtr<Gtk::Builder> ui;
+    virtual bool on_motion_notify_event(GdkEventMotion* motion_event) override;
 
 private:
     
+    bool m_in_resize;
+    int m_last_y;
+    int m_height;
+
     IOMainWnd *m_parent;
     
     Gtk::Box *m_box;
     Gtk::Box *m_boxcontrol;
+    Gtk::Box *m_boxsizer;
+    Gtk::Box *m_boxdraw;
     Gtk::Toolbar *m_toolbar;
     Gtk::Label *m_label;
+
+    OTrackSizer* m_tracksizer;
+
     OTrackDraw* m_trackdraw;
     
     Gtk::ToggleToolButton *m_btn_x32_rec;

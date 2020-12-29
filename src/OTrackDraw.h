@@ -21,12 +21,14 @@
 #include <gtkmm.h>
 #include <gtkmm/widget.h>
 #include <lo/lo.h>
+
+#include "OCustomWidget.h"
 #include "OscCmd.h"
 #include "OTimeDraw.h"
 #include "OTrackStore.h"
 #include "IOMainWnd.h"
 
-class OTrackDraw : public Gtk::Widget {
+class OTrackDraw : public OCustomWidget {
 public:
     OTrackDraw(IOMainWnd*);
     virtual ~OTrackDraw();
@@ -42,21 +44,10 @@ public:
 protected:
 
     //Overrides:
-    Gtk::SizeRequestMode get_request_mode_vfunc() const override;
-    void get_preferred_width_vfunc(int& minimum_width, int& natural_width) const override;
-    void get_preferred_height_for_width_vfunc(int width, int& minimum_height, int& natural_height) const override;
-    void get_preferred_height_vfunc(int& minimum_height, int& natural_height) const override;
-    void get_preferred_width_for_height_vfunc(int height, int& minimum_width, int& natural_width) const override;
-    virtual void on_size_allocate(Gtk::Allocation& allocation) override;
-    virtual void on_map() override;
-    virtual void on_unmap() override;
-    virtual void on_realize() override;
-    virtual void on_unrealize() override;
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     virtual void draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
             int rectangle_width, int rectangle_height, std::string text);
 
-    Glib::RefPtr<Gdk::Window> m_refGdkWindow;
 protected:
     virtual bool on_motion_notify_event(GdkEventMotion* motion_event) override;
     virtual bool on_button_press_event(GdkEventButton* event) override;
@@ -80,7 +71,7 @@ private:
     gint m_right;
     gint m_width;
     
-
+    bool m_selected;
 
 };
 

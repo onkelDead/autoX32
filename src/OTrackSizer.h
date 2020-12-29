@@ -14,39 +14,28 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef SRC_OTRACKSLAYOUT_H_
-#define SRC_OTRACKSLAYOUT_H_
+#ifndef SRC_OTRACKSIZER_H_
+#define SRC_OTRACKSIZER_H_
 
-#include "OTrackView.h"
-#include "IOMainWnd.h"
+#include <gtkmm/widget.h>
+#include "OCustomWidget.h"
+#include "IOTrackView.h"
 
-class OTracksLayout : public Gtk::VBox {
+class OTrackSizer: public OCustomWidget {
 public:
-    OTracksLayout();
-    virtual ~OTracksLayout();
+	OTrackSizer(IOTrackView*);
+	virtual ~OTrackSizer();
+protected:
+	Glib::RefPtr<Gdk::Cursor> m_default_cursor;
+	virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
+    virtual void on_realize() override;
 
-    void AddTrack(OTrackView *v);
-    OTrackView* GetTrackview(std::string);
-
-    void RemoveTrackView(std::string path);
-    void RemoveAllTackViews();
-
-    void SetPos();
-
-    void StopRecord();
-
-    void redraw();
-
-    std::map<std::string, OTrackView *> GetTrackMap();
+    virtual bool on_button_press_event(GdkEventButton* event) override;
+    virtual bool on_button_release_event(GdkEventButton* event) override;
 
 private:
-    
-    std::map<std::string, OTrackView *> m_trackmap;
-    Gtk::Grid m_grig;
-    Gtk::Box m_bbox;
-    Gtk::Label m_label;
+    IOTrackView* m_parent;
+
 };
 
-
-
-#endif /* SRC_OTRACKSLAYOUT_H_ */
+#endif /* SRC_OTRACKSIZER_H_ */
