@@ -33,6 +33,7 @@ public:
     virtual void notify_overview() = 0;
     virtual void remove_track(IOTrackView*) = 0;
     virtual Gio::Settings* GetSettings() = 0;
+	virtual void SelectTrack(std::string, bool) = 0;
 private:
 
 };

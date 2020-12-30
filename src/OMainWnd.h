@@ -104,6 +104,8 @@ public:
     void UpdateDawTime(bool redraw);
     void UpdatePlayhead();
 
+    void SelectTrack(std::string, bool);
+
     /// application settings
     Gio::Settings* GetSettings();
 

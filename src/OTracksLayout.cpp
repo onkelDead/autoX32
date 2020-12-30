@@ -19,7 +19,6 @@
 #include "OMainWnd.h"
 
 OTracksLayout::OTracksLayout() : Gtk::VBox() {
-    m_label.set_name("white");
     m_label.set_hexpand(true);
     m_label.set_halign(Gtk::ALIGN_FILL);
     m_label.set_vexpand(true);

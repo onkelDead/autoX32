@@ -4,7 +4,6 @@ static char trackview_inline_glade[] =
 "<interface>"
 "  <requires lib='gtk+' version='3.20'/>"
 "  <object class='GtkBox' id='track-box'>"
-"    <property name='name'>track</property>"
 "    <property name='visible'>True</property>"
 "    <property name='can_focus'>False</property>"
 "    <property name='hexpand'>True</property>"

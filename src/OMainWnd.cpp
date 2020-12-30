@@ -213,3 +213,10 @@ void OMainWnd::remove_track(IOTrackView* view) {
     m_trackslayout.RemoveTrackView(cmd->GetPath());
     m_project.RemoveCommand(cmd);
 }
+
+void OMainWnd::SelectTrack(std::string path, bool selected) {
+	if (selected)
+		m_trackslayout.GetTrackview(path)->set_name("OTrackView_selected");
+	else
+		m_trackslayout.GetTrackview(path)->set_name("OTrackView");
+}

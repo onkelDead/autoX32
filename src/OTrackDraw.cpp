@@ -175,6 +175,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
 			m_parent->notify_overview();
 		} else {
 			SetSelected(!m_selected);
+			m_parent->SelectTrack(m_trackstore->m_cmd->GetPath(), m_selected);
 			queue_draw();
 		}
 	}
