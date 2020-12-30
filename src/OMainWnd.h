@@ -40,8 +40,6 @@
 
 #define AUTOX32_SCHEMA_ID "de.paraair.autoX32"
 
-
-
 class OMainWnd : public Gtk::Window, IOMainWnd {
 public:
     OMainWnd();
@@ -201,6 +199,8 @@ private:
     void create_about_dlg();
 
     void on_about_dialog_response(int response_id);
+	void PublishUiEvent(UI_EVENTS, void *);
+	void PublishUiEvent(ui_event *);
 };
 
 

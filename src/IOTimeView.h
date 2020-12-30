@@ -17,21 +17,12 @@
 #ifndef IOTIMEVIEW_H
 #define IOTIMEVIEW_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 class IOTimeView {
 public:
 	virtual ~IOTimeView() {}
     virtual void on_timedraw_pos_changed() = 0;    
     virtual void on_timedraw_zoom_changed() = 0;    
 };
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* IOTIMEVIEW_H */
 

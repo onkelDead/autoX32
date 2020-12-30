@@ -17,8 +17,6 @@
 #ifndef IOX32_H
 #define IOX32_H
 
-#include "IOProject.h"
-
 class IOX32 {
 public:
 	virtual ~IOX32() {}

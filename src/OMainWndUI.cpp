@@ -24,7 +24,6 @@
 #include "embedded/autoX32_css.h"
 
 void OMainWnd::create_about_dlg() {
-    // create about dialog
     
     m_Dialog.set_name("AboutDlg");
     m_Dialog.set_transient_for(*this);

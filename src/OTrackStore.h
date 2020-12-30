@@ -24,10 +24,8 @@ class OTrackStore {
 public:
     OTrackStore();    
     OTrackStore(OscCmd* cmd);
-
     virtual ~OTrackStore();
 
-    void Init();
     
     void SetOscCommand(OscCmd* cmd);
 
@@ -55,6 +53,8 @@ public:
     bool m_dirty = false;
     
 private:
+
+    void Init();
 
     std::mutex m_mutex;
 };

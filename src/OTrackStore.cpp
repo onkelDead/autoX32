@@ -22,6 +22,9 @@ OTrackStore::OTrackStore() {
 
 OTrackStore::OTrackStore(OscCmd *cmd) :
 		m_cmd(cmd) {
+	Lock();
+	Init();
+	Unlock();
 }
 
 OTrackStore::~OTrackStore() {

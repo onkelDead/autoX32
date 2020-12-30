@@ -17,8 +17,6 @@
 #ifndef IOTRACKVIEW_H
 #define IOTRACKVIEW_H
 
-
-
 #include "OscCmd.h"
     
 class IOTrackView {

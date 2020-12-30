@@ -23,6 +23,10 @@ extern "C" {
 
 #include "lo/lo.h"    
     
+#ifdef __cplusplus
+}
+#endif
+
 enum DAW_PATH {
 	unknown,
 	smpte,
@@ -46,10 +50,9 @@ typedef struct ui_event_type {
 } ui_event;
 
 typedef struct daw_time_type {
-    //int m_pos;
     int m_maxsamples;
-    float scale;
     int m_bitrate;
+    float scale;
     int m_viewstart;
     int m_viewend;
 } daw_time;
@@ -67,9 +70,6 @@ typedef struct track_entry {
     track_entry* next;
 } track_entry;
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* OTYPES_H */
 

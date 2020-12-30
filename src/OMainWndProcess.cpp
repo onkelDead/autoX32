@@ -70,6 +70,19 @@ void OMainWnd::notify_daw(DAW_PATH path) {
     m_DawDispatcher.emit();
 }
 
+void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {
+	ui_event *ue = new ui_event;
+	ue->what = what;
+	ue->with = with;
+	m_new_ts_queue.push(ue);
+	m_MixerDispatcher.emit();
+}
+
+void OMainWnd::PublishUiEvent(ui_event* ue) {
+	m_new_ts_queue.push(ue);
+	m_MixerDispatcher.emit();
+}
+
 void OMainWnd::OnMixerEvent() {
     while (my_mixerqueue.size() > 0) {
         bool cmd_used = false;
@@ -101,26 +114,16 @@ void OMainWnd::OnMixerEvent() {
 					m_project.AddCommand(c);
 					cmd->SetName(cmd->GetPath());
 					OTrackStore* trackstore = m_project.NewTrack(c);
-					trackstore->Lock();
-					trackstore->Init();
-					trackstore->Unlock();
 					m_x32->Send(c->GetConfigRequestName());
 					m_x32->Send(c->GetConfigRequestColor());
 					cmd_used = true;
-					ui_event *ue = new ui_event;
-					ue->what = UI_EVENTS::new_track;
-					ue->with = trackstore;
-					m_new_ts_queue.push(ue);
-					m_MixerDispatcher.emit();
+
+					PublishUiEvent(UI_EVENTS::new_track, trackstore);
 				}
         	}
             if (m_project.ProcessPos(cmd, &m_timer)) {
             	if (tv && !m_project.GetPlaying()) {
-					ui_event *ue = new ui_event;
-					ue->what = UI_EVENTS::draw_trackview;
-					ue->with = tv;
-					m_new_ts_queue.push(ue);
-					m_MixerDispatcher.emit();
+            		PublishUiEvent(UI_EVENTS::draw_trackview, tv);
             	}
             }
         }
@@ -134,11 +137,9 @@ void OMainWnd::OnMixerEvent() {
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
     my_mixerqueue.push(cmd);
-    //    m_MixerDispatcher.emit();
 }
 
 void OMainWnd::TimerEvent(void* data) {
-    ui_event e;
 
     // update UI-PlayHead/Load every 50ms
     if (m_timer.GetRunTime() > m_last_playhead_update + 50) {
@@ -146,8 +147,7 @@ void OMainWnd::TimerEvent(void* data) {
         m_last_playhead_update = m_timer.GetRunTime();
         // show timer process load percentage
         sprintf(m_timer.load, "Load: %.2f%%", m_timer.GetLoad());
-        m_new_ts_queue.push(&m_timer.ue);
-        m_MixerDispatcher.emit();
+        PublishUiEvent(&m_timer.ue);
     }
     OnMixerEvent();
 }
