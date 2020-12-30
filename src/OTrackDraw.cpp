@@ -128,6 +128,10 @@ void OTrackDraw::SetTouch(bool val) {
 	m_trackstore->m_touch = val;
 }
 
+void OTrackDraw::SetSelected(bool val) {
+	m_selected = val;
+}
+
 void OTrackDraw::SetTrackStore(OTrackStore *trackstore) {
 	m_trackstore = trackstore;
 }
@@ -170,7 +174,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
 			m_daw_time->scale = (gfloat) m_width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
 			m_parent->notify_overview();
 		} else {
-			m_selected = !m_selected;
+			SetSelected(!m_selected);
 			queue_draw();
 		}
 	}

@@ -40,6 +40,8 @@ public:
 	void SetRecord(bool val);
 	void SetTouch(bool val);
 
+	void SetSelected(bool);
+
 protected:
 
 	//Overrides:
