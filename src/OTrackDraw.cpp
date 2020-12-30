@@ -132,6 +132,10 @@ void OTrackDraw::SetTrackStore(OTrackStore *trackstore) {
 	m_trackstore = trackstore;
 }
 
+OTrackStore* OTrackDraw::GetTrackStore() {
+	return m_trackstore;
+}
+
 OscCmd* OTrackDraw::GetCmd() {
 	return m_trackstore->m_cmd;
 }

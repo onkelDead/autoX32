@@ -49,6 +49,8 @@ public:
     track_entry* m_playhead = nullptr;
     OscCmd* m_cmd = nullptr;
     int m_colorindex = 0;
+    bool m_expanded = true;
+    int m_height = 80;
     
     bool m_dirty = false;
     

@@ -34,6 +34,7 @@ public:
 	virtual ~OTrackDraw();
 
 	void SetTrackStore(OTrackStore*);
+	OTrackStore* GetTrackStore();
 	OscCmd* GetCmd();
 
 	void SetRecord(bool val);

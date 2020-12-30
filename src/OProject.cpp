@@ -134,12 +134,17 @@ void OProject::Load(std::string location) {
                 m_known_mixer_commands[path] = new OscCmd(path, (char*) xmlGetProp(node, BAD_CAST "types"));
                 const char* name = (char*) xmlGetProp(node, BAD_CAST "name");
                 m_known_mixer_commands[path]->SetName(name);
+                Gdk::RGBA color;
+                color.set_rgba_u(0, 0, 0, 32768);
                 cv = (char*) xmlGetProp(node, BAD_CAST "red");
-                m_known_mixer_commands[path]->GetColor().set_red_u(atoi(cv));
+                color.set_red_u(atoi(cv));
                 cv = (char*) xmlGetProp(node, BAD_CAST "green");
-                m_known_mixer_commands[path]->GetColor().set_green_u(atoi(cv));
+                color.set_green_u(atoi(cv));
                 cv = (char*) xmlGetProp(node, BAD_CAST "blue");
-                m_known_mixer_commands[path]->GetColor().set_blue_u(atoi(cv));
+                color.set_blue_u(atoi(cv));
+                cv = (char*) xmlGetProp(node, BAD_CAST "alpha");
+                color.set_alpha_u(atoi(cv));
+                m_known_mixer_commands[path]->SetColor(color);
             }
         }
     }
@@ -152,9 +157,14 @@ void OProject::Load(std::string location) {
             xmlNodePtr node = nodeset->nodeTab[i];
             if (node) {
                 const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
+                const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
+                const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
+
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
                 ts->Lock();
+                ts->m_expanded = atoi(expanded);
+                ts->m_height = atoi(height);
                 ts->LoadData(m_projectFile.data());
                 ts->Unlock();
             }
@@ -256,6 +266,8 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "green", "%s", cv);
         sprintf(cv, "%d", it->second->GetColor().get_blue_u());
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "blue", "%s", cv);
+        sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
         xmlTextWriterEndElement(writer);
         printf ("Project::Save: command %s saved\n", it->second->GetPath().data());
         
@@ -263,11 +275,17 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 }
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
+	char cv[16];
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         OTrackStore* ts = it->second;
         ts->Lock();
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
+        sprintf(cv, "%d", it->second->m_expanded);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
+        sprintf(cv, "%d", it->second->m_height);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
+
         xmlTextWriterEndElement(writer);
         it->second->SaveData(m_projectFile.data());
         printf ("Project::Save: track %s saved\n", it->first.data());

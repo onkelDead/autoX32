@@ -59,10 +59,10 @@ private:
     
     bool m_in_resize = 0;
     int m_last_y;
-    int m_height = 80;
 
     IOMainWnd *m_parent;
     
+    Gtk::Expander *m_expander;
     Gtk::Box *m_box;
     Gtk::Box *m_boxcontrol;
     Gtk::Box *m_boxsizer;
@@ -80,6 +80,8 @@ private:
     Gtk::Image m_img_rec_on;
     Gtk::Image m_img_touch_off;
     Gtk::Image m_img_touch_on;
+
+    void on_expander();
 
     virtual bool on_button_press_event(GdkEventButton* event) override;
     void on_menu_popup_edit();

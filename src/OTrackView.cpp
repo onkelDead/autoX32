@@ -28,6 +28,7 @@ OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 		Gtk::Box(), ui { Gtk::Builder::create_from_string(trackview_inline_glade) }, m_parent(wnd) {
 	set_name("OTrackView");
 
+	ui->get_widget<Gtk::Expander>("track-expander", m_expander);
 	ui->get_widget<Gtk::Box>("track-box", m_box);
 	ui->get_widget<Gtk::Box>("track-control", m_boxcontrol);
 	ui->get_widget<Gtk::Box>("box-sizer", m_boxsizer);
@@ -63,7 +64,7 @@ OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 	m_btn_x32_touch->set_icon_widget(m_img_touch_off);
 	m_btn_x32_touch->show_all();
 
-	set_size_request(-1, 80);
+	m_expander->property_expanded().signal_changed().connect(sigc::mem_fun(*this, &OTrackView::on_expander));
 
 	m_box->add(*m_trackdraw);
 
@@ -107,6 +108,7 @@ void OTrackView::on_button_x32_touch_clicked() {
 
 void OTrackView::SetTrackStore(OTrackStore *trackstore) {
 	m_trackdraw->SetTrackStore(trackstore);
+	m_expander->set_expanded(trackstore->m_expanded);
 }
 
 OscCmd* OTrackView::GetCmd() {
@@ -180,14 +182,26 @@ bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
 	return true;
 }
 
+void OTrackView::on_expander() {
+	if (m_expander->get_expanded()) {
+		set_size_request(160, m_trackdraw->GetTrackStore()->m_height);
+	}
+	else {
+		set_size_request(160, -1);
+	}
+	m_trackdraw->GetTrackStore()->m_expanded = m_expander->get_expanded();
+
+}
+
 void OTrackView::Resize(bool val) {
 	m_in_resize = val;
 	if (!val) {
-		if (m_height + m_last_y < 80)
-			m_last_y = 80 - m_height;
-		set_size_request(160, m_height + m_last_y);
+		m_trackdraw->GetTrackStore()->m_height += m_last_y;
+		if (m_trackdraw->GetTrackStore()->m_height < 80)
+			m_trackdraw->GetTrackStore()->m_height = 80;
+		set_size_request(160, m_trackdraw->GetTrackStore()->m_height);
 		m_last_y = 0;
 	} else {
-		m_height = get_height();
+		m_trackdraw->GetTrackStore()->m_height = get_height();
 	}
 }
