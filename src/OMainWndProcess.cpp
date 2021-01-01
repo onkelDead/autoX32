@@ -24,38 +24,60 @@ void OMainWnd::OnDawEvent() {
     if (my_dawqueue.size() > 0) {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
-            case DAW_PATH::samples:
-                if (!m_lock_daw_sample_event) {
-                    if (!m_timer.GetActive()) {
-                        m_timer.SetSamplePos(m_daw.GetCurrentSample());
-                        UpdatePlayhead();
-                    }
-                    if (!m_button_play->get_active()) {
-                        UpdateDawTime(false);
-                    }
+        	/*
+        	 * 	interval = 10ms | 0.01s
+        	 * 	bitrate = 48000Hz | 48000 samples per sec.
+        	 * 	=> 480 samples per interval.
+        	 *
+        	 * 	now timer pos stores real samples
+        	 * 	to store only steps, samples must be devide by 480
+        	 *
+        	 * 	48000 * 0.01 == 480
+        	 *
+        	 * 	512 == 0b100000000 (9 bits)
+        	 *
+        	 * 	48000 / 512 == new sample rate
+        	 *
+        	 *
+        	 *
+        	 */
+
+            case DAW_PATH::timestr:
+                if (!m_lock_daw_time_event) {
+                	int daw_millis = m_daw.GetMilliSeconds();
+                	int timer_millis = m_timer->GetPosMillis();
+                	int gap = daw_millis - timer_millis;
+
+                	printf ("d:%d t:%d gap %d\n", daw_millis, timer_millis, gap);
+                	if (abs(gap) > 20)
+                		m_timer->SetPosMillis(daw_millis);
                 } else {
-                    m_lock_daw_sample_event = false;
+                    m_lock_daw_time_event = false;
                 }
-                break;
-            case DAW_PATH::smpte:
-                m_timeview.SetTimeCode(m_daw.GetTimeCode());
+				if (!m_timer->GetActive()) {
+					m_playhead->set_initialized(true);
+					m_timeview->ScaleView();
+					UpdatePlayhead();
+				}
+                m_timeview->SetTimeCode(m_daw.GetTimeCode());
                 break;
             case DAW_PATH::reply:
-                m_project.SetMaxSamples(m_daw.GetMaxSamples());
+                m_project.SetMaxMillis(m_daw.GetMaxMillis());
                 m_project.SetBitRate(m_daw.GetBitRate());
-                m_timer.SetSecDivide(m_daw.GetBitRate() / 1000);
+                m_timer->SetSecDivide(m_daw.GetBitRate() / 1000);
                 UpdateDawTime(false);
+                m_timeview->SetZoomLoop();
                 break;
             case DAW_PATH::play:
                 m_lock_play = true;
                 m_button_play->set_active(true);
-                m_timer.SetActive(true);
+                m_timer->SetActive(true);
                 m_lock_play = false;
                 break;
             case DAW_PATH::stop:
                 m_lock_play = true;
                 m_button_play->set_active(false);
-                m_timer.SetActive(false);
+                m_timer->SetActive(false);
                 m_lock_play = false;
                 break;
             default:
@@ -84,6 +106,9 @@ void OMainWnd::PublishUiEvent(ui_event* ue) {
 }
 
 void OMainWnd::OnMixerEvent() {
+
+	bool step_processed = false;
+
     while (my_mixerqueue.size() > 0) {
         bool cmd_used = false;
         OscCmd *cmd = my_mixerqueue.front();
@@ -121,18 +146,20 @@ void OMainWnd::OnMixerEvent() {
 					PublishUiEvent(UI_EVENTS::new_track, trackstore);
 				}
         	}
-            if (m_project.ProcessPos(cmd, &m_timer)) {
+            if (m_project.ProcessPos(cmd, m_timer)) {
             	if (tv && !m_project.GetPlaying()) {
             		PublishUiEvent(UI_EVENTS::draw_trackview, tv);
             	}
             }
+            step_processed = true;
         }
 
         delete cmd;
 
         my_mixerqueue.pop();
     }
-    m_project.ProcessPos(NULL, &m_timer);
+    if (!step_processed)
+    	m_project.ProcessPos(NULL, m_timer);
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
@@ -142,12 +169,11 @@ void OMainWnd::notify_mixer(OscCmd *cmd) {
 void OMainWnd::TimerEvent(void* data) {
 
     // update UI-PlayHead/Load every 50ms
-    if (m_timer.GetRunTime() > m_last_playhead_update + 50) {
+    if (m_timer->GetRunTime() > m_last_playhead_update + 50) {
         UpdatePlayhead();
-        m_last_playhead_update = m_timer.GetRunTime();
+        m_last_playhead_update = m_timer->GetRunTime();
         // show timer process load percentage
-        sprintf(m_timer.load, "Load: %.2f%%", m_timer.GetLoad());
-        PublishUiEvent(&m_timer.ue);
+        PublishUiEvent(&m_timer->ue);
     }
     OnMixerEvent();
 }
@@ -169,7 +195,9 @@ void OMainWnd::OnViewEvent() {
             delete e;
         }
         if (e->what == UI_EVENTS::load) {
-            m_lbl_status->set_text((char*)e->with);
+        	char  l[32];
+        	sprintf(l, "Load: %.2f%%", m_timer->GetLoad());
+            m_lbl_status->set_text(l);
         }
         if (e->what == UI_EVENTS::draw_trackview) {
         	((OTrackView*)e->with)->queue_draw();

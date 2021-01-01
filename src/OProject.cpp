@@ -28,7 +28,7 @@ OProject::OProject() {
     m_daw_range.m_loopstart = 0;
     m_daw_range.m_dirty = false;
     m_daw_time.m_bitrate = 0;
-    m_daw_time.m_maxsamples = 1;
+    m_daw_time.m_maxmillis = 1;
     m_daw_time.scale = 1;
     m_daw_time.m_viewstart = 0;
     m_daw_time.m_viewend = -1;
@@ -37,7 +37,7 @@ OProject::OProject() {
 OProject::OProject(std::string location) {
 
     m_daw_time.m_bitrate = 0;
-    m_daw_time.m_maxsamples = 1;
+    m_daw_time.m_maxmillis = 1;
     m_daw_time.scale = 1;
     m_daw_time.m_viewstart = 0;
     m_daw_time.m_viewend = -1;
@@ -307,13 +307,14 @@ void OProject::SetBitRate(int rate) {
     m_daw_time.m_bitrate = rate;
 }
 
-void OProject::SetMaxSamples(int max_samples) {
+void OProject::SetMaxMillis(int max_millis) {
 
-    m_daw_time.m_maxsamples = max_samples;
+    m_daw_time.m_maxmillis = max_millis;
     if (m_daw_range.m_loopend == -1) {
-        m_daw_range.m_loopend = max_samples;
+        m_daw_range.m_loopend = max_millis;
     }
-    m_daw_time.m_viewend = max_samples;
+    m_daw_time.m_viewend = max_millis;
+
 }
 
 void OProject::SetPlaying(bool val) {
@@ -354,12 +355,32 @@ void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
             m_mixer->SendInt(trackstore->m_cmd->GetPath(), entry->val.i);
             break;
     }
-    trackstore->m_playhead = entry;
+}
+
+bool OProject::UpdatePos(OTimer* timer) {
+    bool ret_code = false;
+    int current = timer->GetPosMillis();
+
+
+	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+
+        OTrackStore* trackstore = it->second;
+        trackstore->Lock();
+        track_entry* entry = trackstore->GetEntry(current);
+        if (entry != trackstore->m_playhead) {
+        	PlayTrackEntry(trackstore, entry);
+        	trackstore->m_playhead = entry;
+        	ret_code = true;
+        }
+        trackstore->Unlock();
+
+    }
+	return ret_code;
 }
 
 bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     bool ret_code = false;
-    int current = timer->GetSamplePos();
+    int current = timer->GetPosMillis();
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
        
         OTrackStore* trackstore = it->second;
@@ -367,9 +388,6 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
         track_entry* entry = trackstore->GetEntry(current);
 
         if (entry != trackstore->m_playhead) {
-            if (trackstore->m_record && m_playing) {
-
-            }
             if (!trackstore->m_record || (trackstore->m_record && !m_playing)) {
                 PlayTrackEntry(trackstore, entry);
             } else {
@@ -388,23 +406,23 @@ bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
     return ret_code;
 }
 
-void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int samplepos) {
+void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int timepos) {
     if (trackstore) {
         if (trackstore->m_record) {
             track_entry *entry = NULL;
             if (m_playing) {
-                if (samplepos != trackstore->m_playhead->sample) {
+                if (timepos != trackstore->m_playhead->time) {
                     entry = trackstore->NewEntry();
-                    entry->sample = samplepos;
+                    entry->time = timepos;
                     entry->next = NULL;
                     entry->prev = NULL;
-                    trackstore->AddSamplePoint(entry);
+                    trackstore->AddTimePoint(entry);
                 }
                 else {
                     entry = trackstore->m_playhead;
                 }
             } else {
-                entry = trackstore->GetEntry(samplepos);
+                entry = trackstore->GetEntry(timepos);
             }
 
             if (entry) {

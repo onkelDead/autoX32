@@ -20,8 +20,8 @@
 class IOTimer {
 public:
 	virtual ~IOTimer() {}
-    virtual int GetSamplePos() = 0;
-    virtual void SetSamplePos(int) = 0;
+    virtual int GetPosMillis() = 0;
+    virtual void SetPosMillis(int) = 0;
 };
 
 #endif /* IOTIMER_H */

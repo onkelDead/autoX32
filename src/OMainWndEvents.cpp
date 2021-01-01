@@ -199,7 +199,7 @@ void OMainWnd::on_menu_prefs() {
     if (pDialog->m_result) {
         settings->set_boolean("show-path-on-track", pDialog->GetShowTrackPath());
         settings->set_int("track-resolution", pDialog->GetResolution());
-        m_timer.setInterval(pDialog->GetResolution());
+        m_timer->setInterval(pDialog->GetResolution());
     }
     queue_draw();
 }
@@ -212,16 +212,16 @@ void OMainWnd::on_btn_teach_clicked() {
 
 void OMainWnd::on_btn_loop_start_clicked() {
 
-    m_timeview.SetLoopStart();
+    m_timeview->SetLoopStart();
 }
 
 void OMainWnd::on_btn_loop_end_clicked() {
 
-    m_timeview.SetLoopEnd();
+    m_timeview->SetLoopEnd();
 }
 
 void OMainWnd::on_btn_zoom_loop_clicked() {
-    m_timeview.SetZoomLoop();
+    m_timeview->SetZoomLoop();
     UpdateDawTime(true);
     m_overview->queue_draw();
 }
@@ -248,10 +248,7 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_back_clicked() {
-    m_timer.SetSamplePos(m_project.GetLoopStart());
-    m_project.ProcessPos(NULL, &m_timer);
-    m_lock_daw_sample_event = true;
-    m_daw.SetPosition(m_project.GetLoopStart(), m_button_play->get_active());
+    m_daw.SetPosition(m_project.GetLoopStart() * 48 , m_button_play->get_active());
     UpdatePlayhead();
 }
 
@@ -273,14 +270,15 @@ void OMainWnd::on_btn_cut_clicked() {
 }
 
 void OMainWnd::on_timeline_pos_changed() {
-    m_timer.SetSamplePos(m_timeview.GetClickSamplePos());
-    m_project.ProcessPos(NULL, &m_timer);
-    m_lock_daw_sample_event = true;
-    m_daw.SetPosition(m_timer.GetSamplePos(), m_button_play->get_active());
+    m_timer->SetPosMillis(m_timeview->GetClickMillis());
+    m_project.UpdatePos(m_timer);
+    m_lock_daw_time_event = true;
+    m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
     UpdatePlayhead();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
+	m_timeview->queue_draw();
     m_trackslayout.redraw();
 }
 
@@ -297,14 +295,14 @@ void OMainWnd::UpdateDawTime(bool redraw) {
     if (!m_lock_daw_time) {
         m_lock_daw_time = true;
         UpdatePlayhead();
-        m_timeview.UpdateDawTime(redraw);
+        m_timeview->UpdateDawTime(redraw);
         m_lock_daw_time = false;
     }
 }
 
 void OMainWnd::UpdatePlayhead() {
     daw_time* dt = m_project.GetDawTime();
-    gint pos = (m_timer.GetSamplePos() - dt->m_viewstart) * dt->scale;
+    gint pos = ((m_timer->GetPosMillis()) - dt->m_viewstart) * dt->scale;
     if (pos < 0) {
         m_playhead->set_active(false);
         pos = 0;

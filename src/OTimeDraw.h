@@ -29,10 +29,10 @@
 
 class OTimeDraw : public OCustomWidget {
 public:
-    OTimeDraw();
+    OTimeDraw(IOTimer*);
     virtual ~OTimeDraw();
 
-    void SetMaxSamples(gint max_samples);
+    void SetMaxMillis(gint);
 
     void EnableZoom(bool val);
 
@@ -43,10 +43,9 @@ public:
     void SetSignalZoomChange(IOTimeView *t);
     void SetSignalPosChange(IOTimeView *t);
 
-    int GetClickSamplePos();
+    int GetClickMillis();
     
     void SetDawTime(daw_time*);
-    void SetTimer(IOTimer*);
     void SetRange(daw_range*);
 
 protected:
@@ -61,7 +60,7 @@ private:
 
     bool m_zoom = false;
     int m_view_width = 0;
-    int m_click_sample_pos = 0;
+    int m_click_millis = 0;
     
     IOTimer* m_timer = nullptr;
     daw_time* m_daw_time = nullptr;;

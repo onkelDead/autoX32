@@ -36,6 +36,7 @@
 #define FEEDBACK_MASTER 16
 #define FEEDBACK_TIMECODE 64
 #define FEEDBACK_TRANSPORT_POSITION_SAMPLES 1024
+#define FEEDBACK_HMSMS 1024
 #define FEEDBACK_REPLY 16384
 
 #define XBSMAX 512
@@ -49,8 +50,10 @@ public:
     std::string GetTimeCode();
     gint GetCurrentSample();
 
-    gint GetMaxSamples();
+    gint GetMaxMillis();
     gint GetBitRate();
+
+    void SetMillisFromTime(char*);
 
     void ProcessCmd(const char*, lo_message);
 
@@ -58,6 +61,7 @@ public:
     void Stop();
     void Test();
     void SetPosition(gint, bool);
+	int GetMilliSeconds();
 
     int connect(const char* host, const char* port, const char* replyport, IOMainWnd*);
     int disconnect();
@@ -72,7 +76,8 @@ private:
 
     gint m_sample = 0;
     gint m_bitrate = 0;
-    gint m_maxsamples = 0;
+    int m_maxmillis = 0;
+    int m_millis = 0;
 
     lo_server_thread m_server = nullptr;
     lo_address m_client = nullptr;

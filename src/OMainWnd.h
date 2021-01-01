@@ -155,7 +155,8 @@ private:
     Gtk::Image m_img_cut_off;
 
     Gtk::Box *m_timebox;
-    OTimeView m_timeview;
+    OTimeView *m_timeview = nullptr;
+
     Gtk::Box *m_tracksbox;
     Gtk::ScrolledWindow *m_scroll;
     Gtk::Viewport *m_viewport;
@@ -171,7 +172,9 @@ private:
 
     bool m_lock_play;
     bool m_lock_daw_time;
-    bool m_lock_daw_sample_event;
+
+    /// prevent loop back daw-event when position changed from here
+    bool m_lock_daw_time_event;
 
     /// dialogs
     Gtk::AboutDialog m_Dialog;
@@ -185,7 +188,7 @@ private:
 
     /// objects
     OProject m_project;
-    OTimer m_timer;
+    OTimer *m_timer;
     OX32* m_x32 = nullptr;
     ODAW m_daw;
 

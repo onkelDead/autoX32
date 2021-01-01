@@ -31,6 +31,7 @@ enum DAW_PATH {
 	unknown,
 	smpte,
 	samples,
+	timestr,
 	reply,
 	play,
 	stop
@@ -50,7 +51,7 @@ typedef struct ui_event_type {
 } ui_event;
 
 typedef struct daw_time_type {
-    int m_maxsamples;
+    int m_maxmillis;
     int m_bitrate;
     float scale;
     int m_viewstart;
@@ -65,7 +66,7 @@ typedef struct daw_range {
 
 typedef struct track_entry {
     track_entry* prev;
-    int sample;
+    int time;
     lo_arg val;
     track_entry* next;
 } track_entry;

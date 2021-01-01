@@ -19,11 +19,13 @@
 #include "OTypes.h"
 #include "OMainWnd.h"
 
+#define TIMEVAL_MILLIS(x) ((x).tv_usec / 1000 + (x).tv_sec * 1000)
+
 OTimer::OTimer() {
 }
 
-OTimer::OTimer(std::function<void(void*)> func, const long &interval, void *userData) :
-		m_userData(userData), m_func(func), m_interval(interval) {
+OTimer::OTimer(std::function<void(void*)> task_function, const long &interval, void *userData) :
+		m_userData(userData), m_task_function(task_function), m_interval(interval) {
 }
 
 OTimer::~OTimer() {
@@ -34,44 +36,43 @@ void OTimer::start() {
 	m_running = true;
 
 	ue.what = UI_EVENTS::load;
-	ue.with = load;
+	ue.with = nullptr;
 
 	gettimeofday(&m_starttime, NULL);
+
 	m_thread = std::thread([&]() {
 		while (m_running) {
 			struct timeval now;
+			gettimeofday(&now, NULL);
 			if (m_active) {
 				struct timeval diff_since_start;
-				gettimeofday(&now, NULL);
 				timersub(&now, &m_starttime, &diff_since_start);
-
-				m_run_time_milli_sec = diff_since_start.tv_usec / 1000 + diff_since_start.tv_sec * 1000;
-}
-			auto delta = std::chrono::steady_clock::now()
-					+ std::chrono::milliseconds(m_interval);
-			m_func(m_userData);
+				m_run_time_milli_sec = TIMEVAL_MILLIS(diff_since_start);
+			}
 
 			struct timeval post;
 			struct timeval duration;
 
+			auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
+			m_task_function(m_userData);
 			gettimeofday(&post, NULL);
 			timersub(&post, &now, &duration);
+			m_load = (float) TIMEVAL_MILLIS(duration) / (float) m_interval;
 
-			m_load = ((float) duration.tv_usec / 1000.) / ((float) m_interval)
-					* 100;
-
-			if (m_active)
-				m_samplepos += m_secdivide * m_interval;
-
+			if (m_active) {
+				m_posmillis += m_interval;
+			}
 			std::this_thread::sleep_until(delta);
 		}
 	});
+	m_stopped = true;
 	m_thread.detach();
 }
 
 void OTimer::stop() {
 	m_running = false;
-	m_thread.~thread();
+	while(!m_stopped);
+//	m_thread.~thread();
 	m_load = 0.;
 }
 
@@ -85,7 +86,7 @@ bool OTimer::isRunning() {
 }
 
 OTimer* OTimer::setFunc(std::function<void(void*)> func) {
-	m_func = func;
+	m_task_function = func;
 	return this;
 }
 
@@ -107,14 +108,16 @@ void OTimer::SetSecDivide(int val) {
 	m_secdivide = val;
 }
 
-void OTimer::SetSamplePos(int val) {
-	//printf("SetSamplePos: %d %d\n", val, m_samplepos - val);
-	m_samplepos = val;
-
+void OTimer::SetPosMillis(int millis) {
+	m_posmillis = millis;
 }
 
-int OTimer::GetSamplePos() {
-	return m_samplepos;
+int OTimer::GetPosMillis() {
+	return m_posmillis;
+}
+
+void OTimer::SetSyncGap(int gap) {
+	m_gap = gap;
 }
 
 float OTimer::GetLoad() {

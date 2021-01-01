@@ -27,6 +27,8 @@ public:
     virtual ~OPlayHead();
 
     void set_active(bool val) { m_active = val; }
+    bool get_initialized() { return m_initialized; }
+    void set_initialized(bool val) { m_initialized = val; }
     
 protected:
 
@@ -42,6 +44,7 @@ protected:
     Glib::RefPtr<Gdk::Window> m_refGdkWindow;
     
 private:
+    bool m_initialized = false;
     bool m_active = false;
 };
 

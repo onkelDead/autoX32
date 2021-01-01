@@ -49,14 +49,15 @@ public:
     
     void SetSecDivide(int);
     
-    virtual void SetSamplePos(int);
-    virtual int GetSamplePos();
+    void SetSyncGap(int);
     
     int GetRunTime();
+    virtual int GetPosMillis();
+    virtual void SetPosMillis(int);
     
     float GetLoad();
 
-    char load[32] = { "" };
+    std::string m_loadstr;
     
     ui_event ue;
     
@@ -65,19 +66,23 @@ public:
     
 private:
 
-    struct timeval m_starttime;
+	struct timeval m_starttime;
+
     int m_run_time_milli_sec = 0;
     int m_secdivide = 0;
     
-    int m_samplepos = 0;
+    int m_posmillis = 0;
+
+    int m_gap = 0;
     
     float m_load = 0.;
     
-    std::function<void(void*) > m_func;
+    std::function<void(void*) > m_task_function;
     long m_interval = 50;
 
     std::thread m_thread;
     bool m_running = false;
+	bool m_stopped = false;
     bool m_active = false;
 
     void* m_userData = nullptr;

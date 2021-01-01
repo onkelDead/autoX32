@@ -77,8 +77,7 @@ int ODAW::connect(const char *host, const char *port, const char *replyport,
 	lo_message msg = lo_message_new();
 	lo_message_add_int32(msg, 0);
 	lo_message_add_int32(msg, 0);
-	lo_message_add_int32(msg,
-			FEEDBACK_MASTER + FEEDBACK_TIMECODE
+	lo_message_add_int32(msg,FEEDBACK_MASTER + FEEDBACK_HMSMS
 					+ FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
 	lo_message_add_int32(msg, 1);
 
@@ -110,6 +109,10 @@ int ODAW::connect(const char *host, const char *port, const char *replyport,
 
 void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 	DAW_PATH c = DAW_PATH::unknown;
+
+//	printf("DAW: %s ", entry);
+//	lo_message_pp(msg);
+
 	if (0 == strcmp("/transport_play", entry)) {
 		int argc = lo_message_get_argc(msg);
 		if (argc == 1) {
@@ -132,7 +135,7 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 		int argc = lo_message_get_argc(msg);
 		if (argc == 1) {
 			lo_arg **argv = lo_message_get_argv(msg);
-			timecode.assign((char*) argv[0]);
+			//timecode.assign((char*) argv[0]);
 			c = DAW_PATH::smpte;
 		}
 	}
@@ -152,9 +155,18 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 			m_bitrate = argv[1]->i;
 		}
 		if (argc > 2) {
-			m_maxsamples = argv[2]->i;
+			m_maxmillis = (int)argv[2]->i / (m_bitrate / 1000);
 		}
 		c = DAW_PATH::reply;
+	}
+	if (0 == strcmp("/position/time", entry)) {
+		lo_arg **argv = lo_message_get_argv(msg);
+		int argc = lo_message_get_argc(msg);
+		if (argc == 1) {
+			timecode.assign((char*) argv[0]);
+			SetMillisFromTime((char*)argv[0]);
+		}
+		c = DAW_PATH::timestr;
 	}
 	if (c != DAW_PATH::unknown) {
 		m_parent->notify_daw(c);
@@ -170,12 +182,29 @@ gint ODAW::GetCurrentSample() {
 	return m_sample;
 }
 
-gint ODAW::GetMaxSamples() {
-	return m_maxsamples;
+gint ODAW::GetMaxMillis() {
+	return m_maxmillis;
 }
 
 gint ODAW::GetBitRate() {
 	return m_bitrate;
+}
+
+void ODAW::SetMillisFromTime(char* timestr) {
+	// 00:00:00.000
+	timestr[2] = '\0';
+	int h = atoi(timestr);
+	timestr[5] = '\0';
+	int m = atoi(timestr+3);
+	timestr[8] = '\0';
+	int s = atoi(timestr+6);
+	int mm = atoi(timestr+9);
+
+	m_millis = mm + s * 1000 + m *60000 + h * 3600000;
+}
+
+int ODAW::GetMilliSeconds() {
+	return m_millis;
 }
 
 void ODAW::Play() {

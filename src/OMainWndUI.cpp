@@ -142,9 +142,10 @@ void OMainWnd::create_view() {
     
     add(*m_mainbox);
     
-    m_timeview.set_vexpand(false);
-    m_timeview.set_valign(Gtk::ALIGN_START);
-    m_timebox->add(m_timeview);
+    m_timeview = new OTimeView(m_timer);
+    m_timeview->set_vexpand(false);
+    m_timeview->set_valign(Gtk::ALIGN_START);
+    m_timebox->add(*m_timeview);
 
     ui->get_widget<Gtk::Box>("scroll-view", m_scrolledview);
     m_trackslayout.set_vexpand(true);
@@ -215,8 +216,8 @@ void OMainWnd::create_view() {
     m_btn_cut->set_icon_widget(m_img_cut_off);
     m_btn_cut->show_all();
 
-    m_timeview.signal_pos_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_pos_changed));
-    m_timeview.signal_zoom_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_zoom_changed));
+    m_timeview->signal_pos_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_pos_changed));
+    m_timeview->signal_zoom_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_zoom_changed));
 
     m_refCssProvider = Gtk::CssProvider::create();
     auto refStyleContext = get_style_context();

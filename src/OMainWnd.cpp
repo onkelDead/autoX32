@@ -40,12 +40,12 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
     }
     g_settings_schema_unref(schema);
 
-    m_timeview.SetRange(m_project.GetTimeRange());
-    m_timeview.SetDawTime(m_project.GetDawTime());
-    m_timeview.SetTimer(&m_timer);
+    m_timer = new OTimer();
 
     create_view();
     create_menu();
+    m_timeview->SetRange(m_project.GetTimeRange());
+    m_timeview->SetDawTime(m_project.GetDawTime());
 
     this->add_events(Gdk::KEY_PRESS_MASK);
     this->add_events(Gdk::KEY_RELEASE_MASK);
@@ -64,18 +64,19 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 
     m_lock_play = false;
     m_lock_daw_time = false;
-    m_lock_daw_sample_event = false;
+    m_lock_daw_time_event = false;
 
-    m_timer.setInterval(settings->get_int("track-resolution"));
-    m_timer.SetUserData(&m_project);
-    m_timer.setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
-    m_timer.start();
+    m_timer->setInterval(settings->get_int("track-resolution"));
+    m_timer->SetUserData(&m_project);
+    m_timer->setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
+    m_timer->start();
     AutoConnect();
 
 }
 
 OMainWnd::~OMainWnd() {
-
+	if (m_timeview)
+		delete m_timeview;
 }
 
 Gio::Settings* OMainWnd::GetSettings() {
@@ -114,6 +115,8 @@ bool OMainWnd::Shutdown() {
         if (!SaveProject())
             return ret_code;
     }
+
+    m_timer->stop();
 
     m_x32->Disconnect();
     m_daw.disconnect();
@@ -187,10 +190,9 @@ void OMainWnd::OpenProject(std::string location) {
         trackview->UpdateConfig();
         m_trackslayout.AddTrack(trackview);
     }
-    m_project.ProcessPos(NULL, &m_timer);
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
-//    queue_draw();
+    m_project.UpdatePos(m_timer);
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {

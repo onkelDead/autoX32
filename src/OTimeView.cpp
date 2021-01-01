@@ -20,15 +20,18 @@
 
 #include "embedded/timeview.h"
 
-OTimeView::OTimeView() :
+OTimeView::OTimeView(IOTimer* timer) :
 		Gtk::Box(), m_box(0), ui { Gtk::Builder::create_from_string(
 				timeview_inline_glade) }, m_daw_time(0) {
+
+	m_timer = timer;
+
 	ui->get_widget < Gtk::Box > ("time-box", m_box);
 	ui->get_widget < Gtk::Label > ("o-timecode", m_timecode);
 	ui->get_widget < Gtk::Label > ("o-viewstart", m_viewstart);
 	ui->get_widget < Gtk::Label > ("o-viewend", m_viewend);
 
-	m_timedraw = new OTimeDraw();
+	m_timedraw = new OTimeDraw(timer);
 	m_timedraw->set_hexpand(true);
 	m_timedraw->set_halign(Gtk::ALIGN_FILL);
 	m_box->add(*m_timedraw);
@@ -40,19 +43,18 @@ OTimeView::OTimeView() :
 }
 
 OTimeView::~OTimeView() {
+	if (m_timedraw)
+		delete m_timedraw;
 }
 
 void OTimeView::SetRange(daw_range *range) {
+	m_range = range;
 	m_timedraw->SetRange(range);
 }
 
 void OTimeView::SetDawTime(daw_time *dt) {
 	m_daw_time = dt;
 	m_timedraw->SetDawTime(dt);
-}
-
-void OTimeView::SetTimer(IOTimer *timer) {
-	m_timedraw->SetTimer(timer);
 }
 
 void OTimeView::SetTimeCode(std::string code) {
@@ -88,7 +90,7 @@ void OTimeView::EnableZoom(bool val) {
 
 void OTimeView::SetZoomLoop() {
 	m_timedraw->SetZoomLoop();
-	//UpdateDawTime(true);
+	ScaleView();
 }
 
 void OTimeView::SetLoopStart() {
@@ -97,6 +99,10 @@ void OTimeView::SetLoopStart() {
 
 void OTimeView::SetLoopEnd() {
 	m_timedraw->SetLoopEnd();
+}
+
+void OTimeView::ScaleView(){
+	m_daw_time->scale = (gfloat) m_timedraw->get_width() / (gfloat)(m_daw_time->m_viewend - m_daw_time->m_viewstart);
 }
 
 void OTimeView::on_timedraw_pos_changed() {
@@ -109,6 +115,6 @@ void OTimeView::on_timedraw_zoom_changed() {
 	signal_zoom_changed.emit();
 }
 
-int OTimeView::GetClickSamplePos() {
-	return m_timedraw->GetClickSamplePos();
+int OTimeView::GetClickMillis() {
+	return m_timedraw->GetClickMillis();
 }

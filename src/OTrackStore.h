@@ -30,7 +30,7 @@ public:
     void SetOscCommand(OscCmd* cmd);
 
 
-    void AddSamplePoint(track_entry* e);    
+    void AddTimePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     

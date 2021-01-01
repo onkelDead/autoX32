@@ -51,7 +51,7 @@ public:
     daw_range* GetTimeRange();
     int GetLoopStart();
     daw_time* GetDawTime();
-    void SetMaxSamples(int max_samples);
+    void SetMaxMillis(int max_millis);
     void SetBitRate(int);
     void LockPlayhead(bool);
     
@@ -67,7 +67,9 @@ public:
     
     void SetMixer(IOX32*);
     
+    bool UpdatePos(OTimer*);
     bool ProcessPos(OscCmd*, OTimer*);
+
     void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
 
     OTrackStore* NewTrack(OscCmd*);

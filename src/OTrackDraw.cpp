@@ -62,7 +62,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 
 	cr->set_source_rgba(m_trackstore->m_cmd->GetColor().get_red(), m_trackstore->m_cmd->GetColor().get_green(), m_trackstore->m_cmd->GetColor().get_blue(), m_trackstore->m_cmd->GetColor().get_alpha());
 
-	while (it->next && it->next->sample < m_daw_time->m_viewstart) {
+	while (it->next && it->next->time < m_daw_time->m_viewstart) {
 		it = it->next;
 	}
 
@@ -71,7 +71,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 		cr->move_to(0, last_val);
 		it = it->next;
 		while (it) {
-			gint pos = (it->sample - m_daw_time->m_viewstart) * m_daw_time->scale;
+			gint pos = (it->time - m_daw_time->m_viewstart) * m_daw_time->scale;
 			cr->line_to(pos, last_val);
 			cr->stroke();
 			cr->move_to(pos, last_val);
@@ -80,7 +80,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 			cr->stroke();
 			cr->move_to(pos, last_val);
 			it = it->next;
-			if (it && it->sample > m_daw_time->m_viewend)
+			if (it && it->time > m_daw_time->m_viewend)
 				break;
 		}
 		cr->line_to(m_width, last_val);

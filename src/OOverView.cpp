@@ -118,8 +118,8 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     int height = allocation.get_height();
     m_width = allocation.get_width();
 
-    m_left = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_maxsamples) * m_width;
-    m_right = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_maxsamples) * m_width;
+    m_left = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_maxmillis) * m_width;
+    m_right = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_maxmillis) * m_width;
 
     cr->set_source_rgb(.3, .3, .3);
     cr->rectangle(m_left, 0, m_right-m_left, 80);
@@ -152,7 +152,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                     if (m_last_x >= m_right)
                         return true;
                     m_left = m_last_x;
-                    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxsamples;
+                    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
                     m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
                     m_parent->notify_overview();
                 }
@@ -161,7 +161,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                     if (m_last_x <= m_left)
                         return true;
                     m_right = m_last_x;
-                    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxsamples;
+                    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
                     m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
                     m_parent->notify_overview();
                 }
@@ -173,8 +173,8 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                             return true;
                         m_right += offset;
                         m_left += offset;
-                        m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxsamples;
-                        m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxsamples;
+                        m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
+                        m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
                         m_parent->notify_overview();
                     }
                 }
@@ -202,7 +202,6 @@ bool OOverView::on_button_release_event(GdkEventButton* event) {
 void OOverView::UpdateCursor() {
     if (m_last_x > m_left && m_last_x < m_right ) {
         if (m_current_cursor != Gdk::CursorType::SB_H_DOUBLE_ARROW) {
-        	printf("SB_H_DOUBLE_ARROW\n");
             m_current_cursor = Gdk::CursorType::SB_H_DOUBLE_ARROW;
             m_refGdkWindow.get()->set_cursor(m_shift_cursor);
         }
@@ -210,7 +209,6 @@ void OOverView::UpdateCursor() {
     }
     if (abs(m_last_x - m_left) < 4) {
         if (m_current_cursor != Gdk::CursorType::LEFT_SIDE) {
-        	printf("LEFT_SIDE\n");
             m_current_cursor = Gdk::CursorType::LEFT_SIDE;
             m_refGdkWindow.get()->set_cursor(m_left_cursor);
         }
@@ -218,14 +216,12 @@ void OOverView::UpdateCursor() {
     }
     if (abs(m_last_x - m_right) < 4) {
         if (m_current_cursor != Gdk::CursorType::RIGHT_SIDE) {
-        	printf("RIGHT_SIDE\n");
             m_current_cursor = Gdk::CursorType::RIGHT_SIDE;
             m_refGdkWindow.get()->set_cursor(m_right_cursor);
         }
         return;
     }
     if (m_current_cursor != Gdk::CursorType::ARROW) {
-    	printf("ARROW\n");
         m_current_cursor = Gdk::CursorType::ARROW;
         m_refGdkWindow.get()->set_cursor(m_default_cursor);
     }
