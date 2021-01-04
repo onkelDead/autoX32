@@ -22,6 +22,7 @@ public:
 	virtual ~IOTimer() {}
     virtual int GetPosMillis() = 0;
     virtual void SetPosMillis(int) = 0;
+    virtual void SetTimeRequest(int) = 0;
 };
 
 #endif /* IOTIMER_H */

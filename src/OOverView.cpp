@@ -141,9 +141,9 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
 bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
     if (motion_event->type == GDK_MOTION_NOTIFY) {
         GdkEventMotion* e = (GdkEventMotion*) motion_event;
-        if (m_last_x != (gint) e->x) {
+        if (m_last_x !=  e->x) {
             gint offset = (gint) e->x - m_last_x;
-            m_last_x = (gint) e->x;
+            m_last_x = e->x;
             if (!m_in_drag) {
                 UpdateCursor();
             } else {

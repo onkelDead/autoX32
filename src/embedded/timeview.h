@@ -1,6 +1,6 @@
 static char timeview_inline_glade[] = 
 "<?xml version='1.0' encoding='UTF-8'?>"
-"<!-- Generated with glade 3.22.1 -->"
+"<!-- Generated with glade 3.22.2 -->"
 "<interface>"
 "  <requires lib='gtk+' version='3.20'/>"
 "  <object class='GtkBox' id='time-box'>"
@@ -26,6 +26,7 @@ static char timeview_inline_glade[] =
 "        </child>"
 "        <child>"
 "          <object class='GtkLabel' id='o-viewstart'>"
+"            <property name='name'>ViewStart</property>"
 "            <property name='visible'>True</property>"
 "            <property name='can_focus'>False</property>"
 "          </object>"
@@ -36,6 +37,7 @@ static char timeview_inline_glade[] =
 "        </child>"
 "        <child>"
 "          <object class='GtkLabel' id='o-viewend'>"
+"            <property name='name'>ViewEnd</property>"
 "            <property name='visible'>True</property>"
 "            <property name='can_focus'>False</property>"
 "          </object>"

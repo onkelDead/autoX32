@@ -17,7 +17,7 @@
 #include <gtkmm.h>
 #include "OMainWnd.h"
 
-int main(int argc, char *argv[]) {
+ int main(int argc, char *argv[]) {
     auto app = Gtk::Application::create(argc, argv, AUTOX32_SCHEMA_ID);
 
     OMainWnd window;

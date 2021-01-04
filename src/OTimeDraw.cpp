@@ -63,6 +63,26 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	cr->line_to(pos, height);
 	cr->stroke();
 
+	int elems = 100;
+	int devider = 1;
+	while(elems > 8) {
+		devider *= (devider < 1000) ? 10 : 6;
+		elems = (m_daw_time->m_viewend - m_daw_time->m_viewstart) / devider;
+	}
+
+	char t[32];
+	for (int i = 0; i < elems;i++) {
+		int firstscale = ((devider * i) - (m_daw_time->m_viewstart % devider)) * m_daw_time->scale;
+		cr->set_source_rgb(.6, .6, .6);
+		cr->move_to(firstscale, height / 2);
+		cr->line_to(firstscale, height);
+		cr->stroke();
+
+		cr->move_to(firstscale, 0);
+		GetMillisString(m_daw_time->m_viewstart + (firstscale / m_daw_time->scale), t);
+		draw_text(cr, 120, 30, t);
+	}
+
 	return true;
 }
 
@@ -84,9 +104,17 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr,
 	layout->get_pixel_size(text_width, text_height);
 
 	cr->set_source_rgb(.8, .8, .8);
-	cr->move_to((rectangle_width - text_width) / 2, rectangle_height);
+	//cr->move_to((rectangle_width - text_width) / 2, rectangle_height);
 
 	layout->show_in_cairo_context(cr);
+}
+
+void OTimeDraw::GetMillisString(int millis, char* t) {
+	int mm = millis % 1000;
+	int sec = (millis / 1000) % 60;
+	int min = (millis / 60000) % 60;
+	int hour = (millis / 3600000);
+	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, mm);
 }
 
 void OTimeDraw::SetMaxMillis(gint max_millis) {

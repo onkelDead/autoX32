@@ -64,20 +64,10 @@ void OTimeView::SetTimeCode(std::string code) {
 void OTimeView::UpdateDawTime(bool redraw) {
 	char t[32];
 
-	float fmillis = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_bitrate) * 1000;
-	int millis = (int) (fmillis / 10) % 100;
-	int sec = (int) (fmillis / 1000) % 60;
-	int min = (int) (fmillis / 60000) % 60;
-	int hour = (int(fmillis / 3600000));
-	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, millis);
+	m_timedraw->GetMillisString(m_daw_time->m_viewstart, t);
 	m_viewstart->set_text(t);
 
-	fmillis = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_bitrate) * 1000;
-	millis = (int) (fmillis / 10) % 100;
-	sec = (int) (fmillis / 1000) % 60;
-	min = (int) (fmillis / 60000) % 60;
-	hour = (int(fmillis / 3600000));
-	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, millis);
+	m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
 	m_viewend->set_text(t);
 
 	if (redraw)

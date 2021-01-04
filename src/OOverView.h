@@ -54,7 +54,7 @@ private:
     gint m_width = 0;
     gint m_left = 0;
     gint m_right = 0;
-    gint m_last_x = 0;
+    gdouble m_last_x = 0;
 
     daw_time* m_daw_time = nullptr;
     IOMainWnd* m_parent = nullptr;

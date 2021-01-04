@@ -49,8 +49,10 @@ public:
     
     void SetSecDivide(int);
     
-    void SetSyncGap(int);
+    int GetStepCount();
     
+    virtual void SetTimeRequest(int);
+
     int GetRunTime();
     virtual int GetPosMillis();
     virtual void SetPosMillis(int);
@@ -73,7 +75,8 @@ private:
     
     int m_posmillis = 0;
 
-    int m_gap = 0;
+    int m_timerequest = 0;
+    int m_stepcount = 0;
     
     float m_load = 0.;
     

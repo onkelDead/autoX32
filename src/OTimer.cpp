@@ -38,30 +38,42 @@ void OTimer::start() {
 	ue.what = UI_EVENTS::load;
 	ue.with = nullptr;
 
+	int gap = 0;
+
 	gettimeofday(&m_starttime, NULL);
 
 	m_thread = std::thread([&]() {
 		while (m_running) {
 			struct timeval now;
+			struct timeval post;
+			struct timeval duration;
+			auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
 			gettimeofday(&now, NULL);
+
 			if (m_active) {
 				struct timeval diff_since_start;
 				timersub(&now, &m_starttime, &diff_since_start);
 				m_run_time_milli_sec = TIMEVAL_MILLIS(diff_since_start);
 			}
 
-			struct timeval post;
-			struct timeval duration;
+			// time synch
+			if (m_timerequest != 0) {
+				m_posmillis = m_timerequest;
+				m_timerequest = 0;
+			}
 
-			auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
+			// task execution
 			m_task_function(m_userData);
 			gettimeofday(&post, NULL);
 			timersub(&post, &now, &duration);
 			m_load = (float) TIMEVAL_MILLIS(duration) / (float) m_interval;
 
+			// update current local time
 			if (m_active) {
 				m_posmillis += m_interval;
 			}
+
+
 			std::this_thread::sleep_until(delta);
 		}
 	});
@@ -83,6 +95,16 @@ void OTimer::restart() {
 
 bool OTimer::isRunning() {
 	return m_running;
+}
+
+int OTimer::GetStepCount() {
+	int result = m_stepcount;
+	m_stepcount = 0;
+	return result;
+}
+
+void OTimer::SetTimeRequest(int request) {
+	m_timerequest = request;
 }
 
 OTimer* OTimer::setFunc(std::function<void(void*)> func) {
@@ -114,10 +136,6 @@ void OTimer::SetPosMillis(int millis) {
 
 int OTimer::GetPosMillis() {
 	return m_posmillis;
-}
-
-void OTimer::SetSyncGap(int gap) {
-	m_gap = gap;
 }
 
 float OTimer::GetLoad() {

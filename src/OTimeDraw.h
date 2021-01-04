@@ -44,6 +44,7 @@ public:
     void SetSignalPosChange(IOTimeView *t);
 
     int GetClickMillis();
+    void GetMillisString(int, char*);
     
     void SetDawTime(daw_time*);
     void SetRange(daw_range*);
