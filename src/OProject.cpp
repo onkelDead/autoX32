@@ -126,12 +126,18 @@ void OProject::Load(std::string location) {
     result = xmlXPathEvalExpression(BAD_CAST "//project/cmd", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
+        xmlNodePtr node = *nodeset->nodeTab;
         for (int i = 0; i < nodeset->nodeMax; i++) {
-            xmlNodePtr node = nodeset->nodeTab[i];
             if (node) {
                 const char* cv;
-                const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
-                m_known_mixer_commands[path] = new OscCmd(path, (char*) xmlGetProp(node, BAD_CAST "types"));
+                xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
+                xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
+
+                if (xmlPath == nullptr || xmlTypes == nullptr)
+                	continue;
+                const char* path =  strdup((char*)xmlPath);
+                const char* types = strdup((char*)xmlTypes);
+                m_known_mixer_commands[path] = new OscCmd(path, types);
                 const char* name = (char*) xmlGetProp(node, BAD_CAST "name");
                 m_known_mixer_commands[path]->SetName(name);
                 Gdk::RGBA color;
@@ -146,6 +152,10 @@ void OProject::Load(std::string location) {
                 color.set_alpha_u(atoi(cv));
                 m_known_mixer_commands[path]->SetColor(color);
             }
+            else {
+            	break;
+            }
+            node = node->next;
         }
     }
     xmlXPathFreeObject(result);
@@ -153,8 +163,8 @@ void OProject::Load(std::string location) {
     result = xmlXPathEvalExpression(BAD_CAST "//project/track", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
+        xmlNodePtr node = *nodeset->nodeTab;
         for (int i = 0; i < nodeset->nodeMax; i++) {
-            xmlNodePtr node = nodeset->nodeTab[i];
             if (node) {
                 const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
                 const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
@@ -168,6 +178,10 @@ void OProject::Load(std::string location) {
                 ts->LoadData(m_projectFile.data());
                 ts->Unlock();
             }
+            else {
+            	break;
+            }
+            node = node->next;
         }
     }
     xmlXPathFreeObject(result);
