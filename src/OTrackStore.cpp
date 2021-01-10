@@ -54,7 +54,9 @@ void OTrackStore::Init() {
 }
 
 void OTrackStore::Lock() {
-	m_mutex.lock();
+	while(!m_mutex.try_lock()) {
+		printf("try lock");
+	}
 }
 
 void OTrackStore::Unlock() {

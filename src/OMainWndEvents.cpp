@@ -115,6 +115,21 @@ bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
         return true;
     }
     
+    if (key_event->keyval == GDK_KEY_s) {
+    	on_btn_loop_start_clicked();
+    	return true;
+    }
+
+    if (key_event->keyval == GDK_KEY_e) {
+    	on_btn_loop_end_clicked();
+    	return true;
+    }
+
+    if (key_event->keyval == GDK_KEY_f) {
+    	m_btn_lock_playhead->set_active(!m_btn_lock_playhead->get_active());
+    	return true;
+    }
+
     return Gtk::Window::on_key_release_event(key_event);
 }
 
@@ -327,6 +342,7 @@ void OMainWnd::UpdatePlayhead() {
         } else {
             m_playhead->set_active(true);
             m_playhead->set_margin_start(160 + pos);
+            queue_draw();
         }
     }
 }

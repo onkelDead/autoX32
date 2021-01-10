@@ -379,14 +379,14 @@ bool OProject::UpdatePos(OTimer* timer) {
 	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
 
         OTrackStore* trackstore = it->second;
-        trackstore->Lock();
+        //trackstore->Lock();
         track_entry* entry = trackstore->GetEntry(current);
         if (entry != trackstore->m_playhead) {
         	PlayTrackEntry(trackstore, entry);
         	trackstore->m_playhead = entry;
         	ret_code = true;
         }
-        trackstore->Unlock();
+        //trackstore->Unlock();
 
     }
 	return ret_code;

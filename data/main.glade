@@ -454,6 +454,8 @@
         <property name="name">play-button</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Start/stop play and/or record\n
+Key: Space</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -465,6 +467,8 @@
         <property name="name">back-button</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Go Back to start of range\n
+Key: Home</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -476,6 +480,9 @@
         <property name="name">teachbutton</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Teach mode active\n
+If enabled, a change on Behringer X32 will add a new track.\n
+Key: T</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -487,6 +494,7 @@
         <property name="name">loop_start</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Set start of range to current playhead position\nKey: s</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -498,6 +506,7 @@
         <property name="name">loop_end</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Set end of range to current playhead position\nKey: e</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -509,6 +518,8 @@
         <property name="name">zoom_loop</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Zoom to rrange\n
+Key: z</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -520,6 +531,8 @@
         <property name="name">lock_playhead</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Lock playhead.\nDuring play/record, tracks move under fixed playhead\n
+Key: f</property>
       </object>
       <packing>
         <property name="expand">False</property>

@@ -57,9 +57,9 @@ void OMainWnd::OnDawEvent() {
 				m_lock_daw_time_event = false;
 			}
 			if (!m_timer->GetActive()) {
-				m_timer->SetTimeRequest(m_daw.GetMilliSeconds());
+				m_timer->SetPosMillis(m_daw.GetMilliSeconds());
 				m_playhead->set_initialized(true);
-				m_timeview->ScaleView();
+				//m_timeview->ScaleView();
 				UpdatePlayhead();
 			}
 			m_timeview->SetTimeCode(m_daw.GetTimeCode());
@@ -162,7 +162,7 @@ void OMainWnd::OnMixerEvent() {
 		my_mixerqueue.pop();
 	}
 	if (!step_processed)
-		m_project.ProcessPos(NULL, m_timer);
+		m_project.UpdatePos(m_timer);
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
@@ -178,7 +178,10 @@ void OMainWnd::TimerEvent(void *data) {
 		// show timer process load percentage
 		PublishUiEvent(&m_timer->ue);
 	}
-	OnMixerEvent();
+	if (m_timer->GetPosMillis() != m_last_pos_update) {
+		OnMixerEvent();
+		m_last_pos_update = m_timer->GetPosMillis();
+	}
 }
 
 void OMainWnd::OnViewEvent() {

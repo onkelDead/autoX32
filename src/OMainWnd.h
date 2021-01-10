@@ -196,6 +196,7 @@ private:
 
     void TimerEvent(void*);
     int m_last_playhead_update = 0;
+    int m_last_pos_update = 0;
 
     void create_view();
     void create_menu();

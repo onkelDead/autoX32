@@ -131,12 +131,12 @@ void OX32::do_work(IOX32 *caller) {
 	struct timeval t_rec;
 
 	struct timeval timeout;
-	timeout.tv_sec = 1;
-	timeout.tv_usec = 0;
+
 
 
 	while (m_IsConnected) {
-
+		timeout.tv_sec = 1;
+		timeout.tv_usec = 0;
 		do {
 			FD_ZERO(&m_ReceiveFd);
 			FD_SET(m_X32_socket_fd, &m_ReceiveFd);

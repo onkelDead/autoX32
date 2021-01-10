@@ -59,7 +59,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
     show_all_children(true);
-
+    queue_draw();
     m_x32 = new OX32(this);
 
     m_lock_play = false;
