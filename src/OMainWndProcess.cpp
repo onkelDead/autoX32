@@ -49,7 +49,7 @@ void OMainWnd::OnDawEvent() {
 				if (m_timer->GetActive()) {
 					int gap = daw_millis - timer_millis;
 
-					printf("d:%d t:%d gap:%d\n", daw_millis, timer_millis, gap);
+					//printf("d:%d t:%d gap:%d\n", daw_millis, timer_millis, gap);
 					m_timer->SetTimeRequest(daw_millis);
 				}
 

@@ -166,6 +166,8 @@ private:
 
     Gtk::Box *m_statusbox;
     Gtk::Label *m_lbl_status;
+    Gtk::Label *m_lbl_ardour;
+    Gtk::Label *m_lbl_x32;
 
     Gtk::Overlay *m_overlay;
     OPlayHead *m_playhead;

@@ -21,8 +21,7 @@ void daw_err_handler(int num, const char *msg, const char *where) {
 	fprintf(stderr, "ARDOUR_ERROR %d: %s at %s\n", num, msg, where);
 }
 
-int daw_handler(const char *path, const char *types, lo_arg **argv, int argc,
-		lo_message data, void *user_data) {
+int daw_handler(const char *path, const char *types, lo_arg **argv, int argc, lo_message data, void *user_data) {
 	ODAW *daw = (ODAW*) user_data;
 	if (daw->GetKeepOn() == 2) {
 		daw->SetKeepOn(1);
@@ -60,32 +59,33 @@ void ODAW::SetKeepOn(int val) {
 	m_keep_on = val;
 }
 
-int ODAW::connect(const char *host, const char *port, const char *replyport,
-		IOMainWnd *wnd) {
+int ODAW::connect(const char *host, const char *port, const char *replyport, IOMainWnd *wnd) {
 
 	m_parent = wnd;
 
-	m_server = lo_server_thread_new(replyport, daw_err_handler);
-	if (m_server == NULL) {
-		return 1;
+	if (m_server == nullptr) {
+		m_server = lo_server_thread_new(replyport, daw_err_handler);
+		if (m_server == NULL) {
+			return 1;
+		}
+		lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
+		lo_server_thread_start(m_server);
 	}
-	lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
-	lo_server_thread_start(m_server);
 
+	if (m_client != nullptr) {
+		lo_address_free(m_client);
+	}
 	m_client = lo_address_new(host, port);
 
 	lo_message msg = lo_message_new();
 	lo_message_add_int32(msg, 0);
 	lo_message_add_int32(msg, 0);
-	lo_message_add_int32(msg,FEEDBACK_MASTER + FEEDBACK_HMSMS
-					+ FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
+	lo_message_add_int32(msg, FEEDBACK_MASTER + FEEDBACK_HMSMS + FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
 	lo_message_add_int32(msg, 1);
 
 	gint ret = lo_send_message(m_client, "/set_surface", msg);
 	if (ret == -1) {
-		fprintf(stderr, "OSC client error %d: %s on %s\n",
-				lo_address_errno(m_client), lo_address_errstr(m_client),
-				lo_address_get_hostname(lo_message_get_source(msg)));
+		fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
 	}
 	lo_message_free(msg);
 	time_t connect_timeout;
@@ -155,7 +155,7 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 			m_bitrate = argv[1]->i;
 		}
 		if (argc > 2) {
-			m_maxmillis = (int)argv[2]->i / (m_bitrate / 1000);
+			m_maxmillis = (int) argv[2]->i / (m_bitrate / 1000);
 		}
 		c = DAW_PATH::reply;
 	}
@@ -164,7 +164,7 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 		int argc = lo_message_get_argc(msg);
 		if (argc == 1) {
 			timecode.assign((char*) argv[0]);
-			SetMillisFromTime((char*)argv[0]);
+			SetMillisFromTime((char*) argv[0]);
 		}
 		c = DAW_PATH::timestr;
 	}
@@ -190,17 +190,17 @@ gint ODAW::GetBitRate() {
 	return m_bitrate;
 }
 
-void ODAW::SetMillisFromTime(char* timestr) {
+void ODAW::SetMillisFromTime(char *timestr) {
 	// 00:00:00.000
 	timestr[2] = '\0';
 	int h = atoi(timestr);
 	timestr[5] = '\0';
-	int m = atoi(timestr+3);
+	int m = atoi(timestr + 3);
 	timestr[8] = '\0';
-	int s = atoi(timestr+6);
-	int mm = atoi(timestr+9);
+	int s = atoi(timestr + 6);
+	int mm = atoi(timestr + 9);
 
-	m_millis = mm + s * 1000 + m *60000 + h * 3600000;
+	m_millis = mm + s * 1000 + m * 60000 + h * 3600000;
 }
 
 int ODAW::GetMilliSeconds() {

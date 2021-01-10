@@ -170,6 +170,8 @@ void OMainWnd::create_view() {
     ui->get_widget < Gtk::ToggleToolButton > ("cut", m_btn_cut);
 
     ui->get_widget < Gtk::Label > ("lbl-status", m_lbl_status);
+    ui->get_widget < Gtk::Label > ("lbl-ardour", m_lbl_ardour);
+    ui->get_widget < Gtk::Label > ("lbl-x32", m_lbl_x32);
 
     m_img_play_off.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)play_off_inline, FALSE));
     m_img_play_on.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)play_on_inline, FALSE));

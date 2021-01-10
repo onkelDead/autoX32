@@ -157,9 +157,11 @@ bool OMainWnd::ConnectMixer(std::string host) {
     }
     if (!m_x32->Connect(host)) {
         m_project.SetMixer(m_x32);
+        m_lbl_x32->set_label("X32: connected");
         return true;
     }
     m_project.SetMixer(NULL);
+    m_lbl_x32->set_label("X32: disconnected");
     return false;
 }
 
@@ -168,8 +170,10 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
         m_daw.ShortMessage("/refresh");
         m_daw.ShortMessage("/strip/list");
         m_button_play->set_sensitive(true);
+        m_lbl_ardour->set_label("Ardour: connected");
         return true;
     }
+    m_lbl_ardour->set_label("Ardour: disconnected");
     return false;
 }
 

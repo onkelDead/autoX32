@@ -46,10 +46,21 @@ void OMainWnd::on_menu_file_connection() {
             settings->set_string("daw-reply-port", pDialog->GetArdourReplyPort());
             settings->set_boolean("daw-autoconnect", pDialog->GetArdoutAutoConnect());
         }
+        else {
+            Gtk::MessageDialog dialog(*this, "Failed to connect to Ardour.",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            dialog.run();
+            return;
+        }
 
         if (ConnectMixer(pDialog->GetX32Host())) {
             settings->set_string("mixer-host", pDialog->GetX32Host());
             settings->set_boolean("mixer-autoconnect", pDialog->GetX32AutoConnect());
+        }
+        else {
+            Gtk::MessageDialog dialog(*this, "Failed to connect to Behringer X32.",
+                    false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+            dialog.run();
         }
     }
 }

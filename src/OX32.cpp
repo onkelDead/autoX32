@@ -48,6 +48,10 @@ int OX32::Connect(std::string host) {
 
 	socklen_t Xip_len = sizeof(m_Socket);
 
+	struct timeval response_timeout;
+	response_timeout.tv_sec = 1;
+	response_timeout.tv_usec = 0;
+
 	time_t connect_timeout;
 	time(&connect_timeout);
 	m_IsConnected = 1;
@@ -62,7 +66,7 @@ int OX32::Connect(std::string host) {
 			FD_ZERO(&m_ReceiveFd);
 			FD_SET(m_X32_socket_fd, &m_ReceiveFd);
 			p_status = select(m_X32_socket_fd + 1, &m_ReceiveFd, NULL, NULL,
-			NULL);
+			&response_timeout);
 		} while (0);
 		if (p_status < 0) {
 			printf("Polling for data failed\n");
@@ -80,6 +84,7 @@ int OX32::Connect(std::string host) {
 		} // ... else timeout
 
 		if (difftime(now, connect_timeout) > 2) {
+			m_IsConnected = 0;
 			return 1;
 		}
 		printf(".");
@@ -112,7 +117,11 @@ bool OX32::on_timeout() {
 int OX32::Disconnect() {
 
 	m_timer.disconnect();
-	m_IsConnected = 0;
+	if (m_IsConnected) {
+		m_IsConnected = 0;
+		m_WorkerThread->join();
+		delete m_WorkerThread;
+	}
 	return 0;
 }
 
@@ -121,13 +130,18 @@ void OX32::do_work(IOX32 *caller) {
 	int p_status; // poll status
 	struct timeval t_rec;
 
+	struct timeval timeout;
+	timeout.tv_sec = 1;
+	timeout.tv_usec = 0;
+
+
 	while (m_IsConnected) {
 
 		do {
 			FD_ZERO(&m_ReceiveFd);
 			FD_SET(m_X32_socket_fd, &m_ReceiveFd);
 			p_status = select(m_X32_socket_fd + 1, &m_ReceiveFd, NULL, NULL,
-			NULL);
+			&timeout);
 		} while (0);
 
 		if (p_status > 0) {
