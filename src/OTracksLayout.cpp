@@ -51,7 +51,7 @@ std::map<std::string, OTrackView *> OTracksLayout::GetTrackMap() {
 }
 
 void OTracksLayout::redraw() {
-    queue_draw();
+//    queue_draw();
 }
 
 

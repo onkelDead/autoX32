@@ -212,7 +212,7 @@ void OMainWnd::on_menu_prefs() {
         settings->set_int("track-resolution", pDialog->GetResolution());
         m_timer->setInterval(pDialog->GetResolution());
     }
-    queue_draw();
+    //queue_draw();
 }
 
 void OMainWnd::on_btn_teach_clicked() {

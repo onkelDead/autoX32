@@ -70,8 +70,8 @@ void OTimeView::UpdateDawTime(bool redraw) {
 	m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
 	m_viewend->set_text(t);
 
-	if (redraw)
-		m_timedraw->queue_draw();
+//	if (redraw)
+//		m_timedraw->queue_draw();
 }
 
 void OTimeView::EnableZoom(bool val) {

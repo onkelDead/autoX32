@@ -220,7 +220,7 @@ void OProject::Close() {
     }
     m_tracks.clear();
     m_known_mixer_commands.clear();
-//    m_location = "";
+    m_location = "";
     m_projectFile = "";
     m_daw_range.m_dirty = false;
 }

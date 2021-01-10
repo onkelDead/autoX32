@@ -64,6 +64,7 @@ void OMainWnd::UpdateMenuRecent(){
     if (m_project.m_recent_projects.size() > 0) {
         m_recents->set_sensitive(true);
     }
+    m_recents->show_all();
 }
 
 void OMainWnd::create_menu() {

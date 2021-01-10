@@ -98,6 +98,9 @@ bool OMainWnd::SaveProject() {
                 UpdateMenuRecent();
                 return true;
             }
+            else {
+            	return false;
+            }
         } else {
             m_project.Save();
             m_project.AddRecentProject(m_project.GetProjectLocation());
@@ -106,7 +109,7 @@ bool OMainWnd::SaveProject() {
             return true;
         }
     }
-    return false;
+	return true;
 }
 
 bool OMainWnd::Shutdown() {
