@@ -141,6 +141,7 @@ void OTrackStore::SaveData(const char *filepath) {
 
 		fwrite(&it->time, sizeof(it->time), 1, io);
 		fwrite(&it->val, sizeof(it->val), 1, io);
+		fwrite(&it->delta, sizeof(it->delta), 1, io);
 		it = it->next;
 	}
 	fclose(io);
@@ -175,6 +176,9 @@ void OTrackStore::LoadData(const char *filepath) {
 		if (s != 1)
 			break;
 		s = fread(&it->val, sizeof(it->val), 1, io);
+		if (s != 1)
+			break;
+		s = fread(&it->delta, sizeof(it->delta), 1, io);
 		if (s != 1)
 			break;
 

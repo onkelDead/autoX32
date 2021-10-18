@@ -68,6 +68,7 @@ typedef struct track_entry {
     track_entry* prev;
     int time;
     lo_arg val;
+    lo_arg delta;
     track_entry* next;
 } track_entry;
 

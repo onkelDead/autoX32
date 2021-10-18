@@ -371,6 +371,37 @@ void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
     }
 }
 
+bool OProject::JumpPos(OTimer* timer) {
+    bool ret_code = false;
+    int current = timer->GetPosMillis();
+
+
+	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+
+        OTrackStore* trackstore = it->second;
+        //trackstore->Lock();
+        track_entry* entry = trackstore->m_tracks;
+        track_entry e;
+        e.val.f = entry->val.f;
+        while(entry->next && entry->time < timer->GetPosMillis()) {
+        	e.val.f += entry->next->delta.f;
+        	fprintf(stdout, "e.val %f entry->val %f \n", e.val.f, entry->val.f);
+        	entry = entry->next;
+        }
+        switch (trackstore->m_cmd->GetTypes().data()[0]) {
+            case 'f':
+                m_mixer->SendFloat(trackstore->m_cmd->GetPath(), e.val.f);
+                break;
+            case 'i':
+                m_mixer->SendInt(trackstore->m_cmd->GetPath(), e.val.i);
+                break;
+        }
+        //trackstore->Unlock();
+
+    }
+	return ret_code;
+}
+
 bool OProject::UpdatePos(OTimer* timer) {
     bool ret_code = false;
     int current = timer->GetPosMillis();
@@ -443,9 +474,11 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int timepos) {
                 switch (cmd->GetTypes().data()[0]) {
                     case 'f':
                         entry->val.f = cmd->GetLastFloat();
+                        entry->delta.f = entry->val.f - entry->prev->val.f;
                         break;
                     case 'i':
                         entry->val.i = cmd->GetLastInt();
+                        entry->delta.i = entry->val.i - entry->prev->val.i;
                         break;
                 }
                 trackstore->m_dirty = true;

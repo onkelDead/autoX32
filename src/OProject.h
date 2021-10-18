@@ -68,6 +68,7 @@ public:
     void SetMixer(IOX32*);
     
     bool UpdatePos(OTimer*);
+    bool JumpPos(OTimer*);
     bool ProcessPos(OscCmd*, OTimer*);
 
     void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);

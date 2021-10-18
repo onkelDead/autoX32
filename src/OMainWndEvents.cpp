@@ -297,7 +297,7 @@ void OMainWnd::on_btn_cut_clicked() {
 
 void OMainWnd::on_timeline_pos_changed() {
     m_timer->SetPosMillis(m_timeview->GetClickMillis());
-    m_project.UpdatePos(m_timer);
+    m_project.JumpPos(m_timer);
     m_lock_daw_time_event = true;
     m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
     UpdatePlayhead();

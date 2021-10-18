@@ -161,8 +161,9 @@ void OMainWnd::OnMixerEvent() {
 
 		my_mixerqueue.pop();
 	}
-	if (!step_processed)
+	if (!step_processed && !m_lock_daw_time) {
 		m_project.UpdatePos(m_timer);
+	}
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
