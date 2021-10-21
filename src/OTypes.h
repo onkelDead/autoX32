@@ -27,6 +27,10 @@ extern "C" {
 }
 #endif
 
+enum JACK_EVENT {
+	MTC_COMPLETE
+};
+
 enum DAW_PATH {
 	unknown,
 	smpte,

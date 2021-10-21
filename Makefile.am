@@ -29,7 +29,8 @@ autoX32_SOURCES = \
     src/OTimer.cpp \
     src/autoX32.cpp \
     src/OQueue.cpp \
-    src/OCustomWidget.cpp
+    src/OCustomWidget.cpp \
+    src/OJack.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -49,7 +50,8 @@ noinst_HEADERS = \
     src/OX32.h \
     src/OTimer.h \
     src/OQueue.h \
-    src/OCustomWidget.h
+    src/OCustomWidget.h \
+    src/OJack.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0
@@ -67,8 +69,8 @@ dist_data_DATA = data/media/autoX32.png
 desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
     
-autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} -DPKGDATADIR='"$(datadir)"' 
-autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} -lpthread
+autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} -DPKGDATADIR='"$(datadir)"' 
+autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} -ljack -lpthread
 
 gsettings_SCHEMAS = de.paraair.autoX32.gschema.xml
 @GSETTINGS_RULES@

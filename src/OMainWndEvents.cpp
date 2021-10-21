@@ -265,11 +265,13 @@ void OMainWnd::on_button_play_clicked() {
             m_project.Save();
         m_trackslayout.StopRecord();
         if (!m_lock_play)
-            m_daw.Stop();
+            //m_daw.Stop();
+        	m_jack.Stop();
     } else {
         m_project.SetPlaying(true);
         if (!m_lock_play)
-            m_daw.Play();
+        	//m_daw.Play();
+        	m_jack.Play();
     }
 }
 
@@ -299,7 +301,8 @@ void OMainWnd::on_timeline_pos_changed() {
     m_timer->SetPosMillis(m_timeview->GetClickMillis());
     m_project.JumpPos(m_timer);
     m_lock_daw_time_event = true;
-    m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
+    //m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
+    m_jack.Locate(m_timer->GetPosMillis());
     UpdatePlayhead();
 }
 

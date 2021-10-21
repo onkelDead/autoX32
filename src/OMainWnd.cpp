@@ -52,6 +52,8 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 
     create_about_dlg();
 
+    m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
+
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
     m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnViewEvent));
@@ -135,7 +137,7 @@ bool OMainWnd::Shutdown() {
     return ret_code;
 }
 
-void OMainWnd::LoadSettings() {
+void OMainWnd::ApplyWindowSettings() {
     if (settings) {
         set_default_size(settings->get_int("window-width"), settings->get_int("window-height"));
         move(settings->get_int("window-left"), settings->get_int("window-top"));
@@ -228,4 +230,14 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
 		m_trackslayout.GetTrackview(path)->set_name("OTrackView_selected");
 	else
 		m_trackslayout.GetTrackview(path)->set_name("OTrackView");
+}
+
+bool OMainWnd::SetupJackClient() {
+
+
+
+	m_jack.Connect(this);
+
+
+	return 0;
 }

@@ -20,6 +20,18 @@
 
 #include "OscCmd.h"
 
+void OMainWnd::OnJackEvent() {
+	if (m_jackqueue.size() > 0) {
+		JACK_EVENT c = m_jackqueue.front();
+		switch (c) {
+		case MTC_COMPLETE:
+			m_timeview->SetTimeCode(m_jack.GetTimeCode());
+			break;
+		}
+	}
+	m_jackqueue.pop();
+}
+
 void OMainWnd::OnDawEvent() {
 	if (my_dawqueue.size() > 0) {
 		DAW_PATH c = my_dawqueue.front();
@@ -62,7 +74,7 @@ void OMainWnd::OnDawEvent() {
 				//m_timeview->ScaleView();
 				UpdatePlayhead();
 			}
-			m_timeview->SetTimeCode(m_daw.GetTimeCode());
+			//m_timeview->SetTimeCode(m_daw.GetTimeCode());
 			break;
 		case DAW_PATH::reply:
 			m_project.SetMaxMillis(m_daw.GetMaxMillis());
@@ -93,6 +105,11 @@ void OMainWnd::OnDawEvent() {
 void OMainWnd::notify_daw(DAW_PATH path) {
 	my_dawqueue.push(path);
 	m_DawDispatcher.emit();
+}
+
+void OMainWnd::notify_jack(JACK_EVENT jack_event) {
+	m_jackqueue.push(jack_event);
+	m_JackDispatcher.emit();
 }
 
 void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {

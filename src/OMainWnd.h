@@ -21,11 +21,13 @@
 #include <giomm/settingsschemasource.h>
 #include <gtkmm/widget.h>
 
+
 #include "IOMainWnd.h"
 #include "OResource.h"
 
 #include "OX32.h"
 #include "ODAW.h"
+#include "OJack.h"
 #include "OProject.h"
 #include "OTimeView.h"
 #include "OTracksLayout.h"
@@ -78,6 +80,8 @@ public:
     void on_timeline_pos_changed();
 
     /// thread events
+    void OnJackEvent();
+    void notify_jack(JACK_EVENT);
     void OnDawEvent();
     void notify_daw(DAW_PATH);
     void OnMixerEvent();
@@ -88,11 +92,14 @@ public:
     void remove_track(IOTrackView*);
 
     /// operations
-    void LoadSettings();
+    void ApplyWindowSettings();
     void AutoConnect();
     bool ConnectMixer(std::string);
 
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
+
+    bool SetupJackClient();
+
     void NewProject();
     void OpenProject(std::string location);
     bool SaveProject();
@@ -106,6 +113,7 @@ public:
 
     /// application settings
     Gio::Settings* GetSettings();
+
 
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
@@ -183,6 +191,9 @@ private:
 
     Glib::Dispatcher m_DawDispatcher;
     std::queue<DAW_PATH> my_dawqueue;
+    Glib::Dispatcher m_JackDispatcher;
+    std::queue<JACK_EVENT> m_jackqueue;
+
     Glib::Dispatcher m_MixerDispatcher;
     std::queue<OscCmd*> my_mixerqueue;
     Glib::Dispatcher m_OverViewDispatcher;
@@ -193,6 +204,7 @@ private:
     OTimer *m_timer;
     OX32* m_x32 = nullptr;
     ODAW m_daw;
+    OJack m_jack;
 
     void TimerEvent(void*);
     int m_last_playhead_update = 0;

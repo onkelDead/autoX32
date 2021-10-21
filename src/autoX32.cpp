@@ -22,7 +22,9 @@
 
     OMainWnd window;
 
-    window.LoadSettings(); 
+    window.ApplyWindowSettings(); 
+
+    window.SetupJackClient();
 
     return app->run((Gtk::Window&)window);
 }

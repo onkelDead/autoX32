@@ -18,6 +18,7 @@ AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
 PKG_CHECK_MODULES([GTKMM3], [gtkmm-3.0])
 PKG_CHECK_MODULES([XML2], [libxml++-2.6])
 PKG_CHECK_MODULES([LO], [liblo])
+PKG_CHECK_MODULES([JACK], [jack])
 
 GLIB_GSETTINGS
 
