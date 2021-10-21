@@ -241,3 +241,7 @@ bool OMainWnd::SetupJackClient() {
 
 	return 0;
 }
+
+gint OMainWnd::GetPosMillis() {
+	return m_jack.GetMillis();
+}

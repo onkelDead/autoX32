@@ -20,18 +20,18 @@
 
 #include "embedded/timeview.h"
 
-OTimeView::OTimeView(IOTimer* timer) :
+OTimeView::OTimeView(IOMainWnd* wnd) :
 		Gtk::Box(), m_box(0), ui { Gtk::Builder::create_from_string(
 				timeview_inline_glade) }, m_daw_time(0) {
 
-	m_timer = timer;
+	m_mainWnd = wnd;
 
 	ui->get_widget < Gtk::Box > ("time-box", m_box);
 	ui->get_widget < Gtk::Label > ("o-timecode", m_timecode);
 	ui->get_widget < Gtk::Label > ("o-viewstart", m_viewstart);
 	ui->get_widget < Gtk::Label > ("o-viewend", m_viewend);
 
-	m_timedraw = new OTimeDraw(timer);
+	m_timedraw = new OTimeDraw(wnd);
 	m_timedraw->set_hexpand(true);
 	m_timedraw->set_halign(Gtk::ALIGN_FILL);
 	m_box->add(*m_timedraw);

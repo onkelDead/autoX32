@@ -17,12 +17,12 @@
 #include "OTimeDraw.h"
 #include "OTypes.h"
 
-OTimeDraw::OTimeDraw(IOTimer* timer) {
+OTimeDraw::OTimeDraw(IOMainWnd* wnd) {
 
 	set_has_window(true);
 	set_name("o-timeline");
 
-	m_timer = timer;
+	m_mainWnd = wnd;
 
 	menu_popup_start.set_label("Set loop start");
 	menu_popup.append(menu_popup_start);
@@ -47,7 +47,7 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	int height = allocation.get_height();
 	m_view_width = allocation.get_width();
 
-	int m_current_time = m_timer->GetPosMillis();
+	int m_current_time = m_mainWnd->GetPosMillis();
 
 	gint pos = (m_current_time - m_daw_time->m_viewstart) * m_daw_time->scale;
 
@@ -137,13 +137,13 @@ bool OTimeDraw::on_button_press_event(GdkEventButton *event) {
 }
 
 void OTimeDraw::on_menu_popup_start() {
-	m_range->m_loopstart = m_timer->GetPosMillis();
+	m_range->m_loopstart = m_mainWnd->GetPosMillis();
 	m_range->m_dirty = true;
 	queue_draw();
 }
 
 void OTimeDraw::on_menu_popup_end() {
-	m_range->m_loopend = m_timer->GetPosMillis();
+	m_range->m_loopend = m_mainWnd->GetPosMillis();
 	m_range->m_dirty = true;
 	queue_draw();
 }
@@ -153,13 +153,13 @@ void OTimeDraw::EnableZoom(bool val) {
 }
 
 void OTimeDraw::SetLoopStart() {
-	m_range->m_loopstart = m_timer->GetPosMillis();
+	m_range->m_loopstart = m_mainWnd->GetPosMillis();
 	m_range->m_dirty = true;
 	queue_draw();
 }
 
 void OTimeDraw::SetLoopEnd() {
-	m_range->m_loopend = m_timer->GetPosMillis();
+	m_range->m_loopend = m_mainWnd->GetPosMillis();
 	m_range->m_dirty = true;
 	queue_draw();
 }

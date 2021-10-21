@@ -23,11 +23,11 @@
 #include "OTimeDraw.h"
 #include "IOTimeView.h"
 
-#include "IOTimer.h"
+#include "IOMainWnd.h"
 
 class OTimeView : public Gtk::Box, IOTimeView {
 public:
-    OTimeView(IOTimer*);
+    OTimeView(IOMainWnd*);
     virtual ~OTimeView();
 
     void SetRange(daw_range* range);
@@ -58,7 +58,7 @@ private:
     OTimeDraw *m_timedraw = nullptr;
     daw_time* m_daw_time;
     daw_range* m_range = nullptr;
-    IOTimer* m_timer = nullptr;
+    IOMainWnd* m_mainWnd = nullptr;
 
 
 

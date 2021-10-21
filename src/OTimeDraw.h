@@ -25,11 +25,11 @@
 #include "IOTimeView.h"
 #include "OTypes.h"
 
-#include "IOTimer.h"
+#include "IOMainWnd.h"
 
 class OTimeDraw : public OCustomWidget {
 public:
-    OTimeDraw(IOTimer*);
+    OTimeDraw(IOMainWnd*);
     virtual ~OTimeDraw();
 
     void SetMaxMillis(gint);
@@ -63,7 +63,7 @@ private:
     int m_view_width = 0;
     int m_click_millis = 0;
     
-    IOTimer* m_timer = nullptr;
+    IOMainWnd* m_mainWnd = nullptr;
     daw_time* m_daw_time = nullptr;;
     daw_range* m_range = nullptr;
 

@@ -26,7 +26,6 @@ autoX32_SOURCES = \
     src/OProject.cpp \
     src/ODAW.cpp \
     src/OX32.cpp \
-    src/OTimer.cpp \
     src/autoX32.cpp \
     src/OQueue.cpp \
     src/OCustomWidget.cpp \
@@ -48,7 +47,6 @@ noinst_HEADERS = \
     src/OConnectDlg.h \
     src/ODlgPrefs.h \
     src/OX32.h \
-    src/OTimer.h \
     src/OQueue.h \
     src/OCustomWidget.h \
     src/OJack.h

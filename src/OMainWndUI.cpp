@@ -143,7 +143,7 @@ void OMainWnd::create_view() {
     
     add(*m_mainbox);
     
-    m_timeview = new OTimeView(m_timer);
+    m_timeview = new OTimeView(this);
     m_timeview->set_vexpand(false);
     m_timeview->set_valign(Gtk::ALIGN_START);
     m_timebox->add(*m_timeview);

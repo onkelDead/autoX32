@@ -100,6 +100,8 @@ public:
 
     bool SetupJackClient();
 
+    gint GetPosMillis();
+
     void NewProject();
     void OpenProject(std::string location);
     bool SaveProject();
