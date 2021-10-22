@@ -67,7 +67,15 @@ static int process_mtc_event(jack_midi_event_t event, OJack* jack) {
 
 	if (event.buffer[0] == 0xf1) {
 		jack->m_jackMtc.QuarterFrame(event.buffer[1]);
-		jack->Notify(MTC_QUARTER_FRAME);
+                if (jack->m_jackMtc.m_edge_sec==1) {
+        		jack->Notify(MTC_QUARTER_FRAME_SEC);
+                }
+                if (jack->m_jackMtc.m_edge_sec==2) {
+        		jack->Notify(MTC_QUARTER_FRAME_SEC1);
+                        jack->m_jackMtc.m_edge_sec = 0;
+                }
+                else
+                    jack->Notify(MTC_QUARTER_FRAME);
 	} else if (event.buffer[0] == 0xf0) {
 		jack->m_jackMtc.FullFrame(event.buffer);
 		jack->Notify(MTC_COMPLETE);
@@ -158,12 +166,13 @@ void OJackMtc::QuarterFrame(uint8_t data) {
 	lock_millis = true;
 	subframe++;
 	if (subframe == 4) {
-		subframe = 0;
-		frame++;
+ 		subframe = 0;
+                frame++;
 	}
-	if (frame == 30) {
+        if (frame == 30) {
 		frame = 0;
 		sec++;
+                m_edge_sec = true;
 	}
 	if (sec == 60) {
 		sec = 0;

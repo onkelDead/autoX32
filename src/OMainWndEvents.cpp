@@ -266,11 +266,15 @@ void OMainWnd::on_button_play_clicked() {
         if (!m_lock_play)
             //m_daw.Stop();
         	m_jack.Stop();
+        if (!m_shot_refresh)
+            this->get_window()->thaw_updates();
+        m_shot_refresh = 0;
     } else {
         m_project.SetPlaying(true);
         if (!m_lock_play)
         	//m_daw.Play();
         	m_jack.Play();
+        this->get_window()->freeze_updates();
     }
 }
 
@@ -336,12 +340,12 @@ void OMainWnd::UpdatePlayhead() {
             gint offset = m_playhead->get_margin_start() - 160 - pos;
             dt->m_viewend -= offset / dt->scale;
             dt->m_viewstart -= offset / dt->scale;
-            queue_draw();
+            //queue_draw();
             m_playhead->set_active(true);
         } else {
             m_playhead->set_active(true);
             m_playhead->set_margin_start(160 + pos);
-            queue_draw();
+            //queue_draw();
         }
     }
 }

@@ -183,6 +183,7 @@ private:
 
     bool m_lock_play;
     bool m_lock_daw_time;
+    uint8_t m_shot_refresh = false;
 
     /// prevent loop back daw-event when position changed from here
     bool m_lock_daw_time_event;

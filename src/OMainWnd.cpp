@@ -176,6 +176,7 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 }
 
 void OMainWnd::NewProject() {
+    
     m_project.New();
 }
 

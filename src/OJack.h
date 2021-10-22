@@ -21,6 +21,7 @@ public:
 	void QuarterFrame(uint8_t data);
 	gint GetMillis();
 	std::string GetTimeCode();
+        bool m_edge_sec = false;
 
 private:
 	uint8_t hour = 0;

@@ -332,6 +332,7 @@ void OProject::SetMaxMillis(int max_millis) {
 }
 
 void OProject::SetPlaying(bool val) {
+    
     m_playing = val;
 }
 
