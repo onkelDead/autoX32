@@ -275,13 +275,12 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_back_clicked() {
-    m_daw.SetPosition(m_project.GetLoopStart() * 48 , m_button_play->get_active());
+    m_jack.Locate(m_project.GetLoopStart());
     UpdatePlayhead();
 }
 
 void OMainWnd::on_button_test_clicked() {
 
-    m_daw.Test();
 }
 
 void OMainWnd::on_btn_lock_playhead_clicked() {

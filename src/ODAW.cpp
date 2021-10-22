@@ -165,14 +165,6 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 	}
 }
 
-std::string ODAW::GetTimeCode() {
-	return timecode;
-
-}
-
-gint ODAW::GetCurrentSample() {
-	return m_sample;
-}
 
 gint ODAW::GetMaxMillis() {
 	return m_maxmillis;
@@ -182,27 +174,3 @@ gint ODAW::GetBitRate() {
 	return m_bitrate;
 }
 
-
-void ODAW::Play() {
-	ShortMessage("/transport_play");
-}
-
-void ODAW::Stop() {
-	ShortMessage("/transport_stop");
-}
-
-void ODAW::Test() {
-	lo_message msg = lo_message_new();
-	lo_message_add_int32(msg, 48000);
-	lo_message_add_int32(msg, 0);
-	lo_send_message(m_client, "/locate", msg);
-	lo_message_free(msg);
-}
-
-void ODAW::SetPosition(gint pos, bool play) {
-	lo_message msg = lo_message_new();
-	lo_message_add_int32(msg, pos);
-	lo_message_add_int32(msg, play ? 1 : 0);
-	lo_send_message(m_client, "/locate", msg);
-	lo_message_free(msg);
-}

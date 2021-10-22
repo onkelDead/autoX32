@@ -47,19 +47,11 @@ public:
     ODAW();
     virtual ~ODAW();
 
-    std::string GetTimeCode();
-    gint GetCurrentSample();
-
     gint GetMaxMillis();
     gint GetBitRate();
 
-
     void ProcessCmd(const char*, lo_message);
 
-    void Play();
-    void Stop();
-    void Test();
-    void SetPosition(gint, bool);
 
     int connect(const char* host, const char* port, const char* replyport, IOMainWnd*);
     int disconnect();
