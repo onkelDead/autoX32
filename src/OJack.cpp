@@ -179,7 +179,7 @@ void OJackMtc::QuarterFrame(uint8_t data) {
 
 gint OJackMtc::GetMillis() {
 	while(lock_millis);
-	return hour * 3600000 + min * 60000 + sec * 1000 + (frame * 1000 / 30) + (subframe * 1000 / 120);
+	return hour * 432000 + min * 7200 + sec * 120 + (frame * 4) + (subframe);
 }
 
 std::string OJackMtc::GetTimeCode() {
@@ -233,14 +233,15 @@ void OJack::Stop() {
 }
 
 void OJack::Locate(gint millis) {
-	int mm = (millis % 1000) * 30 / 1000;
-	int sec = (millis / 1000) % 60;
-	int min = (millis / 60000) % 60;
-	int hour = (millis / 3600000);
+	int mm = (millis / 4) % 30;
+	int sec = (millis / 120) % 60;
+	int min = (millis / 7200) % 60;
+	int hour = (millis / 432000);
 	locate[7] = hour;
 	locate[8] = min;
 	locate[9] = sec;
 	locate[10] = mm;
+	printf("locate %02d:%02d:%02d:%02d", hour, min, sec, mm);
 	doLocate = true;
 }
 

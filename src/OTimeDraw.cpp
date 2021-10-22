@@ -66,7 +66,7 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 	int elems = 100;
 	int devider = 1;
 	while(elems > 8) {
-		devider *= (devider < 1000) ? 10 : 6;
+		devider *= (devider < 120) ? 10 : 6;
 		elems = (m_daw_time->m_viewend - m_daw_time->m_viewstart) / devider;
 	}
 
@@ -110,10 +110,10 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr,
 }
 
 void OTimeDraw::GetMillisString(int millis, char* t) {
-	int mm = millis % 1000;
-	int sec = (millis / 1000) % 60;
-	int min = (millis / 60000) % 60;
-	int hour = (millis / 3600000);
+	int mm = millis % 120;
+	int sec = (millis / 120) % 60;
+	int min = (millis / 7200) % 60;
+	int hour = (millis / 432000);
 	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, mm);
 }
 
@@ -132,6 +132,7 @@ bool OTimeDraw::on_button_press_event(GdkEventButton *event) {
 		return true;
 	}
 	m_click_millis = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
+	printf("m_click_millis = %d\n", m_click_millis);
 	signal_pos_changed.emit();
 	return true;
 }

@@ -53,7 +53,6 @@ public:
     gint GetMaxMillis();
     gint GetBitRate();
 
-    void SetMillisFromTime(char*);
 
     void ProcessCmd(const char*, lo_message);
 
@@ -61,7 +60,6 @@ public:
     void Stop();
     void Test();
     void SetPosition(gint, bool);
-	int GetMilliSeconds();
 
     int connect(const char* host, const char* port, const char* replyport, IOMainWnd*);
     int disconnect();
@@ -77,7 +75,6 @@ private:
     gint m_sample = 0;
     gint m_bitrate = 0;
     int m_maxmillis = 0;
-    int m_millis = 0;
 
     lo_server_thread m_server = nullptr;
     lo_address m_client = nullptr;
