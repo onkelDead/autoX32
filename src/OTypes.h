@@ -28,7 +28,10 @@ extern "C" {
 #endif
 
 enum JACK_EVENT {
-	MTC_COMPLETE
+	MTC_COMPLETE,
+	MTC_QUARTER_FRAME,
+	MMC_PLAY,
+	MMC_STOP
 };
 
 enum DAW_PATH {

@@ -23,7 +23,6 @@
 #include "OscCmd.h"
 
 #include "embedded/main.h"
-#include "OTimer.h"
 
 const Glib::ustring str_recent_projects = "recent-projects";
 
@@ -40,8 +39,6 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
     }
     g_settings_schema_unref(schema);
 
-    m_timer = new OTimer();
-
     create_view();
     create_menu();
     m_timeview->SetRange(m_project.GetTimeRange());
@@ -56,9 +53,11 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
-    m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnViewEvent));
+    m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
+
+    m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnViewEvent));
 
     show_all_children(true);
     queue_draw();
@@ -68,10 +67,6 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
     m_lock_daw_time = false;
     m_lock_daw_time_event = false;
 
-    m_timer->setInterval(settings->get_int("track-resolution"));
-    m_timer->SetUserData(&m_project);
-    m_timer->setFunc(std::bind(&OMainWnd::TimerEvent, this, &m_project));
-    m_timer->start();
     AutoConnect();
 
 }
@@ -120,8 +115,6 @@ bool OMainWnd::Shutdown() {
         if (!SaveProject())
             return ret_code;
     }
-
-    m_timer->stop();
 
     m_x32->Disconnect();
     m_daw.disconnect();
@@ -201,7 +194,7 @@ void OMainWnd::OpenProject(std::string location) {
     }
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
-    m_project.UpdatePos(m_timer);
+    m_project.UpdatePos(GetPosMillis());
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {

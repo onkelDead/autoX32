@@ -33,7 +33,6 @@
 #include "OTracksLayout.h"
 #include "OOverView.h"
 #include "OPlayHead.h"
-#include "OTimer.h"
 #include "OQueue.h"
 
 #define PACKAGE_STRING "autoX32"
@@ -198,12 +197,12 @@ private:
 
     Glib::Dispatcher m_MixerDispatcher;
     std::queue<OscCmd*> my_mixerqueue;
+    Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;
     OQueue m_new_ts_queue;
 
     /// objects
     OProject m_project;
-    OTimer *m_timer;
     OX32* m_x32 = nullptr;
     ODAW m_daw;
     OJack m_jack;

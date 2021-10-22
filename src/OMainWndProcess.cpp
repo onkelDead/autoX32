@@ -24,8 +24,21 @@ void OMainWnd::OnJackEvent() {
 	if (m_jackqueue.size() > 0) {
 		JACK_EVENT c = m_jackqueue.front();
 		switch (c) {
+		case MTC_QUARTER_FRAME:
 		case MTC_COMPLETE:
 			m_timeview->SetTimeCode(m_jack.GetTimeCode());
+			m_project.UpdatePos(GetPosMillis());
+			UpdatePlayhead();
+			break;
+		case MMC_PLAY:
+			m_lock_play = true;
+			m_button_play->set_active(true);
+			m_lock_play = false;
+			break;
+		case MMC_STOP:
+			m_lock_play = true;
+			m_button_play->set_active(false);
+			m_lock_play = false;
 			break;
 		}
 	}
@@ -55,45 +68,42 @@ void OMainWnd::OnDawEvent() {
 		 */
 
 		case DAW_PATH::timestr:
-			if (!m_lock_daw_time_event) {
-				int daw_millis = m_daw.GetMilliSeconds();
-				int timer_millis = m_timer->GetPosMillis();
-				if (m_timer->GetActive()) {
-					int gap = daw_millis - timer_millis;
-
-					//printf("d:%d t:%d gap:%d\n", daw_millis, timer_millis, gap);
-					m_timer->SetTimeRequest(daw_millis);
-				}
-
-			} else {
-				m_lock_daw_time_event = false;
-			}
-			if (!m_timer->GetActive()) {
-				m_timer->SetPosMillis(m_daw.GetMilliSeconds());
-				m_playhead->set_initialized(true);
-				//m_timeview->ScaleView();
-				UpdatePlayhead();
-			}
+//			if (!m_lock_daw_time_event) {
+//				int daw_millis = m_daw.GetMilliSeconds();
+//				int timer_millis = m_timer->GetPosMillis();
+//				if (m_timer->GetActive()) {
+//					int gap = daw_millis - timer_millis;
+//
+//					//printf("d:%d t:%d gap:%d\n", daw_millis, timer_millis, gap);
+//					m_timer->SetTimeRequest(daw_millis);
+//				}
+//
+//			} else {
+//				m_lock_daw_time_event = false;
+//			}
+//			if (!m_timer->GetActive()) {
+//				m_timer->SetPosMillis(m_daw.GetMilliSeconds());
+//				m_playhead->set_initialized(true);
+//				//m_timeview->ScaleView();
+//				UpdatePlayhead();
+//			}
 			//m_timeview->SetTimeCode(m_daw.GetTimeCode());
 			break;
 		case DAW_PATH::reply:
 			m_project.SetMaxMillis(m_daw.GetMaxMillis());
 			m_project.SetBitRate(m_daw.GetBitRate());
-			m_timer->SetSecDivide(m_daw.GetBitRate() / 1000);
 			UpdateDawTime(false);
 			m_timeview->SetZoomLoop();
 			break;
 		case DAW_PATH::play:
-			m_lock_play = true;
-			m_button_play->set_active(true);
-			m_timer->SetActive(true);
-			m_lock_play = false;
+//			m_lock_play = true;
+//			m_button_play->set_active(true);
+//			m_lock_play = false;
 			break;
 		case DAW_PATH::stop:
-			m_lock_play = true;
-			m_button_play->set_active(false);
-			m_timer->SetActive(false);
-			m_lock_play = false;
+//			m_lock_play = true;
+//			m_button_play->set_active(false);
+//			m_lock_play = false;
 			break;
 		default:
 			break;
@@ -117,12 +127,12 @@ void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {
 	ue->what = what;
 	ue->with = with;
 	m_new_ts_queue.push(ue);
-	m_MixerDispatcher.emit();
+	m_ViewDispatcher.emit();
 }
 
 void OMainWnd::PublishUiEvent(ui_event *ue) {
 	m_new_ts_queue.push(ue);
-	m_MixerDispatcher.emit();
+	m_ViewDispatcher.emit();
 }
 
 void OMainWnd::OnMixerEvent() {
@@ -166,7 +176,7 @@ void OMainWnd::OnMixerEvent() {
 					PublishUiEvent(UI_EVENTS::new_track, trackstore);
 				}
 			}
-			if (m_project.ProcessPos(cmd, m_timer)) {
+			if (m_project.ProcessPos(cmd, GetPosMillis())) {
 				if (tv && !m_project.GetPlaying()) {
 					PublishUiEvent(UI_EVENTS::draw_trackview, tv);
 				}
@@ -179,27 +189,17 @@ void OMainWnd::OnMixerEvent() {
 		my_mixerqueue.pop();
 	}
 	if (!step_processed && !m_lock_daw_time) {
-		m_project.UpdatePos(m_timer);
+		m_project.UpdatePos(GetPosMillis());
 	}
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
 	my_mixerqueue.push(cmd);
+	m_MixerDispatcher.emit();
 }
 
 void OMainWnd::TimerEvent(void *data) {
 
-	// update UI-PlayHead/Load every 50ms
-	if (m_timer->GetRunTime() > m_last_playhead_update + 50) {
-		UpdatePlayhead();
-		m_last_playhead_update = m_timer->GetRunTime();
-		// show timer process load percentage
-		PublishUiEvent(&m_timer->ue);
-	}
-	if (m_timer->GetPosMillis() != m_last_pos_update) {
-		OnMixerEvent();
-		m_last_pos_update = m_timer->GetPosMillis();
-	}
 }
 
 void OMainWnd::OnViewEvent() {
@@ -219,9 +219,7 @@ void OMainWnd::OnViewEvent() {
 			delete e;
 		}
 		if (e->what == UI_EVENTS::load) {
-			char l[32];
-			sprintf(l, "Load: %.2f%%", m_timer->GetLoad());
-			m_lbl_status->set_text(l);
+
 		}
 		if (e->what == UI_EVENTS::draw_trackview) {
 			((OTrackView*) e->with)->queue_draw();

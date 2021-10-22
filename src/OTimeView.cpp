@@ -59,6 +59,7 @@ void OTimeView::SetDawTime(daw_time *dt) {
 
 void OTimeView::SetTimeCode(std::string code) {
 	m_timecode->set_text(code);
+
 }
 
 void OTimeView::UpdateDawTime(bool redraw) {
@@ -96,6 +97,7 @@ void OTimeView::ScaleView(){
 }
 
 void OTimeView::on_timedraw_pos_changed() {
+
 	signal_pos_changed.emit();
 }
 

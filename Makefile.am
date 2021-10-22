@@ -55,8 +55,8 @@ if DEBUG
     AM_CFLAGS = -g3 -O0
     AM_CXXFLAGS = -g3 -O0
 else
-    AM_CFLAGS = -O2
-    AM_CXXFLAGS = -O2
+    AM_CFLAGS = -O0
+    AM_CXXFLAGS = -O0
 endif
 
 data_DATA = data/media/autoX32.png
@@ -67,7 +67,7 @@ dist_data_DATA = data/media/autoX32.png
 desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
     
-autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} -DPKGDATADIR='"$(datadir)"' 
+autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} -DPKGDATADIR='"$(datadir)"' -O0
 autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} -ljack -lpthread
 
 gsettings_SCHEMAS = de.paraair.autoX32.gschema.xml

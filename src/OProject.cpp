@@ -353,7 +353,10 @@ void OProject::RemoveCommand(OscCmd* cmd) {
 }
 
 OTrackStore* OProject::GetTrack(std::string path) {
-	return m_tracks[path];
+	auto e = m_tracks.find(path);
+	if (e != m_tracks.end())
+		return m_tracks[path];
+	return NULL;
 }
 
 std::map<std::string, OTrackStore*> OProject::GetTracks() {
@@ -371,9 +374,8 @@ void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
     }
 }
 
-bool OProject::JumpPos(OTimer* timer) {
+bool OProject::JumpPos(gint current) {
     bool ret_code = false;
-    int current = timer->GetPosMillis();
 
 
 	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
@@ -383,7 +385,7 @@ bool OProject::JumpPos(OTimer* timer) {
         track_entry* entry = trackstore->m_tracks;
         track_entry e;
         e.val.f = entry->val.f;
-        while(entry->next && entry->time < timer->GetPosMillis()) {
+        while(entry->next && entry->time < current) {
         	e.val.f += entry->next->delta.f;
         	fprintf(stdout, "e.val %f entry->val %f \n", e.val.f, entry->val.f);
         	entry = entry->next;
@@ -402,9 +404,8 @@ bool OProject::JumpPos(OTimer* timer) {
 	return ret_code;
 }
 
-bool OProject::UpdatePos(OTimer* timer) {
+bool OProject::UpdatePos(gint current) {
     bool ret_code = false;
-    int current = timer->GetPosMillis();
 
 
 	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
@@ -423,9 +424,8 @@ bool OProject::UpdatePos(OTimer* timer) {
 	return ret_code;
 }
 
-bool OProject::ProcessPos(OscCmd* cmd, OTimer* timer) {
+bool OProject::ProcessPos(OscCmd* cmd, gint current) {
     bool ret_code = false;
-    int current = timer->GetPosMillis();
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
        
         OTrackStore* trackstore = it->second;

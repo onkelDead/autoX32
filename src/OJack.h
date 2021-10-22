@@ -14,9 +14,32 @@
 #include "OTypes.h"
 #include "IOMainWnd.h"
 
+class OJackMtc {
+public:
+
+	void FullFrame(uint8_t* frame_data);
+	void QuarterFrame(uint8_t data);
+	gint GetMillis();
+	std::string GetTimeCode();
+
+private:
+	uint8_t hour = 0;
+	uint8_t min = 0;
+	uint8_t sec = 0;
+	uint8_t frame = 0;
+	uint8_t subframe = 0;
+
+	uint8_t n1 = 0;
+	uint8_t n2 = 0;
+	std::string timecode;
+	gint millis;
+	bool lock_millis = false;
+};
+
+
 class OJack {
 public:
-	OJack() {};
+	OJack() : m_millis(0), m_jack_client(NULL) {};
     virtual ~OJack() {};
 
 
@@ -30,6 +53,8 @@ public:
     gint GetMillis();
 
     std::string GetTimeCode();
+
+    OJackMtc m_jackMtc;
 
     jack_client_t *m_jack_client;
 

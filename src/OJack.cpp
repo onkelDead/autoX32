@@ -23,10 +23,6 @@ jack_port_t *mmc_in_port;
 jack_port_t *mmc_out_port;
 jack_port_t *mtc_port;
 
-static int mtc_counter = 0;
-
-static uint8_t mtc_time_frames[8];
-
 static uint8_t mmc_command[] = { 0xf0, 0x7f, 0x00, 0x06 };
 
 static jack_midi_data_t midi_play[] = { 0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7 };
@@ -38,13 +34,7 @@ static bool doFind = false;
 static jack_midi_data_t locate[] = { 0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7 };
 static bool doLocate = false;
 
-static int s_hour;
-static int s_min;
-static int s_sec;
-static int s_fr;
-static gint s_millis;
-
-static int process_mmc_event(jack_midi_event_t event) {
+static int process_mmc_event(jack_midi_event_t event, OJack* jack) {
 
 	if (event.size > 4) {
 		if (!memcmp(event.buffer, mmc_command, sizeof(mmc_command))) {
@@ -52,12 +42,15 @@ static int process_mmc_event(jack_midi_event_t event) {
 			switch (event.buffer[4]) {
 			case 1:
 				printf("  Stop\n");
+				jack->Notify(MMC_STOP);
 				break;
 			case 2:
 				printf("  Play\n");
+				jack->Notify(MMC_PLAY);
 				break;
 			case 3:
 				printf("  Deferred Play\n");
+				jack->Notify(MMC_PLAY);
 				break;
 			case 0x44:
 				printf("  Locate %02d:%02d:%02d:%02d\n", event.buffer[7], event.buffer[8], event.buffer[9], event.buffer[10]);
@@ -71,40 +64,20 @@ static int process_mmc_event(jack_midi_event_t event) {
 
 static int process_mtc_event(jack_midi_event_t event, OJack* jack) {
 	uint8_t s;
-	if (event.buffer[0] == 0xf1) {
-		mtc_time_frames[event.buffer[1] >> 4] = event.buffer[1] & 0x0f;
-		mtc_counter++;
 
-		if (mtc_counter == 8) {
-			mtc_counter = 0;
-			jack->Notify(MTC_COMPLETE);
-		}
+	if (event.buffer[0] == 0xf1) {
+		jack->m_jackMtc.QuarterFrame(event.buffer[1]);
+		jack->Notify(MTC_QUARTER_FRAME);
 	} else if (event.buffer[0] == 0xf0) {
-		mtc_time_frames[7] = event.buffer[5] >> 4;
-		mtc_time_frames[6] = event.buffer[5] & 0x0f;
-		mtc_time_frames[5] = event.buffer[6] >> 4;
-		mtc_time_frames[4] = event.buffer[6] & 0x0f;
-		mtc_time_frames[3] = event.buffer[7] >> 4;
-		mtc_time_frames[2] = event.buffer[7] & 0x0f;
-		mtc_time_frames[1] = event.buffer[8] >> 4;
-		mtc_time_frames[0] = event.buffer[8] & 0x0f;
+		jack->m_jackMtc.FullFrame(event.buffer);
 		jack->Notify(MTC_COMPLETE);
 	}
-
-	s_hour = (mtc_time_frames[7] & 0x01) * 16 + (mtc_time_frames[6] & 0x0f);
-	s_min = (mtc_time_frames[5] & 0x03) * 16 + (mtc_time_frames[4] & 0x0f);
-	s_sec = (mtc_time_frames[3] & 0x03) * 16 + (mtc_time_frames[2] & 0x0f);
-	s_fr = (mtc_time_frames[1] & 0x01) * 16 + (mtc_time_frames[0] & 0x0f);
-
-	s_millis = s_hour * 3600000 + s_min * 60000 + s_sec * 1000 + (s_fr * 1000 / 30);
-
 	return 1;
 }
 
 static int process(jack_nframes_t nframes, void *arg) {
 	int i;
 	void *port_buf = jack_port_get_buffer(mmc_in_port, nframes);
-	//jack_default_audio_sample_t *out = (jack_default_audio_sample_t *) jack_port_get_buffer (output_port, nframes);
 	jack_midi_event_t in_event;
 	jack_nframes_t event_index = 0;
 	jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
@@ -112,7 +85,7 @@ static int process(jack_nframes_t nframes, void *arg) {
 		//printf("Ardour MMC in: have %d events\n", event_count);
 		for (i = 0; i < event_count; i++) {
 			jack_midi_event_get(&in_event, port_buf, i);
-			if (!process_mmc_event(in_event)) {
+			if (!process_mmc_event(in_event, ((OJack*)arg))) {
 				printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
 				for (int j = 0; j < in_event.size; j++) {
 					printf("%02x ", in_event.buffer[j]);
@@ -172,7 +145,53 @@ static void jack_shutdown(void *arg) {
 	exit(1);
 }
 
+// JackMtc
+void OJackMtc::FullFrame(uint8_t *frame_data) {
+	hour = frame_data[5] & 0x1f;
+	min = frame_data[6];
+	sec = frame_data[7];
+	frame = frame_data[8];
+	subframe = 0;
+}
 
+void OJackMtc::QuarterFrame(uint8_t data) {
+	lock_millis = true;
+	subframe++;
+	if (subframe == 4) {
+		subframe = 0;
+		frame++;
+	}
+	if (frame == 30) {
+		frame = 0;
+		sec++;
+	}
+	if (sec == 60) {
+		sec = 0;
+		min++;
+	}
+	if (min == 60) {
+		min = 0;
+		hour++;
+	}
+
+	lock_millis = false;
+}
+
+gint OJackMtc::GetMillis() {
+	while(lock_millis);
+	return hour * 3600000 + min * 60000 + sec * 1000 + (frame * 1000 / 30) + (subframe * 1000 / 120);
+}
+
+std::string OJackMtc::GetTimeCode() {
+	char t[32];
+
+	sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, frame);
+	timecode = t;
+	return timecode;
+}
+
+
+// class OJack
 void OJack::Connect(IOMainWnd* wnd) {
 
 	m_parent = wnd;
@@ -226,7 +245,7 @@ void OJack::Locate(gint millis) {
 }
 
 gint OJack::GetMillis() {
-	return s_millis;
+	return m_jackMtc.GetMillis();
 }
 
 void OJack::Notify(JACK_EVENT event) {
@@ -234,11 +253,5 @@ void OJack::Notify(JACK_EVENT event) {
 }
 
 std::string OJack::GetTimeCode() {
-	char timecode[32];
-
-	sprintf(timecode, "%02d:%02d:%02d:%02d\n", s_hour, s_min, s_sec, s_fr);
-	m_timecode = timecode;
-
-	return m_timecode;
-
+	return m_jackMtc.GetTimeCode();
 }

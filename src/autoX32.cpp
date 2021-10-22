@@ -1,4 +1,4 @@
-/*
+/*8
   Copyright 2020 Detlef Urban <onkel@paraair.de>
 
   Permission to use, copy, modify, and/or distribute this software for any

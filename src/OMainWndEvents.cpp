@@ -225,7 +225,6 @@ void OMainWnd::on_menu_prefs() {
     if (pDialog->m_result) {
         settings->set_boolean("show-path-on-track", pDialog->GetShowTrackPath());
         settings->set_int("track-resolution", pDialog->GetResolution());
-        m_timer->setInterval(pDialog->GetResolution());
     }
     //queue_draw();
 }
@@ -298,12 +297,10 @@ void OMainWnd::on_btn_cut_clicked() {
 }
 
 void OMainWnd::on_timeline_pos_changed() {
-    m_timer->SetPosMillis(m_timeview->GetClickMillis());
-    m_project.JumpPos(m_timer);
     m_lock_daw_time_event = true;
     //m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
-    m_jack.Locate(m_timer->GetPosMillis());
-    UpdatePlayhead();
+    m_jack.Locate(m_timeview->GetClickMillis());
+    //UpdatePlayhead();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
@@ -331,7 +328,7 @@ void OMainWnd::UpdateDawTime(bool redraw) {
 
 void OMainWnd::UpdatePlayhead() {
     daw_time* dt = m_project.GetDawTime();
-    gint pos = ((m_timer->GetPosMillis()) - dt->m_viewstart) * dt->scale;
+    gint pos = ((GetPosMillis()) - dt->m_viewstart) * dt->scale;
     if (pos < 0) {
         m_playhead->set_active(false);
         pos = 0;
