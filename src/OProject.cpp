@@ -407,46 +407,49 @@ bool OProject::JumpPos(gint current) {
 bool OProject::UpdatePos(gint current) {
     bool ret_code = false;
 
-
 	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
 
         OTrackStore* trackstore = it->second;
-        //trackstore->Lock();
+        trackstore->Lock();
         track_entry* entry = trackstore->GetEntry(current);
         if (entry != trackstore->m_playhead) {
-        	PlayTrackEntry(trackstore, entry);
-        	trackstore->m_playhead = entry;
+        	if (trackstore->m_record && m_playing) {
+        		trackstore->RemoveEntry(entry);
+        	}
+        	else {
+				PlayTrackEntry(trackstore, entry);
+				trackstore->m_playhead = entry;
+        	}
         	ret_code = true;
         }
-        //trackstore->Unlock();
-
+        trackstore->Unlock();
     }
 	return ret_code;
 }
 
-bool OProject::ProcessPos(OscCmd* cmd, gint current) {
+bool OProject::ProcessPos(OTrackStore* trackstore, OscCmd* cmd, gint current) {
     bool ret_code = false;
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+//    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
        
-        OTrackStore* trackstore = it->second;
-        trackstore->Lock();
-        track_entry* entry = trackstore->GetEntry(current);
+//        OTrackStore* trackstore = it->second;
+	trackstore->Lock();
+//        if (current != trackstore->m_playhead->time) {
+//        	track_entry* entry = trackstore->GetEntry(current);
 
-        if (entry != trackstore->m_playhead) {
-            if (!trackstore->m_record || (trackstore->m_record && !m_playing)) {
-                PlayTrackEntry(trackstore, entry);
-            } else {
-                if (m_playing && trackstore->m_record) {
-                    trackstore->RemoveEntry(entry);
-                }
-            }
-        }
-        if (cmd && it->first == cmd->GetPath()) {
-            AddEntry(trackstore, cmd, current);
-            ret_code = true;
-        }
-        trackstore->Unlock();
-    }
+	if (trackstore->m_record) {
+		AddEntry(trackstore, cmd, current);
+
+//					trackstore->RemoveEntry(entry);
+	}
+//		}
+//        else {
+//        	trackstore->m_playhead->val = cmd->GetLastFloat();
+//        }
+//        if (cmd && it->first == cmd->GetPath()) {
+	ret_code = true;
+//        }
+	trackstore->Unlock();
+//    }
     
     return ret_code;
 }
@@ -462,6 +465,7 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int timepos) {
                     entry->next = NULL;
                     entry->prev = NULL;
                     trackstore->AddTimePoint(entry);
+                    trackstore->m_playhead = entry;
                 }
                 else {
                     entry = trackstore->m_playhead;
@@ -474,11 +478,11 @@ void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int timepos) {
                 switch (cmd->GetTypes().data()[0]) {
                     case 'f':
                         entry->val.f = cmd->GetLastFloat();
-                        entry->delta.f = entry->val.f - entry->prev->val.f;
+                        entry->delta.f = cmd->GetLastFloat() - ((entry->prev != NULL) ? entry->prev->val.f : 1.0);
                         break;
                     case 'i':
                         entry->val.i = cmd->GetLastInt();
-                        entry->delta.i = entry->val.i - entry->prev->val.i;
+                        entry->delta.i = cmd->GetLastInt() - ((entry->prev != NULL) ? entry->prev->val.i : 1);
                         break;
                 }
                 trackstore->m_dirty = true;

@@ -132,7 +132,6 @@ bool OTimeDraw::on_button_press_event(GdkEventButton *event) {
 		return true;
 	}
 	m_click_millis = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
-	printf("m_click_millis = %d\n", m_click_millis);
 	signal_pos_changed.emit();
 	return true;
 }

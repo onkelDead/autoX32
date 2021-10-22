@@ -68,7 +68,7 @@ public:
     
     bool UpdatePos(gint);
     bool JumpPos(gint);
-    bool ProcessPos(OscCmd*, gint);
+    bool ProcessPos(OTrackStore*, OscCmd*, gint);
 
     void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
 

@@ -241,7 +241,6 @@ void OJack::Locate(gint millis) {
 	locate[8] = min;
 	locate[9] = sec;
 	locate[10] = mm;
-	printf("locate %02d:%02d:%02d:%02d", hour, min, sec, mm);
 	doLocate = true;
 }
 

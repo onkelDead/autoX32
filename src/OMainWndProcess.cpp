@@ -27,7 +27,7 @@ void OMainWnd::OnJackEvent() {
 		case MTC_QUARTER_FRAME:
 		case MTC_COMPLETE:
 			m_timeview->SetTimeCode(m_jack.GetTimeCode());
-			m_project.UpdatePos(GetPosMillis());
+			m_project.UpdatePos(m_jack.GetMillis());
 			UpdatePlayhead();
 			break;
 		case MMC_PLAY:
@@ -152,31 +152,30 @@ void OMainWnd::OnMixerEvent() {
 				}
 			}
 		} else {
+			// is this track already known ?
 			OTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
 			OTrackView *tv = NULL;
 			;
-			if (trackstore) {
+			if (trackstore) { // the track is known
 				tv = m_trackslayout.GetTrackview(cmd->GetPath());
-				if (tv) {
-					if (tv->GetTouch()) {
+				if (tv) { // we have a trackview for it
+					if (tv->GetTouch()) { // trackview is configured for touch
 						tv->SetRecord(true);
 					}
 				}
-			} else {
-				if (m_btn_teach->get_active()) {
+			} else { // the track is not known
+				if (m_btn_teach->get_active()) { // I'm configured for teach-in, so create track and trackview
 					OscCmd *c = new OscCmd(*cmd);
-					c->Parse();
+					c->Parse();  // TODO: check if obsolete, view above cmd->parse()
 					m_project.AddCommand(c);
 					cmd->SetName(cmd->GetPath());
-					OTrackStore *trackstore = m_project.NewTrack(c);
+					trackstore = m_project.NewTrack(c);
 					m_x32->Send(c->GetConfigRequestName());
 					m_x32->Send(c->GetConfigRequestColor());
-					cmd_used = true;
-
 					PublishUiEvent(UI_EVENTS::new_track, trackstore);
 				}
 			}
-			if (m_project.ProcessPos(cmd, GetPosMillis())) {
+			if (m_project.ProcessPos(trackstore, cmd, GetPosMillis())) {
 				if (tv && !m_project.GetPlaying()) {
 					PublishUiEvent(UI_EVENTS::draw_trackview, tv);
 				}
@@ -188,9 +187,9 @@ void OMainWnd::OnMixerEvent() {
 
 		my_mixerqueue.pop();
 	}
-	if (!step_processed && !m_lock_daw_time) {
-		m_project.UpdatePos(GetPosMillis());
-	}
+//	if (!step_processed && !m_lock_daw_time) { // TODO: why this?
+//		m_project.UpdatePos(GetPosMillis());
+//	}
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
