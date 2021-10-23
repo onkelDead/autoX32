@@ -51,7 +51,7 @@ ODlgPrefs::ODlgPrefs(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& 
     
     builder->get_widget< Gtk::CheckButton >("chk-show-track-path", m_chk_showtrackpath);
     builder->get_widget< Gtk::Entry >("txt-resolution", m_txt_resolution);
-    
+    builder->get_widget< Gtk::CheckButton >("chk-smooth-screen", m_chk_smooth_screen);
     
 }
 
@@ -85,4 +85,13 @@ void ODlgPrefs::SetResolution(int res) {
 
 int ODlgPrefs::GetResolution() {
     return atoi(m_txt_resolution->get_text().data());
+}
+
+
+void ODlgPrefs::SetSmoothScreen(bool val) {
+    m_chk_smooth_screen->set_active(val);
+}
+
+bool ODlgPrefs::GetSmoothScreen() {
+    return m_chk_smooth_screen->get_active();
 }

@@ -220,11 +220,13 @@ void OMainWnd::on_menu_prefs() {
     // fill dialog with data
     pDialog->SetShowTrackPath(settings->get_boolean("show-path-on-track"));
     pDialog->SetResolution(settings->get_int("track-resolution"));
+    pDialog->SetSmoothScreen(settings->get_boolean("smooth-screen"));
 
     pDialog->run();
     if (pDialog->m_result) {
         settings->set_boolean("show-path-on-track", pDialog->GetShowTrackPath());
         settings->set_int("track-resolution", pDialog->GetResolution());
+        settings->set_boolean("smooth-screen", pDialog->GetSmoothScreen());
     }
     //queue_draw();
 }
@@ -266,7 +268,7 @@ void OMainWnd::on_button_play_clicked() {
         if (!m_lock_play)
             //m_daw.Stop();
         	m_jack.Stop();
-        if (!m_shot_refresh)
+        if (!m_shot_refresh && settings->get_boolean("smooth-screen"))
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
     } else {
@@ -274,7 +276,8 @@ void OMainWnd::on_button_play_clicked() {
         if (!m_lock_play)
         	//m_daw.Play();
         	m_jack.Play();
-        this->get_window()->freeze_updates();
+        if (settings->get_boolean("smooth-screen"))
+            this->get_window()->freeze_updates();
     }
 }
 

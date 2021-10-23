@@ -94,7 +94,14 @@
             <description>
                 Sets the resolition of track automation in milliseconds
             </description>
-        </key>         
+        </key>
+        <key name='smooth-screen' type='b'>
+            <default>false</default>
+            <summary>Smooth screen update</summary>
+            <description>
+                If enabled, the scrren updates smoothly during run/record.
+            </description>
+        </key>                  
     </schema>
 
 </schemalist>

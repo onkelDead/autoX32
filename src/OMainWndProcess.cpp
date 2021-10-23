@@ -28,11 +28,13 @@ void OMainWnd::OnJackEvent() {
             case MTC_COMPLETE:
                 if (m_shot_refresh) {
                     if (!--m_shot_refresh)
-                        this->get_window()->freeze_updates();
+                        if (settings->get_boolean("smooth-screen"))
+                            this->get_window()->freeze_updates();
                 }
                 else if (m_jack.m_jackMtc.m_edge_sec) {
                     m_jack.m_jackMtc.m_edge_sec = false;
-                    this->get_window()->thaw_updates();
+                    if (settings->get_boolean("smooth-screen"))
+                        this->get_window()->thaw_updates();
                     m_shot_refresh = 3;
                 }
                 m_timeview->SetTimeCode(m_jack.GetTimeCode());

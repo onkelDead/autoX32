@@ -34,6 +34,9 @@ public:
     void SetResolution(int resolution);
     int GetResolution();
     
+    void SetSmoothScreen(bool);
+    bool GetSmoothScreen();
+    
     bool m_result;
 
 protected:
@@ -45,6 +48,7 @@ private:
     Gtk::Button* m_btn_ok;
     
     Gtk::CheckButton* m_chk_showtrackpath;
+    Gtk::CheckButton* m_chk_smooth_screen;
     Gtk::Entry* m_txt_resolution;
 };
 
