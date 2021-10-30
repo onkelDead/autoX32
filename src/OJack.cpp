@@ -23,6 +23,7 @@ jack_port_t *mmc_in_port;
 jack_port_t *mmc_out_port;
 jack_port_t *mtc_port;
 jack_port_t *ctl_in_port;
+jack_port_t *ctl_out_port;
 
 static uint8_t mmc_command[] = {0xf0, 0x7f, 0x00, 0x06};
 
@@ -265,6 +266,7 @@ void OJack::Connect(IOMainWnd* wnd) {
     mmc_out_port = jack_port_register(m_jack_client, "Ardour MMC out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
     mtc_port = jack_port_register(m_jack_client, "Ardour MTC in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_in_port = jack_port_register(m_jack_client, "Onkel Controller in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    ctl_out_port = jack_port_register(m_jack_client, "Onkel Controller out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
     if (jack_activate(m_jack_client)) {
         fprintf(stderr, "cannot activate client");
@@ -275,6 +277,7 @@ void OJack::Connect(IOMainWnd* wnd) {
     jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
     jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
     jack_connect(m_jack_client, "netjack:capture_1", "autoX32:Onkel Controller in");
+    jack_connect(m_jack_client, "autoX32:Onkel Controller out", "netjack:playback_1");
 
     doPlay = true;
     usleep(100000);
