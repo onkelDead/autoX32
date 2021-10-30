@@ -22,37 +22,41 @@ extern "C" {
 #endif
 
 #include "lo/lo.h"    
-    
+
 #ifdef __cplusplus
 }
 #endif
 
 enum JACK_EVENT {
-	MTC_COMPLETE,
-	MTC_QUARTER_FRAME,
-        MTC_QUARTER_FRAME_SEC,
-        MTC_QUARTER_FRAME_SEC1,
-	MMC_PLAY,
-	MMC_STOP
+    MTC_COMPLETE,
+    MTC_QUARTER_FRAME,
+    MTC_QUARTER_FRAME_SEC,
+    MTC_QUARTER_FRAME_SEC1,
+    MMC_PLAY,
+    MMC_STOP,
+    MMC_LOCATE,
+    CTL_PLAYSTOP,
+    CTL_TEACH_ON,
+    CTL_TEACH_OFF,
+    CTL_COMMAND
 };
 
 enum DAW_PATH {
-	unknown,
-	smpte,
-	samples,
-	timestr,
-	reply,
-	play,
-	stop
+    unknown,
+    smpte,
+    samples,
+    timestr,
+    reply,
+    play,
+    stop
 };
 
 enum UI_EVENTS {
-	nothing,
+    nothing,
     load,
     new_track,
-	draw_trackview
+    draw_trackview
 };
-
 
 typedef struct ui_event_type {
     UI_EVENTS what;

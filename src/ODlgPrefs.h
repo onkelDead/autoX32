@@ -31,9 +31,6 @@ public:
     void SetShowTrackPath(bool);
     bool GetShowTrackPath();
     
-    void SetResolution(int resolution);
-    int GetResolution();
-    
     void SetSmoothScreen(bool);
     bool GetSmoothScreen();
     
@@ -49,7 +46,6 @@ private:
     
     Gtk::CheckButton* m_chk_showtrackpath;
     Gtk::CheckButton* m_chk_smooth_screen;
-    Gtk::Entry* m_txt_resolution;
 };
 
 #endif /* ODLGPREFS_H */

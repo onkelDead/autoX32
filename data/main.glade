@@ -155,7 +155,6 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="chk-show-track-path">
-                    <property name="label" translatable="yes">checkbutton</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
@@ -185,7 +184,7 @@
                     <property name="halign">start</property>
                     <property name="hexpand">True</property>
                     <property name="xpad">8</property>
-                    <property name="label" translatable="yes">Track resolution</property>
+                    <property name="label" translatable="yes">Smooth screen on run</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -194,9 +193,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="txt-resolution">
+                  <object class="GtkCheckButton" id="chk-smooth-screen">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -210,6 +212,9 @@
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child>
               <placeholder/>

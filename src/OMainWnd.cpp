@@ -24,8 +24,6 @@
 
 #include "embedded/main.h"
 
-const Glib::ustring str_recent_projects = "recent-projects";
-
 OMainWnd::OMainWnd() :
 Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 
@@ -35,7 +33,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
     GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
     if (schema) {
         settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
-        m_project.m_recent_projects = settings->get_string_array("recent-projects");
+        m_project.m_recent_projects = settings->get_string_array(SETTINGS_RECENT_PROJECTS);
     }
     g_settings_schema_unref(schema);
 
@@ -91,7 +89,7 @@ bool OMainWnd::SaveProject() {
                 NewProject();
                 m_project.Save();
                 m_project.AddRecentProject(m_project.GetProjectLocation());
-                settings->set_string_array(str_recent_projects, m_project.m_recent_projects);
+                settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
                 UpdateMenuRecent();
                 return true;
             }
@@ -101,7 +99,7 @@ bool OMainWnd::SaveProject() {
         } else {
             m_project.Save();
             m_project.AddRecentProject(m_project.GetProjectLocation());
-            settings->set_string_array("recent-projects", m_project.m_recent_projects);
+            settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
             UpdateMenuRecent();
             return true;
         }
@@ -122,30 +120,30 @@ bool OMainWnd::Shutdown() {
     int width, height;
     get_size(width, height);
 
-    settings->set_int("window-width", width);
-    settings->set_int("window-height", height);
+    settings->set_int(SETTINGS_WINDOW_WIDTH, width);
+    settings->set_int(SETTINGS_WINDOW_HEIGHT, height);
     get_position(width, height);
-    settings->set_int("window-left", width);
-    settings->set_int("window-top", height);
+    settings->set_int(SETTINGS_WINDOW_LEFT, width);
+    settings->set_int(SETTINGS_WINDOW_TOP, height);
     return ret_code;
 }
 
 void OMainWnd::ApplyWindowSettings() {
     if (settings) {
-        set_default_size(settings->get_int("window-width"), settings->get_int("window-height"));
-        move(settings->get_int("window-left"), settings->get_int("window-top"));
+        set_default_size(settings->get_int(SETTINGS_WINDOW_WIDTH), settings->get_int(SETTINGS_WINDOW_HEIGHT));
+        move(settings->get_int(SETTINGS_WINDOW_LEFT), settings->get_int(SETTINGS_WINDOW_TOP));
     }
 }
 
 void OMainWnd::AutoConnect() {
-    if (settings->get_boolean("mixer-autoconnect")) {
-        ConnectMixer(settings->get_string("mixer-host"));
+    if (settings->get_boolean(SETTINGS_MIXER_AUTOCONNECT)) {
+        ConnectMixer(settings->get_string(SETTINGS_MIXER_HOST));
     }
 
-    if (settings && settings->get_boolean("daw-autoconnect")) {
-        ConnectDaw(settings->get_string("daw-host")
-                , settings->get_string("daw-port")
-                , settings->get_string("daw-reply-port"));
+    if (settings && settings->get_boolean(SETTINGS_DAW_AUTOCONNECT)) {
+        ConnectDaw(settings->get_string(SETTINGS_DAW_HOST)
+                , settings->get_string(SETTINGS_DAW_PORT)
+                , settings->get_string(SETTINGS_DAW__REPLAY_PORT));
     }
 }
 

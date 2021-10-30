@@ -430,9 +430,7 @@ bool OProject::UpdatePos(gint current) {
 
 bool OProject::ProcessPos(OTrackStore* trackstore, OscCmd* cmd, gint current) {
     bool ret_code = false;
-//    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-       
-//        OTrackStore* trackstore = it->second;
+    if (trackstore) {
 	trackstore->Lock();
 //        if (current != trackstore->m_playhead->time) {
 //        	track_entry* entry = trackstore->GetEntry(current);
@@ -450,7 +448,7 @@ bool OProject::ProcessPos(OTrackStore* trackstore, OscCmd* cmd, gint current) {
 	ret_code = true;
 //        }
 	trackstore->Unlock();
-//    }
+    }
     
     return ret_code;
 }

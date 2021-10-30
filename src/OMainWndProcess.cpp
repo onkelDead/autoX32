@@ -28,12 +28,12 @@ void OMainWnd::OnJackEvent() {
             case MTC_COMPLETE:
                 if (m_shot_refresh) {
                     if (!--m_shot_refresh)
-                        if (settings->get_boolean("smooth-screen"))
+                        if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                             this->get_window()->freeze_updates();
                 }
                 else if (m_jack.m_jackMtc.m_edge_sec) {
                     m_jack.m_jackMtc.m_edge_sec = false;
-                    if (settings->get_boolean("smooth-screen"))
+                    if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                         this->get_window()->thaw_updates();
                     m_shot_refresh = 3;
                 }
@@ -50,6 +50,22 @@ void OMainWnd::OnJackEvent() {
                 m_lock_play = true;
                 m_button_play->set_active(false);
                 m_lock_play = false;
+                break;
+            case CTL_PLAYSTOP:
+                m_lock_play = true;
+                if (!m_button_play->get_active())
+                    m_jack.Play();
+                else
+                    m_jack.Stop();
+                m_lock_play = false;
+                break;
+            case CTL_TEACH_ON:
+                m_btn_teach->set_active(true);
+                //on_btn_teach_clicked();
+                break;
+            case CTL_TEACH_OFF:
+                m_btn_teach->set_active(false);
+                //on_btn_teach_clicked();
                 break;
         }
     }
