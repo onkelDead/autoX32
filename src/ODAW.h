@@ -57,6 +57,8 @@ public:
     int disconnect();
 
     void ShortMessage(const char* cmd);
+    
+    void SetRange(int start, int end);
 
     int GetKeepOn();
     void SetKeepOn(int);

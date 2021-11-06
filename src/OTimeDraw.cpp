@@ -158,10 +158,18 @@ void OTimeDraw::SetLoopStart() {
 	queue_draw();
 }
 
+int OTimeDraw::GetLoopStart() {
+    return m_range->m_loopstart;
+}
+
 void OTimeDraw::SetLoopEnd() {
 	m_range->m_loopend = m_mainWnd->GetPosMillis();
 	m_range->m_dirty = true;
 	queue_draw();
+}
+
+int OTimeDraw::GetLoopEnd() {
+    return m_range->m_loopend;
 }
 
 void OTimeDraw::SetDawTime(daw_time *dt) {

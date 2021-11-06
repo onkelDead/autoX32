@@ -37,7 +37,9 @@ public:
     void EnableZoom(bool);
     void SetZoomLoop();
     void SetLoopStart();
+    int GetLoopStart();
     void SetLoopEnd();
+    int GetLoopEnd();
     void SetTimeCode(std::string);
     int GetClickMillis();
     void ScaleView();

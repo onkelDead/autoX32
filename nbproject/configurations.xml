@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="97">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="0">
+      <df name="src">
+        <in>OConnectDlg.cpp</in>
+        <in>OCustomWidget.cpp</in>
+        <in>ODAW.cpp</in>
+        <in>ODlgPrefs.cpp</in>
+        <in>OJack.cpp</in>
+        <in>OMainWnd.cpp</in>
+        <in>OMainWndEvents.cpp</in>
+        <in>OMainWndProcess.cpp</in>
+        <in>OMainWndUI.cpp</in>
+        <in>OOverView.cpp</in>
+        <in>OPlayHead.cpp</in>
+        <in>OProject.cpp</in>
+        <in>OQueue.cpp</in>
+        <in>OTimeDraw.cpp</in>
+        <in>OTimeView.cpp</in>
+        <in>OTrackDlg.cpp</in>
+        <in>OTrackDraw.cpp</in>
+        <in>OTrackSizer.cpp</in>
+        <in>OTrackStore.cpp</in>
+        <in>OTrackView.cpp</in>
+        <in>OTracksLayout.cpp</in>
+        <in>OX32.cpp</in>
+        <in>OscCmd.cpp</in>
+        <in>autoX32.cpp</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>configure</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-std=c++11"/>
+      </flagsDictionary>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -j 8 -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>autoX32</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>.</pElem>
+              <pElem>/usr/include/gtkmm-3.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+              <pElem>/usr/include/atkmm-1.6</pElem>
+              <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+              <pElem>/usr/include/gdkmm-3.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+              <pElem>/usr/include/giomm-2.4</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+              <pElem>/usr/include/pangomm-1.4</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+              <pElem>/usr/include/glibmm-2.4</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+              <pElem>/usr/include/gtk-3.0</pElem>
+              <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+              <pElem>/usr/include/at-spi-2.0</pElem>
+              <pElem>/usr/include/dbus-1.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+              <pElem>/usr/include/gio-unix-2.0</pElem>
+              <pElem>/usr/include/cairo</pElem>
+              <pElem>/usr/include/pango-1.0</pElem>
+              <pElem>/usr/include/fribidi</pElem>
+              <pElem>/usr/include/harfbuzz</pElem>
+              <pElem>/usr/include/atk-1.0</pElem>
+              <pElem>/usr/include/cairomm-1.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+              <pElem>/usr/include/pixman-1</pElem>
+              <pElem>/usr/include/uuid</pElem>
+              <pElem>/usr/include/freetype2</pElem>
+              <pElem>/usr/include/libpng16</pElem>
+              <pElem>/usr/include/sigc++-2.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+              <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+              <pElem>/usr/include/libmount</pElem>
+              <pElem>/usr/include/blkid</pElem>
+              <pElem>/usr/include/glib-2.0</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+              <pElem>/usr/include/libxml++-2.6</pElem>
+              <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+              <pElem>/usr/include/libxml2</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>HAVE_CONFIG_H</Elem>
+              <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>./configure CC=${IDE_CC} CXX=${IDE_CXX} CFLAGS="-g3 -gdwarf-2" CXXFLAGS="-g3 -gdwarf-2"</preBuildCommand>
+        </preBuild>
+      </makefileType>
+      <item path="src/OConnectDlg.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OCustomWidget.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/ODAW.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/ODlgPrefs.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OJack.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OMainWnd.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OMainWndEvents.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OMainWndProcess.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OMainWndUI.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OOverView.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OPlayHead.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OProject.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OQueue.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTimeDraw.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTimeView.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTrackDlg.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTrackDraw.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTrackSizer.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTrackStore.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTrackView.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OTracksLayout.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OX32.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/OscCmd.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="src/autoX32.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

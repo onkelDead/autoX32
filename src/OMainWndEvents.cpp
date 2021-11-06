@@ -248,6 +248,7 @@ void OMainWnd::on_btn_loop_start_clicked() {
 void OMainWnd::on_btn_loop_end_clicked() {
 
     m_timeview->SetLoopEnd();
+    m_daw.SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd());
 }
 
 void OMainWnd::on_btn_zoom_loop_clicked() {

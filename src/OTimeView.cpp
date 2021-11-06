@@ -88,8 +88,16 @@ void OTimeView::SetLoopStart() {
 	m_timedraw->SetLoopStart();
 }
 
+int OTimeView::GetLoopStart() {
+    return m_timedraw->GetLoopStart();
+}
+
 void OTimeView::SetLoopEnd() {
 	m_timedraw->SetLoopEnd();
+}
+
+int OTimeView::GetLoopEnd() {
+    return m_timedraw->GetLoopEnd();
 }
 
 void OTimeView::ScaleView(){

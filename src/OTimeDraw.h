@@ -37,7 +37,9 @@ public:
     void EnableZoom(bool val);
 
     void SetLoopStart();    
+    int GetLoopStart();
     void SetLoopEnd();
+    int GetLoopEnd();
     void SetZoomLoop();
     
     void SetSignalZoomChange(IOTimeView *t);
