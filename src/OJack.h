@@ -47,7 +47,12 @@ public:
     void Connect(IOMainWnd* wnd);
 
     void Play();
+    void ControllerShowPlay();
     void Stop();
+    void ControllerShowStop();
+    
+    void ControllerShowTeachOn();
+    void ControllerShowTeachOff();
 
     void Locate(gint);
 

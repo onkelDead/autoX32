@@ -40,6 +40,16 @@ static bool doLocate = false;
 
 static bool ctl_play = false;
 
+static bool doShowPlay = false;
+static jack_midi_data_t ctl_show_play[] = { 0xb8, 1, 4 };
+static bool doShowStop = false;
+static jack_midi_data_t ctl_show_stop[] = { 0xb8, 1, 0 };
+
+static bool doShowTeachOn = false;
+static jack_midi_data_t ctl_show_teach_on[] = { 0xb9, 2, 4 };
+static bool doShowTeachOff = false;
+static jack_midi_data_t ctl_show_teach_off[] = { 0xb9, 2, 0 };
+
 static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
     if (event.size == 3) {
 
@@ -80,6 +90,7 @@ static int process_mmc_event(jack_midi_event_t event, OJack* jack) {
                 case 3:
                     printf("  Deferred Play\n");
                     jack->Notify(MMC_PLAY);
+                    
                     break;
                 case 0x44:
                     printf("  Locate %02d:%02d:%02d:%02d\n", event.buffer[7], event.buffer[8], event.buffer[9], event.buffer[10]);
@@ -149,6 +160,8 @@ static int process(jack_nframes_t nframes, void *arg) {
 
     port_buf = jack_port_get_buffer(mmc_out_port, nframes);
     jack_midi_clear_buffer(port_buf);
+    void* ctl_buf = jack_port_get_buffer(ctl_out_port, nframes);
+    jack_midi_clear_buffer(ctl_buf);
     if (doPlay) {
         unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_play));
         memcpy(buffer, midi_play, sizeof (midi_play));
@@ -174,19 +187,50 @@ static int process(jack_nframes_t nframes, void *arg) {
         doLocate = false;
     }
 
+    if (doShowPlay) {
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_play));
+        
+        memcpy(buffer, ctl_show_play, sizeof (ctl_show_play));
+        printf("\nshow play\n");
+        doShowPlay = false;
+    }
+
+    if (doShowStop) {
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_stop));
+        memcpy(buffer, ctl_show_stop, sizeof (ctl_show_stop));
+        printf("\nshow stop\n");
+        doShowStop = false;
+    }
+    
+    if (doShowTeachOn) {
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_teach_on));
+        memcpy(buffer, ctl_show_teach_on, sizeof (ctl_show_teach_on));
+        printf("\nshow teach on\n");
+        doShowTeachOn = false;
+    }
+    if (doShowTeachOff) {
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_teach_off));
+        memcpy(buffer, ctl_show_teach_off, sizeof (ctl_show_teach_off));
+        printf("\nshow teach off\n");
+        doShowTeachOff = false;
+    }
+
+    
     port_buf = jack_port_get_buffer(ctl_in_port, nframes);
     event_count = jack_midi_get_event_count(port_buf);
     if (event_count > 0) {
 
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
-            if (!process_ctl_event(in_event, ((OJack*) arg)) || true) {
+            if (!process_ctl_event(in_event, ((OJack*) arg))) {
+#if 0                
                 printf("Onkel Controller in: have %d events\n", event_count);
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
                 for (int j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
                 }
                 printf("\n");
+#endif                
             }
         }
     }
@@ -279,9 +323,9 @@ void OJack::Connect(IOMainWnd* wnd) {
     jack_connect(m_jack_client, "netjack:capture_1", "autoX32:Onkel Controller in");
     jack_connect(m_jack_client, "autoX32:Onkel Controller out", "netjack:playback_1");
 
-    doPlay = true;
-    usleep(100000);
-    doStop = true;
+//    doPlay = true;
+//    usleep(100000);
+//    doStop = true;
 }
 
 void OJack::Play() {
@@ -314,4 +358,21 @@ void OJack::Notify(JACK_EVENT event) {
 
 std::string OJack::GetTimeCode() {
     return m_jackMtc.GetTimeCode();
+}
+
+void OJack::ControllerShowPlay() {
+    doShowPlay = true;
+}
+
+void OJack::ControllerShowStop() {
+    doShowStop = true;
+}
+
+
+void OJack::ControllerShowTeachOn() {
+    doShowTeachOn = true;
+}
+
+void OJack::ControllerShowTeachOff() {
+    doShowTeachOff = true;
 }

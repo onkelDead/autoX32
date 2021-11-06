@@ -233,6 +233,11 @@ void OMainWnd::on_btn_teach_clicked() {
 
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
+    if (m_btn_teach->get_active())
+        m_jack.ControllerShowTeachOn();
+    else
+        m_jack.ControllerShowTeachOff();
+
 }
 
 void OMainWnd::on_btn_loop_start_clicked() {

@@ -44,11 +44,13 @@ void OMainWnd::OnJackEvent() {
             case MMC_PLAY:
                 m_lock_play = true;
                 m_button_play->set_active(true);
+                m_jack.ControllerShowPlay();
                 m_lock_play = false;
                 break;
             case MMC_STOP:
                 m_lock_play = true;
                 m_button_play->set_active(false);
+                m_jack.ControllerShowStop();
                 m_lock_play = false;
                 break;
             case CTL_PLAYSTOP:
@@ -186,7 +188,7 @@ void OMainWnd::OnMixerEvent() {
             if (trackstore) { // the track is known
                 tv = m_trackslayout.GetTrackview(cmd->GetPath());
                 if (tv) { // we have a trackview for it
-                    if (tv->GetTouch()) { // trackview is configured for touch
+                    if (tv->GetTouch() || m_btn_teach->get_active()) { // trackview is configured for touch
                         tv->SetRecord(true);
                     }
                 }
