@@ -30,15 +30,14 @@ void OMainWnd::OnJackEvent() {
                     if (!--m_shot_refresh)
                         if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                             this->get_window()->freeze_updates();
-                }
-                else if (m_jack.m_jackMtc.m_edge_sec) {
+                } else if (m_jack.m_jackMtc.m_edge_sec) {
                     m_jack.m_jackMtc.m_edge_sec = false;
                     if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                         this->get_window()->thaw_updates();
                     m_shot_refresh = 3;
                 }
                 m_timeview->SetTimeCode(m_jack.GetTimeCode());
-                m_project.UpdatePos(m_jack.GetMillis());
+                m_project.UpdatePos(m_jack.GetMillis(), c == MTC_COMPLETE);
                 UpdatePlayhead();
                 break;
             case MMC_PLAY:
@@ -51,14 +50,18 @@ void OMainWnd::OnJackEvent() {
                 m_lock_play = true;
                 m_button_play->set_active(false);
                 m_jack.ControllerShowStop();
+                this->queue_draw();
                 m_lock_play = false;
                 break;
             case CTL_PLAYSTOP:
                 m_lock_play = true;
-                if (!m_button_play->get_active())
+                if (!m_button_play->get_active()) {
+                    m_button_play->set_active(true);
                     m_jack.Play();
-                else
+                } else {
+                    m_button_play->set_active(false);
                     m_jack.Stop();
+                }
                 m_lock_play = false;
                 break;
             case CTL_TEACH_ON:
@@ -68,6 +71,22 @@ void OMainWnd::OnJackEvent() {
             case CTL_TEACH_OFF:
                 m_btn_teach->set_active(false);
                 //on_btn_teach_clicked();
+                break;
+            case CTL_LOOP_SET:
+                if (!m_jack.GetLoopState()) {
+                    on_btn_loop_start_clicked();
+                    m_jack.LoopStart();
+                } else {
+                    on_btn_loop_end_clicked();
+                    m_jack.LoopEnd();
+                }
+                break;
+            case CTL_LOOP_CLEAR:
+                m_jack.SetLoopState(false);
+                m_daw.ClearRange();
+                break;
+            case CTL_TOGGLE_LOOP:
+                m_daw.ShortMessage("/loop_toggle");
                 break;
         }
     }
@@ -184,7 +203,7 @@ void OMainWnd::OnMixerEvent() {
             // is this track already known ?
             OTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
             OTrackView *tv = NULL;
-            ;
+
             if (trackstore) { // the track is known
                 tv = m_trackslayout.GetTrackview(cmd->GetPath());
                 if (tv) { // we have a trackview for it
@@ -199,6 +218,7 @@ void OMainWnd::OnMixerEvent() {
                     m_project.AddCommand(c);
                     cmd->SetName(cmd->GetPath());
                     trackstore = m_project.NewTrack(c);
+                    trackstore->m_playing = m_project.m_playing;
                     m_x32->Send(c->GetConfigRequestName());
                     m_x32->Send(c->GetConfigRequestColor());
                     PublishUiEvent(UI_EVENTS::new_track, trackstore);
@@ -216,9 +236,6 @@ void OMainWnd::OnMixerEvent() {
 
         my_mixerqueue.pop();
     }
-    //	if (!step_processed && !m_lock_daw_time) { // TODO: why this?
-    //		m_project.UpdatePos(GetPosMillis());
-    //	}
 }
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
@@ -235,23 +252,27 @@ void OMainWnd::OnViewEvent() {
     m_new_ts_queue.front_pop(&e);
     if (e) {
 
-        if (e->what == UI_EVENTS::new_track) {
-            OTrackStore *trackstore = (OTrackStore*) e->with;
-            if (!m_trackslayout.GetTrackview(trackstore->m_cmd->GetPath())) {
-                OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
-                trackview->SetTrackStore(trackstore);
-                trackview->SetRecord(true);
-                trackview->UpdateConfig();
-                m_trackslayout.AddTrack(trackview);
+        switch (e->what) {
+            case UI_EVENTS::new_track:
+            {
+                OTrackStore *trackstore = (OTrackStore*) e->with;
+                if (!m_trackslayout.GetTrackview(trackstore->m_cmd->GetPath())) {
+                    OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
+                    trackview->SetTrackStore(trackstore);
+                    trackview->SetRecord(true);
+                    trackview->UpdateConfig();
+                    m_trackslayout.AddTrack(trackview);
+                }
+                delete e;
             }
-            delete e;
-        }
-        if (e->what == UI_EVENTS::load) {
+                break;
 
-        }
-        if (e->what == UI_EVENTS::draw_trackview) {
-            ((OTrackView*) e->with)->queue_draw();
-            delete e;
+            case UI_EVENTS::draw_trackview:
+            {
+                ((OTrackView*) e->with)->queue_draw();
+                delete e;
+            }
+                break;
         }
     }
 }

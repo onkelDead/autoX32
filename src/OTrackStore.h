@@ -34,17 +34,21 @@ public:
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     
-    void Lock();
-    void Unlock();
 
-    track_entry* NewEntry();
+
+    track_entry* NewEntry(gint pos = 0);
     track_entry* GetEntry(int);
+    
     void RemoveEntry(track_entry*);
+    void AddEntry(OscCmd*, gint);
+    
+    track_entry* GetPlayhead();
+    track_entry* UpdatePlayhead(gint, bool);
     
     bool m_record = false;
+    bool m_playing = false;    
     bool m_touch = false;
     track_entry* m_tracks = nullptr;
-    track_entry* m_playhead = nullptr;
     OscCmd* m_cmd = nullptr;
     int m_colorindex = 0;
     bool m_expanded = true;
@@ -53,10 +57,19 @@ public:
     bool m_dirty = false;
     
 private:
-
     void Init();
 
+    inline void Lock();
+    inline void Unlock();
+    
+    inline void RemoveEntryInternal(track_entry*);
+    inline track_entry* GetEntryInternal(gint);
+    inline void AddtimePointInternal(track_entry *e);
+    
     std::mutex m_mutex;
+    
+    track_entry* m_playhead = nullptr;
+   
 };
 
 #endif /* OTRACKSTORE_H */

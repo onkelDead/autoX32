@@ -193,7 +193,7 @@ void OMainWnd::OpenProject(std::string location) {
     }
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
-    m_project.UpdatePos(GetPosMillis());
+    m_project.UpdatePos(GetPosMillis(), true);
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {

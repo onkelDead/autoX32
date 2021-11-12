@@ -57,7 +57,7 @@ void OProject::SetMixer(IOX32* mixer) {
 
 bool OProject::GetDirty() {
     bool dirty = m_dirty;
-    
+
     dirty |= m_daw_range.m_dirty;
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         dirty |= it->second->m_dirty;
@@ -66,7 +66,7 @@ bool OProject::GetDirty() {
 }
 
 bool OProject::GetPlaying() {
-	return m_playing;
+    return m_playing;
 }
 
 std::string OProject::GetProjectLocation() {
@@ -134,9 +134,9 @@ void OProject::Load(std::string location) {
                 xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
 
                 if (xmlPath == nullptr || xmlTypes == nullptr)
-                	continue;
-                const char* path =  strdup((char*)xmlPath);
-                const char* types = strdup((char*)xmlTypes);
+                    continue;
+                const char* path = strdup((char*) xmlPath);
+                const char* types = strdup((char*) xmlTypes);
                 m_known_mixer_commands[path] = new OscCmd(path, types);
                 const char* name = (char*) xmlGetProp(node, BAD_CAST "name");
                 m_known_mixer_commands[path]->SetName(name);
@@ -151,9 +151,8 @@ void OProject::Load(std::string location) {
                 cv = (char*) xmlGetProp(node, BAD_CAST "alpha");
                 color.set_alpha_u(atoi(cv));
                 m_known_mixer_commands[path]->SetColor(color);
-            }
-            else {
-            	break;
+            } else {
+                break;
             }
             node = node->next;
         }
@@ -172,14 +171,11 @@ void OProject::Load(std::string location) {
 
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
-                ts->Lock();
                 ts->m_expanded = atoi(expanded);
                 ts->m_height = atoi(height);
                 ts->LoadData(m_projectFile.data());
-                ts->Unlock();
-            }
-            else {
-            	break;
+            } else {
+                break;
             }
             node = node->next;
         }
@@ -195,7 +191,7 @@ void OProject::Save() {
 
     m_projectFile = m_location;
     m_projectFile.append("/").append(name.append(".xml").data());
-    
+
     xmlTextWriterPtr writer;
 
     writer = xmlNewTextWriterFilename(m_projectFile.data(), 0);
@@ -214,7 +210,7 @@ void OProject::Save() {
 void OProject::Close() {
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete it->second;
-    }    
+    }
     for (std::map<std::string, OscCmd*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
         delete it->second;
     }
@@ -235,7 +231,7 @@ void OProject::AddRecentProject(std::string location) {
             m_recent_projects.erase(it);
         }
     }
-    
+
     m_recent_projects.insert(m_recent_projects.begin(), location);
     if (m_recent_projects.size() > 4) {
         m_recent_projects.erase(m_recent_projects.end());
@@ -256,7 +252,7 @@ void OProject::SaveRange(xmlTextWriterPtr writer) {
     xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "end", "%d", m_daw_range.m_loopend);
     m_daw_range.m_dirty = false;
     xmlTextWriterEndElement(writer);
-    printf ("Project::Save: range saved\n");
+    printf("Project::Save: range saved\n");
 }
 
 void OProject::SaveZoom(xmlTextWriterPtr writer) {
@@ -264,7 +260,7 @@ void OProject::SaveZoom(xmlTextWriterPtr writer) {
     xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "start", "%d", m_daw_time.m_viewstart);
     xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "end", "%d", m_daw_time.m_viewend);
     xmlTextWriterEndElement(writer);
-    printf ("Project::Save: zoom saved\n");
+    printf("Project::Save: zoom saved\n");
 }
 
 void OProject::SaveCommands(xmlTextWriterPtr writer) {
@@ -283,16 +279,15 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
         sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
         xmlTextWriterEndElement(writer);
-        printf ("Project::Save: command %s saved\n", it->second->GetPath().data());
-        
+        printf("Project::Save: command %s saved\n", it->second->GetPath().data());
+
     }
 }
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
-	char cv[16];
+    char cv[16];
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         OTrackStore* ts = it->second;
-        ts->Lock();
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
         sprintf(cv, "%d", it->second->m_expanded);
@@ -302,8 +297,7 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
 
         xmlTextWriterEndElement(writer);
         it->second->SaveData(m_projectFile.data());
-        printf ("Project::Save: track %s saved\n", it->first.data());
-        ts->Unlock();
+        printf("Project::Save: track %s saved\n", it->first.data());
     }
 }
 
@@ -332,8 +326,12 @@ void OProject::SetMaxMillis(int max_millis) {
 }
 
 void OProject::SetPlaying(bool val) {
-    
+
     m_playing = val;
+    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        OTrackStore* ts = it->second;
+        ts->m_playing = val;
+    }
 }
 
 OscCmd* OProject::GetCommand(char* path) {
@@ -354,17 +352,19 @@ void OProject::RemoveCommand(OscCmd* cmd) {
 }
 
 OTrackStore* OProject::GetTrack(std::string path) {
-	auto e = m_tracks.find(path);
-	if (e != m_tracks.end())
-		return m_tracks[path];
-	return NULL;
+    auto e = m_tracks.find(path);
+    if (e != m_tracks.end())
+        return m_tracks[path];
+    return NULL;
 }
 
 std::map<std::string, OTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
 
-void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
+bool OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry) {
+    if (entry == nullptr)
+        return false;
     switch (trackstore->m_cmd->GetTypes().data()[0]) {
         case 'f':
             m_mixer->SendFloat(trackstore->m_cmd->GetPath(), entry->val.f);
@@ -373,121 +373,31 @@ void OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry){
             m_mixer->SendInt(trackstore->m_cmd->GetPath(), entry->val.i);
             break;
     }
+    return true;
 }
 
-bool OProject::JumpPos(gint current) {
+bool OProject::UpdatePos(gint current, bool jump) {
     bool ret_code = false;
 
-
-	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-
-        OTrackStore* trackstore = it->second;
-        //trackstore->Lock();
-        track_entry* entry = trackstore->m_tracks;
-        track_entry e;
-        e.val.f = entry->val.f;
-        while(entry->next && entry->time < current) {
-        	e.val.f += entry->next->delta.f;
-        	fprintf(stdout, "e.val %f entry->val %f \n", e.val.f, entry->val.f);
-        	entry = entry->next;
-        }
-        switch (trackstore->m_cmd->GetTypes().data()[0]) {
-            case 'f':
-                m_mixer->SendFloat(trackstore->m_cmd->GetPath(), e.val.f);
-                break;
-            case 'i':
-                m_mixer->SendInt(trackstore->m_cmd->GetPath(), e.val.i);
-                break;
-        }
-        //trackstore->Unlock();
-
-    }
-	return ret_code;
-}
-
-bool OProject::UpdatePos(gint current) {
-    bool ret_code = false;
-
-	for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
 
         OTrackStore* trackstore = it->second;
-        trackstore->Lock();
-        track_entry* entry = trackstore->GetEntry(current);
-        if (entry != trackstore->m_playhead) {
-        	if (trackstore->m_record && m_playing) {
-        		trackstore->RemoveEntry(entry);
-        	}
-        	else {
-				PlayTrackEntry(trackstore, entry);
-				trackstore->m_playhead = entry;
-        	}
-        	ret_code = true;
-        }
-        trackstore->Unlock();
+        ret_code = PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
+
     }
-	return ret_code;
+    return ret_code;
 }
 
 bool OProject::ProcessPos(OTrackStore* trackstore, OscCmd* cmd, gint current) {
     bool ret_code = false;
     if (trackstore) {
-	trackstore->Lock();
-//        if (current != trackstore->m_playhead->time) {
-//        	track_entry* entry = trackstore->GetEntry(current);
-
-	if (trackstore->m_record) {
-		AddEntry(trackstore, cmd, current);
-
-//					trackstore->RemoveEntry(entry);
-	}
-//		}
-//        else {
-//        	trackstore->m_playhead->val = cmd->GetLastFloat();
-//        }
-//        if (cmd && it->first == cmd->GetPath()) {
-	ret_code = true;
-//        }
-	trackstore->Unlock();
-    }
-    
-    return ret_code;
-}
-
-void OProject::AddEntry(OTrackStore* trackstore, OscCmd* cmd, int timepos) {
-    if (trackstore) {
         if (trackstore->m_record) {
-            track_entry *entry = NULL;
-            if (m_playing) {
-                if (timepos != trackstore->m_playhead->time) {
-                    entry = trackstore->NewEntry();
-                    entry->time = timepos;
-                    entry->next = NULL;
-                    entry->prev = NULL;
-                    trackstore->AddTimePoint(entry);
-                    trackstore->m_playhead = entry;
-                }
-                else {
-                    entry = trackstore->m_playhead;
-                }
-            } else {
-                entry = trackstore->GetEntry(timepos);
-            }
-
-            if (entry) {
-                switch (cmd->GetTypes().data()[0]) {
-                    case 'f':
-                        entry->val.f = cmd->GetLastFloat();
-                        entry->delta.f = cmd->GetLastFloat() - ((entry->prev != NULL) ? entry->prev->val.f : 1.0);
-                        break;
-                    case 'i':
-                        entry->val.i = cmd->GetLastInt();
-                        entry->delta.i = cmd->GetLastInt() - ((entry->prev != NULL) ? entry->prev->val.i : 1);
-                        break;
-                }
-                trackstore->m_dirty = true;
-            }
+            trackstore->AddEntry(cmd, current);
         }
+        ret_code = true;
     }
+
+    return ret_code;
 }
 
 OscCmd* OProject::ProcessConfig(OscCmd* cmd) {
@@ -500,8 +410,8 @@ OscCmd* OProject::ProcessConfig(OscCmd* cmd) {
         if (it->second->GetConfigRequestColor() == cmd->GetPath()) {
             it->second->SetColorIndex(cmd->GetLastInt());
             return it->second;
-        }        
-        
+        }
+
     }
     return NULL;
 }

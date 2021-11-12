@@ -1,11 +1,18 @@
 /*
- * jack.c
- *
- *  Created on: Oct 20, 2021
- *      Author: onkel
+  Copyright 2021 Detlef Urban <onkel@paraair.de>
+
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+
+  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-
 
 #include <stdio.h>
 #include <errno.h>
@@ -13,11 +20,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #include <jack/jack.h>
 #include <jack/midiport.h>
 
 #include <src/OJack.h>
+#include <queue>
 
 jack_port_t *mmc_in_port;
 jack_port_t *mmc_out_port;
@@ -25,30 +34,19 @@ jack_port_t *mtc_port;
 jack_port_t *ctl_in_port;
 jack_port_t *ctl_out_port;
 
-static uint8_t mmc_command[] = {0xf0, 0x7f, 0x00, 0x06};
+std::queue<int> ctl_out;
+std::queue<uint8_t> mmc_out;
 
+#define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
+static uint8_t mmc_command[13];
 
-static jack_midi_data_t midi_play[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
-static bool doPlay = false;
-static jack_midi_data_t midi_stop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x01, 0xf7};
-static bool doStop = false;
-static jack_midi_data_t find[] = {0xf0, 0x7f, 0x7e, 0x06, 0x05, 0xf7};
-static bool doFind = false;
-static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
+static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
+
 static bool doLocate = false;
+static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
 
-static bool ctl_play = false;
-
-static bool doShowPlay = false;
-static jack_midi_data_t ctl_show_play[] = { 0xb8, 1, 4 };
-static bool doShowStop = false;
-static jack_midi_data_t ctl_show_stop[] = { 0xb8, 1, 0 };
-
-static bool doShowTeachOn = false;
-static jack_midi_data_t ctl_show_teach_on[] = { 0xb9, 2, 4 };
-static bool doShowTeachOff = false;
-static jack_midi_data_t ctl_show_teach_off[] = { 0xb9, 2, 0 };
+time_t t;
 
 static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
     if (event.size == 3) {
@@ -66,6 +64,24 @@ static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
                     else
                         jack->Notify(CTL_TEACH_OFF);
                     break;
+                case 3:
+                    if (event.buffer[2]) // button on down
+                        time(&t);
+                    else {
+                        time_t now;
+                        time(&now);
+                        if (now > t + 1) {
+                            jack->Notify(CTL_LOOP_CLEAR);
+                        } else {
+                            jack->Notify(CTL_LOOP_SET);
+                        }
+                    }
+                    break;
+                case 4:
+                    if (event.buffer[2]) {
+                        jack->Notify(CTL_TOGGLE_LOOP);
+                    }
+                    break;
             }
             return 1;
         }
@@ -76,28 +92,21 @@ static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
 static int process_mmc_event(jack_midi_event_t event, OJack* jack) {
 
     if (event.size > 4) {
-        if (!memcmp(event.buffer, mmc_command, sizeof (mmc_command))) {
-            //printf("MMC: got command with with time %d  ", event.time);
-            switch (event.buffer[4]) {
-                case 1:
-                    printf("  Stop\n");
-                    jack->Notify(MMC_STOP);
-                    break;
-                case 2:
-                    printf("  Play\n");
-                    jack->Notify(MMC_PLAY);
-                    break;
-                case 3:
-                    printf("  Deferred Play\n");
-                    jack->Notify(MMC_PLAY);
-                    
-                    break;
-                case 0x44:
-                    printf("  Locate %02d:%02d:%02d:%02d\n", event.buffer[7], event.buffer[8], event.buffer[9], event.buffer[10]);
-                    break;
-            }
-            return 1;
+        switch (event.buffer[4]) {
+            case 1:
+                jack->Notify(MMC_STOP);
+                break;
+            case 2:
+                jack->Notify(MMC_PLAY);
+                break;
+            case 3:
+                jack->Notify(MMC_PLAY);
+
+                break;
+            case 0x44:
+                break;
         }
+        return 1;
     }
     return 0;
 }
@@ -129,7 +138,6 @@ static int process(jack_nframes_t nframes, void *arg) {
     jack_nframes_t event_index = 0;
     jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
     if (event_count > 0) {
-        //printf("Ardour MMC in: have %d events\n", event_count);
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
             if (!process_mmc_event(in_event, ((OJack*) arg))) {
@@ -145,7 +153,6 @@ static int process(jack_nframes_t nframes, void *arg) {
     port_buf = jack_port_get_buffer(mtc_port, nframes);
     event_count = jack_midi_get_event_count(port_buf);
     if (event_count > 0) {
-        //printf("Ardour MTC in: have %d events\n", event_count);
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
             if (!process_mtc_event(in_event, ((OJack*) arg))) {
@@ -162,60 +169,30 @@ static int process(jack_nframes_t nframes, void *arg) {
     jack_midi_clear_buffer(port_buf);
     void* ctl_buf = jack_port_get_buffer(ctl_out_port, nframes);
     jack_midi_clear_buffer(ctl_buf);
-    if (doPlay) {
-        unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_play));
-        memcpy(buffer, midi_play, sizeof (midi_play));
-        printf("\nplay send\n");
-        doPlay = false;
+
+    if (!mmc_out.empty()) {
+        uint8_t c = mmc_out.front();
+        unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_playstop));
+        memcpy(buffer, midi_playstop, sizeof (midi_playstop));
+        buffer[4] = c;
+        mmc_out.pop();
     }
-    if (doStop) {
-        unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_stop));
-        memcpy(buffer, midi_stop, sizeof (midi_stop));
-        printf("\nstop send\n");
-        doStop = false;
-    }
-    if (doFind) {
-        unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (find));
-        memcpy(buffer, find, sizeof (find));
-        printf("\nfind send\n");
-        doFind = false;
-    }
+
     if (doLocate) {
         unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (locate));
         memcpy(buffer, locate, sizeof (locate));
-        printf("\nlocate send\n");
         doLocate = false;
     }
 
-    if (doShowPlay) {
-        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_play));
-        
-        memcpy(buffer, ctl_show_play, sizeof (ctl_show_play));
-        printf("\nshow play\n");
-        doShowPlay = false;
+    if (!ctl_out.empty()) {
+        int c = ctl_out.front();
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, 3);
+        buffer[0] = (c >> 16) & 0xff;
+        buffer[1] = (c >> 8) & 0xff;
+        buffer[2] = (c) & 0xff;
+        ctl_out.pop();
     }
 
-    if (doShowStop) {
-        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_stop));
-        memcpy(buffer, ctl_show_stop, sizeof (ctl_show_stop));
-        printf("\nshow stop\n");
-        doShowStop = false;
-    }
-    
-    if (doShowTeachOn) {
-        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_teach_on));
-        memcpy(buffer, ctl_show_teach_on, sizeof (ctl_show_teach_on));
-        printf("\nshow teach on\n");
-        doShowTeachOn = false;
-    }
-    if (doShowTeachOff) {
-        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, sizeof (ctl_show_teach_off));
-        memcpy(buffer, ctl_show_teach_off, sizeof (ctl_show_teach_off));
-        printf("\nshow teach off\n");
-        doShowTeachOff = false;
-    }
-
-    
     port_buf = jack_port_get_buffer(ctl_in_port, nframes);
     event_count = jack_midi_get_event_count(port_buf);
     if (event_count > 0) {
@@ -320,20 +297,47 @@ void OJack::Connect(IOMainWnd* wnd) {
     jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
     jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
     jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
-    jack_connect(m_jack_client, "netjack:capture_1", "autoX32:Onkel Controller in");
-    jack_connect(m_jack_client, "autoX32:Onkel Controller out", "netjack:playback_1");
+    jack_connect(m_jack_client, "OSerialBridge:out", "autoX32:Onkel Controller in");
+    jack_connect(m_jack_client, "autoX32:Onkel Controller out", "OSerialBridge:in");
 
-//    doPlay = true;
-//    usleep(100000);
-//    doStop = true;
+
+    ctl_out.push(CTL_COMMAND(0xb8, 0, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xb9, 1, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xba, 2, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbb, 0, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbc, 1, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbd, 2, 64));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xb8, 0, 0));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xb9, 1, 0));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xba, 2, 0));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbb, 0, 0));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbc, 1, 0));
+    usleep(100000);
+    ctl_out.push(CTL_COMMAND(0xbd, 2, 0));
+
+    Play();
+    usleep(100000);
+    Stop();
 }
 
 void OJack::Play() {
-    doPlay = true;
+    mmc_out.push(0x03);
+    ControllerShowPlay();
 }
 
 void OJack::Stop() {
-    doStop = true;
+    mmc_out.push(0x01);
+    ControllerShowStop();
 }
 
 void OJack::Locate(gint millis) {
@@ -361,18 +365,37 @@ std::string OJack::GetTimeCode() {
 }
 
 void OJack::ControllerShowPlay() {
-    doShowPlay = true;
+    ctl_out.push(CTL_COMMAND(0xb8, 1, 4));
 }
 
 void OJack::ControllerShowStop() {
-    doShowStop = true;
+    ctl_out.push(CTL_COMMAND(0xb8, 1, 0));
 }
 
-
 void OJack::ControllerShowTeachOn() {
-    doShowTeachOn = true;
+    ctl_out.push(CTL_COMMAND(0xb9, 2, 4));
 }
 
 void OJack::ControllerShowTeachOff() {
-    doShowTeachOff = true;
+    ctl_out.push(CTL_COMMAND(0xb9, 2, 0));
+}
+
+void OJack::LoopStart() {
+    m_loop_state = true;
+    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
+}
+
+void OJack::LoopEnd() {
+    m_loop_state = false;
+    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
+}
+
+bool OJack::GetLoopState() {
+    return m_loop_state;
+}
+
+void OJack::SetLoopState(bool state) {
+    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
+    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
+    m_loop_state = state;
 }

@@ -58,7 +58,8 @@ public:
 
     void ShortMessage(const char* cmd);
     
-    void SetRange(int start, int end);
+    void SetRange(int start, int end, bool enable = false);
+    void ClearRange();
 
     int GetKeepOn();
     void SetKeepOn(int);

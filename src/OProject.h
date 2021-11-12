@@ -66,20 +66,20 @@ public:
     
     void SetMixer(IOX32*);
     
-    bool UpdatePos(gint);
-    bool JumpPos(gint);
+    bool UpdatePos(gint, bool);
     bool ProcessPos(OTrackStore*, OscCmd*, gint);
 
-    void PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
+    bool PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
 
     OTrackStore* NewTrack(OscCmd*);
-    void AddEntry(OTrackStore*, OscCmd*, int);
     
     OscCmd* ProcessConfig(OscCmd*);
 
     void AddRecentProject(std::string);
     
     std::vector<std::string> m_recent_projects;
+
+    bool m_playing = false;
 
 private:
 
@@ -88,7 +88,6 @@ private:
     std::string m_location;
     std::string m_projectFile;
     
-    bool m_playing = false;
     
     daw_range m_daw_range;
     daw_time m_daw_time;
