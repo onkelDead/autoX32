@@ -51,9 +51,8 @@ std::map<std::string, OTrackView *> OTracksLayout::GetTrackMap() {
 }
 
 void OTracksLayout::redraw() {
-//    queue_draw();
+    //    queue_draw();
 }
-
 
 void OTracksLayout::StopRecord() {
     for (std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin(); it != m_trackmap.end(); ++it) {
@@ -61,11 +60,20 @@ void OTracksLayout::StopRecord() {
             it->second->SetRecord(false);
             it->second->SetTouch(false);
         }
-    }    
+    }
+}
+
+void OTracksLayout::StopTeach() {
+    for (std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin(); it != m_trackmap.end(); ++it) {
+        if (it->second) {
+            it->second->SetRecord(false);
+            it->second->SetTouch(false);
+        }
+    }
 }
 
 void OTracksLayout::RemoveAllTackViews() {
-    while(m_trackmap.size() > 0) {
+    while (m_trackmap.size() > 0) {
         std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin();
         RemoveTrackView(it->first);
     }
@@ -76,7 +84,7 @@ void OTracksLayout::RemoveTrackView(std::string path) {
     remove(*tv);
     m_trackmap.erase(path);
     delete tv;
-    
+
 }
 
 

@@ -215,37 +215,53 @@
         </ccTool>
       </item>
       <item path="src/OJack.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/include/jack</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
-            <pElem>/usr/include/glib-2.0/glib</pElem>
-            <pElem>/usr/include/glib-2.0/glib/deprecated</pElem>
-            <pElem>/usr/include/glib-2.0/gobject</pElem>
-            <pElem>/usr/include/atk-1.0/atk</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0/gio</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
-            <pElem>/usr/include/pango-1.0/pango</pElem>
-            <pElem>/usr/include/harfbuzz</pElem>
-            <pElem>/usr/include/cairo</pElem>
-            <pElem>/usr/include/freetype2</pElem>
-            <pElem>/usr/include/freetype2/freetype/config</pElem>
-            <pElem>/usr/include/freetype2/freetype</pElem>
-            <pElem>/usr/include/fontconfig</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
-            <pElem>/usr/include/lo</pElem>
             <pElem>.</pElem>
-            <pElem>/usr/include/atk-1.0</pElem>
-            <pElem>/usr/include/giomm-2.4</pElem>
-            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
             <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OMainWnd.cpp" ex="false" tool="1" flavor2="8">
@@ -449,37 +465,53 @@
         </ccTool>
       </item>
       <item path="src/OOverView.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
-            <pElem>/usr/include/glib-2.0/glib</pElem>
-            <pElem>/usr/include/glib-2.0/glib/deprecated</pElem>
-            <pElem>/usr/include/glib-2.0/gobject</pElem>
-            <pElem>/usr/include/cairo</pElem>
-            <pElem>/usr/include/atk-1.0/atk</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
-            <pElem>/usr/include/glib-2.0/gio</pElem>
-            <pElem>/usr/include/pango-1.0/pango</pElem>
-            <pElem>/usr/include/harfbuzz</pElem>
-            <pElem>/usr/include/freetype2</pElem>
-            <pElem>/usr/include/freetype2/freetype/config</pElem>
-            <pElem>/usr/include/freetype2/freetype</pElem>
-            <pElem>/usr/include/fontconfig</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
-            <pElem>/usr/include/lo</pElem>
-            <pElem>/usr/include/gtkmm-3.0</pElem>
-            <pElem>/usr/include/atk-1.0</pElem>
-            <pElem>/usr/include/giomm-2.4</pElem>
-            <pElem>/usr/include/pango-1.0</pElem>
-            <pElem>/usr/include/gdkmm-3.0</pElem>
             <pElem>.</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+            <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OPlayHead.cpp" ex="false" tool="1" flavor2="8">
@@ -564,81 +596,153 @@
         </ccTool>
       </item>
       <item path="src/OQueue.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/include/lo</pElem>
             <pElem>.</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+            <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OTimeDraw.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
-            <pElem>/usr/include/glib-2.0/glib</pElem>
-            <pElem>/usr/include/glib-2.0/glib/deprecated</pElem>
-            <pElem>/usr/include/glib-2.0/gobject</pElem>
-            <pElem>/usr/include/pango-1.0/pango</pElem>
-            <pElem>/usr/include/cairo</pElem>
-            <pElem>/usr/include/atk-1.0/atk</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0/gio</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
-            <pElem>/usr/include/harfbuzz</pElem>
-            <pElem>/usr/include/freetype2</pElem>
-            <pElem>/usr/include/freetype2/freetype/config</pElem>
-            <pElem>/usr/include/freetype2/freetype</pElem>
-            <pElem>/usr/include/fontconfig</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
-            <pElem>/usr/include/lo</pElem>
-            <pElem>/usr/include/gdkmm-3.0</pElem>
-            <pElem>/usr/include/pango-1.0</pElem>
-            <pElem>/usr/include/atk-1.0</pElem>
-            <pElem>/usr/include/giomm-2.4</pElem>
-            <pElem>/usr/include/gtkmm-3.0</pElem>
             <pElem>.</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+            <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OTimeView.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
-            <pElem>/usr/include/glib-2.0/glib</pElem>
-            <pElem>/usr/include/glib-2.0/glib/deprecated</pElem>
-            <pElem>/usr/include/glib-2.0/gobject</pElem>
-            <pElem>/usr/include/atk-1.0/atk</pElem>
-            <pElem>src/embedded</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0/gio</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
-            <pElem>/usr/include/pango-1.0/pango</pElem>
-            <pElem>/usr/include/harfbuzz</pElem>
-            <pElem>/usr/include/cairo</pElem>
-            <pElem>/usr/include/freetype2</pElem>
-            <pElem>/usr/include/freetype2/freetype/config</pElem>
-            <pElem>/usr/include/freetype2/freetype</pElem>
-            <pElem>/usr/include/fontconfig</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
-            <pElem>/usr/include/lo</pElem>
-            <pElem>/usr/include/gtkmm-3.0</pElem>
-            <pElem>/usr/include/atk-1.0</pElem>
-            <pElem>/usr/include/giomm-2.4</pElem>
-            <pElem>/usr/include/pango-1.0</pElem>
-            <pElem>/usr/include/gdkmm-3.0</pElem>
             <pElem>.</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+            <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OTrackDlg.cpp" ex="false" tool="1" flavor2="8">
@@ -906,37 +1010,53 @@
         </ccTool>
       </item>
       <item path="src/OX32.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
+        <ccTool flags="1">
           <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/include/lo</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
-            <pElem>/usr/include/glib-2.0/glib</pElem>
-            <pElem>/usr/include/glib-2.0/glib/deprecated</pElem>
-            <pElem>/usr/include/glib-2.0/gobject</pElem>
-            <pElem>/usr/include/atk-1.0/atk</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
-            <pElem>/usr/include/glib-2.0/gio</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
-            <pElem>/usr/include/pango-1.0/pango</pElem>
-            <pElem>/usr/include/harfbuzz</pElem>
-            <pElem>/usr/include/cairo</pElem>
-            <pElem>/usr/include/freetype2</pElem>
-            <pElem>/usr/include/freetype2/freetype/config</pElem>
-            <pElem>/usr/include/freetype2/freetype</pElem>
-            <pElem>/usr/include/fontconfig</pElem>
-            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
-            <pElem>/usr/include/atk-1.0</pElem>
-            <pElem>/usr/include/sigc++-2.0</pElem>
-            <pElem>/usr/include/giomm-2.4</pElem>
-            <pElem>/usr/include/pango-1.0</pElem>
-            <pElem>/usr/include/gdkmm-3.0</pElem>
             <pElem>.</pElem>
+            <pElem>/usr/include/gtkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gtkmm-3.0/include</pElem>
+            <pElem>/usr/include/atkmm-1.6</pElem>
+            <pElem>/usr/include/gtk-3.0/unix-print</pElem>
+            <pElem>/usr/include/gdkmm-3.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/gdkmm-3.0/include</pElem>
+            <pElem>/usr/include/giomm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/giomm-2.4/include</pElem>
+            <pElem>/usr/include/pangomm-1.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/pangomm-1.4/include</pElem>
+            <pElem>/usr/include/glibmm-2.4</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glibmm-2.4/include</pElem>
+            <pElem>/usr/include/gtk-3.0</pElem>
+            <pElem>/usr/include/at-spi2-atk/2.0</pElem>
+            <pElem>/usr/include/at-spi-2.0</pElem>
+            <pElem>/usr/include/dbus-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/dbus-1.0/include</pElem>
+            <pElem>/usr/include/gio-unix-2.0</pElem>
+            <pElem>/usr/include/cairo</pElem>
+            <pElem>/usr/include/pango-1.0</pElem>
+            <pElem>/usr/include/fribidi</pElem>
+            <pElem>/usr/include/harfbuzz</pElem>
+            <pElem>/usr/include/atk-1.0</pElem>
+            <pElem>/usr/include/cairomm-1.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/cairomm-1.0/include</pElem>
+            <pElem>/usr/include/pixman-1</pElem>
+            <pElem>/usr/include/uuid</pElem>
+            <pElem>/usr/include/freetype2</pElem>
+            <pElem>/usr/include/libpng16</pElem>
+            <pElem>/usr/include/sigc++-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/sigc++-2.0/include</pElem>
+            <pElem>/usr/include/gdk-pixbuf-2.0</pElem>
+            <pElem>/usr/include/libmount</pElem>
+            <pElem>/usr/include/blkid</pElem>
+            <pElem>/usr/include/glib-2.0</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/glib-2.0/include</pElem>
+            <pElem>/usr/include/libxml++-2.6</pElem>
+            <pElem>/usr/lib/x86_64-linux-gnu/libxml++-2.6/include</pElem>
+            <pElem>/usr/include/libxml2</pElem>
           </incDir>
+          <preprocessorList>
+            <Elem>HAVE_CONFIG_H</Elem>
+            <Elem>PKGDATADIR="/usr/local/share/autoX32/"</Elem>
+          </preprocessorList>
         </ccTool>
       </item>
       <item path="src/OscCmd.cpp" ex="false" tool="1" flavor2="8">

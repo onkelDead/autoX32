@@ -88,6 +88,9 @@ void OMainWnd::OnJackEvent() {
             case CTL_TOGGLE_LOOP:
                 m_daw.ShortMessage("/loop_toggle");
                 break;
+            case CTL_HOME:
+                on_button_back_clicked();
+                break;
         }
     }
     m_jackqueue.pop();

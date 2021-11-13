@@ -45,8 +45,7 @@ void OMainWnd::on_menu_file_connection() {
             settings->set_string(SETTINGS_DAW_PORT, pDialog->GetArdourPort());
             settings->set_string(SETTINGS_DAW__REPLAY_PORT, pDialog->GetArdourReplyPort());
             settings->set_boolean(SETTINGS_DAW_AUTOCONNECT, pDialog->GetArdoutAutoConnect());
-        }
-        else {
+        } else {
             Gtk::MessageDialog dialog(*this, "Failed to connect to Ardour.",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
             dialog.run();
@@ -56,8 +55,7 @@ void OMainWnd::on_menu_file_connection() {
         if (ConnectMixer(pDialog->GetX32Host())) {
             settings->set_string(SETTINGS_MIXER_HOST, pDialog->GetX32Host());
             settings->set_boolean(SETTINGS_MIXER_AUTOCONNECT, pDialog->GetX32AutoConnect());
-        }
-        else {
+        } else {
             Gtk::MessageDialog dialog(*this, "Failed to connect to Behringer X32.",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
             dialog.run();
@@ -97,10 +95,10 @@ bool OMainWnd::on_key_press_event(GdkEventKey *key_event) {
 
 bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
     if (key_event->keyval == GDK_KEY_space) {
-//        m_button_play->set_active(!m_button_play->get_active());
-//        return true;
+        //        m_button_play->set_active(!m_button_play->get_active());
+        //        return true;
     }
-    
+
     if (key_event->keyval == GDK_KEY_Home) {
         on_button_back_clicked();
         return true;
@@ -114,20 +112,20 @@ bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
         on_btn_zoom_loop_clicked();
         return true;
     }
-    
+
     if (key_event->keyval == GDK_KEY_s) {
-    	on_btn_loop_start_clicked();
-    	return true;
+        on_btn_loop_start_clicked();
+        return true;
     }
 
     if (key_event->keyval == GDK_KEY_e) {
-    	on_btn_loop_end_clicked();
-    	return true;
+        on_btn_loop_end_clicked();
+        return true;
     }
 
     if (key_event->keyval == GDK_KEY_f) {
-    	m_btn_lock_playhead->set_active(!m_btn_lock_playhead->get_active());
-    	return true;
+        m_btn_lock_playhead->set_active(!m_btn_lock_playhead->get_active());
+        return true;
     }
 
     return Gtk::Window::on_key_release_event(key_event);
@@ -233,10 +231,14 @@ void OMainWnd::on_btn_teach_clicked() {
 
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
-    if (m_btn_teach->get_active())
+    if (m_btn_teach->get_active()) {
         m_jack.ControllerShowTeachOn();
-    else
+    } else {
         m_jack.ControllerShowTeachOff();
+        m_trackslayout.StopTeach();
+
+    }
+
 
 }
 
@@ -267,20 +269,20 @@ void OMainWnd::on_button_play_clicked() {
 
     if (!m_button_play->get_active()) {
         m_project.SetPlaying(false);
-        if (m_project.GetProjectLocation() != "") 
+        if (m_project.GetProjectLocation() != "")
             m_project.Save();
         m_trackslayout.StopRecord();
         if (!m_lock_play)
             //m_daw.Stop();
-        	m_jack.Stop();
+            m_jack.Stop();
         if (!m_shot_refresh && settings->get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
     } else {
         m_project.SetPlaying(true);
         if (!m_lock_play)
-        	//m_daw.Play();
-        	m_jack.Play();
+            //m_daw.Play();
+            m_jack.Play();
         if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->freeze_updates();
     }
@@ -303,8 +305,8 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 }
 
 void OMainWnd::on_btn_cut_clicked() {
-	m_btn_cut->set_icon_widget(m_btn_cut->get_active() ? m_img_cut_on : m_img_cut_off);
-	m_btn_cut->show_all();
+    m_btn_cut->set_icon_widget(m_btn_cut->get_active() ? m_img_cut_on : m_img_cut_off);
+    m_btn_cut->show_all();
 }
 
 void OMainWnd::on_timeline_pos_changed() {
@@ -315,7 +317,7 @@ void OMainWnd::on_timeline_pos_changed() {
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
-	m_timeview->queue_draw();
+    m_timeview->queue_draw();
     m_trackslayout.redraw();
 }
 

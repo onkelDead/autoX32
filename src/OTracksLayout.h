@@ -34,6 +34,7 @@ public:
     void SetPos();
 
     void StopRecord();
+    void StopTeach();
 
     void redraw();
 

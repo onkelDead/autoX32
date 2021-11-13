@@ -41,7 +41,8 @@ enum JACK_EVENT {
     CTL_COMMAND,
     CTL_LOOP_SET,
     CTL_LOOP_CLEAR,
-    CTL_TOGGLE_LOOP
+    CTL_TOGGLE_LOOP,
+    CTL_HOME
 };
 
 enum DAW_PATH {

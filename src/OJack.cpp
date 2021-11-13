@@ -82,6 +82,11 @@ static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
                         jack->Notify(CTL_TOGGLE_LOOP);
                     }
                     break;
+                case 6:
+                    if (event.buffer[2]) {
+                        jack->Notify(CTL_HOME);
+                    }
+                    break;
             }
             return 1;
         }
