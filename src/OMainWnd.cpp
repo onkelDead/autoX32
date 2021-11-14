@@ -28,16 +28,17 @@ void check_ardour_recent(void* user_Data) {
     FILE* file_recent;
     char name[256];
     char path[256];
+    int dummy;
 
     OMainWnd* mainWnd = (OMainWnd*) user_Data;
 
     printf("check_ardour_recent\n");
     file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
     if (file_recent != NULL) {
-        fscanf(file_recent, "%s", name);
-        fscanf(file_recent, "%s", path);
+        dummy = fscanf(file_recent, "%s", name);
+        dummy = fscanf(file_recent, "%s", path);
         fclose(file_recent);
-        strcat(path, "/autoX32");
+        strncat(path, "/autoX32", 256);
         if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
             mainWnd->CloseProject();
             

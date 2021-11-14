@@ -193,14 +193,15 @@ bool OProject::OpenFromArdurRecent() {
     char name[256];
     char path[256];
     bool ret_val = false;
+    int dummy;
 
     file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
     if (file_recent != NULL) {
-        fscanf(file_recent, "%s", name);
-        fscanf(file_recent, "%s", path);
+        dummy = fscanf(file_recent, "%s", name);
+        dummy = fscanf(file_recent, "%s", path);
         fclose(file_recent);
 
-        strcat(path, "/autoX32");
+        strncat(path, "/autoX32", 256);
         printf("%s\n", path);
         if (access(path, F_OK)) {
             printf("project don't exists\n");
