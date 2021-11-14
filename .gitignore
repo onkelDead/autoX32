@@ -11,3 +11,6 @@ config.h
 config.status
 stamp-h1
 /config.log
+src/.deps/
+src/.dirstamp
+
