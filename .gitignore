@@ -1,0 +1,13 @@
+nbproject
+Makefile
+Makefile.in
+aclocal.m4
+compile
+configure
+autom4te.cache
+*.o
+autoX32*
+config.h
+config.status
+stamp-h1
+/config.log
