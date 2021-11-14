@@ -38,7 +38,7 @@ void check_ardour_recent(void* user_Data) {
         dummy = fscanf(file_recent, "%s", name);
         dummy = fscanf(file_recent, "%s", path);
         fclose(file_recent);
-        strncat(path, "/autoX32", 256);
+        strncat(path, "/autoX32", 32);
         if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
             mainWnd->CloseProject();
             

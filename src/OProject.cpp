@@ -23,7 +23,6 @@
 #include "OTrackStore.h"
 #include "IOX32.h"
 
-
 OProject::OProject() {
     m_daw_range.m_loopend = -1;
     m_daw_range.m_loopstart = 0;
@@ -201,7 +200,7 @@ bool OProject::OpenFromArdurRecent() {
         dummy = fscanf(file_recent, "%s", path);
         fclose(file_recent);
 
-        strncat(path, "/autoX32", 256);
+        strncat(path, "/autoX32", 32);
         printf("%s\n", path);
         if (access(path, F_OK)) {
             printf("project don't exists\n");
@@ -321,17 +320,19 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     char cv[16];
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        OTrackStore* ts = it->second;
-        xmlTextWriterStartElement(writer, BAD_CAST "track");
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
-        sprintf(cv, "%d", it->second->m_expanded);
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
-        sprintf(cv, "%d", it->second->m_height);
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
+        if (it->second->m_dirty) {
+            OTrackStore* ts = it->second;
+            xmlTextWriterStartElement(writer, BAD_CAST "track");
+            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
+            sprintf(cv, "%d", it->second->m_expanded);
+            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
+            sprintf(cv, "%d", it->second->m_height);
+            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
 
-        xmlTextWriterEndElement(writer);
-        it->second->SaveData(m_projectFile.data());
-        printf("Project::Save: track %s saved\n", it->first.data());
+            xmlTextWriterEndElement(writer);
+            it->second->SaveData(m_projectFile.data());
+            printf("Project::Save: track %s saved\n", it->first.data());
+        }
     }
 }
 
