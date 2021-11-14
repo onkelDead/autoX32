@@ -33,8 +33,6 @@ extern "C" {
 #include "embedded/rec_on.h"
 #include "embedded/teach_off.h"
 #include "embedded/teach_on.h"
-#include "embedded/touch_off.h"
-#include "embedded/touch_on.h"
 #include "embedded/zoom_loop.h"
 #include "embedded/cut_on.h"
 #include "embedded/cut_off.h"
