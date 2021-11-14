@@ -24,8 +24,42 @@
 
 #include "embedded/main.h"
 
+void check_ardour_recent(void* user_Data) {
+    FILE* file_recent;
+    char name[256];
+    char path[256];
+
+    OMainWnd* mainWnd = (OMainWnd*) user_Data;
+
+    printf("check_ardour_recent\n");
+    file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
+    if (file_recent != NULL) {
+        fscanf(file_recent, "%s", name);
+        fscanf(file_recent, "%s", path);
+        fclose(file_recent);
+        strcat(path, "/autoX32");
+        if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
+            mainWnd->CloseProject();
+            
+            if (access(path, F_OK)) {
+                printf("project don't exists\n");
+                if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP) != 0) {
+                    perror("mkdir() error");
+                    return;
+                }
+                mainWnd->NewProject();
+                mainWnd->SetProjectLocation(path);
+                mainWnd->SaveProject();
+            }
+            mainWnd->OpenProject(path);
+        }
+    }
+}
+
+
 OMainWnd::OMainWnd() :
-Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
+Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
+{
 
     set_name("OMainWnd");
 
@@ -70,8 +104,13 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)} {
 }
 
 OMainWnd::~OMainWnd() {
-	if (m_timeview)
-		delete m_timeview;
+    if (m_timer) {
+        m_timer->stop();
+        while (m_timer->isRunning());
+        delete m_timer;
+    }
+    if (m_timeview)
+        delete m_timeview;
 }
 
 Gio::Settings* OMainWnd::GetSettings() {
@@ -92,9 +131,8 @@ bool OMainWnd::SaveProject() {
                 settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
                 UpdateMenuRecent();
                 return true;
-            }
-            else {
-            	return false;
+            } else {
+                return false;
             }
         } else {
             m_project.Save();
@@ -104,7 +142,7 @@ bool OMainWnd::SaveProject() {
             return true;
         }
     }
-	return true;
+    return true;
 }
 
 bool OMainWnd::Shutdown() {
@@ -167,6 +205,8 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
         m_daw.ShortMessage("/strip/list");
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
+        m_timer = new OTimer(check_ardour_recent, 5000, this);
+        m_timer->start();
         return true;
     }
     m_lbl_ardour->set_label("Ardour: disconnected");
@@ -174,7 +214,7 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 }
 
 void OMainWnd::NewProject() {
-    
+
     m_project.New();
 }
 
@@ -182,7 +222,7 @@ void OMainWnd::OpenProject(std::string location) {
     m_project.Load(location);
 
     set_title("autoX32 - [" + location + "]");
-    
+
     std::map<std::string, OTrackStore*> tracks = m_project.GetTracks();
 
     for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
@@ -194,6 +234,20 @@ void OMainWnd::OpenProject(std::string location) {
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
     m_project.UpdatePos(GetPosMillis(), true);
+}
+
+std::string OMainWnd::GetProjectLocation() {
+    return m_project.GetProjectLocation();
+}
+
+void OMainWnd::SetProjectLocation(std::string location) {
+    m_project.SetProjectLocation(location);
+}
+
+void OMainWnd::CloseProject() {
+    m_trackslayout.RemoveAllTackViews();
+ 
+    m_project.Close();
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {
@@ -218,22 +272,22 @@ void OMainWnd::remove_track(IOTrackView* view) {
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
-	if (selected)
-		m_trackslayout.GetTrackview(path)->set_name("OTrackView_selected");
-	else
-		m_trackslayout.GetTrackview(path)->set_name("OTrackView");
+    if (selected)
+        m_trackslayout.GetTrackview(path)->set_name("OTrackView_selected");
+    else
+        m_trackslayout.GetTrackview(path)->set_name("OTrackView");
 }
 
 bool OMainWnd::SetupJackClient() {
 
 
 
-	m_jack.Connect(this);
+    m_jack.Connect(this);
 
 
-	return 0;
+    return 0;
 }
 
 gint OMainWnd::GetPosMillis() {
-	return m_jack.GetMillis();
+    return m_jack.GetMillis();
 }

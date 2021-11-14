@@ -27,6 +27,7 @@
 #include "OscCmd.h"
 #include "OTrackStore.h"
 #include "IOProject.h"
+#include "OTimer.h"
 
 #include "IOX32.h"
 
@@ -40,7 +41,8 @@ public:
     void Save();
     void Load(std::string location);
     void Close();
-
+    bool OpenFromArdurRecent();
+    
     std::string GetProjectLocation();
     void SetProjectLocation(std::string);
     
@@ -80,6 +82,7 @@ public:
     std::vector<std::string> m_recent_projects;
 
     bool m_playing = false;
+    
 
 private:
 
@@ -95,6 +98,8 @@ private:
     bool m_lock_playhead = false;
 
     IOX32* m_mixer = nullptr;
+    
+
 
     std::map<std::string, OscCmd*> m_known_mixer_commands;
     std::map<std::string, OTrackStore*> m_tracks;

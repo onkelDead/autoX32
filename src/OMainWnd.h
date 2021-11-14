@@ -34,6 +34,7 @@
 #include "OOverView.h"
 #include "OPlayHead.h"
 #include "OQueue.h"
+#include "OTimer.h"
 
 #define PACKAGE_STRING "autoX32"
 #define PACKAGE_VERSION "0.1"
@@ -103,9 +104,12 @@ public:
 
     void NewProject();
     void OpenProject(std::string location);
+    std::string GetProjectLocation();
+    void SetProjectLocation(std::string);
     bool SaveProject();
     bool SelectProjectLocation(bool);
     bool Shutdown();
+    void CloseProject();
 
     void UpdateDawTime(bool redraw);
     void UpdatePlayhead();
@@ -115,6 +119,7 @@ public:
     /// application settings
     Gio::Settings* GetSettings();
 
+    OTimer *m_timer = nullptr;
 
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;

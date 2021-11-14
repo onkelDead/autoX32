@@ -23,6 +23,7 @@
 #include "OTrackStore.h"
 #include "IOX32.h"
 
+
 OProject::OProject() {
     m_daw_range.m_loopend = -1;
     m_daw_range.m_loopstart = 0;
@@ -49,6 +50,7 @@ OProject::OProject(std::string location) {
 }
 
 OProject::~OProject() {
+
 }
 
 void OProject::SetMixer(IOX32* mixer) {
@@ -184,6 +186,37 @@ void OProject::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
+}
+
+bool OProject::OpenFromArdurRecent() {
+    FILE* file_recent;
+    char name[256];
+    char path[256];
+    bool ret_val = false;
+
+    file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
+    if (file_recent != NULL) {
+        fscanf(file_recent, "%s", name);
+        fscanf(file_recent, "%s", path);
+        fclose(file_recent);
+
+        strcat(path, "/autoX32");
+        printf("%s\n", path);
+        if (access(path, F_OK)) {
+            printf("project don't exists\n");
+            m_location = path;
+            if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP) != 0) {
+                perror("mkdir() error");
+                return ret_val;
+            }
+            New();
+            Save();
+        } else {
+            Load(path);
+            ret_val = true;
+        }
+    }
+    return ret_val;
 }
 
 void OProject::Save() {

@@ -55,12 +55,13 @@ public:
     int m_height = 80;
     
     bool m_dirty = false;
+
+    void Lock();
+    inline void Unlock();
     
 private:
     void Init();
 
-    inline void Lock();
-    inline void Unlock();
     
     inline void RemoveEntryInternal(track_entry*);
     inline track_entry* GetEntryInternal(gint);
