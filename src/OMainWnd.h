@@ -102,7 +102,9 @@ public:
 
     gint GetPosMillis();
 
-    void NewProject();
+    void NewProject();    
+    void NewProject(std::string);
+
     void OpenProject(std::string location);
     std::string GetProjectLocation();
     void SetProjectLocation(std::string);

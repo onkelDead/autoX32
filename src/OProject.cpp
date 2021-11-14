@@ -166,15 +166,17 @@ void OProject::Load(std::string location) {
         xmlNodePtr node = *nodeset->nodeTab;
         for (int i = 0; i < nodeset->nodeMax; i++) {
             if (node) {
-                const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
-                const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
-                const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
+                if (node->type == XML_ELEMENT_NODE) {
+                    const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
+                    const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
+                    const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
 
-                OscCmd* cmd = m_known_mixer_commands[path];
-                OTrackStore *ts = NewTrack(cmd);
-                ts->m_expanded = atoi(expanded);
-                ts->m_height = atoi(height);
-                ts->LoadData(m_projectFile.data());
+                    OscCmd* cmd = m_known_mixer_commands[path];
+                    OTrackStore *ts = NewTrack(cmd);
+                    ts->m_expanded = atoi(expanded);
+                    ts->m_height = atoi(height);
+                    ts->LoadData(m_projectFile.data());
+                }
             } else {
                 break;
             }
@@ -320,16 +322,16 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     char cv[16];
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        if (it->second->m_dirty) {
-            OTrackStore* ts = it->second;
-            xmlTextWriterStartElement(writer, BAD_CAST "track");
-            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
-            sprintf(cv, "%d", it->second->m_expanded);
-            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
-            sprintf(cv, "%d", it->second->m_height);
-            xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
+        OTrackStore* ts = it->second;
+        xmlTextWriterStartElement(writer, BAD_CAST "track");
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
+        sprintf(cv, "%d", it->second->m_expanded);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
+        sprintf(cv, "%d", it->second->m_height);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
 
-            xmlTextWriterEndElement(writer);
+        xmlTextWriterEndElement(writer);
+        if (it->second->m_dirty) {
             it->second->SaveData(m_projectFile.data());
             printf("Project::Save: track %s saved\n", it->first.data());
         }

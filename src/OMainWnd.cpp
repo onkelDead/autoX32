@@ -48,9 +48,7 @@ void check_ardour_recent(void* user_Data) {
                     perror("mkdir() error");
                     return;
                 }
-                mainWnd->NewProject();
-                mainWnd->SetProjectLocation(path);
-                mainWnd->SaveProject();
+                mainWnd->NewProject(path);
             }
             mainWnd->OpenProject(path);
         }
@@ -212,6 +210,11 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
     }
     m_lbl_ardour->set_label("Ardour: disconnected");
     return false;
+}
+
+void OMainWnd::NewProject(std::string path) {
+    m_project.SetProjectLocation(path);
+    m_project.New();
 }
 
 void OMainWnd::NewProject() {

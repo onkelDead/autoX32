@@ -46,28 +46,10 @@ public:
 
     OTimer *setInterval(const long &interval);
     
-    void SetSecDivide(int);
-    
-    int GetStepCount();
-    
-    virtual void SetTimeRequest(int);
-
-    int GetRunTime();
-    virtual int GetPosMillis();
-    virtual void SetPosMillis(int);
-    
-    float GetLoad();
-
-    std::string m_loadstr;
-    
-    ui_event ue;
-    
-    bool GetActive();
-    void SetActive(bool);
     
 private:
 
-	struct timeval m_starttime;
+    struct timeval m_starttime;
 
     int m_run_time_milli_sec = 0;
     int m_secdivide = 0;
