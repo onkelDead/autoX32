@@ -402,12 +402,13 @@ std::map<std::string, OTrackStore*> OProject::GetTracks() {
 bool OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry) {
     if (entry == nullptr)
         return false;
-    switch (trackstore->m_cmd->GetTypes().data()[0]) {
+    OscCmd* cmd = trackstore->GetOscCommand();
+    switch (cmd->GetTypes().data()[0]) {
         case 'f':
-            m_mixer->SendFloat(trackstore->m_cmd->GetPath(), entry->val.f);
+            m_mixer->SendFloat(cmd->GetPath(), entry->val.f);
             break;
         case 'i':
-            m_mixer->SendInt(trackstore->m_cmd->GetPath(), entry->val.i);
+            m_mixer->SendInt(cmd->GetPath(), entry->val.i);
             break;
     }
     return true;

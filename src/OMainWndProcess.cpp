@@ -210,7 +210,7 @@ void OMainWnd::OnMixerEvent() {
             if (trackstore) { // the track is known
                 tv = m_trackslayout.GetTrackview(cmd->GetPath());
                 if (tv) { // we have a trackview for it
-                    if (tv->GetTouch() || m_btn_teach->get_active()) { // trackview is configured for touch
+                    if (m_btn_teach->get_active()) { // trackview is configured for touch
                         tv->SetRecord(true);
                     }
                 }
@@ -259,7 +259,7 @@ void OMainWnd::OnViewEvent() {
             case UI_EVENTS::new_track:
             {
                 OTrackStore *trackstore = (OTrackStore*) e->with;
-                if (!m_trackslayout.GetTrackview(trackstore->m_cmd->GetPath())) {
+                if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);

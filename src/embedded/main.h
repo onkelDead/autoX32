@@ -560,5 +560,4 @@ static char main_inline_glade[] =
 "      <class name='OMainWnd'/>"
 "    </style>"
 "  </object>"
-"</interface>"
-;
+"</interface>";

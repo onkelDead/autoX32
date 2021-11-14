@@ -53,6 +53,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     int last_val;
 
     track_entry *it = m_trackstore->m_tracks;
+    OscCmd* cmd = m_trackstore->GetOscCommand();
 
     if (m_trackstore->m_playing) {
         //return true;
@@ -66,7 +67,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
 
     cr->set_line_width(1);
-    cr->set_source_rgba(m_trackstore->m_cmd->GetColor().get_red(), m_trackstore->m_cmd->GetColor().get_green(), m_trackstore->m_cmd->GetColor().get_blue(), m_trackstore->m_cmd->GetColor().get_alpha());
+    cr->set_source_rgba(cmd->GetColor().get_red(), cmd->GetColor().get_green(), cmd->GetColor().get_blue(), cmd->GetColor().get_alpha());
 
     while (it->next && it->next->time < m_daw_time->m_viewstart) {
         it = it->next;
@@ -94,7 +95,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
 
     if (m_parent->GetSettings()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
-        draw_text(cr, 2, 2, m_trackstore->m_cmd->GetPath());
+        draw_text(cr, 2, 2, cmd->GetPath());
 
     if (m_selected) {
         cr->set_source_rgb(1., 0., 0.);
@@ -130,10 +131,6 @@ void OTrackDraw::SetRecord(bool val) {
     m_trackstore->m_record = val;
 }
 
-void OTrackDraw::SetTouch(bool val) {
-    m_trackstore->m_touch = val;
-}
-
 void OTrackDraw::SetSelected(bool val) {
     m_selected = val;
 }
@@ -147,7 +144,7 @@ OTrackStore* OTrackDraw::GetTrackStore() {
 }
 
 OscCmd* OTrackDraw::GetCmd() {
-    return m_trackstore->m_cmd;
+    return m_trackstore->GetOscCommand();
 }
 
 bool OTrackDraw::on_button_press_event(GdkEventButton *event) {
@@ -181,7 +178,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
             m_parent->notify_overview();
         } else {
             SetSelected(!m_selected);
-            m_parent->SelectTrack(m_trackstore->m_cmd->GetPath(), m_selected);
+            m_parent->SelectTrack(m_trackstore->GetOscCommand()->GetPath(), m_selected);
             queue_draw();
         }
     }

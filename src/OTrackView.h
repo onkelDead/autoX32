@@ -41,13 +41,9 @@ public:
     virtual void Resize(bool);
 
     void on_button_x32_rec_clicked();
-    void on_button_x32_touch_clicked();
     
     void SetRecord(bool);
     bool GetRecord();
-    
-    bool GetTouch();
-    void SetTouch(bool);
 
     void UpdateConfig();
     
@@ -75,11 +71,8 @@ private:
     OTrackDraw* m_trackdraw;
     
     Gtk::ToggleToolButton *m_btn_x32_rec;
-    Gtk::ToggleToolButton *m_btn_x32_touch;
     Gtk::Image m_img_rec_off;
     Gtk::Image m_img_rec_on;
-    Gtk::Image m_img_touch_off;
-    Gtk::Image m_img_touch_on;
 
     void on_expander();
 

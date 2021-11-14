@@ -62,6 +62,10 @@ void OTrackStore::Unlock() {
     m_mutex.unlock();
 }
 
+OscCmd* OTrackStore::GetOscCommand() {
+    return m_cmd;
+}
+
 track_entry* OTrackStore::NewEntry(gint timepos) {
     track_entry* entry = new track_entry;
     entry->time = timepos;

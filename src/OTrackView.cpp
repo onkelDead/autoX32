@@ -35,7 +35,6 @@ OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 	ui->get_widget<Gtk::Label>("track-label", m_label);
 	ui->get_widget<Gtk::Toolbar>("track-bar", m_toolbar);
 	ui->get_widget<Gtk::ToggleToolButton>("track-rec", m_btn_x32_rec);
-	ui->get_widget<Gtk::ToggleToolButton>("track-touch", m_btn_x32_touch);
 
 	m_boxcontrol->set_name("OTrackControl");
 	m_toolbar->set_name("OTrackControl");
@@ -55,14 +54,9 @@ OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 
 	m_img_rec_off.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*) rec_off_inline, FALSE));
 	m_img_rec_on.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*) rec_on_inline, FALSE));
-	m_img_touch_off.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*) touch_off_inline, FALSE));
-	m_img_touch_on.set(Gdk::Pixbuf::create_from_inline(-1, (unsigned char*) touch_on_inline, FALSE));
 	m_btn_x32_rec->signal_clicked().connect(sigc::mem_fun(*this, &OTrackView::on_button_x32_rec_clicked));
 	m_btn_x32_rec->set_icon_widget(m_img_rec_off);
 	m_btn_x32_rec->show_all();
-	m_btn_x32_touch->signal_clicked().connect(sigc::mem_fun(*this, &OTrackView::on_button_x32_touch_clicked));
-	m_btn_x32_touch->set_icon_widget(m_img_touch_off);
-	m_btn_x32_touch->show_all();
 
 	m_expander->property_expanded().signal_changed().connect(sigc::mem_fun(*this, &OTrackView::on_expander));
 
@@ -98,14 +92,6 @@ void OTrackView::on_button_x32_rec_clicked() {
 
 }
 
-void OTrackView::on_button_x32_touch_clicked() {
-	m_btn_x32_touch->set_icon_widget(m_btn_x32_touch->get_active() ? m_img_touch_on : m_img_touch_off);
-	m_btn_x32_touch->show_all();
-
-	m_trackdraw->SetTouch(m_btn_x32_touch->get_active());
-
-}
-
 void OTrackView::SetTrackStore(OTrackStore *trackstore) {
 	m_trackdraw->SetTrackStore(trackstore);
 	m_expander->set_expanded(trackstore->m_expanded);
@@ -124,16 +110,8 @@ void OTrackView::SetRecord(bool val) {
 	m_btn_x32_rec->set_active(val);
 }
 
-void OTrackView::SetTouch(bool val) {
-	m_btn_x32_touch->set_active(val);
-}
-
 bool OTrackView::GetRecord() {
 	return m_btn_x32_rec->get_active();
-}
-
-bool OTrackView::GetTouch() {
-	return m_btn_x32_touch->get_active();
 }
 
 bool OTrackView::on_button_press_event(GdkEventButton *event) {

@@ -27,7 +27,7 @@ public:
     virtual ~OTrackStore();
 
     
-    void SetOscCommand(OscCmd* cmd);
+    OscCmd* GetOscCommand();
 
 
     void AddTimePoint(track_entry* e);    
@@ -47,21 +47,19 @@ public:
     
     bool m_record = false;
     bool m_playing = false;    
-    bool m_touch = false;
     track_entry* m_tracks = nullptr;
-    OscCmd* m_cmd = nullptr;
-    int m_colorindex = 0;
     bool m_expanded = true;
     int m_height = 80;
     
     bool m_dirty = false;
 
-    void Lock();
-    inline void Unlock();
+
     
 private:
     void Init();
 
+    inline void Lock();
+    inline void Unlock();    
     
     inline void RemoveEntryInternal(track_entry*);
     inline track_entry* GetEntryInternal(gint);
@@ -70,6 +68,7 @@ private:
     std::mutex m_mutex;
     
     track_entry* m_playhead = nullptr;
+    OscCmd* m_cmd = nullptr;
    
 };
 

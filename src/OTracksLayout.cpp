@@ -58,7 +58,6 @@ void OTracksLayout::StopRecord() {
     for (std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin(); it != m_trackmap.end(); ++it) {
         if (it->second) {
             it->second->SetRecord(false);
-            it->second->SetTouch(false);
         }
     }
 }
@@ -67,7 +66,6 @@ void OTracksLayout::StopTeach() {
     for (std::map<std::string, OTrackView*>::iterator it = m_trackmap.begin(); it != m_trackmap.end(); ++it) {
         if (it->second) {
             it->second->SetRecord(false);
-            it->second->SetTouch(false);
         }
     }
 }
