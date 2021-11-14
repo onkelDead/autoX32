@@ -197,7 +197,7 @@ void OTrackStore::SaveData(const char *filepath) {
     int i;
     int l = oscpath.length();
     char *s = strdup(oscpath.data());
-    char x[l + 1];
+    char x[256];
     char file[PATH_MAX];
     char *fp = strdup(filepath);
 
@@ -229,7 +229,7 @@ void OTrackStore::LoadData(const char *filepath) {
     int i;
     int l = oscpath.length();
     char *s = strdup(oscpath.data());
-    char x[l + 1];
+    char x[256];
     char file[PATH_MAX];
     char *fp = strdup(filepath);
 

@@ -64,7 +64,7 @@ private:
 
 
 
-    Gtk::Label *m_timecode = nullptr;;
+    Gtk::Label *m_timecode = nullptr;
     Gtk::Label *m_viewstart = nullptr;
     Gtk::Label *m_viewend = nullptr;
 

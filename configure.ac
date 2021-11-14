@@ -1,6 +1,8 @@
 AC_INIT([autoX32], [0.4], [onkel@paraair.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_PREREQ([2.66])
+${CXXFLAGS=""}
+${CFLAGS=""}
 AC_PROG_CXX
 
 AC_ARG_ENABLE(debug,

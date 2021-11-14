@@ -66,7 +66,7 @@ private:
     int m_click_millis = 0;
     
     IOMainWnd* m_mainWnd = nullptr;
-    daw_time* m_daw_time = nullptr;;
+    daw_time* m_daw_time = nullptr;
     daw_range* m_range = nullptr;
 
     Gtk::Menu menu_popup;
