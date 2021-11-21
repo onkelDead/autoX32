@@ -58,7 +58,7 @@ void ODAW::SetRange(int start, int end, bool enable) {
     gint ret = lo_send_message(m_client, "/loop_location", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
-    }    
+    }
     if (enable) {
         ShortMessage("/loop_toggle");
     }
@@ -97,7 +97,7 @@ int ODAW::connect(const char *host, const char *port, const char *replyport, IOM
     lo_message msg = lo_message_new();
     lo_message_add_int32(msg, 0);
     lo_message_add_int32(msg, 0);
-    lo_message_add_int32(msg, FEEDBACK_MASTER + FEEDBACK_HMSMS + FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
+    lo_message_add_int32(msg, FEEDBACK_MASTER + /* FEEDBACK_HMSMS + */ FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
     lo_message_add_int32(msg, 1);
 
     gint ret = lo_send_message(m_client, "/set_surface", msg);
@@ -127,45 +127,24 @@ int ODAW::connect(const char *host, const char *port, const char *replyport, IOM
 void ODAW::ProcessCmd(const char *entry, lo_message msg) {
     DAW_PATH c = DAW_PATH::unknown;
 
-    //	printf("DAW: %s ", entry);
-    //	lo_message_pp(msg);
+//    printf("DAW: %s ", entry);
+//    lo_message_pp(msg);
 
-    if (0 == strcmp("/transport_play", entry)) {
-        int argc = lo_message_get_argc(msg);
-        if (argc == 1) {
-            lo_arg **argv = lo_message_get_argv(msg);
-            if (argv[0]->i)
-                c = DAW_PATH::play;
-        }
-    }
-
-    if (0 == strcmp("/transport_stop", entry)) {
-        int argc = lo_message_get_argc(msg);
-        if (argc == 1) {
-            lo_arg **argv = lo_message_get_argv(msg);
-            if (argv[0]->i)
-                c = DAW_PATH::stop;
-        }
-    }
-
-    if (0 == strcmp("/position/smpte", entry)) {
-        int argc = lo_message_get_argc(msg);
-        if (argc == 1) {
-            lo_arg **argv = lo_message_get_argv(msg);
-            //timecode.assign((char*) argv[0]);
-            c = DAW_PATH::smpte;
-        }
-    }
     if (0 == strcmp("/position/samples", entry)) {
         int argc = lo_message_get_argc(msg);
         if (argc == 1) {
             lo_arg **argv = lo_message_get_argv(msg);
             m_sample = atoi(&argv[0]->s);
-            c = DAW_PATH::samples;
+            if (m_wait_for_samples) {
+                c = DAW_PATH::samples;
+                m_wait_for_samples = false;
+            }
         }
     }
 
     if (0 == strcmp("/reply", entry)) {
+
+
         lo_arg **argv = lo_message_get_argv(msg);
         int argc = lo_message_get_argc(msg);
         if (argc > 1) {
@@ -174,6 +153,7 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
         if (argc > 2) {
             m_maxmillis = (int) argv[2]->i / (m_bitrate / 120);
         }
+        m_wait_for_samples = true;
         c = DAW_PATH::reply;
     }
 
@@ -184,6 +164,10 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
 
 gint ODAW::GetMaxMillis() {
     return m_maxmillis;
+}
+
+gint ODAW::GetSample() {
+    return m_sample;
 }
 
 gint ODAW::GetBitRate() {

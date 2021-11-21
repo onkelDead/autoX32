@@ -35,6 +35,7 @@ enum JACK_EVENT {
     MMC_PLAY,
     MMC_STOP,
     MMC_LOCATE,
+    MMC_RESET, 
     CTL_PLAYSTOP,
     CTL_TEACH_ON,
     CTL_TEACH_OFF,
@@ -47,12 +48,8 @@ enum JACK_EVENT {
 
 enum DAW_PATH {
     unknown,
-    smpte,
     samples,
-    timestr,
-    reply,
-    play,
-    stop
+    reply
 };
 
 enum UI_EVENTS {

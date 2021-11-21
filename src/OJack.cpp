@@ -137,6 +137,11 @@ static int process_mtc_event(jack_midi_event_t event, OJack* jack) {
 }
 
 static int process(jack_nframes_t nframes, void *arg) {
+    
+    OJack* jack = (OJack*) arg;
+    
+    jack->ReconnectPorts();
+    
     int i;
     void *port_buf = jack_port_get_buffer(mmc_in_port, nframes);
     jack_midi_event_t in_event;
@@ -260,7 +265,21 @@ void OJackMtc::QuarterFrame(uint8_t data) {
 
 gint OJackMtc::GetMillis() {
     while (lock_millis);
-    return hour * 432000 + min * 7200 + sec * 120 + (frame * 4) + (subframe);
+    return hour * 432000 
+            + min * 7200 
+            + sec * 120 
+            + (frame * 4) + (subframe);
+}
+
+void OJackMtc::SetFrame(gint f) {
+    hour = f / 432000;
+    f -= hour * 432000 ;
+    min = (f / 7200 % 60);
+    f -= min * 7200;
+    sec = (f / 120) % 60;
+    f -= sec * 120;
+    frame = (f / 4 ) % 30;
+    subframe = 0;
 }
 
 std::string OJackMtc::GetTimeCode() {
@@ -273,6 +292,52 @@ std::string OJackMtc::GetTimeCode() {
 
 
 // class OJack
+void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg) {
+    
+    OJack* jack = (OJack*) arg;
+    
+    if (connect)    
+        printf("Connect ");
+    else
+        printf("Disconnect ");
+    printf("Connect '%s' to '%s'\n", jack_port_name(jack_port_by_id(jack->m_jack_client, a)), jack_port_name(jack_port_by_id(jack->m_jack_client, b)));
+}
+
+void on_register_client(const char* name, int reg, void *arg) {
+    if (reg)    
+        printf("Register ");
+    else
+        printf("Unregister ");
+    printf("Client '%s'\n", name);
+    
+    return;
+}
+
+void on_register_port(jack_port_id_t port, int reg, void *arg) {
+    OJack* jack = (OJack*) arg;
+    
+    const char* port_name = jack_port_name(jack_port_by_id(jack->m_jack_client, port));
+    
+    if (reg) 
+        printf("Register ");
+    else
+        printf("Unregister ");
+    printf(" Port '%s'\n", port_name);
+    
+    if (reg) {
+        if (strcmp("ardour:MTC out", port_name) == 0)
+            jack->m_reconnect_mtc_out = true;
+        if (strcmp("ardour:MMC out", port_name) == 0)
+            jack->m_reconnect_mmc_out = true;       
+        if (strcmp("ardour:MMC in", port_name) == 0)
+            jack->m_reconnect_mmc_in = true;            
+        if (strcmp("OSerialBridge:out", port_name) == 0)
+            jack->m_reconnect_ctl_out = true;            
+        if (strcmp("OSerialBridge:in", port_name) == 0)
+            jack->m_reconnect_ctl_in = true;            
+        
+    }
+}
 
 void OJack::Connect(IOMainWnd* wnd) {
 
@@ -294,18 +359,22 @@ void OJack::Connect(IOMainWnd* wnd) {
     ctl_in_port = jack_port_register(m_jack_client, "Onkel Controller in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_out_port = jack_port_register(m_jack_client, "Onkel Controller out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
+    
+    jack_set_client_registration_callback(m_jack_client, on_register_client, this);
+    jack_set_port_registration_callback(m_jack_client, on_register_port, this);
+    jack_set_port_connect_callback(m_jack_client, on_port_connect, this);
+    
     if (jack_activate(m_jack_client)) {
         fprintf(stderr, "cannot activate client");
         return;
     }
 
-    jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
+//    jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
     jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
     jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
     jack_connect(m_jack_client, "OSerialBridge:out", "autoX32:Onkel Controller in");
     jack_connect(m_jack_client, "autoX32:Onkel Controller out", "OSerialBridge:in");
-
-
+    
     ctl_out.push(CTL_COMMAND(0xb8, 0, 64));
     usleep(100000);
     ctl_out.push(CTL_COMMAND(0xb9, 1, 64));
@@ -330,14 +399,41 @@ void OJack::Connect(IOMainWnd* wnd) {
     usleep(100000);
     ctl_out.push(CTL_COMMAND(0xbd, 2, 0));
 
-    Play();
-    usleep(100000);
-    Stop();
+//    Play();
+//    usleep(100000);
+//    Stop();
 }
 
 void OJack::Play() {
     mmc_out.push(0x03);
     ControllerShowPlay();
+}
+
+void OJack::ReconnectPorts() {
+        if (m_reconnect_mtc_out) {
+        m_reconnect_mtc_out = false;
+        jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
+    }
+    
+    if (m_reconnect_mmc_out) {
+        m_reconnect_mmc_out = false;
+        jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
+    }  
+    
+    if (m_reconnect_mmc_in) {
+        m_reconnect_mmc_in = false;
+        jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
+        Notify(MMC_RESET);
+    }
+
+    if (m_reconnect_ctl_in) {
+        jack_connect(m_jack_client, "OSerialBridge:out", "autoX32:Onkel Controller in");
+        m_reconnect_ctl_in = false;
+    }
+    if (m_reconnect_ctl_out) {
+        jack_connect(m_jack_client, "autoX32:Onkel Controller out", "OSerialBridge:in");        
+        m_reconnect_ctl_out = false;
+    }
 }
 
 void OJack::Stop() {
@@ -359,6 +455,10 @@ void OJack::Locate(gint millis) {
 
 gint OJack::GetMillis() {
     return m_jackMtc.GetMillis();
+}
+
+void OJack::SetFrame(gint frame) {
+    m_jackMtc.SetFrame(frame);
 }
 
 void OJack::Notify(JACK_EVENT event) {

@@ -313,7 +313,7 @@ void OMainWnd::on_timeline_pos_changed() {
     m_lock_daw_time_event = true;
     //m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
     m_jack.Locate(m_timeview->GetClickMillis());
-    //UpdatePlayhead();
+    // UpdatePlayhead();
 }
 
 void OMainWnd::on_timeline_zoom_changed() {

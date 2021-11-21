@@ -63,6 +63,8 @@ public:
 
     int GetKeepOn();
     void SetKeepOn(int);
+    
+    gint GetSample();
 
 private:
     int m_keep_on = 1;
@@ -71,6 +73,8 @@ private:
     gint m_bitrate = 0;
     int m_maxmillis = 0;
 
+    bool m_wait_for_samples = false;
+    
     lo_server_thread m_server = nullptr;
     lo_address m_client = nullptr;
 

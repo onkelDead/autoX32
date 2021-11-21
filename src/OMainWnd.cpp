@@ -32,7 +32,6 @@ void check_ardour_recent(void* user_Data) {
 
     OMainWnd* mainWnd = (OMainWnd*) user_Data;
 
-    printf("check_ardour_recent\n");
     file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
     if (file_recent != NULL) {
         dummy = fscanf(file_recent, "%s", name);
@@ -202,9 +201,10 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
     if (!m_daw.connect(ip.data(), port.data(), replyport.data(), this)) {
         m_daw.ShortMessage("/refresh");
         m_daw.ShortMessage("/strip/list");
+        m_daw.ShortMessage("/transport_sample");
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer(check_ardour_recent, 5000, this);
+        m_timer = new OTimer(check_ardour_recent, 500, this);
         m_timer->start();
         return true;
     }

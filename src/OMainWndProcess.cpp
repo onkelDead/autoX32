@@ -53,6 +53,10 @@ void OMainWnd::OnJackEvent() {
                 this->queue_draw();
                 m_lock_play = false;
                 break;
+            case MMC_RESET:
+                m_daw.ShortMessage("/refresh");
+                m_daw.ShortMessage("/strip/list");
+                break;
             case CTL_PLAYSTOP:
                 m_lock_play = true;
                 if (!m_button_play->get_active()) {
@@ -118,43 +122,18 @@ void OMainWnd::OnDawEvent() {
                  *
                  */
 
-            case DAW_PATH::timestr:
-                //			if (!m_lock_daw_time_event) {
-                //				int daw_millis = m_daw.GetMilliSeconds();
-                //				int timer_millis = m_timer->GetPosMillis();
-                //				if (m_timer->GetActive()) {
-                //					int gap = daw_millis - timer_millis;
-                //
-                //					//printf("d:%d t:%d gap:%d\n", daw_millis, timer_millis, gap);
-                //					m_timer->SetTimeRequest(daw_millis);
-                //				}
-                //
-                //			} else {
-                //				m_lock_daw_time_event = false;
-                //			}
-                //			if (!m_timer->GetActive()) {
-                //				m_timer->SetPosMillis(m_daw.GetMilliSeconds());
-                //				m_playhead->set_initialized(true);
-                //				//m_timeview->ScaleView();
-                //				UpdatePlayhead();
-                //			}
-                //m_timeview->SetTimeCode(m_daw.GetTimeCode());
-                break;
             case DAW_PATH::reply:
                 m_project.SetMaxMillis(m_daw.GetMaxMillis());
                 m_project.SetBitRate(m_daw.GetBitRate());
                 UpdateDawTime(false);
                 m_timeview->SetZoomLoop();
                 break;
-            case DAW_PATH::play:
-                //			m_lock_play = true;
-                //			m_button_play->set_active(true);
-                //			m_lock_play = false;
-                break;
-            case DAW_PATH::stop:
-                //			m_lock_play = true;
-                //			m_button_play->set_active(false);
-                //			m_lock_play = false;
+            case DAW_PATH::samples:
+                 m_jack.SetFrame(m_daw.GetSample() / 400 );
+                m_timeview->SetTimeCode(m_jack.GetTimeCode());
+                m_project.UpdatePos(m_jack.GetMillis(), true);
+                UpdatePlayhead();
+                
                 break;
             default:
                 break;

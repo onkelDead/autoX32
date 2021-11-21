@@ -28,6 +28,7 @@ public:
 
 	void FullFrame(uint8_t* frame_data);
 	void QuarterFrame(uint8_t data);
+        void SetFrame(gint);
 	gint GetMillis();
 	std::string GetTimeCode();
         bool m_edge_sec = false;
@@ -54,6 +55,7 @@ public:
 
 
     void Connect(IOMainWnd* wnd);
+    void ReconnectPorts();
 
     void Play();
     void ControllerShowPlay();
@@ -66,6 +68,7 @@ public:
     void Locate(gint);
 
     gint GetMillis();
+    void SetFrame(gint);
 
     std::string GetTimeCode();
     
@@ -84,6 +87,12 @@ public:
     void Notify(JACK_EVENT event);
 
     IOMainWnd* m_parent = nullptr;
+    
+    bool m_reconnect_mtc_out = true;
+    bool m_reconnect_mmc_out = true;
+    bool m_reconnect_mmc_in = true;
+    bool m_reconnect_ctl_out = false;
+    bool m_reconnect_ctl_in = false;
     
 private:
     bool m_loop_state = false;
