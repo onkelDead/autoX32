@@ -388,10 +388,12 @@ void OJack::ControllerShowTeachOff() {
 void OJack::LoopStart() {
     m_loop_state = true;
     ctl_out.push(CTL_COMMAND(0xba, 1, 4));
+    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
 }
 
 void OJack::LoopEnd() {
     m_loop_state = false;
+    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
     ctl_out.push(CTL_COMMAND(0xba, 0, 4));
 }
 
