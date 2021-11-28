@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.39.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkBox" id="track-box">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="hexpand">True</property>
     <property name="vexpand">True</property>
     <child>
       <object class="GtkExpander" id="track-expander">
         <property name="name">track-expander</property>
-        <property name="width_request">160</property>
+        <property name="width-request">160</property>
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="tooltip_text" translatable="yes">Expand / Collapse track</property>
+        <property name="can-focus">True</property>
+        <property name="tooltip-text" translatable="yes">Expand / Collapse track</property>
         <child>
           <object class="GtkBox" id="track-control">
             <property name="name">track_control</property>
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
-            <property name="baseline_position">bottom</property>
+            <property name="baseline-position">bottom</property>
             <child>
               <object class="GtkToolbar" id="track-bar">
-                <property name="name">OMainToolbar</property>
+                <property name="name">OTrackToolbar</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="valign">start</property>
                 <child>
                   <object class="GtkToggleToolButton" id="track-rec">
+                    <property name="name">TrackRecordButton</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Enable Record</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Enable Record</property>
                     <property name="valign">start</property>
                   </object>
                   <packing>
@@ -43,15 +44,15 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkBox" id="box-sizer">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <placeholder/>
@@ -68,7 +69,7 @@
         <child type="label">
           <object class="GtkLabel" id="track-label">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <property name="label" translatable="yes">expander</property>
           </object>
         </child>

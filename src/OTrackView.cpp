@@ -37,7 +37,7 @@ OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 	ui->get_widget<Gtk::ToggleToolButton>("track-rec", m_btn_x32_rec);
 
 	m_boxcontrol->set_name("OTrackControl");
-	m_toolbar->set_name("OTrackControl");
+	m_toolbar->set_name("OTrackBar");
 
 	m_boxcontrol->set_vexpand(true);
 	m_boxcontrol->set_valign(Gtk::ALIGN_FILL);
