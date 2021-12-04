@@ -50,7 +50,7 @@ private:
 
 class OJack {
 public:
-	OJack() : m_millis(0), m_jack_client(NULL) {};
+    OJack() : m_millis(0), m_jack_client(NULL) {};
     virtual ~OJack() {};
 
 

@@ -360,3 +360,13 @@ void OMainWnd::UpdatePlayhead() {
     }
 }
 
+
+void OMainWnd::TrackViewUp(std::string path) {
+    m_trackslayout.TrackUp(path);
+    m_project.SetDirty();
+}
+
+void OMainWnd::TrackViewDown(std::string path) {
+    m_trackslayout.TrackDown(path);
+    m_project.SetDirty();
+}
