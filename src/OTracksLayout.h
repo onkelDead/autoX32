@@ -19,6 +19,7 @@
 
 #include "OTrackView.h"
 #include "IOMainWnd.h"
+#include "IOTracksLayout.h"
 
 typedef struct trackview_entry {
     trackview_entry* prev;
@@ -27,7 +28,7 @@ typedef struct trackview_entry {
     
 } trackview_entry;
 
-class OTracksLayout : public Gtk::VBox {
+class OTracksLayout : public Gtk::VBox, public IOTracksLayout {
 public:
     OTracksLayout();
     virtual ~OTracksLayout();
@@ -47,6 +48,8 @@ public:
     void StopTeach();
 
     void redraw();
+    
+    virtual gint GetTrackIndex(std::string path);
 
 private:
     

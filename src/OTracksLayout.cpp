@@ -98,6 +98,22 @@ void OTracksLayout::RemoveTrackView(std::string path) {
     }
 }
 
+gint OTracksLayout::GetTrackIndex(std::string path) {
+    trackview_entry* list = m_tracklist;
+    gint index = 0;
+    if (list == nullptr) {
+        return -1;
+    }
+    while(list != nullptr) {
+        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
+            return index;
+        }
+        list = list->next;
+        index++;
+    }
+    return -1;
+}
+
 void OTracksLayout::TrackUp(std::string path) {
     trackview_entry* list = m_tracklist;
     if (list == nullptr) {

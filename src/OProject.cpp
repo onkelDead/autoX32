@@ -52,6 +52,10 @@ OProject::~OProject() {
 
 }
 
+void OProject::SetTracksLayout(IOTracksLayout *layout) {
+    m_layout = layout;
+}
+
 void OProject::SetMixer(IOX32* mixer) {
     m_mixer = mixer;
 }
@@ -64,6 +68,10 @@ bool OProject::GetDirty() {
         dirty |= it->second->m_dirty;
     }
     return dirty;
+}
+
+void OProject::SetDirty() {
+    m_dirty = true;
 }
 
 bool OProject::GetPlaying() {
@@ -128,14 +136,14 @@ void OProject::Load(std::string location) {
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
         xmlNodePtr node = *nodeset->nodeTab;
-        for (int i = 0; i < nodeset->nodeMax; i++) {
-            if (node) {
+        while(node) {
+            if (node->type == XML_ELEMENT_NODE) {
                 const char* cv;
+                if (strcmp((const char*)node->name, "cmd") != 0)
+                    break;
                 xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
                 xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
 
-                if (xmlPath == nullptr || xmlTypes == nullptr)
-                    continue;
                 const char* path = strdup((char*) xmlPath);
                 const char* types = strdup((char*) xmlTypes);
                 m_known_mixer_commands[path] = new OscCmd(path, types);
@@ -152,33 +160,35 @@ void OProject::Load(std::string location) {
                 cv = (char*) xmlGetProp(node, BAD_CAST "alpha");
                 color.set_alpha_u(atoi(cv));
                 m_known_mixer_commands[path]->SetColor(color);
-            } else {
-                break;
             }
-            node = node->next;
+            node = node->next; 
         }
     }
     xmlXPathFreeObject(result);
 
     result = xmlXPathEvalExpression(BAD_CAST "//project/track", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+        gint c = 0;
         nodeset = result->nodesetval;
         xmlNodePtr node = *nodeset->nodeTab;
-        for (int i = 0; i < nodeset->nodeMax; i++) {
-            if (node) {
-                if (node->type == XML_ELEMENT_NODE) {
-                    const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
-                    const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
-                    const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
-
-                    OscCmd* cmd = m_known_mixer_commands[path];
-                    OTrackStore *ts = NewTrack(cmd);
-                    ts->m_expanded = atoi(expanded);
-                    ts->m_height = atoi(height);
-                    ts->LoadData(m_projectFile.data());
-                }
-            } else {
-                break;
+        while(node) {
+            if (node->type == XML_ELEMENT_NODE) {
+                if (strcmp((const char*)node->name, "track") != 0)
+                    break;
+                const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
+                const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
+                const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
+                const char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
+                
+                OscCmd* cmd = m_known_mixer_commands[path];
+                OTrackStore *ts = NewTrack(cmd);
+                ts->m_expanded = atoi(expanded);
+                ts->m_height = atoi(height);
+                if (layout_index) 
+                    ts->m_index = atoi(layout_index);
+                else
+                    ts->m_index = c++;
+                ts->LoadData(m_projectFile.c_str());
             }
             node = node->next;
         }
@@ -322,6 +332,7 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     char cv[16];
     for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        gint layout_index = m_layout->GetTrackIndex(it->first);
         OTrackStore* ts = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
@@ -329,6 +340,8 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
         sprintf(cv, "%d", it->second->m_height);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
+        sprintf(cv, "%d", layout_index);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "layout_index", "%s", cv);
 
         xmlTextWriterEndElement(writer);
         if (it->second->m_dirty) {

@@ -61,6 +61,8 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
 
     set_name("OMainWnd");
 
+    m_project.SetTracksLayout(&m_trackslayout);
+    
     GSettingsSchemaSource *source = g_settings_schema_source_get_default();
     GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
     if (schema) {
@@ -229,11 +231,15 @@ void OMainWnd::OpenProject(std::string location) {
 
     std::map<std::string, OTrackStore*> tracks = m_project.GetTracks();
 
-    for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-        OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
-        trackview->SetTrackStore(it->second);
-        trackview->UpdateConfig();
-        m_trackslayout.AddTrack(trackview);
+    for (gint i = 0; i < tracks.size(); i++) {
+        for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+            if (it->second->m_index == i) {
+                OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
+                trackview->SetTrackStore(it->second);
+                trackview->UpdateConfig();
+                m_trackslayout.AddTrack(trackview);
+            }
+        }
     }
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();

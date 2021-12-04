@@ -30,6 +30,7 @@
 #include "OTimer.h"
 
 #include "IOX32.h"
+#include "IOTracksLayout.h"
 
 class OProject : public IOProject{
 public:
@@ -47,6 +48,7 @@ public:
     void SetProjectLocation(std::string);
     
     bool GetDirty();
+    void SetDirty();
 
     bool GetPlaying();
     daw_range* GetTimeRange();
@@ -83,6 +85,7 @@ public:
 
     bool m_playing = false;
     
+    void SetTracksLayout(IOTracksLayout*);
 
 private:
 
@@ -99,7 +102,7 @@ private:
 
     IOX32* m_mixer = nullptr;
     
-
+    IOTracksLayout *m_layout;
 
     std::map<std::string, OscCmd*> m_known_mixer_commands;
     std::map<std::string, OTrackStore*> m_tracks;

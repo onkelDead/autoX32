@@ -55,7 +55,7 @@ public:
     
     bool m_dirty = false;
 
-
+    gint m_index = -1;
     
 private:
     void Init();
