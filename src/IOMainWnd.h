@@ -27,9 +27,6 @@
 
 class IOMainWnd {
 public:
-
-    virtual ~IOMainWnd() {
-    }
     virtual void notify_daw(DAW_PATH) = 0;
     virtual void notify_jack(JACK_EVENT) = 0;
     virtual void notify_mixer(OscCmd*) = 0;

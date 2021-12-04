@@ -18,12 +18,11 @@
 #define IOTRACKVIEW_H
 
 #include "OscCmd.h"
-    
+
 class IOTrackView {
 public:
-	virtual ~IOTrackView() {}
     virtual OscCmd* GetCmd() = 0;
-	virtual void Resize(bool) = 0;
+    virtual void Resize(bool) = 0;
 };
 
 
