@@ -96,7 +96,6 @@ menuitem:disabled {
         left top,
         left bottom,
         from (rgb(50,50,60)),
-        color-stop (0.5, darker (rgb(75,75,75))),
         to (rgb(50,50,60)));
     background-color: rgb(50,50,60);
     border-style: none;
@@ -104,6 +103,7 @@ menuitem:disabled {
 
 entry, colorchooser {
     color: #ffffff;
+    background-color: rgb(55,55,55);
 }
 
 .separator {

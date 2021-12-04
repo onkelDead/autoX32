@@ -29,6 +29,8 @@
                 <property name="can-focus">False</property>
                 <property name="halign">start</property>
                 <property name="valign">start</property>
+                <property name="toolbar-style">both-horiz</property>
+                <property name="icon_size">2</property>
                 <child>
                   <object class="GtkToggleToolButton" id="track-rec">
                     <property name="name">TrackRecordButton</property>
@@ -36,10 +38,51 @@
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Enable Record</property>
                     <property name="valign">start</property>
+                    <property name="icon-name">media-record</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="track-edit">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Edit track</property>
+                    <property name="label" translatable="yes">toolbutton</property>
+                    <property name="icon-name">mail-message-new</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="track-up">
+                    <property name="name">track-up</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Move track up</property>
+                    <property name="label" translatable="yes">toolbutton</property>
+                    <property name="icon-name">go-up</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="track-down">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Move track down</property>
+                    <property name="label" translatable="yes">toolbutton</property>
+                    <property name="icon-name">go-down</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
                   </packing>
                 </child>
               </object>
