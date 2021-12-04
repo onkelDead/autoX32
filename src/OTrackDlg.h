@@ -35,6 +35,8 @@ public:
     Gdk::RGBA GetColor();
     void SetColor(Gdk::RGBA);
     
+    void SetCountEntries(gint count);
+    
     bool GetResult();
 
     
@@ -50,6 +52,7 @@ private:
     Gtk::Button* m_btn_ok;
     Gtk::Entry* m_txt_name;
     Gtk::Entry* m_txt_path;
+    Gtk::Label* m_count_entries;
     Gtk::ColorButton* m_btn_color;
     
 };

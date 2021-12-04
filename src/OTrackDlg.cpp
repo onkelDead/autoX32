@@ -49,6 +49,7 @@ OTrackDlg::OTrackDlg(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& 
 
     builder->get_widget< Gtk::Entry >("txt-name", m_txt_name);
     builder->get_widget< Gtk::Entry >("txt-path", m_txt_path);
+    builder->get_widget< Gtk::Label >("lbl-count-entries", m_count_entries);
     builder->get_widget< Gtk::ColorButton >("btn-color", m_btn_color);
     m_btn_color->set_name("OColorButton");
     
@@ -87,6 +88,12 @@ Gdk::RGBA OTrackDlg::GetColor() {
 
 void OTrackDlg::SetColor(Gdk::RGBA color) {
     m_btn_color->set_rgba(color);
+}
+
+void OTrackDlg::SetCountEntries(gint count) {
+    char tmp[32];
+    sprintf(tmp, "%d", count);
+    m_count_entries->set_text(tmp);
 }
 
 bool OTrackDlg::GetResult() {
