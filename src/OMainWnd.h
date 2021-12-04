@@ -117,6 +117,9 @@ public:
     void UpdatePlayhead();
 
     void SelectTrack(std::string, bool);
+    void TrackViewUp(std::string path);    
+    void TrackViewDown(std::string path);
+
 
     /// application settings
     Gio::Settings* GetSettings();

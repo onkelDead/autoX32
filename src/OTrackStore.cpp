@@ -268,3 +268,13 @@ void OTrackStore::LoadData(const char *filepath) {
     m_dirty = false;
     fclose(io);
 }
+
+gint OTrackStore::GetCountEntries() {
+    gint c = 0;
+    track_entry *e = m_tracks;   
+    while(e->next) {
+        e = e->next;
+        c++;
+    }
+    return c;
+}

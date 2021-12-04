@@ -20,6 +20,13 @@
 #include "OTrackView.h"
 #include "IOMainWnd.h"
 
+typedef struct trackview_entry {
+    trackview_entry* prev;
+    OTrackView* item;
+    trackview_entry* next;
+    
+} trackview_entry;
+
 class OTracksLayout : public Gtk::VBox {
 public:
     OTracksLayout();
@@ -31,6 +38,9 @@ public:
     void RemoveTrackView(std::string path);
     void RemoveAllTackViews();
 
+    void TrackUp(std::string path);
+    void TrackDown(std::string path);
+    
     void SetPos();
 
     void StopRecord();
@@ -38,14 +48,15 @@ public:
 
     void redraw();
 
-    std::map<std::string, OTrackView *> GetTrackMap();
-
 private:
     
-    std::map<std::string, OTrackView *> m_trackmap;
+    trackview_entry* new_entry();
+    void append_entry(trackview_entry* entry);
+    void swap_tracks(trackview_entry* t1, trackview_entry* t2);
+    
+    trackview_entry* m_tracklist = nullptr;
     Gtk::Grid m_grig;
     Gtk::Box m_bbox;
-    Gtk::Label m_label;
 };
 
 

@@ -45,6 +45,8 @@ public:
     track_entry* GetPlayhead();
     track_entry* UpdatePlayhead(gint, bool);
     
+    gint GetCountEntries();
+    
     bool m_record = false;
     bool m_playing = false;    
     track_entry* m_tracks = nullptr;

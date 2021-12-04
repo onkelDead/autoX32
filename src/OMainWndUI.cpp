@@ -240,3 +240,11 @@ void OMainWnd::create_view() {
     auto screen = Gdk::Screen::get_default();
     refStyleContext->add_provider_for_screen(Gdk::Screen::get_default(), m_refCssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
+
+void OMainWnd::TrackViewUp(std::string path) {
+    m_trackslayout.TrackUp(path);
+}
+
+void OMainWnd::TrackViewDown(std::string path) {
+    m_trackslayout.TrackDown(path);
+}

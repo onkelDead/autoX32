@@ -74,15 +74,24 @@ private:
     Gtk::Image m_img_rec_off;
     Gtk::Image m_img_rec_on;
 
+    Gtk::ToolButton *m_btn_edit;
+    Gtk::ToolButton *m_btn_up;
+    Gtk::ToolButton *m_btn_down;
+    
     void on_expander();
 
     virtual bool on_button_press_event(GdkEventButton* event) override;
     void on_menu_popup_edit();
     void on_menu_popup_remove();
+    void on_menu_popup_rectoggle();
+    void on_menu_popup_up();
+    void on_menu_popup_down();
     
     Gtk::Menu menu_popup;
     Gtk::MenuItem menu_popup_rename;
     Gtk::MenuItem menu_popup_remove;
+    Gtk::MenuItem menu_popup_rectoggle;
+    
     
 };
 
