@@ -243,7 +243,7 @@ void OMainWnd::OnViewEvent() {
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
                     trackview->UpdateConfig();
-                    m_trackslayout.AddTrack(trackview);
+                    m_trackslayout.AddTrack(trackview, trackstore->m_visible);
                 }
                 delete e;
             }

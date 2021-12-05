@@ -18,11 +18,15 @@
 #define IOTRACKVIEW_H
 
 #include "OscCmd.h"
+#include "OTrackStore.h"
 
 class IOTrackView {
 public:
     virtual OscCmd* GetCmd() = 0;
+    virtual OTrackStore* GetTrackStore() = 0;
     virtual void Resize(bool) = 0;
+    virtual void Expand() = 0;
+    virtual void Collapse() = 0;
 };
 
 

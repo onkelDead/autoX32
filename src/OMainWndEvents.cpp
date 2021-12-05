@@ -227,6 +227,12 @@ void OMainWnd::on_menu_prefs() {
     //queue_draw();
 }
 
+void OMainWnd::on_menu_layout() {
+    m_trackslayout.EditLayout();
+    
+    
+}
+
 void OMainWnd::on_btn_teach_clicked() {
 
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
@@ -368,5 +374,10 @@ void OMainWnd::TrackViewUp(std::string path) {
 
 void OMainWnd::TrackViewDown(std::string path) {
     m_trackslayout.TrackDown(path);
+    m_project.SetDirty();
+}
+
+void OMainWnd::TrackViewHide(std::string path) {
+    m_trackslayout.TrackHide(path, false);
     m_project.SetDirty();
 }

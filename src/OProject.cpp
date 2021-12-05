@@ -179,6 +179,7 @@ void OProject::Load(std::string location) {
                 const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
                 const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
                 const char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
+                const char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
                 
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
@@ -188,6 +189,7 @@ void OProject::Load(std::string location) {
                     ts->m_index = atoi(layout_index);
                 else
                     ts->m_index = c++;
+                ts->m_visible = atoi(visible);
                 ts->LoadData(m_projectFile.c_str());
             }
             node = node->next;
@@ -342,6 +344,8 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
         sprintf(cv, "%d", layout_index);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "layout_index", "%s", cv);
+        sprintf(cv, "%d", it->second->m_visible);
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "visible", "%s", cv);
 
         xmlTextWriterEndElement(writer);
         if (it->second->m_dirty) {

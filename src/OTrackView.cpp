@@ -73,13 +73,16 @@ Gtk::Box(), ui{Gtk::Builder::create_from_string(trackview_inline_glade)}
     menu_popup_rename.set_label("Edit...");
     menu_popup_remove.set_label("Remove...");
     menu_popup_rectoggle.set_label("Toggle record");
+    menu_popup_hide.set_label("Hide");
     menu_popup.append(menu_popup_rename);
     menu_popup.append(menu_popup_remove);
     menu_popup.append(menu_popup_rectoggle);
+    menu_popup.append(menu_popup_hide);
 
     menu_popup_rename.signal_activate().connect(sigc::mem_fun(this, &OTrackView::on_menu_popup_edit));
     menu_popup_remove.signal_activate().connect(sigc::mem_fun(*this, &OTrackView::on_menu_popup_remove));
     menu_popup_rectoggle.signal_activate().connect(sigc::mem_fun(*this, &OTrackView::on_menu_popup_rectoggle));
+    menu_popup_hide.signal_activate().connect(sigc::mem_fun(*this, &OTrackView::on_menu_popup_hide));
 
     set_valign(Gtk::ALIGN_FILL);
     add(*m_box);
@@ -102,6 +105,10 @@ void OTrackView::on_button_x32_rec_clicked() {
 void OTrackView::SetTrackStore(OTrackStore *trackstore) {
     m_trackdraw->SetTrackStore(trackstore);
     m_expander->set_expanded(trackstore->m_expanded);
+}
+
+OTrackStore* OTrackView::GetTrackStore() {
+    return m_trackdraw->GetTrackStore();
 }
 
 OscCmd* OTrackView::GetCmd() {
@@ -167,6 +174,11 @@ void OTrackView::on_menu_popup_rectoggle() {
     m_btn_x32_rec->set_active(!m_btn_x32_rec->get_active());
 }
 
+void OTrackView::on_menu_popup_hide() {
+   m_parent->TrackViewHide(this->GetCmd()->GetPath()); 
+}
+
+
 bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
 
     if (motion_event->type == GDK_MOTION_NOTIFY) {
@@ -189,6 +201,16 @@ void OTrackView::on_expander() {
     }
     m_trackdraw->GetTrackStore()->m_expanded = m_expander->get_expanded();
 
+}
+
+void OTrackView::Expand() {
+    m_expander->set_expanded(true);
+    on_expander();
+}
+
+void OTrackView::Collapse() {
+    m_expander->set_expanded(false);
+    on_expander();
 }
 
 void OTrackView::Resize(bool val) {

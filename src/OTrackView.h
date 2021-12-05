@@ -37,6 +37,7 @@ public:
     OscCmd* GetCmd();
 
     void SetTrackStore(OTrackStore*);
+    OTrackStore* GetTrackStore();
 
     virtual void Resize(bool);
 
@@ -46,6 +47,9 @@ public:
     bool GetRecord();
 
     void UpdateConfig();
+    
+    void Expand();
+    void Collapse();
     
 protected:
     Glib::RefPtr<Gtk::Builder> ui;
@@ -86,11 +90,13 @@ private:
     void on_menu_popup_rectoggle();
     void on_menu_popup_up();
     void on_menu_popup_down();
+    void on_menu_popup_hide();
     
     Gtk::Menu menu_popup;
     Gtk::MenuItem menu_popup_rename;
     Gtk::MenuItem menu_popup_remove;
     Gtk::MenuItem menu_popup_rectoggle;
+    Gtk::MenuItem menu_popup_hide;
     
     
 };

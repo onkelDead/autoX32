@@ -37,6 +37,7 @@ public:
     virtual gint GetPosMillis() = 0;
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;
+    virtual void TrackViewHide(std::string) = 0;
 
 private:
 

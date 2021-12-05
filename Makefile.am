@@ -30,7 +30,8 @@ autoX32_SOURCES = \
     src/OQueue.cpp \
     src/OCustomWidget.cpp \
     src/OJack.cpp \
-    src/OTimer.cpp
+    src/OTimer.cpp \
+    src/ODlgLayout.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -51,7 +52,8 @@ noinst_HEADERS = \
     src/OQueue.h \
     src/OCustomWidget.h \
     src/OJack.h \
-    src/OTimer.h
+    src/OTimer.h \
+    src/ODlgLayout.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0

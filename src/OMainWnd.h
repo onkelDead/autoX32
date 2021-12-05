@@ -64,6 +64,7 @@ public:
     void on_menu_recent(std::string);
 
     void on_menu_prefs();
+    void on_menu_layout();
 
     /// button/UI events
     void on_button_play_clicked();
@@ -119,6 +120,7 @@ public:
     void SelectTrack(std::string, bool);
     void TrackViewUp(std::string path);    
     void TrackViewDown(std::string path);
+    void TrackViewHide(std::string path);
 
 
     /// application settings
@@ -147,6 +149,7 @@ private:
     Glib::RefPtr<Gtk::MenuItem> m_project_save;
     Glib::RefPtr<Gtk::MenuItem> m_project_save_as;
     Glib::RefPtr<Gtk::MenuItem> m_project_close;
+    Glib::RefPtr<Gtk::MenuItem> m_layout;
     Glib::RefPtr<Gtk::MenuItem> m_prefs;
     Glib::RefPtr<Gtk::Menu> m_recents;
     Glib::RefPtr<Gtk::MenuItem> m_about;

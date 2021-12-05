@@ -237,7 +237,7 @@ void OMainWnd::OpenProject(std::string location) {
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(it->second);
                 trackview->UpdateConfig();
-                m_trackslayout.AddTrack(trackview);
+                m_trackslayout.AddTrack(trackview, it->second->m_visible);
             }
         }
     }

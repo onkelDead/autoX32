@@ -20,6 +20,7 @@
 #include "OTrackView.h"
 #include "IOMainWnd.h"
 #include "IOTracksLayout.h"
+#include "ODlgLayout.h"
 
 typedef struct trackview_entry {
     trackview_entry* prev;
@@ -33,7 +34,7 @@ public:
     OTracksLayout();
     virtual ~OTracksLayout();
 
-    void AddTrack(OTrackView *v);
+    void AddTrack(OTrackView *v, bool show);
     OTrackView* GetTrackview(std::string);
 
     void RemoveTrackView(std::string path);
@@ -41,6 +42,7 @@ public:
 
     void TrackUp(std::string path);
     void TrackDown(std::string path);
+    void TrackHide(std::string path, bool hide);
     
     void SetPos();
 
@@ -50,7 +52,14 @@ public:
     void redraw();
     
     virtual gint GetTrackIndex(std::string path);
-
+    
+    void EditLayout();
+    void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);
+    void on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check);
+    
+    void on_btn_collapse();
+    void on_btn_expand();
+    
 private:
     
     trackview_entry* new_entry();

@@ -17,6 +17,8 @@
 #include <gtkmm.h>
 #include "OTracksLayout.h"
 #include "OMainWnd.h"
+#include "embedded/main.h"
+#include "embedded/autoX32_css.h"
 
 OTracksLayout::OTracksLayout() : Gtk::VBox() {
     m_bbox.set_vexpand(true);
@@ -26,7 +28,7 @@ OTracksLayout::OTracksLayout() : Gtk::VBox() {
 OTracksLayout::~OTracksLayout() {
 }
 
-void OTracksLayout::AddTrack(OTrackView *v) {
+void OTracksLayout::AddTrack(OTrackView *v, bool show) {
     v->set_hexpand(true);
     v->set_halign(Gtk::ALIGN_FILL);
     v->set_valign(Gtk::ALIGN_START);
@@ -34,8 +36,10 @@ void OTracksLayout::AddTrack(OTrackView *v) {
     entry->item = v;
     append_entry(entry);
     //m_trackmap[v->GetCmd()->GetPath()] = v;
-    add(*v);
-    v->show();
+    if (show) {
+        add(*v);
+        v->show();
+    }
 }
 
 OTrackView* OTracksLayout::GetTrackview(std::string path) {
@@ -112,6 +116,62 @@ gint OTracksLayout::GetTrackIndex(std::string path) {
         index++;
     }
     return -1;
+}
+
+void OTracksLayout::EditLayout() {
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(main_inline_glade);
+    ODlgLayout *pDialog = nullptr;
+    builder->get_widget_derived("dlg-layout", pDialog);  
+            
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return;
+    }
+    while(list != nullptr) {
+        pDialog->AddTrack(this, list->item);
+        list = list->next;
+    }
+    
+    pDialog->show_all_children(true);
+    pDialog->run();
+    
+}
+
+void OTracksLayout::on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check) 
+{
+    TrackHide(view->GetCmd()->GetPath(), check->get_active());
+}
+
+void OTracksLayout::on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check)
+{
+    if (check->get_active())
+        view->Expand();
+    else
+        view->Collapse();
+}
+
+
+
+void OTracksLayout::TrackHide(std::string path, bool hide) {
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return;
+    }
+    while(list != nullptr) {
+        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
+            list->item->GetTrackStore()->m_visible = hide;
+            list->item->GetTrackStore()->m_dirty = true;
+            if (!hide)
+                remove (*list->item);
+            else {
+                add(*list->item);
+                reorder_child(*list->item, list->item->GetTrackStore()->m_index);
+                show_all_children(true);
+            }
+            return;
+        }   
+        list = list->next;
+    }
 }
 
 void OTracksLayout::TrackUp(std::string path) {
