@@ -51,6 +51,7 @@ protected:
     virtual bool on_motion_notify_event(GdkEventMotion* motion_event) override;
     virtual bool on_button_press_event(GdkEventButton* event) override;
     virtual bool on_button_release_event(GdkEventButton* event) override;
+    virtual bool on_scroll_event(GdkEventScroll* scroll_event) override;
 
     Glib::RefPtr<Gdk::Window> m_refGdkWindow;
 
@@ -72,6 +73,7 @@ private:
     Glib::RefPtr<Gdk::Cursor> m_shift_cursor;
     
     void UpdateCursor();
+    void UpdateDawTime();
     
 };
 

@@ -16,6 +16,7 @@
 
 
 #include <gdkmm-3.0/gdkmm/cursor.h>
+#include <gtk-3.0/gdk/gdkevents.h>
 #include "OOverView.h"
 
 OOverView::OOverView(IOMainWnd* wnd, daw_time* dt) : m_parent(wnd), m_daw_time(dt) {
@@ -141,7 +142,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
     if (motion_event->type == GDK_MOTION_NOTIFY) {
         GdkEventMotion* e = (GdkEventMotion*) motion_event;
 
-        gint offset = (gint)e->x - (gint)m_last_x;
+        gint offset = (gint) e->x - (gint) m_last_x;
         if (abs(offset) > 1) {
             if (!m_in_drag) {
                 UpdateCursor();
@@ -151,18 +152,14 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                     if (m_last_x >= m_right)
                         return true;
                     m_left = m_last_x;
-                    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
-                    m_parent->notify_overview();
+                    UpdateDawTime(); 
                 }
                 if (m_drag_mode == OV_RIGHT_SIZE) {
                     if (m_last_x > m_width) m_last_x = m_width;
                     if (m_last_x <= m_left)
                         return true;
                     m_right = m_last_x;
-                    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
-                    m_parent->notify_overview();
+                    UpdateDawTime(); 
                 }
                 if (m_drag_mode == OV_DRAG) {
                     if (m_right + offset > m_width)
@@ -171,9 +168,7 @@ bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
                         return true;
                     m_left += offset;
                     m_right += offset;
-                    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_parent->notify_overview();
+                    UpdateDawTime();        
                 }
             }
             m_last_x = e->x;
@@ -210,8 +205,7 @@ void OOverView::UpdateCursor() {
             m_drag_mode = OV_RIGHT_SIZE;
         }
         return;
-    }
-    else if (m_last_x > m_left && m_last_x < m_right) {
+    } else if (m_last_x > m_left && m_last_x < m_right) {
         if (m_drag_mode != OV_DRAG) {
             m_refGdkWindow.get()->set_cursor(m_shift_cursor);
             m_drag_mode = OV_DRAG;
@@ -223,4 +217,50 @@ void OOverView::UpdateCursor() {
         m_refGdkWindow.get()->set_cursor(m_default_cursor);
         m_drag_mode = OV_NONE;
     }
+}
+
+void OOverView::UpdateDawTime() {
+    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
+    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
+    m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
+    m_parent->notify_overview();
+}
+
+bool OOverView::on_scroll_event(GdkEventScroll* scroll_event) {
+    if (scroll_event->state == 16) {
+        if (scroll_event->direction == GDK_SCROLL_DOWN) {
+            gdouble l = m_left;
+            m_left -= (m_right - l);
+            m_right -= (m_right - l);
+            if (m_left < 0.0) {
+                m_right -= m_left;
+                m_left = 0;
+            }
+            UpdateDawTime();
+        }
+        if (scroll_event->direction == GDK_SCROLL_UP) {
+            gdouble l = m_left;
+            m_left += (m_right - l);
+            m_right += (m_right - l);
+            if (m_right > m_width) {
+                m_left -= (m_right - m_width);
+                m_right = m_width;
+            }
+            UpdateDawTime();
+        }
+    }
+    if (scroll_event->state == 20) {
+        gdouble delta = (m_right - m_left) / 4;
+        if (scroll_event->direction == GDK_SCROLL_DOWN) {
+            m_left -= delta;
+            m_right += delta;
+            UpdateDawTime();
+        }
+        if (scroll_event->direction == GDK_SCROLL_UP) {
+            m_left += delta;
+            m_right -= delta;
+            UpdateDawTime();
+        }
+    }
+    return true;
 }
