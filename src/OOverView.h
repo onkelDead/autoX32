@@ -23,11 +23,17 @@
 #include "OTypes.h"
 #include "IOMainWnd.h"
 
+typedef enum {
+    OV_NONE,
+    OV_LEFT_SIZE,
+    OV_DRAG,
+    OV_RIGHT_SIZE
+} OV_DRAG_MODE;
+
 class OOverView : public Gtk::Widget {
 public:
     OOverView(IOMainWnd*, daw_time*);
     virtual ~OOverView();
-
 
 protected:
     //Overrides:
@@ -51,15 +57,15 @@ protected:
 private:
     
     bool m_in_drag = false;
-    gint m_width = 0;
-    gint m_left = 0;
-    gint m_right = 0;
+    gdouble m_width = 0;
+    gdouble m_left = 0;
+    gdouble m_right = 0;
     gdouble m_last_x = 0;
+    OV_DRAG_MODE m_drag_mode = OV_NONE;
 
     daw_time* m_daw_time = nullptr;
     IOMainWnd* m_parent = nullptr;
     
-    Gdk::CursorType m_current_cursor = Gdk::CursorType::ARROW;
     Glib::RefPtr<Gdk::Cursor> m_default_cursor;
     Glib::RefPtr<Gdk::Cursor> m_left_cursor;
     Glib::RefPtr<Gdk::Cursor> m_right_cursor;

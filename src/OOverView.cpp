@@ -16,12 +16,11 @@
 
 
 #include <gdkmm-3.0/gdkmm/cursor.h>
-
 #include "OOverView.h"
 
 OOverView::OOverView(IOMainWnd* wnd, daw_time* dt) : m_parent(wnd), m_daw_time(dt) {
 
-	set_name("OOVerView");
+    set_name("OOVerView");
 }
 
 OOverView::~OOverView() {
@@ -101,7 +100,7 @@ void OOverView::on_realize() {
         m_left_cursor = Gdk::Cursor::create(Gdk::CursorType::LEFT_SIDE);
         m_right_cursor = Gdk::Cursor::create(Gdk::CursorType::RIGHT_SIDE);
         m_shift_cursor = Gdk::Cursor::create(Gdk::CursorType::SB_H_DOUBLE_ARROW);
-        m_current_cursor = Gdk::CursorType::ARROW;
+        m_drag_mode = OV_NONE;
     }
 }
 
@@ -122,10 +121,10 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     m_right = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_maxmillis) * m_width;
 
     cr->set_source_rgb(.3, .3, .3);
-    cr->rectangle(m_left, 0, m_right-m_left, 80);
+    cr->rectangle(m_left, 0, m_right - m_left, 80);
     cr->stroke_preserve();
-    cr->fill(); 
-    
+    cr->fill();
+
     cr->set_source_rgb(.6, .8, .6);
     cr->move_to(m_left, 0);
     cr->line_to(m_left, height);
@@ -134,51 +133,50 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     cr->move_to(m_right, 0);
     cr->line_to(m_right, height);
     cr->stroke();
-    
+
     return true;
 }
 
 bool OOverView::on_motion_notify_event(GdkEventMotion* motion_event) {
     if (motion_event->type == GDK_MOTION_NOTIFY) {
         GdkEventMotion* e = (GdkEventMotion*) motion_event;
-        if (m_last_x !=  e->x) {
-            gint offset = (gint) e->x - m_last_x;
-            m_last_x = e->x;
+
+        gint offset = (gint)e->x - (gint)m_last_x;
+        if (abs(offset) > 1) {
             if (!m_in_drag) {
                 UpdateCursor();
             } else {
-                if (m_current_cursor == Gdk::CursorType::LEFT_SIDE) {
-                    if (m_last_x < 0 ) m_last_x = 0;
+                if (m_drag_mode == OV_LEFT_SIZE) {
+                    if (m_last_x < 0) m_last_x = 0;
                     if (m_last_x >= m_right)
                         return true;
                     m_left = m_last_x;
                     m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
+                    m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
                     m_parent->notify_overview();
                 }
-                if (m_current_cursor == Gdk::CursorType::RIGHT_SIDE) {
+                if (m_drag_mode == OV_RIGHT_SIZE) {
                     if (m_last_x > m_width) m_last_x = m_width;
                     if (m_last_x <= m_left)
                         return true;
                     m_right = m_last_x;
                     m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
-                    m_daw_time->scale = (gfloat) (m_width-160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);                    
+                    m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
                     m_parent->notify_overview();
                 }
-                if (m_current_cursor == Gdk::CursorType::SB_H_DOUBLE_ARROW) {
-                    if (offset != 0) {
-                        if (m_right + offset > m_width)
-                            return true;
-                        if (m_left + offset < 0)
-                            return true;
-                        m_right += offset;
-                        m_left += offset;
-                        m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
-                        m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
-                        m_parent->notify_overview();
-                    }
+                if (m_drag_mode == OV_DRAG) {
+                    if (m_right + offset > m_width)
+                        return true;
+                    if (m_left + offset < 0)
+                        return true;
+                    m_left += offset;
+                    m_right += offset;
+                    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
+                    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
+                    m_parent->notify_overview();
                 }
             }
+            m_last_x = e->x;
         }
     }
     return true;
@@ -200,29 +198,29 @@ bool OOverView::on_button_release_event(GdkEventButton* event) {
 }
 
 void OOverView::UpdateCursor() {
-    if (m_last_x > m_left && m_last_x < m_right ) {
-        if (m_current_cursor != Gdk::CursorType::SB_H_DOUBLE_ARROW) {
-            m_current_cursor = Gdk::CursorType::SB_H_DOUBLE_ARROW;
-            m_refGdkWindow.get()->set_cursor(m_shift_cursor);
-        }
-        return;
-    }
     if (abs(m_last_x - m_left) < 4) {
-        if (m_current_cursor != Gdk::CursorType::LEFT_SIDE) {
-            m_current_cursor = Gdk::CursorType::LEFT_SIDE;
+        if (m_drag_mode != OV_LEFT_SIZE) {
             m_refGdkWindow.get()->set_cursor(m_left_cursor);
+            m_drag_mode = OV_LEFT_SIZE;
         }
         return;
-    }
-    if (abs(m_last_x - m_right) < 4) {
-        if (m_current_cursor != Gdk::CursorType::RIGHT_SIDE) {
-            m_current_cursor = Gdk::CursorType::RIGHT_SIDE;
+    } else if (abs(m_last_x - m_right) < 4) {
+        if (m_drag_mode != OV_RIGHT_SIZE) {
             m_refGdkWindow.get()->set_cursor(m_right_cursor);
+            m_drag_mode = OV_RIGHT_SIZE;
         }
         return;
     }
-    if (m_current_cursor != Gdk::CursorType::ARROW) {
-        m_current_cursor = Gdk::CursorType::ARROW;
+    else if (m_last_x > m_left && m_last_x < m_right) {
+        if (m_drag_mode != OV_DRAG) {
+            m_refGdkWindow.get()->set_cursor(m_shift_cursor);
+            m_drag_mode = OV_DRAG;
+        }
+        return;
+    }
+
+    if (m_drag_mode != OV_NONE) {
         m_refGdkWindow.get()->set_cursor(m_default_cursor);
+        m_drag_mode = OV_NONE;
     }
 }
