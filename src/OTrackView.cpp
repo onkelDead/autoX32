@@ -184,13 +184,13 @@ bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
     if (motion_event->type == GDK_MOTION_NOTIFY) {
         GdkEventMotion *e = (GdkEventMotion*) motion_event;
         if (m_in_resize) {
-            int offset;
             if (m_last_y != (gint) e->y) {
                 OTrackStore* ts = m_trackdraw->GetTrackStore();
+                gint min_height = m_boxcontrol->get_height();
                 m_last_y = (gint) e->y;
                 ts->m_height += m_last_y;
-                if (ts->m_height < 80)
-                    ts->m_height = 80;
+                if (ts->m_height < min_height)
+                    ts->m_height = min_height;
                 set_size_request(160, ts->m_height);
                 ts->m_dirty = true;
             }
@@ -222,12 +222,6 @@ void OTrackView::Collapse() {
 void OTrackView::Resize(bool val) {
     m_in_resize = val;
     if (!val) {
-        m_trackdraw->GetTrackStore()->m_height += m_last_y;
-        if (m_trackdraw->GetTrackStore()->m_height < 80)
-            m_trackdraw->GetTrackStore()->m_height = 80;
-        set_size_request(160, m_trackdraw->GetTrackStore()->m_height);
         m_last_y = 0;
-    } else {
-        m_trackdraw->GetTrackStore()->m_height = get_height();
     }
 }
