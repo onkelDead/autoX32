@@ -41,10 +41,7 @@ bool OTrackSizer::on_button_press_event(GdkEventButton *event) {
 	if (event->button == 1) {
 		m_parent->Resize(true);
 	}
-
-	if (event->button == 1 && event->type == GdkEventType::GDK_2BUTTON_PRESS)
-		printf("double\n");
-	return false;
+        return false;
 }
 
 bool OTrackSizer::on_button_release_event(GdkEventButton *event) {

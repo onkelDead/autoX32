@@ -26,6 +26,7 @@
 
 OTrackView::OTrackView(IOMainWnd *wnd, daw_time* daw_time) :
 Gtk::Box(), ui{Gtk::Builder::create_from_string(trackview_inline_glade)}
+
 , m_parent(wnd) {
     set_name("OTrackView");
 
@@ -175,9 +176,8 @@ void OTrackView::on_menu_popup_rectoggle() {
 }
 
 void OTrackView::on_menu_popup_hide() {
-   m_parent->TrackViewHide(this->GetCmd()->GetPath()); 
+    m_parent->TrackViewHide(this->GetCmd()->GetPath());
 }
-
 
 bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
 
@@ -186,7 +186,13 @@ bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
         if (m_in_resize) {
             int offset;
             if (m_last_y != (gint) e->y) {
+                OTrackStore* ts = m_trackdraw->GetTrackStore();
                 m_last_y = (gint) e->y;
+                ts->m_height += m_last_y;
+                if (ts->m_height < 80)
+                    ts->m_height = 80;
+                set_size_request(160, ts->m_height);
+                ts->m_dirty = true;
             }
         }
     }
