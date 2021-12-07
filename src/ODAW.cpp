@@ -53,8 +53,8 @@ void ODAW::ShortMessage(const char *cmd) {
 
 void ODAW::SetRange(int start, int end, bool enable) {
     lo_message msg = lo_message_new();
-    lo_message_add_int32(msg, start * m_bitrate / 120);
-    lo_message_add_int32(msg, end * m_bitrate / 120);
+    lo_message_add_int32(msg, start * m_bitrate / 12);
+    lo_message_add_int32(msg, end * m_bitrate / 12);
     gint ret = lo_send_message(m_client, "/loop_location", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
@@ -148,10 +148,10 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
         lo_arg **argv = lo_message_get_argv(msg);
         int argc = lo_message_get_argc(msg);
         if (argc > 1) {
-            m_bitrate = argv[1]->i;
+            m_bitrate = argv[1]->i / 10;
         }
         if (argc > 2) {
-            m_maxmillis = (int) argv[2]->i / (m_bitrate / 120);
+            m_maxmillis = (int) argv[2]->i / (m_bitrate / 12);
         }
         m_wait_for_samples = true;
         c = DAW_PATH::reply;
