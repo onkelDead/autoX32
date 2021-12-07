@@ -111,6 +111,8 @@ private:
     void SaveZoom(xmlTextWriterPtr writer);
     void SaveCommands(xmlTextWriterPtr writer);
     void SaveTracks(xmlTextWriterPtr writer);
+    
+    gint GetInteger(xmlNodePtr node, const char* name);
 };
 
 #endif /* SRC_OPROJECT_H_ */

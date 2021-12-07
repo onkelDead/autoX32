@@ -49,7 +49,9 @@ OProject::OProject(std::string location) {
 }
 
 OProject::~OProject() {
-
+    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        delete it->second;
+    }
 }
 
 void OProject::SetTracksLayout(IOTracksLayout *layout) {
@@ -97,6 +99,13 @@ void OProject::New() {
     m_projectFile.append("/").append(name.append(".xml").data());
 }
 
+gint OProject::GetInteger(xmlNodePtr node, const char* name) {
+    xmlChar *keyword = xmlGetProp(node, BAD_CAST name);
+    gint result = atoi((const char *) keyword);
+    xmlFree(keyword);
+    return result;
+}
+
 void OProject::Load(std::string location) {
     SetProjectLocation(location);
     std::string name = basename(m_location.data());
@@ -116,8 +125,8 @@ void OProject::Load(std::string location) {
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
         xmlNodePtr node = nodeset->nodeTab[0];
-        m_daw_range.m_loopstart = atoi((const char *) xmlGetProp(node, BAD_CAST "start"));
-        m_daw_range.m_loopend = atoi((const char *) xmlGetProp(node, BAD_CAST "end"));
+        m_daw_range.m_loopstart = GetInteger(node, "start");
+        m_daw_range.m_loopend = GetInteger(node, "end");
         m_daw_range.m_dirty = false;
     }
     xmlXPathFreeObject(result);
@@ -126,8 +135,8 @@ void OProject::Load(std::string location) {
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
         xmlNodePtr node = nodeset->nodeTab[0];
-        m_daw_time.m_viewstart = atoi((const char *) xmlGetProp(node, BAD_CAST "start"));
-        m_daw_time.m_viewend = atoi((const char *) xmlGetProp(node, BAD_CAST "end"));
+        m_daw_time.m_viewstart = GetInteger(node, "start");
+        m_daw_time.m_viewend = GetInteger(node, "end");
     }
     xmlXPathFreeObject(result);
 
@@ -138,28 +147,28 @@ void OProject::Load(std::string location) {
         xmlNodePtr node = *nodeset->nodeTab;
         while(node) {
             if (node->type == XML_ELEMENT_NODE) {
-                const char* cv;
                 if (strcmp((const char*)node->name, "cmd") != 0)
                     break;
                 xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
                 xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
 
-                const char* path = strdup((char*) xmlPath);
-                const char* types = strdup((char*) xmlTypes);
+                char* path = strdup((char*) xmlPath);
+                char* types = strdup((char*) xmlTypes);
                 m_known_mixer_commands[path] = new OscCmd(path, types);
-                const char* name = (char*) xmlGetProp(node, BAD_CAST "name");
+                xmlFree(xmlPath);
+                xmlFree(xmlTypes);
+                char* name = (char*) xmlGetProp(node, BAD_CAST "name");
                 m_known_mixer_commands[path]->SetName(name);
+                xmlFree(name);
                 Gdk::RGBA color;
                 color.set_rgba_u(0, 0, 0, 32768);
-                cv = (char*) xmlGetProp(node, BAD_CAST "red");
-                color.set_red_u(atoi(cv));
-                cv = (char*) xmlGetProp(node, BAD_CAST "green");
-                color.set_green_u(atoi(cv));
-                cv = (char*) xmlGetProp(node, BAD_CAST "blue");
-                color.set_blue_u(atoi(cv));
-                cv = (char*) xmlGetProp(node, BAD_CAST "alpha");
-                color.set_alpha_u(atoi(cv));
+                color.set_red_u(GetInteger(node, "red"));
+                color.set_green_u(GetInteger(node, "green"));
+                color.set_blue_u(GetInteger(node, "blue"));
+                color.set_alpha_u(GetInteger(node, "alpha"));
                 m_known_mixer_commands[path]->SetColor(color);
+                free(path);
+                free(types);
             }
             node = node->next; 
         }
@@ -175,23 +184,30 @@ void OProject::Load(std::string location) {
             if (node->type == XML_ELEMENT_NODE) {
                 if (strcmp((const char*)node->name, "track") != 0)
                     break;
-                const char* path = (char*) xmlGetProp(node, BAD_CAST "path");
-                const char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
-                const char* height = (char*) xmlGetProp(node, BAD_CAST "height");
-                const char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
-                const char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
+                char* path = (char*) xmlGetProp(node, BAD_CAST "path");
+                char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
+                char* height = (char*) xmlGetProp(node, BAD_CAST "height");
+                char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
+                char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
                 
                 OscCmd* cmd = m_known_mixer_commands[path];
                 OTrackStore *ts = NewTrack(cmd);
                 ts->m_expanded = atoi(expanded);
                 ts->m_height = atoi(height);
-                if (layout_index) 
+                if (layout_index) {
                     ts->m_index = atoi(layout_index);
+                    xmlFree(layout_index);
+                }
                 else
                     ts->m_index = c++;
                 ts->m_visible = visible ? atoi(visible) : true;
                         
                 ts->LoadData(m_projectFile.c_str());
+                if (visible)
+                    xmlFree(visible);
+                xmlFree(path);
+                xmlFree(expanded);
+                xmlFree(height);
             }
             node = node->next;
         }

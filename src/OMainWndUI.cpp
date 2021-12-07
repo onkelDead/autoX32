@@ -129,14 +129,14 @@ void OMainWnd::create_view() {
     ui->get_widget<Gtk::Toolbar>("toolbar", m_tool_box);
     m_mainbox->add(*m_tool_box);
     
-    Gtk::Box *bbox = new Gtk::Box();
-    bbox->set_orientation(Gtk::ORIENTATION_VERTICAL);
+    m_bbox = new Gtk::Box();
+    m_bbox->set_orientation(Gtk::ORIENTATION_VERTICAL);
     
     ui->get_widget<Gtk::Box>("time-box", m_timebox);
-    bbox->add(*m_timebox);
+    m_bbox->add(*m_timebox);
     
     ui->get_widget<Gtk::ScrolledWindow>("scrolled-view", m_scroll);
-    bbox->add(*m_scroll);
+    m_bbox->add(*m_scroll);
     
     m_overlay = new Gtk::Overlay();
     m_playhead = new OPlayHead();
@@ -145,9 +145,9 @@ void OMainWnd::create_view() {
     m_playhead->set_size_request(1, -1);
     m_playhead->set_margin_start(160);
     
-    m_overlay->add_overlay(*bbox);
+    m_overlay->add_overlay(*m_bbox);
     m_overlay->add_overlay(*m_playhead);
-    m_overlay->set_overlay_pass_through(*bbox, false);
+    m_overlay->set_overlay_pass_through(*m_bbox, false);
     m_mainbox->add(*m_overlay);    
     
     ui->get_widget<Gtk::Box>("box-status", m_status_box);

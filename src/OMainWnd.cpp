@@ -104,6 +104,8 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
 }
 
 OMainWnd::~OMainWnd() {
+    if (m_x32)
+        delete m_x32;
     if (m_timer) {
         m_timer->stop();
         while (m_timer->isRunning());
@@ -111,6 +113,7 @@ OMainWnd::~OMainWnd() {
     }
     if (m_timeview)
         delete m_timeview;
+    delete m_bbox;
 }
 
 Gio::Settings* OMainWnd::GetSettings() {

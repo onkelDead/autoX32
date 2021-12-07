@@ -241,8 +241,10 @@ void OTrackStore::LoadData(const char *filepath) {
         x[i] = s[i] == '/' ? '_' : s[i];
     }
     x[i] = '\0';
-
+    free(s);
+    
     sprintf(file, "%s/%s.dat", dirname((char*) fp), x);
+    free(fp);
     FILE *io = fopen(file, "rb");
 
     Lock();

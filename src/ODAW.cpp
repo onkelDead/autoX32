@@ -34,14 +34,20 @@ ODAW::ODAW() {
 }
 
 ODAW::~ODAW() {
-
+    disconnect();
 }
 
 int ODAW::disconnect() {
-    if (m_client)
+    if (m_client) {
         lo_address_free(m_client);
+        m_client = nullptr;
+    }
     m_keep_on = 0;
-    lo_server_thread_free(m_server);
+    if (m_server) {
+        lo_server_thread_stop(m_server);
+        lo_server_thread_free(m_server);
+        m_server = nullptr;
+    }
     return 0;
 }
 

@@ -195,6 +195,7 @@ private:
     OTracksLayout m_trackslayout;
     OOverView* m_overview;
 
+    Gtk::Box *m_bbox;
     Gtk::Box *m_statusbox;
     Gtk::Label *m_lbl_status;
     Gtk::Label *m_lbl_ardour;

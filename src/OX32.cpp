@@ -22,7 +22,6 @@ OX32::OX32(IOMainWnd* wnd) : m_parent(wnd) {
 }
 
 OX32::~OX32() {
-	delete m_WorkerThread;
 }
 
 int OX32::Connect(std::string host) {

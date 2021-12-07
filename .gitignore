@@ -10,7 +10,7 @@ autoX32*
 config.h
 config.status
 stamp-h1
-/config.log
+config.log
 src/.deps/
 src/.dirstamp
 src/embedded/.deps/
