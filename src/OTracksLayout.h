@@ -57,14 +57,16 @@ public:
     void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);
     void on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check);
     
-    void on_btn_collapse();
-    void on_btn_expand();
+    void ExpandCollapseAll(bool expand);
+    void ResetAll();
+    void FitView(gint);
     
 private:
     
     trackview_entry* new_entry();
     void append_entry(trackview_entry* entry);
     void swap_tracks(trackview_entry* t1, trackview_entry* t2);
+    gint get_count_visible();
     
     trackview_entry* m_tracklist = nullptr;
     Gtk::Grid m_grig;

@@ -65,6 +65,11 @@ public:
 
     void on_menu_prefs();
     void on_menu_layout();
+    void on_menu_expand_all();
+    void on_menu_collapse_all();
+    void on_menu_reset_all();
+    void on_menu_fit();
+    
 
     /// button/UI events
     void on_button_play_clicked();
@@ -150,10 +155,15 @@ private:
     Glib::RefPtr<Gtk::MenuItem> m_project_save_as;
     Glib::RefPtr<Gtk::MenuItem> m_project_close;
     Glib::RefPtr<Gtk::MenuItem> m_layout;
+    Glib::RefPtr<Gtk::MenuItem> m_expand_all;
+    Glib::RefPtr<Gtk::MenuItem> m_collapse_all;
+    Glib::RefPtr<Gtk::MenuItem> m_reset_all;
+    Glib::RefPtr<Gtk::MenuItem> m_view_fit;
     Glib::RefPtr<Gtk::MenuItem> m_prefs;
     Glib::RefPtr<Gtk::Menu> m_recents;
     Glib::RefPtr<Gtk::MenuItem> m_about;
 
+    // private tool bar members
     Gtk::Box *m_Toolbox;
     Gtk::ToggleToolButton* m_button_play;
     Gtk::Image m_img_play_on;
@@ -176,8 +186,11 @@ private:
     Gtk::Image m_img_cut_on;
     Gtk::Image m_img_cut_off;
 
+    Gtk::MenuBar *m_menu_box;
+    Gtk::Toolbar *m_tool_box;
     Gtk::Box *m_timebox;
     OTimeView *m_timeview = nullptr;
+    Gtk::Box *m_status_box;
 
     Gtk::Box *m_tracksbox;
     Gtk::ScrolledWindow *m_scroll;

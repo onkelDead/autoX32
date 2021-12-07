@@ -97,7 +97,19 @@ void OMainWnd::create_menu() {
     m_prefs->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_prefs));
     
     m_layout = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_layout"));
-    m_layout->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_layout));    
+    m_layout->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_layout));  
+    
+    m_expand_all = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_view_expand_all"));
+    m_expand_all->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_expand_all));  
+    
+    m_collapse_all = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_view_collapse_all"));
+    m_collapse_all->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_collapse_all));      
+    
+    m_reset_all = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_view_reset_all"));
+    m_reset_all->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_reset_all));      
+    
+    m_view_fit = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_view_fit"));
+    m_view_fit->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_fit));      
     
     m_recents = Glib::RefPtr<Gtk::Menu>::cast_dynamic(ui->get_object("menu-recent"));
 
@@ -108,17 +120,14 @@ void OMainWnd::create_view() {
 
     set_title("autoX32 - [untitled]");
     
-    Gtk::MenuBar *menubar = NULL;
-    Gtk::Toolbar *toolbar = NULL;
-    Gtk::Box *status  = NULL;
 
     ui->get_widget<Gtk::Box>("main-box", m_mainbox);
     
-    ui->get_widget<Gtk::MenuBar>("main-menu", menubar);
-    m_mainbox->add(*menubar);
+    ui->get_widget<Gtk::MenuBar>("main-menu", m_menu_box);
+    m_mainbox->add(*m_menu_box);
     
-    ui->get_widget<Gtk::Toolbar>("toolbar", toolbar);
-    m_mainbox->add(*toolbar);
+    ui->get_widget<Gtk::Toolbar>("toolbar", m_tool_box);
+    m_mainbox->add(*m_tool_box);
     
     Gtk::Box *bbox = new Gtk::Box();
     bbox->set_orientation(Gtk::ORIENTATION_VERTICAL);
@@ -141,8 +150,8 @@ void OMainWnd::create_view() {
     m_overlay->set_overlay_pass_through(*bbox, false);
     m_mainbox->add(*m_overlay);    
     
-    ui->get_widget<Gtk::Box>("box-status", status);
-    m_mainbox->add(*status);    
+    ui->get_widget<Gtk::Box>("box-status", m_status_box);
+    m_mainbox->add(*m_status_box);    
     
     add(*m_mainbox);
     

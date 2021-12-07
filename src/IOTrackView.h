@@ -25,8 +25,9 @@ public:
     virtual OscCmd* GetCmd() = 0;
     virtual OTrackStore* GetTrackStore() = 0;
     virtual void Resize(bool) = 0;
-    virtual void Expand() = 0;
-    virtual void Collapse() = 0;
+    virtual void ExpandCollapse(bool) = 0;
+    virtual void Reset() = 0;
+    virtual void SetHeight(gint) = 0;
 };
 
 

@@ -144,13 +144,52 @@ void OTracksLayout::on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check)
 
 void OTracksLayout::on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check)
 {
-    if (check->get_active())
-        view->Expand();
-    else
-        view->Collapse();
+    view->ExpandCollapse(check->get_active());
 }
 
+void OTracksLayout::ExpandCollapseAll(bool expand) {
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return;
+    }
+    while(list != nullptr) {
+        list->item->ExpandCollapse(expand);
+        list = list->next;
+    }    
+}
 
+void OTracksLayout::ResetAll() {
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return;
+    }
+    while(list != nullptr) {
+        if (!list->item->GetTrackStore()->m_visible)
+            TrackHide(list->item->GetCmd()->GetPath(), true);
+        list->item->Reset();
+        list = list->next;
+    }        
+}
+
+void OTracksLayout::FitView(gint full_size) {
+    gint count_visible = get_count_visible();
+    gint req_size = full_size / count_visible;
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return;
+    }
+    while(list != nullptr) {
+        if (list->item->GetTrackStore()->m_visible) {
+            list->item->SetHeight(req_size);
+        }
+        if (!list->item->GetTrackStore()->m_expanded) {
+            list->item->ExpandCollapse(true);
+        }
+
+        list = list->next;
+    }    
+    show_all_children(true);
+}
 
 void OTracksLayout::TrackHide(std::string path, bool hide) {
     trackview_entry* list = m_tracklist;
@@ -256,4 +295,17 @@ void OTracksLayout::append_entry(trackview_entry* entry) {
     entry->prev = list;
 }
 
-
+gint OTracksLayout::get_count_visible() {
+    gint c = 0;
+    trackview_entry* list = m_tracklist;
+    if (list == nullptr) {
+        return 0;
+    }
+        
+    while( list) {
+        if (list->item->GetTrackStore()->m_visible)
+            c++;
+        list = list->next;
+    }
+    return c;
+}

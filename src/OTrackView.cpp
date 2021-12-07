@@ -209,13 +209,8 @@ void OTrackView::on_expander() {
 
 }
 
-void OTrackView::Expand() {
-    m_expander->set_expanded(true);
-    on_expander();
-}
-
-void OTrackView::Collapse() {
-    m_expander->set_expanded(false);
+void OTrackView::ExpandCollapse(bool expand) {
+    m_expander->set_expanded(expand);
     on_expander();
 }
 
@@ -224,4 +219,18 @@ void OTrackView::Resize(bool val) {
     if (!val) {
         m_last_y = 0;
     }
+}
+
+void OTrackView::Reset() {
+    SetHeight(80);
+    m_trackdraw->GetTrackStore()->m_visible = true;
+    m_expander->set_expanded(true);
+    on_expander();  
+}
+
+void OTrackView::SetHeight(gint height) {
+    OTrackStore* ts = m_trackdraw->GetTrackStore();
+    set_size_request(160, height);
+    ts->m_height = height;
+    ts->m_dirty = true;    
 }

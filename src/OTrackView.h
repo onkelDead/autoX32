@@ -48,8 +48,9 @@ public:
 
     void UpdateConfig();
     
-    void Expand();
-    void Collapse();
+    void ExpandCollapse(bool expand);
+    void Reset();
+    void SetHeight(gint);
     
 protected:
     Glib::RefPtr<Gtk::Builder> ui;

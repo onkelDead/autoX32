@@ -229,8 +229,26 @@ void OMainWnd::on_menu_prefs() {
 
 void OMainWnd::on_menu_layout() {
     m_trackslayout.EditLayout();
-    
-    
+}
+
+void OMainWnd::on_menu_expand_all() {
+    m_trackslayout.ExpandCollapseAll(true);
+}
+
+void OMainWnd::on_menu_collapse_all() {
+    m_trackslayout.ExpandCollapseAll(false);
+}
+
+void OMainWnd::on_menu_reset_all() {
+    m_trackslayout.ResetAll();
+}
+
+void OMainWnd::on_menu_fit() {
+    m_trackslayout.FitView(m_mainbox->get_height() 
+        - m_tool_box->get_height() 
+        - m_timebox->get_height() 
+        - m_overview->get_height()
+        - m_status_box->get_height());
 }
 
 void OMainWnd::on_btn_teach_clicked() {
