@@ -190,6 +190,8 @@ static char trackdlg_inline_glade[] =
 "                  <object class='GtkLabel'>"
 "                    <property name='visible'>True</property>"
 "                    <property name='can-focus'>False</property>"
+"                    <property name='halign'>start</property>"
+"                    <property name='xpad'>8</property>"
 "                    <property name='label' translatable='yes'>Count entries:</property>"
 "                  </object>"
 "                  <packing>"
