@@ -189,7 +189,8 @@ void OProject::Load(std::string location) {
                     ts->m_index = atoi(layout_index);
                 else
                     ts->m_index = c++;
-                ts->m_visible = atoi(visible);
+                ts->m_visible = visible ? atoi(visible) : true;
+                        
                 ts->LoadData(m_projectFile.c_str());
             }
             node = node->next;

@@ -173,6 +173,8 @@ void OTracksLayout::ResetAll() {
 
 void OTracksLayout::FitView(gint full_size) {
     gint count_visible = get_count_visible();
+    if (count_visible == 0)
+        return;
     gint req_size = full_size / count_visible;
     trackview_entry* list = m_tracklist;
     if (list == nullptr) {

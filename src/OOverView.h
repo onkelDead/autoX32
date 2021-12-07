@@ -34,6 +34,8 @@ class OOverView : public Gtk::Widget {
 public:
     OOverView(IOMainWnd*, daw_time*);
     virtual ~OOverView();
+    
+    void SetPos(gint);
 
 protected:
     //Overrides:
@@ -63,6 +65,7 @@ private:
     gdouble m_right = 0;
     gdouble m_last_x = 0;
     OV_DRAG_MODE m_drag_mode = OV_NONE;
+    gint m_pos = 0;
 
     daw_time* m_daw_time = nullptr;
     IOMainWnd* m_parent = nullptr;

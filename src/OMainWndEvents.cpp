@@ -376,10 +376,12 @@ void OMainWnd::UpdatePlayhead() {
             dt->m_viewstart -= offset / dt->scale;
             //queue_draw();
             m_playhead->set_active(true);
+            m_overview->SetPos(GetPosMillis());
         } else {
             m_playhead->set_active(true);
             m_playhead->set_margin_start(160 + pos);
             //queue_draw();
+            m_overview->SetPos(GetPosMillis());
         }
     }
 }

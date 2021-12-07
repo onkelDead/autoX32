@@ -135,6 +135,14 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     cr->line_to(m_right, height);
     cr->stroke();
 
+    gint pos = ((float) m_pos / (float) m_daw_time->m_maxmillis) * m_width;
+    cr->set_line_width(1.0);
+    cr->set_source_rgb(.8, .0, .0);
+    cr->move_to(pos, 0);
+    cr->line_to(pos, height);
+    cr->stroke();
+    
+    
     return true;
 }
 
@@ -263,4 +271,9 @@ bool OOverView::on_scroll_event(GdkEventScroll* scroll_event) {
         }
     }
     return true;
+}
+
+void OOverView::SetPos(gint pos) {
+    m_pos = pos;
+    queue_draw();
 }
