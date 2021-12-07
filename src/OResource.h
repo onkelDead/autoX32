@@ -22,7 +22,6 @@ extern "C" {
 #endif
 
 #include "embedded/go_start.h"
-#include "embedded/lock_playhead.h"
 #include "embedded/lock_playhead_off.h"
 #include "embedded/lock_playhead_on.h"
 #include "embedded/loop_end.h"
@@ -34,8 +33,6 @@ extern "C" {
 #include "embedded/teach_off.h"
 #include "embedded/teach_on.h"
 #include "embedded/zoom_loop.h"
-#include "embedded/cut_on.h"
-#include "embedded/cut_off.h"
 
     
 #define SETTING_SMOOTH_SCREEN           "smooth-screen"    

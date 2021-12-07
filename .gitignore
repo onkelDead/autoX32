@@ -13,4 +13,6 @@ stamp-h1
 /config.log
 src/.deps/
 src/.dirstamp
+src/embedded/.deps/
+src/embedded/.dirstamp
 

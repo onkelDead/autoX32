@@ -31,7 +31,13 @@ autoX32_SOURCES = \
     src/OCustomWidget.cpp \
     src/OJack.cpp \
     src/OTimer.cpp \
-    src/ODlgLayout.cpp
+    src/ODlgLayout.cpp \
+    src/embedded/autoX32_css.cpp \
+    src/embedded/connectDlg.cpp \
+    src/embedded/main.cpp \
+    src/embedded/timeview.cpp \
+    src/embedded/trackview.cpp \
+    src/embedded/trackdlg.cpp 
 
 noinst_HEADERS = \
     src/OTimeDraw.h \

@@ -740,17 +740,6 @@ Key: f</property>
         <property name="homogeneous">True</property>
       </packing>
     </child>
-    <child>
-      <object class="GtkToggleToolButton" id="cut">
-        <property name="name">lock_playhead</property>
-        <property name="visible">True</property>
-        <property name="can-focus">False</property>
-      </object>
-      <packing>
-        <property name="expand">False</property>
-        <property name="homogeneous">True</property>
-      </packing>
-    </child>
     <style>
       <class name="OMainWnd"/>
     </style>

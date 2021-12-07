@@ -328,10 +328,6 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
     m_project.LockPlayhead(m_btn_lock_playhead->get_active());
 }
 
-void OMainWnd::on_btn_cut_clicked() {
-    m_btn_cut->set_icon_widget(m_btn_cut->get_active() ? m_img_cut_on : m_img_cut_off);
-    m_btn_cut->show_all();
-}
 
 void OMainWnd::on_timeline_pos_changed() {
     m_lock_daw_time_event = true;
