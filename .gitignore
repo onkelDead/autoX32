@@ -6,7 +6,7 @@ compile
 configure
 autom4te.cache
 *.o
-autoX32*
+autoX32
 config.h
 config.status
 stamp-h1
