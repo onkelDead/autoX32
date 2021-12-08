@@ -58,8 +58,11 @@ public:
     gint m_index = -1;
     bool m_visible = true;
     
+    void Clear();
+    
 private:
     void Init();
+    
 
     inline void Lock();
     inline void Unlock();    

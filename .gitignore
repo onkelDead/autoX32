@@ -16,3 +16,13 @@ src/.dirstamp
 src/embedded/.deps/
 src/embedded/.dirstamp
 de.paraair.autoX32.gschema.valid
+tests/.deps/.dirstamp
+tests/.deps/check_TrackStore-test_trackstore.Po
+tests/.dirstamp
+tests/.deps/.dirstamp
+tests/.deps/check_TrackStore-test_trackstore.Po
+check_*
+*.log
+*.trs
+test-driver
+

@@ -25,13 +25,7 @@ OTrackStore::OTrackStore(OscCmd *cmd) : m_cmd(cmd) {
 }
 
 OTrackStore::~OTrackStore() {
-    Lock();
-    do {
-        track_entry *track = m_tracks->next;
-        delete m_tracks;
-        m_tracks = track;
-    } while (m_tracks);
-    Unlock();
+    Clear();
 }
 
 void OTrackStore::Init() {
@@ -52,6 +46,21 @@ void OTrackStore::Init() {
     Unlock();
 }
 
+void OTrackStore::Clear() {
+    Lock();
+    if (m_tracks) {
+        while (m_tracks)
+        {
+            track_entry *next = m_tracks->next;
+            delete m_tracks;
+            m_tracks = next;
+        }
+        m_tracks = nullptr;
+        m_playhead = nullptr;
+    }
+    Unlock();
+}
+
 void OTrackStore::Lock() {
     while (!m_mutex.try_lock()) {
         printf("try lock");
@@ -68,6 +77,7 @@ OscCmd* OTrackStore::GetOscCommand() {
 
 track_entry* OTrackStore::NewEntry(gint timepos) {
     track_entry* entry = new track_entry;
+    memset(entry, 0, sizeof (track_entry));
     entry->time = timepos;
     entry->next = NULL;
     entry->prev = NULL;
@@ -90,16 +100,18 @@ track_entry* OTrackStore::GetEntryInternal(gint pos) {
     bool changed = false;
 
     track_entry *entry = m_playhead;
-    while (entry->next && entry->next->time < pos) {
-        entry = entry->next;
-        changed = true;
-    }
+    if (entry) {
+        while (entry->next && entry->next->time < pos) {
+            entry = entry->next;
+            changed = true;
+        }
 
-    if (!changed) {
-        while (entry->time > pos && entry->prev) { // backwind
-            entry = entry->prev;
-            if (entry->time == 0)
-                break;
+        if (!changed) {
+            while (entry->time > pos && entry->prev) { // backwind
+                entry = entry->prev;
+                if (entry->time == 0)
+                    break;
+            }
         }
     }
     return entry;
@@ -180,6 +192,10 @@ void OTrackStore::RemoveEntryInternal(track_entry *entry) {
     m_dirty = true;
 }
 
+track_entry* OTrackStore::GetPlayhead() {
+    return m_playhead;
+}
+
 track_entry* OTrackStore::UpdatePlayhead(gint current, bool jump) {
     track_entry *new_pos = nullptr;
     track_entry* entry = GetEntry(current);
@@ -224,6 +240,7 @@ void OTrackStore::SaveData(const char *filepath) {
     }
     fclose(io);
     free(fp);
+    free(s);
     Unlock();
     m_dirty = false;
 }
@@ -242,11 +259,12 @@ void OTrackStore::LoadData(const char *filepath) {
     }
     x[i] = '\0';
     free(s);
-    
+
     sprintf(file, "%s/%s.dat", dirname((char*) fp), x);
     free(fp);
     FILE *io = fopen(file, "rb");
 
+    Clear();
     Lock();
     while (!feof(io)) {
         size_t s;
@@ -255,15 +273,20 @@ void OTrackStore::LoadData(const char *filepath) {
         it->next = 0;
 
         s = fread(&it->time, sizeof (it->time), 1, io);
-        if (s != 1)
+        if (s != 1) {
+            delete it;
             break;
+        }
         s = fread(&it->val, sizeof (it->val), 1, io);
-        if (s != 1)
+        if (s != 1) {
+            delete it;
             break;
+        }        
         s = fread(&it->delta, sizeof (it->delta), 1, io);
-        if (s != 1)
+        if (s != 1) {
+            delete it;
             break;
-
+        }
         AddtimePointInternal(it);
     }
     Unlock();
@@ -273,8 +296,8 @@ void OTrackStore::LoadData(const char *filepath) {
 
 gint OTrackStore::GetCountEntries() {
     gint c = 0;
-    track_entry *e = m_tracks;   
-    while(e->next) {
+    track_entry *e = m_tracks;
+    while (e) {
         e = e->next;
         c++;
     }

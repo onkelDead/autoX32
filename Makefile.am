@@ -87,3 +87,8 @@ EXTRA_DIST = $(gsettings_SCHEMAS) \
 	     $(pixmaps_DATA) \
 	     $(desktop_DATA)
 
+TESTS = check_TrackStore
+check_PROGRAMS = check_TrackStore
+check_TrackStore_SOURCES = tests/test_trackstore.cpp
+check_TrackStore_CPPFLAGS = -g -O0 -std=c++11 -I../src ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/autoX32-OscCmd.o ${GTKMM3_LIBS}

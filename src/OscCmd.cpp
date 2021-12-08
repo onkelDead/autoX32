@@ -18,6 +18,8 @@
 
 OscCmd::OscCmd(const char* path, const char* types) : m_path(path), m_types(types)  {
     m_color.set_rgba_u(32768, 32768, 32768);
+    m_last_float = 0.0;
+    m_last_int = 0;
 
 }
 
