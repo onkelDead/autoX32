@@ -65,17 +65,17 @@ public:
 
     void RemoveCommand(OscCmd*);
     
-    OTrackStore *GetTrack(std::string);
-    std::map<std::string, OTrackStore*> GetTracks();
+    IOTrackStore *GetTrack(std::string);
+    std::map<std::string, IOTrackStore*> GetTracks();
     
     void SetMixer(IOX32*);
     
     bool UpdatePos(gint, bool);
-    bool ProcessPos(OTrackStore*, OscCmd*, gint);
+    bool ProcessPos(IOTrackStore*, OscCmd*, gint);
 
-    bool PlayTrackEntry(OTrackStore* trackstore, track_entry* entry);
+    bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
 
-    OTrackStore* NewTrack(OscCmd*);
+    IOTrackStore* NewTrack(OscCmd*);
     
     OscCmd* ProcessConfig(OscCmd*);
 
@@ -105,7 +105,7 @@ private:
     IOTracksLayout *m_layout;
 
     std::map<std::string, OscCmd*> m_known_mixer_commands;
-    std::map<std::string, OTrackStore*> m_tracks;
+    std::map<std::string, IOTrackStore*> m_tracks;
 
     void SaveRange(xmlTextWriterPtr writer);
     void SaveZoom(xmlTextWriterPtr writer);

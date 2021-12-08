@@ -25,7 +25,7 @@
 #include "OTimeDraw.h"
 #include "OTrackSizer.h"
 #include "OTrackDraw.h"
-#include "OTrackStore.h"
+#include "IOTrackStore.h"
 #include "IOMainWnd.h"
 #include "IOTrackView.h"
 
@@ -36,8 +36,8 @@ public:
 
     OscCmd* GetCmd();
 
-    void SetTrackStore(OTrackStore*);
-    OTrackStore* GetTrackStore();
+    void SetTrackStore(IOTrackStore*);
+    IOTrackStore* GetTrackStore();
 
     virtual void Resize(bool);
 

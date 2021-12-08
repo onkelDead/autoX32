@@ -17,10 +17,12 @@
 #include <libgen.h>
 #include "OTrackStore.h"
 
-OTrackStore::OTrackStore() {
-}
-
 OTrackStore::OTrackStore(OscCmd *cmd) : m_cmd(cmd) {
+    m_layout.m_expanded = true;
+    m_layout.m_height = 80;
+    m_layout.m_visible = true;
+    m_layout.m_index = -1;    
+    
     Init();
 }
 
@@ -73,6 +75,10 @@ void OTrackStore::Unlock() {
 
 OscCmd* OTrackStore::GetOscCommand() {
     return m_cmd;
+}
+
+track_entry* OTrackStore::GetTracks() {
+    return m_tracks;
 }
 
 track_entry* OTrackStore::NewEntry(gint timepos) {

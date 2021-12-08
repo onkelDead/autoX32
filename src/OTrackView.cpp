@@ -1,5 +1,5 @@
 /*
- Copyright 2020 Detlef Urban <onkel@paraair.de>
+ Copyright 2021 Detlef Urban <onkel@paraair.de>
 
  Permission to use, copy, modify, and/or distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
@@ -103,12 +103,12 @@ void OTrackView::on_button_x32_rec_clicked() {
 
 }
 
-void OTrackView::SetTrackStore(OTrackStore *trackstore) {
+void OTrackView::SetTrackStore(IOTrackStore *trackstore) {
     m_trackdraw->SetTrackStore(trackstore);
-    m_expander->set_expanded(trackstore->m_expanded);
+    m_expander->set_expanded(trackstore->GetLayout()->m_expanded);
 }
 
-OTrackStore* OTrackView::GetTrackStore() {
+IOTrackStore* OTrackView::GetTrackStore() {
     return m_trackdraw->GetTrackStore();
 }
 
@@ -185,14 +185,14 @@ bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
         GdkEventMotion *e = (GdkEventMotion*) motion_event;
         if (m_in_resize) {
             if (m_last_y != (gint) e->y) {
-                OTrackStore* ts = m_trackdraw->GetTrackStore();
+                IOTrackStore* ts = m_trackdraw->GetTrackStore();
                 gint min_height = m_boxcontrol->get_height();
                 m_last_y = (gint) e->y;
-                ts->m_height += m_last_y;
-                if (ts->m_height < min_height)
-                    ts->m_height = min_height;
-                set_size_request(160, ts->m_height);
-                ts->m_dirty = true;
+                ts->GetLayout()->m_height += m_last_y;
+                if (ts->GetLayout()->m_height < min_height)
+                    ts->GetLayout()->m_height = min_height;
+                set_size_request(160, ts->GetLayout()->m_height);
+                ts->SetDirty(true);
             }
         }
     }
@@ -201,11 +201,11 @@ bool OTrackView::on_motion_notify_event(GdkEventMotion *motion_event) {
 
 void OTrackView::on_expander() {
     if (m_expander->get_expanded()) {
-        set_size_request(160, m_trackdraw->GetTrackStore()->m_height);
+        set_size_request(160, m_trackdraw->GetTrackStore()->GetLayout()->m_height);
     } else {
         set_size_request(160, -1);
     }
-    m_trackdraw->GetTrackStore()->m_expanded = m_expander->get_expanded();
+    m_trackdraw->GetTrackStore()->GetLayout()->m_expanded = m_expander->get_expanded();
 
 }
 
@@ -223,14 +223,14 @@ void OTrackView::Resize(bool val) {
 
 void OTrackView::Reset() {
     SetHeight(80);
-    m_trackdraw->GetTrackStore()->m_visible = true;
+    m_trackdraw->GetTrackStore()->GetLayout()->m_visible = true;
     m_expander->set_expanded(true);
     on_expander();  
 }
 
 void OTrackView::SetHeight(gint height) {
-    OTrackStore* ts = m_trackdraw->GetTrackStore();
+    IOTrackStore* ts = m_trackdraw->GetTrackStore();
     set_size_request(160, height);
-    ts->m_height = height;
-    ts->m_dirty = true;    
+    ts->GetLayout()->m_height = height;
+    ts->SetDirty(true);    
 }

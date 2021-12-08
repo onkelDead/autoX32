@@ -164,7 +164,7 @@ void OTracksLayout::ResetAll() {
         return;
     }
     while(list != nullptr) {
-        if (!list->item->GetTrackStore()->m_visible)
+        if (!list->item->GetTrackStore()->GetLayout()->m_visible)
             TrackHide(list->item->GetCmd()->GetPath(), true);
         list->item->Reset();
         list = list->next;
@@ -181,10 +181,10 @@ void OTracksLayout::FitView(gint full_size) {
         return;
     }
     while(list != nullptr) {
-        if (list->item->GetTrackStore()->m_visible) {
+        if (list->item->GetTrackStore()->GetLayout()->m_visible) {
             list->item->SetHeight(req_size);
         }
-        if (!list->item->GetTrackStore()->m_expanded) {
+        if (!list->item->GetTrackStore()->GetLayout()->m_expanded) {
             list->item->ExpandCollapse(true);
         }
 
@@ -200,13 +200,13 @@ void OTracksLayout::TrackHide(std::string path, bool hide) {
     }
     while(list != nullptr) {
         if (list->item->GetCmd()->GetPath().compare(path) == 0) {
-            list->item->GetTrackStore()->m_visible = hide;
-            list->item->GetTrackStore()->m_dirty = true;
+            list->item->GetTrackStore()->GetLayout()->m_visible = hide;
+            list->item->GetTrackStore()->SetDirty(true);
             if (!hide)
                 remove (*list->item);
             else {
                 add(*list->item);
-                reorder_child(*list->item, list->item->GetTrackStore()->m_index);
+                reorder_child(*list->item, list->item->GetTrackStore()->GetLayout()->m_index);
                 show_all_children(true);
             }
             return;
@@ -305,7 +305,7 @@ gint OTracksLayout::get_count_visible() {
     }
         
     while( list) {
-        if (list->item->GetTrackStore()->m_visible)
+        if (list->item->GetTrackStore()->GetLayout()->m_visible)
             c++;
         list = list->next;
     }

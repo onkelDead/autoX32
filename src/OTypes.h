@@ -86,6 +86,13 @@ typedef struct track_entry {
     track_entry* next;
 } track_entry;
 
+typedef struct track_layout {
+    bool m_expanded;
+    int m_height;
+    bool m_visible;
+    int m_index;    
+} track_layout;
+
 
 #endif /* OTYPES_H */
 

@@ -3,7 +3,7 @@ datadir = $(prefix)/share/autoX32/
 desktopdir       = $(prefix)/share/applications
 pixmapsdir       = $(prefix)/share/pixmaps
 autoX32kdir = src
-bin_PROGRAMS = autoX32
+bin_PROGRAMS = autoX32 check_TrackStore
 
 autoX32_SOURCES = \
     src/OMainWndEvents.cpp \

@@ -14,23 +14,34 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef IOTRACKVIEW_H
-#define IOTRACKVIEW_H
+#ifndef IOTRACKSTORE_H
+#define IOTRACKSTORE_H
 
+#include "OTypes.h"
 #include "OscCmd.h"
-#include "IOTrackStore.h"
 
-class IOTrackView {
+
+class IOTrackStore {
 public:
-    virtual OscCmd* GetCmd() = 0;
-    virtual IOTrackStore* GetTrackStore() = 0;
-    virtual void Resize(bool) = 0;
-    virtual void ExpandCollapse(bool) = 0;
-    virtual void Reset() = 0;
-    virtual void SetHeight(gint) = 0;
+    virtual track_entry *GetTracks() = 0;
+    virtual OscCmd* GetOscCommand() = 0;
+    virtual bool IsPlaying() = 0;
+    virtual bool IsRecording() = 0;
+    virtual void SetPlaying(bool val) = 0;
+    virtual void SetRecording(bool val) = 0;
+    
+    virtual track_entry* UpdatePlayhead(gint, bool) = 0;
+    
+    virtual bool IsDirty() = 0;
+    virtual void SetDirty(bool val) = 0;
+    
+    virtual void AddEntry(OscCmd*, gint) = 0;
+    virtual gint GetCountEntries() = 0;
+    virtual track_layout* GetLayout() = 0;
+    
+    virtual void SaveData(const char* filepath) = 0;
+    virtual void LoadData(const char* filepath) = 0;
 };
 
-
-
-#endif /* IOTRACKVIEW_H */
+#endif /* IOTRACKSTORE_H */
 

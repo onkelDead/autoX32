@@ -25,7 +25,7 @@
 #include "OCustomWidget.h"
 #include "OscCmd.h"
 #include "OTimeDraw.h"
-#include "OTrackStore.h"
+#include "IOTrackStore.h"
 #include "IOMainWnd.h"
 
 class OTrackDraw: public OCustomWidget {
@@ -33,8 +33,8 @@ public:
 	OTrackDraw(IOMainWnd*, daw_time*);
 	virtual ~OTrackDraw();
 
-	void SetTrackStore(OTrackStore*);
-	OTrackStore* GetTrackStore();
+	void SetTrackStore(IOTrackStore*);
+	IOTrackStore* GetTrackStore();
 	OscCmd* GetCmd();
 
 	void SetRecord(bool val);
@@ -62,7 +62,7 @@ private:
 	daw_time *m_daw_time;
 
 	float GetHeight(lo_arg it, char t);
-	OTrackStore *m_trackstore = nullptr;
+	IOTrackStore *m_trackstore = nullptr;
 
 	bool m_in_drag = 0;
 	guint m_btn_down = 0;

@@ -183,7 +183,7 @@ void OMainWnd::OnMixerEvent() {
             }
         } else {
             // is this track already known ?
-            OTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
+            IOTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
             OTrackView *tv = NULL;
 
             if (trackstore) { // the track is known
@@ -200,7 +200,7 @@ void OMainWnd::OnMixerEvent() {
                     m_project.AddCommand(c);
                     cmd->SetName(cmd->GetPath());
                     trackstore = m_project.NewTrack(c);
-                    trackstore->m_playing = m_project.m_playing;
+                    trackstore->SetPlaying(m_project.m_playing);
                     m_x32->Send(c->GetConfigRequestName());
                     m_x32->Send(c->GetConfigRequestColor());
                     PublishUiEvent(UI_EVENTS::new_track, trackstore);
@@ -237,13 +237,13 @@ void OMainWnd::OnViewEvent() {
         switch (e->what) {
             case UI_EVENTS::new_track:
             {
-                OTrackStore *trackstore = (OTrackStore*) e->with;
+                IOTrackStore *trackstore = (IOTrackStore*) e->with;
                 if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
                     trackview->UpdateConfig();
-                    m_trackslayout.AddTrack(trackview, trackstore->m_visible);
+                    m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                 }
                 delete e;
             }

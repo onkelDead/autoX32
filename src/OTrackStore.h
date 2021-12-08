@@ -17,25 +17,22 @@
 #ifndef OTRACKSTORE_H
 #define OTRACKSTORE_H
 
+#include "IOTrackStore.h"
 #include "OTypes.h"
 #include "OscCmd.h"
 
-class OTrackStore {
+class OTrackStore : public IOTrackStore {
 public:
-    OTrackStore();    
     OTrackStore(OscCmd* cmd);
     virtual ~OTrackStore();
 
-    
     OscCmd* GetOscCommand();
-
+    track_entry *GetTracks();
 
     void AddTimePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     
-
-
     track_entry* NewEntry(gint pos = 0);
     track_entry* GetEntry(int);
     
@@ -44,25 +41,33 @@ public:
     
     track_entry* GetPlayhead();
     track_entry* UpdatePlayhead(gint, bool);
+
+    inline bool IsPlaying() { return m_playing; };
+    inline void SetPlaying(bool val) { m_playing = val; }
+    
+    inline bool IsRecording() { return m_record; }
+    inline void SetRecording(bool val) { m_record = val; }
+
+    inline bool IsDirty() { return m_dirty; }
+    inline void SetDirty(bool val) { m_dirty = val; }
     
     gint GetCountEntries();
     
-    bool m_record = false;
-    bool m_playing = false;    
-    track_entry* m_tracks = nullptr;
-    bool m_expanded = true;
-    int m_height = 80;
+    inline track_layout* GetLayout() { return &m_layout; }
     
-    bool m_dirty = false;
-
-    gint m_index = -1;
-    bool m_visible = true;
     
     void Clear();
     
 private:
     void Init();
     
+    bool m_record = false;
+    bool m_playing = false;    
+
+    track_entry* m_tracks = nullptr;
+    bool m_dirty = false;
+    
+    track_layout m_layout;
 
     inline void Lock();
     inline void Unlock();    

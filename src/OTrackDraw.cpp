@@ -52,10 +52,10 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     m_width = allocation.get_width();
     int last_val;
 
-    track_entry *it = m_trackstore->m_tracks;
+    track_entry *it = m_trackstore->GetTracks();
     OscCmd* cmd = m_trackstore->GetOscCommand();
 
-    if (m_trackstore->m_playing) {
+    if (m_trackstore->IsPlaying()) {
         //return true;
     }
     
@@ -128,18 +128,18 @@ void OTrackDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rectangl
 }
 
 void OTrackDraw::SetRecord(bool val) {
-    m_trackstore->m_record = val;
+    m_trackstore->SetRecording(val);
 }
 
 void OTrackDraw::SetSelected(bool val) {
     m_selected = val;
 }
 
-void OTrackDraw::SetTrackStore(OTrackStore *trackstore) {
+void OTrackDraw::SetTrackStore(IOTrackStore *trackstore) {
     m_trackstore = trackstore;
 }
 
-OTrackStore* OTrackDraw::GetTrackStore() {
+IOTrackStore* OTrackDraw::GetTrackStore() {
     return m_trackstore;
 }
 

@@ -232,15 +232,15 @@ void OMainWnd::OpenProject(std::string location) {
 
     set_title("autoX32 - [" + location + "]");
 
-    std::map<std::string, OTrackStore*> tracks = m_project.GetTracks();
+    std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
 
     for (gint i = 0; i < tracks.size(); i++) {
-        for (std::map<std::string, OTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-            if (it->second->m_index == i) {
+        for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+            if (it->second->GetLayout()->m_index == i) {
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(it->second);
                 trackview->UpdateConfig();
-                m_trackslayout.AddTrack(trackview, it->second->m_visible);
+                m_trackslayout.AddTrack(trackview, it->second->GetLayout()->m_visible);
             }
         }
     }

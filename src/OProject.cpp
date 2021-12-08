@@ -49,7 +49,7 @@ OProject::OProject(std::string location) {
 }
 
 OProject::~OProject() {
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete it->second;
     }
 }
@@ -66,8 +66,8 @@ bool OProject::GetDirty() {
     bool dirty = m_dirty;
 
     dirty |= m_daw_range.m_dirty;
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        dirty |= it->second->m_dirty;
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        dirty |= it->second->IsDirty();
     }
     return dirty;
 }
@@ -191,16 +191,16 @@ void OProject::Load(std::string location) {
                 char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
                 
                 OscCmd* cmd = m_known_mixer_commands[path];
-                OTrackStore *ts = NewTrack(cmd);
-                ts->m_expanded = atoi(expanded);
-                ts->m_height = atoi(height);
+                IOTrackStore *ts = NewTrack(cmd);
+                ts->GetLayout()->m_expanded = atoi(expanded);
+                ts->GetLayout()->m_height = atoi(height);
                 if (layout_index) {
-                    ts->m_index = atoi(layout_index);
+                    ts->GetLayout()->m_index = atoi(layout_index);
                     xmlFree(layout_index);
                 }
                 else
-                    ts->m_index = c++;
-                ts->m_visible = visible ? atoi(visible) : true;
+                    ts->GetLayout()->m_index = c++;
+                ts->GetLayout()->m_visible = visible ? atoi(visible) : true;
                         
                 ts->LoadData(m_projectFile.c_str());
                 if (visible)
@@ -272,7 +272,7 @@ void OProject::Save() {
 }
 
 void OProject::Close() {
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete it->second;
     }
     for (std::map<std::string, OscCmd*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
@@ -350,30 +350,30 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     char cv[16];
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         gint layout_index = m_layout->GetTrackIndex(it->first);
-        OTrackStore* ts = it->second;
+        IOTrackStore* ts = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
-        sprintf(cv, "%d", it->second->m_expanded);
+        sprintf(cv, "%d", it->second->GetLayout()->m_expanded);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
-        sprintf(cv, "%d", it->second->m_height);
+        sprintf(cv, "%d", it->second->GetLayout()->m_height);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
         sprintf(cv, "%d", layout_index);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "layout_index", "%s", cv);
-        sprintf(cv, "%d", it->second->m_visible);
+        sprintf(cv, "%d", it->second->GetLayout()->m_visible);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "visible", "%s", cv);
 
         xmlTextWriterEndElement(writer);
-        if (it->second->m_dirty) {
+        if (it->second->IsDirty()) {
             it->second->SaveData(m_projectFile.data());
             printf("Project::Save: track %s saved\n", it->first.data());
         }
     }
 }
 
-OTrackStore* OProject::NewTrack(OscCmd* cmd) {
-    OTrackStore* ts = new OTrackStore(cmd);
+IOTrackStore* OProject::NewTrack(OscCmd* cmd) {
+    IOTrackStore* ts = new OTrackStore(cmd);
     m_tracks[cmd->GetPath()] = ts;
     return ts;
 }
@@ -399,9 +399,9 @@ void OProject::SetMaxMillis(int max_millis) {
 void OProject::SetPlaying(bool val) {
 
     m_playing = val;
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        OTrackStore* ts = it->second;
-        ts->m_playing = val;
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        IOTrackStore* ts = it->second;
+        ts->SetPlaying(val);
     }
 }
 
@@ -414,7 +414,7 @@ void OProject::AddCommand(OscCmd* cmd) {
 }
 
 void OProject::RemoveCommand(OscCmd* cmd) {
-    OTrackStore *ts = m_tracks[cmd->GetPath()];
+    IOTrackStore *ts = m_tracks[cmd->GetPath()];
     m_tracks.erase(cmd->GetPath());
     delete ts;
     m_known_mixer_commands.erase(cmd->GetPath());
@@ -422,18 +422,18 @@ void OProject::RemoveCommand(OscCmd* cmd) {
     m_dirty = true;
 }
 
-OTrackStore* OProject::GetTrack(std::string path) {
+IOTrackStore* OProject::GetTrack(std::string path) {
     auto e = m_tracks.find(path);
     if (e != m_tracks.end())
         return m_tracks[path];
     return NULL;
 }
 
-std::map<std::string, OTrackStore*> OProject::GetTracks() {
+std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
 
-bool OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry) {
+bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
     if (entry == nullptr)
         return false;
     OscCmd* cmd = trackstore->GetOscCommand();
@@ -451,19 +451,19 @@ bool OProject::PlayTrackEntry(OTrackStore* trackstore, track_entry* entry) {
 bool OProject::UpdatePos(gint current, bool jump) {
     bool ret_code = false;
 
-    for (std::map<std::string, OTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
 
-        OTrackStore* trackstore = it->second;
+        IOTrackStore* trackstore = it->second;
         ret_code = PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
 
     }
     return ret_code;
 }
 
-bool OProject::ProcessPos(OTrackStore* trackstore, OscCmd* cmd, gint current) {
+bool OProject::ProcessPos(IOTrackStore* trackstore, OscCmd* cmd, gint current) {
     bool ret_code = false;
     if (trackstore) {
-        if (trackstore->m_record) {
+        if (trackstore->IsRecording()) {
             trackstore->AddEntry(cmd, current);
         }
         ret_code = true;

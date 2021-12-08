@@ -123,7 +123,7 @@ ODlgLayoutTrack::ODlgLayoutTrack(IOTracksLayout* parent, IOTrackView* view) : Gt
     m_check = new Gtk::CheckButton();
     m_check->set_vexpand(false);
     m_check->set_hexpand(false);
-    m_check->set_active(view->GetTrackStore()->m_visible);
+    m_check->set_active(view->GetTrackStore()->GetLayout()->m_visible);
     m_check->set_margin_left(8);
     m_check->set_margin_right(8);
     m_check->set_tooltip_text("Show/Hide Track");
@@ -132,7 +132,7 @@ ODlgLayoutTrack::ODlgLayoutTrack(IOTracksLayout* parent, IOTrackView* view) : Gt
     m_expand = new Gtk::CheckButton();
     m_expand->set_vexpand(false);
     m_expand->set_hexpand(false);
-    m_expand->set_active(view->GetTrackStore()->m_expanded);
+    m_expand->set_active(view->GetTrackStore()->GetLayout()->m_expanded);
     m_expand->set_margin_left(8);
     m_expand->set_margin_right(8);
     m_expand->set_tooltip_text("Expand/Collapse Track");
