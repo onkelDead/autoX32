@@ -16,11 +16,11 @@ The following libraries are added to build using pkg-config (versions I'd use):
 
 Build instruction
 
-aclocal
-autoconf
-automake --add-missing
-./configure
-make
-sudo make install
+    aclocal
+    autoconf
+    automake --add-missing
+    ./configure
+    make
+    sudo make install
 
     
