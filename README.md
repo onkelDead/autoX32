@@ -3,7 +3,7 @@ Automation Recorder for audio production with Ardour and Behringer X32.
 
 ![screenshot.png](/screenshot.png?raw=true)
 
-Required libraries:
+## Required libraries:
     
 The following libraries are added to build using pkg-config (versions I'd use):
 
@@ -14,7 +14,7 @@ The following libraries are added to build using pkg-config (versions I'd use):
     jack (1.9.12)    
     check (0.10.0)
 
-Build instruction
+## Build instruction
 
     aclocal
     autoconf
