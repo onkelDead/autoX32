@@ -23,10 +23,12 @@
  * Simple C++ Test Suite
  */
 
+#define TEST2_NUM_ENTRIES 100000
+
 #define TEST_EQUAL(a, b, c, d) \
     if ((a) != (b)) { \
         c = EXIT_FAILURE; \
-        std::cout << "Failed: " << d << std::endl; \
+        std::cout << "Failed: " << a << " != " << b << std::endl; \
     }
 
 int test1() {
@@ -63,12 +65,69 @@ int test1() {
     delete cmd1;
     ts = NULL;
     cmd = NULL;
+    
+    unlink("/tmp/test-path.dat");
     return result;
 }
 
-void test2() {
+int test2() {
+    int result = EXIT_SUCCESS;
     std::cout << "test_trackstore test 2" << std::endl;
-    std::cout << "%TEST_FAILED% time=0 testname=test2 (test_trackstore) message=error message sample" << std::endl;
+    std::cout << "TEST2_NUM_ENTRIES = " << TEST2_NUM_ENTRIES << std::endl;
+    std::cout << "measure time for adding TEST2_NUM_ENTRIES entries with incremental positions" << std::endl;
+    
+    // prepare track store
+    OscCmd* cmd = new OscCmd("test-path", "test-types");
+    OTrackStore* ts = new OTrackStore(cmd);
+    ts->SetRecording(true);
+    ts->SetPlaying(true);
+
+    // store begin time
+    clock_t begin = clock();
+    
+    for (int i = 1; i <= TEST2_NUM_ENTRIES; i++) {
+        ts->AddEntry(cmd, i);
+    }
+    
+    TEST_EQUAL(TEST2_NUM_ENTRIES+1, ts->GetCountEntries(), result, "TEST2_NUM_ENTRIES != ts->GetCountEntries()")
+    
+    clock_t end = clock();
+    double time_spent = (double)(end - begin); //in microseconds
+    
+    std::cout << "elapse time: " << time_spent << " µsec." << std::endl;
+    
+    delete ts;
+    delete cmd;
+    
+    cmd = new OscCmd("test-path", "test-types");
+    ts = new OTrackStore(cmd);
+    ts->SetRecording(true);
+    ts->SetPlaying(true);    
+    
+    std::cout << std::endl << "measure time for adding TEST2_NUM_ENTRIES entries with random positions" << std::endl;
+    begin = clock();
+    
+    for (int i = 1; i <= TEST2_NUM_ENTRIES; i++) {
+        ts->AddEntry(cmd, rand());
+    }
+    end = clock();
+    time_spent = (double)(end - begin); //in microseconds
+    std::cout << "elapse time: " << time_spent << " µsec." << std::endl;
+
+    std::cout << std::endl << "measure time for TEST2_NUM_ENTRIES update positions" << std::endl;
+    begin = clock();
+    
+    for (int i = 1; i <= TEST2_NUM_ENTRIES; i++) {
+        ts->UpdatePlayhead(rand(), true);
+    }
+    end = clock();
+    time_spent = (double)(end - begin); //in microseconds
+    std::cout << "elapse time: " << time_spent << " µsec." << std::endl;
+
+    delete ts;
+    delete cmd;
+    
+    return result;
 }
 
 int main(int argc, char** argv) {
@@ -79,6 +138,10 @@ int main(int argc, char** argv) {
     std::cout << "TEST_FINISHED test1 (test_trackstore)" << std::endl;
 
 
+    std::cout << "TEST_STARTED test2 (test_trackstore)" << std::endl;
+    result |= test2();
+    std::cout << "TEST_FINISHED test2 (test_trackstore)" << std::endl;
+    
     return (result);
 }
 
