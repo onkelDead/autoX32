@@ -256,9 +256,9 @@ void OMainWnd::on_btn_teach_clicked() {
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
     if (m_btn_teach->get_active()) {
-        m_jack.ControllerShowTeachOn();
+        m_backend->ControllerShowTeachOn();
     } else {
-        m_jack.ControllerShowTeachOff();
+        m_backend->ControllerShowTeachOff();
         m_trackslayout.StopTeach();
 
     }
@@ -298,7 +298,7 @@ void OMainWnd::on_button_play_clicked() {
         m_trackslayout.StopRecord();
         if (!m_lock_play)
             //m_daw.Stop();
-            m_jack.Stop();
+            m_backend->Stop();
         if (!m_shot_refresh && settings->get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
@@ -306,14 +306,14 @@ void OMainWnd::on_button_play_clicked() {
         m_project.SetPlaying(true);
         if (!m_lock_play)
             //m_daw.Play();
-            m_jack.Play();
+            m_backend->Play();
         if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->freeze_updates();
     }
 }
 
 void OMainWnd::on_button_back_clicked() {
-    m_jack.Locate(m_project.GetLoopStart());
+    m_backend->Locate(m_project.GetLoopStart());
     UpdatePlayhead();
 }
 
@@ -332,7 +332,7 @@ void OMainWnd::on_btn_lock_playhead_clicked() {
 void OMainWnd::on_timeline_pos_changed() {
     m_lock_daw_time_event = true;
     //m_daw.SetPosition(m_timer->GetPosMillis() * 48, m_button_play->get_active());
-    m_jack.Locate(m_timeview->GetClickMillis());
+    m_backend->Locate(m_timeview->GetClickMillis());
     // UpdatePlayhead();
 }
 

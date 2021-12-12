@@ -21,34 +21,11 @@
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include "OTypes.h"
+#include "IOBackend.h"
 #include "IOMainWnd.h"
 
-class OJackMtc {
-public:
 
-	void FullFrame(uint8_t* frame_data);
-	void QuarterFrame(uint8_t data);
-        void SetFrame(gint);
-	gint GetMillis();
-	std::string GetTimeCode();
-        bool m_edge_sec = false;
-
-private:
-	uint8_t hour = 0;
-	uint8_t min = 0;
-	uint8_t sec = 0;
-	uint8_t frame = 0;
-	uint8_t subframe = 0;
-
-	uint8_t n1 = 0;
-	uint8_t n2 = 0;
-	std::string timecode;
-	gint millis;
-	bool lock_millis = false;
-};
-
-
-class OJack {
+class OJack : public IOBackend {
 public:
     OJack() : m_millis(0), m_jack_client(NULL) {};
     virtual ~OJack() {};
@@ -67,7 +44,9 @@ public:
 
     void Locate(gint);
 
-    gint GetMillis();
+    OMidiMtc* GetMidiMtc() { return &m_midi_mtc; }
+    
+    int GetMillis();
     void SetFrame(gint);
 
     std::string GetTimeCode();
@@ -77,7 +56,6 @@ public:
     bool GetLoopState();
     void SetLoopState(bool);
 
-    OJackMtc m_jackMtc;
 
     jack_client_t *m_jack_client;
 
@@ -97,6 +75,8 @@ public:
 private:
     bool m_loop_state = false;
 
+    OMidiMtc m_midi_mtc;
+    
 };
 
 

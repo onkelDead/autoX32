@@ -103,7 +103,7 @@ public:
 
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
 
-    bool SetupJackClient();
+    bool SetupBackend();
 
     gint GetPosMillis();
 
@@ -229,7 +229,7 @@ private:
     OProject m_project;
     OX32* m_x32 = nullptr;
     ODAW m_daw;
-    OJack m_jack;
+    IOBackend* m_backend;
 
     void TimerEvent(void*);
     int m_last_playhead_update = 0;

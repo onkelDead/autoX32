@@ -30,8 +30,10 @@ autoX32_SOURCES = \
     src/OQueue.cpp \
     src/OCustomWidget.cpp \
     src/OJack.cpp \
+    src/OMidiMtc.cpp \
     src/OTimer.cpp \
     src/ODlgLayout.cpp \
+    src/ODlgProlog.cpp \
     src/embedded/autoX32_css.cpp \
     src/embedded/connectDlg.cpp \
     src/embedded/main.cpp \
@@ -58,8 +60,10 @@ noinst_HEADERS = \
     src/OQueue.h \
     src/OCustomWidget.h \
     src/OJack.h \
+    src/OMidiMtc.h \
     src/OTimer.h \
-    src/ODlgLayout.h
+    src/ODlgLayout.h \
+    src/ODlgProlog.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0

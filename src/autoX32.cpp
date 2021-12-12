@@ -16,15 +16,46 @@
 
 #include <gtkmm.h>
 #include "OMainWnd.h"
+#include "ODlgProlog.h"
+#include "embedded/main.h"
 
  int main(int argc, char *argv[]) {
     auto app = Gtk::Application::create(argc, argv, AUTOX32_SCHEMA_ID);
 
-    OMainWnd window;
+    int midi_backend;
+    
+    OMainWnd* window;
 
-    window.ApplyWindowSettings(); 
+    Glib::RefPtr<Gio::Settings> settings;    
+    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
 
-    window.SetupJackClient();
+    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
+    if (schema) {
+        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
+        midi_backend = settings->get_int(SETTINGS_MIDI_BACKEND);
+    }
+    
+    g_settings_schema_unref(schema);    
+    
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(main_inline_glade);    
+    ODlgProlog *pDialog = nullptr;
+    builder->get_widget_derived("dlg-prolog", pDialog);
+    
+    pDialog->SetMidiBackend(midi_backend);
+    
+    pDialog->run();
+    if (!pDialog->GetResult()) {
+        return 0;
+    }
+    
+    midi_backend = pDialog->GetMidiBackend();
+    settings->set_int(SETTINGS_MIDI_BACKEND, midi_backend);
+    
+    window = new OMainWnd();
+    
+    window->ApplyWindowSettings(); 
 
-    return app->run((Gtk::Window&)window);
+    window->SetupBackend();
+
+    return app->run((Gtk::Window&)*window);
 }

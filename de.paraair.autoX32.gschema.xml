@@ -4,6 +4,14 @@
 
     <schema path="/de/paraair/autoX32/" id="de.paraair.autoX32">
 
+        <key name='midi-backend' type='i'>
+            <default>1</default>
+            <summary>The used MIDI backend</summary>
+            <description>
+                Midi Backend
+            </description>
+        </key> 
+                
         <key name='mixer-host' type='s'>
             <default>"192.168.178.43"</default>
             <summary>Mixer IP</summary>

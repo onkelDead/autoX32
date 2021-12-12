@@ -51,6 +51,7 @@ extern "C" {
 #define SETTINGS_SHOW_PATH_ON_TRACK     "show-path-on-track"
     
 #define SETTINGS_RECENT_PROJECTS        "recent-projects"    
+#define SETTINGS_MIDI_BACKEND           "midi-backend"    
     
 #ifdef __cplusplus
 }

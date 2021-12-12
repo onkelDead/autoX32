@@ -16,7 +16,7 @@ char autoX32_inline_css[] =
 "*/"
 ""
 "#ViewStart, #ViewEnd {"
-"	font-size: 75%;"
+"    font-size: 75%;"
 "}"
 ""
 "#OTrackView {"
@@ -56,7 +56,7 @@ char autoX32_inline_css[] =
 "    color:            rgb(0,255,0);"
 "}"
 ""
-"#OMainWnd, #OTrackDlg, #OConnectDlg, #AboutDlg, #ODlgPrefs, #ODlgLayout, #ODlgLayoutTrack {"
+"#OMainWnd, #OTrackDlg, #OConnectDlg, #AboutDlg, #ODlgPrefs, #ODlgLayout, #ODlgLayoutTrack, #ODlgProlog {"
 "    background-color: rgb(50,50,50);"
 "    color: rgb(228,228,228);"
 "}"
@@ -107,4 +107,7 @@ char autoX32_inline_css[] =
 ".separator {"
 "    color: rgb(32,32,32);"
 "}"
-;
+"combobox *{"
+"    background: rgb(55,55,55);"
+"    color: rgb(255, 255, 255);"
+"}";

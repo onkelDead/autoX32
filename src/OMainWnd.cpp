@@ -291,16 +291,16 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_trackslayout.GetTrackview(path)->set_name("OTrackView");
 }
 
-bool OMainWnd::SetupJackClient() {
+bool OMainWnd::SetupBackend() {
 
+    m_backend = new OJack();
 
-
-    m_jack.Connect(this);
+    m_backend->Connect(this);
 
 
     return 0;
 }
 
 gint OMainWnd::GetPosMillis() {
-    return m_jack.GetMillis();
+    return m_backend->GetMillis();
 }

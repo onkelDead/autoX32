@@ -30,26 +30,26 @@ void OMainWnd::OnJackEvent() {
                     if (!--m_shot_refresh)
                         if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                             this->get_window()->freeze_updates();
-                } else if (m_jack.m_jackMtc.m_edge_sec) {
-                    m_jack.m_jackMtc.m_edge_sec = false;
+                } else if (m_backend->GetMidiMtc()->m_edge_sec) {
+                    m_backend->GetMidiMtc()->m_edge_sec = false;
                     if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
                         this->get_window()->thaw_updates();
                     m_shot_refresh = 3;
                 }
-                m_timeview->SetTimeCode(m_jack.GetTimeCode());
-                m_project.UpdatePos(m_jack.GetMillis(), c == MTC_COMPLETE);
+                m_timeview->SetTimeCode(m_backend->GetTimeCode());
+                m_project.UpdatePos(m_backend->GetMillis(), c == MTC_COMPLETE);
                 UpdatePlayhead();
                 break;
             case MMC_PLAY:
                 m_lock_play = true;
                 m_button_play->set_active(true);
-                m_jack.ControllerShowPlay();
+                m_backend->ControllerShowPlay();
                 m_lock_play = false;
                 break;
             case MMC_STOP:
                 m_lock_play = true;
                 m_button_play->set_active(false);
-                m_jack.ControllerShowStop();
+                m_backend->ControllerShowStop();
                 this->queue_draw();
                 m_lock_play = false;
                 break;
@@ -61,10 +61,10 @@ void OMainWnd::OnJackEvent() {
                 m_lock_play = true;
                 if (!m_button_play->get_active()) {
                     m_button_play->set_active(true);
-                    m_jack.Play();
+                    m_backend->Play();
                 } else {
                     m_button_play->set_active(false);
-                    m_jack.Stop();
+                    m_backend->Stop();
                 }
                 m_lock_play = false;
                 break;
@@ -77,16 +77,16 @@ void OMainWnd::OnJackEvent() {
                 //on_btn_teach_clicked();
                 break;
             case CTL_LOOP_SET:
-                if (!m_jack.GetLoopState()) {
+                if (!m_backend->GetLoopState()) {
                     on_btn_loop_start_clicked();
-                    m_jack.LoopStart();
+                    m_backend->LoopStart();
                 } else {
                     on_btn_loop_end_clicked();
-                    m_jack.LoopEnd();
+                    m_backend->LoopEnd();
                 }
                 break;
             case CTL_LOOP_CLEAR:
-                m_jack.SetLoopState(false);
+                m_backend->SetLoopState(false);
                 m_daw.ClearRange();
                 break;
             case CTL_TOGGLE_LOOP:
@@ -129,9 +129,9 @@ void OMainWnd::OnDawEvent() {
                 m_timeview->SetZoomLoop();
                 break;
             case DAW_PATH::samples:
-                 m_jack.SetFrame(m_daw.GetSample() / 400 );
-                m_timeview->SetTimeCode(m_jack.GetTimeCode());
-                m_project.UpdatePos(m_jack.GetMillis(), true);
+                 m_backend->SetFrame(m_daw.GetSample() / 400 );
+                m_timeview->SetTimeCode(m_backend->GetTimeCode());
+                m_project.UpdatePos(m_backend->GetMillis(), true);
                 UpdatePlayhead();
                 
                 break;

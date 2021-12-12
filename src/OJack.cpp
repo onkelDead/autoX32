@@ -120,17 +120,17 @@ static int process_mtc_event(jack_midi_event_t event, OJack* jack) {
     uint8_t s;
 
     if (event.buffer[0] == 0xf1) {
-        jack->m_jackMtc.QuarterFrame(event.buffer[1]);
-        if (jack->m_jackMtc.m_edge_sec == 1) {
+        jack->GetMidiMtc()->QuarterFrame(event.buffer[1]);
+        if (jack->GetMidiMtc()->m_edge_sec == 1) {
             jack->Notify(MTC_QUARTER_FRAME_SEC);
         }
-        if (jack->m_jackMtc.m_edge_sec == 2) {
+        if (jack->GetMidiMtc()->m_edge_sec == 2) {
             jack->Notify(MTC_QUARTER_FRAME_SEC1);
-            jack->m_jackMtc.m_edge_sec = 0;
+            jack->GetMidiMtc()->m_edge_sec = 0;
         } else
             jack->Notify(MTC_QUARTER_FRAME);
     } else if (event.buffer[0] == 0xf0) {
-        jack->m_jackMtc.FullFrame(event.buffer);
+        jack->GetMidiMtc()->FullFrame(event.buffer);
         jack->Notify(MTC_COMPLETE);
     }
     return 1;
@@ -227,67 +227,6 @@ static int process(jack_nframes_t nframes, void *arg) {
 static void jack_shutdown(void *arg) {
     // TODO: fix me, what to do if jack server stops
     exit(1);
-}
-
-// JackMtc
-
-void OJackMtc::FullFrame(uint8_t *frame_data) {
-    hour = frame_data[5] & 0x1f;
-    min = frame_data[6];
-    sec = frame_data[7];
-    frame = frame_data[8];
-    subframe = 0;
-}
-
-void OJackMtc::QuarterFrame(uint8_t data) {
-    lock_millis = true;
-    subframe++;
-    if (subframe == 4) {
-        subframe = 0;
-        frame++;
-    }
-    if (frame == 30) {
-        frame = 0;
-        sec++;
-        m_edge_sec = true;
-    }
-    if (sec == 60) {
-        sec = 0;
-        min++;
-    }
-    if (min == 60) {
-        min = 0;
-        hour++;
-    }
-
-    lock_millis = false;
-}
-
-gint OJackMtc::GetMillis() {
-    while (lock_millis);
-    return hour * 432000 
-            + min * 7200 
-            + sec * 120 
-            + (frame * 4) + (subframe);
-}
-
-void OJackMtc::SetFrame(gint f) {
-    hour = f / 432000;
-    f -= hour * 432000 ;
-    min = (f / 7200 % 60);
-    f -= min * 7200;
-    sec = (f / 120) % 60;
-    f -= sec * 120;
-    frame = (f / 4 ) % 30;
-    subframe = 0;
-}
-
-std::string OJackMtc::GetTimeCode() {
-    char t[32];
-
-    sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, frame);
-    timecode = t;
-    return timecode;
 }
 
 
@@ -453,12 +392,12 @@ void OJack::Locate(gint millis) {
     doLocate = true;
 }
 
-gint OJack::GetMillis() {
-    return m_jackMtc.GetMillis();
+int OJack::GetMillis() {
+    return m_midi_mtc.GetMillis();
 }
 
 void OJack::SetFrame(gint frame) {
-    m_jackMtc.SetFrame(frame);
+    m_midi_mtc.SetFrame(frame);
 }
 
 void OJack::Notify(JACK_EVENT event) {
@@ -466,7 +405,7 @@ void OJack::Notify(JACK_EVENT event) {
 }
 
 std::string OJack::GetTimeCode() {
-    return m_jackMtc.GetTimeCode();
+    return m_midi_mtc.GetTimeCode();
 }
 
 void OJack::ControllerShowPlay() {
