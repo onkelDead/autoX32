@@ -53,9 +53,18 @@
     
     window = new OMainWnd();
     
+    if (window->SetupBackend(midi_backend)) {
+        Gtk::MessageDialog dialog(*window, "Failed to start backend.",
+                false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
+        dialog.run();   
+        delete window;
+        return 1;
+    }
+
     window->ApplyWindowSettings(); 
-
-    window->SetupBackend();
-
-    return app->run((Gtk::Window&)*window);
+    window->AutoConnect();
+    
+    int result = app->run((Gtk::Window&)*window);
+    delete window;
+    return result;
 }

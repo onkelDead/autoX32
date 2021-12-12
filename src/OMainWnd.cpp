@@ -99,8 +99,6 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
     m_lock_daw_time = false;
     m_lock_daw_time_event = false;
 
-    AutoConnect();
-
 }
 
 OMainWnd::~OMainWnd() {
@@ -291,12 +289,17 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_trackslayout.GetTrackview(path)->set_name("OTrackView");
 }
 
-bool OMainWnd::SetupBackend() {
+bool OMainWnd::SetupBackend(gint index) {
 
-    m_backend = new OJack();
+    switch(index) {
+        case 0:
+            return 1;
+        case 1:
+            m_backend = new OJack();
+            break;
+    }
 
     m_backend->Connect(this);
-
 
     return 0;
 }
