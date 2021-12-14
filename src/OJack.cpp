@@ -34,107 +34,12 @@ jack_port_t *mtc_port;
 jack_port_t *ctl_in_port;
 jack_port_t *ctl_out_port;
 
-std::queue<int> ctl_out;
-std::queue<uint8_t> mmc_out;
-
-#define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
-
 static uint8_t mmc_command[13];
 
 static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
 
 static bool doLocate = false;
 static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
-
-time_t t;
-
-static int process_ctl_event(jack_midi_event_t event, OJack* jack) {
-    if (event.size == 3) {
-
-        if (event.buffer[0] == 0xb0) {
-            switch (event.buffer[1]) {
-                case 1: // PLAY/STOP
-                    if (event.buffer[2]) {
-                        jack->Notify(CTL_PLAYSTOP);
-                    }
-                    break;
-                case 2: // Toggle teach
-                    if (event.buffer[2])
-                        jack->Notify(CTL_TEACH_ON);
-                    else
-                        jack->Notify(CTL_TEACH_OFF);
-                    break;
-                case 3:
-                    if (event.buffer[2]) // button on down
-                        time(&t);
-                    else {
-                        time_t now;
-                        time(&now);
-                        if (now > t + 1) {
-                            jack->Notify(CTL_LOOP_CLEAR);
-                        } else {
-                            jack->Notify(CTL_LOOP_SET);
-                        }
-                    }
-                    break;
-                case 4:
-                    if (event.buffer[2]) {
-                        jack->Notify(CTL_TOGGLE_LOOP);
-                    }
-                    break;
-                case 6:
-                    if (event.buffer[2]) {
-                        jack->Notify(CTL_HOME);
-                    }
-                    break;
-            }
-            return 1;
-        }
-    }
-    return 0;
-}
-
-static int process_mmc_event(jack_midi_event_t event, OJack* jack) {
-
-    if (event.size > 4) {
-        switch (event.buffer[4]) {
-            case 1:
-                jack->Notify(MMC_STOP);
-                break;
-            case 2:
-                jack->Notify(MMC_PLAY);
-                break;
-            case 3:
-                jack->Notify(MMC_PLAY);
-
-                break;
-            case 0x44:
-                break;
-        }
-        return 1;
-    }
-    return 0;
-}
-
-static int process_mtc_event(jack_midi_event_t event, OJack* jack) {
-    uint8_t s;
-
-    if (event.buffer[0] == 0xf1) {
-        jack->GetMidiMtc()->QuarterFrame(event.buffer[1]);
-        if (jack->GetMidiMtc()->m_edge_sec == 1) {
-            jack->Notify(MTC_QUARTER_FRAME_SEC);
-        }
-        if (jack->GetMidiMtc()->m_edge_sec == 2) {
-            jack->Notify(MTC_QUARTER_FRAME_SEC1);
-            jack->GetMidiMtc()->m_edge_sec = 0;
-        } else
-            jack->Notify(MTC_QUARTER_FRAME);
-    } else if (event.buffer[0] == 0xf0) {
-        jack->GetMidiMtc()->FullFrame(event.buffer);
-        jack->Notify(MTC_COMPLETE);
-    }
-    return 1;
-}
 
 static int process(jack_nframes_t nframes, void *arg) {
     
@@ -150,7 +55,7 @@ static int process(jack_nframes_t nframes, void *arg) {
     if (event_count > 0) {
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
-            if (!process_mmc_event(in_event, ((OJack*) arg))) {
+            if (!process_mmc_event(in_event.buffer, in_event.size, ((OJack*) arg))) {
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
                 for (int j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
@@ -165,7 +70,7 @@ static int process(jack_nframes_t nframes, void *arg) {
     if (event_count > 0) {
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
-            if (!process_mtc_event(in_event, ((OJack*) arg))) {
+            if (!process_mtc_event(in_event.buffer, ((OJack*) arg))) {
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
                 for (int j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
@@ -180,12 +85,12 @@ static int process(jack_nframes_t nframes, void *arg) {
     void* ctl_buf = jack_port_get_buffer(ctl_out_port, nframes);
     jack_midi_clear_buffer(ctl_buf);
 
-    if (!mmc_out.empty()) {
-        uint8_t c = mmc_out.front();
+    if (!jack->mmc_out.empty()) {
+        uint8_t c = jack->mmc_out.front();
         unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_playstop));
         memcpy(buffer, midi_playstop, sizeof (midi_playstop));
         buffer[4] = c;
-        mmc_out.pop();
+        jack->mmc_out.pop();
     }
 
     if (doLocate) {
@@ -194,13 +99,13 @@ static int process(jack_nframes_t nframes, void *arg) {
         doLocate = false;
     }
 
-    if (!ctl_out.empty()) {
-        int c = ctl_out.front();
+    if (!jack->ctl_out.empty()) {
+        int c = jack->ctl_out.front();
         unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, 3);
         buffer[0] = (c >> 16) & 0xff;
         buffer[1] = (c >> 8) & 0xff;
         buffer[2] = (c) & 0xff;
-        ctl_out.pop();
+        jack->ctl_out.pop();
     }
 
     port_buf = jack_port_get_buffer(ctl_in_port, nframes);
@@ -209,7 +114,7 @@ static int process(jack_nframes_t nframes, void *arg) {
 
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
-            if (!process_ctl_event(in_event, ((OJack*) arg))) {
+            if (!process_ctl_event(in_event.buffer, in_event.size, ((OJack*) arg))) {
 #if 0                
                 printf("Onkel Controller in: have %d events\n", event_count);
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
@@ -224,11 +129,14 @@ static int process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
+void OJack::Start() {
+    
+}
+
 static void jack_shutdown(void *arg) {
     // TODO: fix me, what to do if jack server stops
     exit(1);
 }
-
 
 // class OJack
 void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg) {
@@ -286,7 +194,6 @@ void OJack::Connect(IOMainWnd* wnd) {
         fprintf(stderr, "jack server not running?\n");
         return;
     }
-
 
     jack_set_process_callback(m_jack_client, process, this);
 

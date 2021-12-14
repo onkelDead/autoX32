@@ -30,6 +30,8 @@ autoX32_SOURCES = \
     src/OQueue.cpp \
     src/OCustomWidget.cpp \
     src/OJack.cpp \
+    src/OAlsa.cpp \
+    src/OBackend.cpp \
     src/OMidiMtc.cpp \
     src/OTimer.cpp \
     src/ODlgLayout.cpp \
@@ -60,6 +62,7 @@ noinst_HEADERS = \
     src/OQueue.h \
     src/OCustomWidget.h \
     src/OJack.h \
+    src/OAlsa.h \
     src/OMidiMtc.h \
     src/OTimer.h \
     src/ODlgLayout.h \
@@ -81,8 +84,8 @@ dist_data_DATA = data/media/autoX32.png
 desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
     
-autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} -DPKGDATADIR='"$(datadir)"'
-autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} -ljack -lpthread	
+autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} -DPKGDATADIR='"$(datadir)"'
+autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} -ljack -lpthread	
 
 gsettings_SCHEMAS = de.paraair.autoX32.gschema.xml
 @GSETTINGS_RULES@

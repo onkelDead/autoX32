@@ -30,15 +30,14 @@ public:
     OJack() : m_millis(0), m_jack_client(NULL) {};
     virtual ~OJack() {};
 
-
     void Connect(IOMainWnd* wnd);
+    void Start();
     void ReconnectPorts();
 
     void Play();
-    void ControllerShowPlay();
     void Stop();
+    void ControllerShowPlay();
     void ControllerShowStop();
-    
     void ControllerShowTeachOn();
     void ControllerShowTeachOff();
 

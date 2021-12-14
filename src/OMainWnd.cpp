@@ -62,6 +62,7 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
     set_name("OMainWnd");
 
     m_project.SetTracksLayout(&m_trackslayout);
+
     
     GSettingsSchemaSource *source = g_settings_schema_source_get_default();
     GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
@@ -71,6 +72,8 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
     }
     g_settings_schema_unref(schema);
 
+    ApplyWindowSettings(); 
+    
     create_view();
     create_menu();
     m_timeview->SetRange(m_project.GetTimeRange());
@@ -175,6 +178,8 @@ void OMainWnd::ApplyWindowSettings() {
 }
 
 void OMainWnd::AutoConnect() {
+    std::string reply_port = settings->get_string(SETTINGS_DAW__REPLAY_PORT);
+    printf ("reply: %s\n", reply_port.c_str());
     if (settings->get_boolean(SETTINGS_MIXER_AUTOCONNECT)) {
         ConnectMixer(settings->get_string(SETTINGS_MIXER_HOST));
     }
@@ -182,8 +187,9 @@ void OMainWnd::AutoConnect() {
     if (settings && settings->get_boolean(SETTINGS_DAW_AUTOCONNECT)) {
         ConnectDaw(settings->get_string(SETTINGS_DAW_HOST)
                 , settings->get_string(SETTINGS_DAW_PORT)
-                , settings->get_string(SETTINGS_DAW__REPLAY_PORT));
+                , reply_port);
     }
+    m_backend->Start();
 }
 
 bool OMainWnd::ConnectMixer(std::string host) {
@@ -293,10 +299,13 @@ bool OMainWnd::SetupBackend(gint index) {
 
     switch(index) {
         case 0:
-            return 1;
+            m_backend = new OAlsa();
+            break;
         case 1:
             m_backend = new OJack();
             break;
+        default:
+            return 1;
     }
 
     m_backend->Connect(this);

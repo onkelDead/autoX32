@@ -22,21 +22,11 @@
  int main(int argc, char *argv[]) {
     auto app = Gtk::Application::create(argc, argv, AUTOX32_SCHEMA_ID);
 
-    int midi_backend;
+    int midi_backend = 0;
     
     OMainWnd* window;
 
-    Glib::RefPtr<Gio::Settings> settings;    
-    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
-
-    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
-    if (schema) {
-        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
-        midi_backend = settings->get_int(SETTINGS_MIDI_BACKEND);
-    }
-    
-    g_settings_schema_unref(schema);    
-    
+   
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(main_inline_glade);    
     ODlgProlog *pDialog = nullptr;
     builder->get_widget_derived("dlg-prolog", pDialog);
@@ -49,7 +39,6 @@
     }
     
     midi_backend = pDialog->GetMidiBackend();
-    settings->set_int(SETTINGS_MIDI_BACKEND, midi_backend);
     
     window = new OMainWnd();
     
@@ -61,8 +50,8 @@
         return 1;
     }
 
-    window->ApplyWindowSettings(); 
     window->AutoConnect();
+    
     
     int result = app->run((Gtk::Window&)*window);
     delete window;

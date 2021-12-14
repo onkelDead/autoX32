@@ -28,6 +28,7 @@
 #include "OX32.h"
 #include "ODAW.h"
 #include "OJack.h"
+#include "OAlsa.h"
 #include "OProject.h"
 #include "OTimeView.h"
 #include "OTracksLayout.h"

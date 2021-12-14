@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.39.0 -->
+<!-- Generated with glade 3.22.2 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkDialog" id="connect-dlg">
-    <property name="width-request">466</property>
-    <property name="height-request">300</property>
-    <property name="can-focus">False</property>
+    <property name="width_request">466</property>
+    <property name="height_request">300</property>
+    <property name="can_focus">False</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
-    <property name="type-hint">dialog</property>
+    <property name="type_hint">dialog</property>
+    <child type="titlebar">
+      <placeholder/>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can-focus">False</property>
+        <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can-focus">False</property>
-            <property name="layout-style">end</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="btn-cancel">
                 <property name="label" translatable="yes">Cancel</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -35,8 +38,8 @@
               <object class="GtkButton" id="btn-ok">
                 <property name="label" translatable="yes">Ok</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -54,20 +57,20 @@
         <child>
           <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
+            <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="xpad">8</property>
                     <property name="label" translatable="yes">Ardout Host:</property>
@@ -81,7 +84,7 @@
                 <child>
                   <object class="GtkEntry" id="txt-daw-host">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can_focus">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -99,15 +102,15 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="xpad">8</property>
                     <property name="label" translatable="yes">Ardout Port:</property>
@@ -121,7 +124,7 @@
                 <child>
                   <object class="GtkEntry" id="txt-daw-port">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can_focus">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -139,15 +142,15 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="xpad">8</property>
                     <property name="label" translatable="yes">Ardout Reply Port:</property>
@@ -161,7 +164,7 @@
                 <child>
                   <object class="GtkEntry" id="txt-daw-reply-port">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can_focus">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -179,15 +182,15 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="xpad">8</property>
                     <property name="label" translatable="yes">Ardout Auto Connect:</property>
                     <property name="xalign">2.2351741291171123e-10</property>
@@ -201,9 +204,9 @@
                 <child>
                   <object class="GtkCheckButton" id="chk-daw-connect">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="draw-indicator">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
                     <child>
                       <placeholder/>
                     </child>
@@ -224,7 +227,7 @@
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes"> </property>
               </object>
               <packing>
@@ -236,15 +239,15 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="halign">start</property>
                     <property name="xpad">8</property>
                     <property name="label" translatable="yes">X32 Host:</property>
@@ -258,7 +261,7 @@
                 <child>
                   <object class="GtkEntry" id="txt-x32-host">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
+                    <property name="can_focus">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -276,17 +279,17 @@
             <child>
               <object class="GtkBox">
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">10</property>
-                <property name="margin-bottom">10</property>
+                <property name="can_focus">False</property>
+                <property name="margin_start">16</property>
+                <property name="margin_end">16</property>
+                <property name="margin_top">10</property>
+                <property name="margin_bottom">10</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
-                    <property name="can-focus">False</property>
+                    <property name="can_focus">False</property>
                     <property name="xpad">8</property>
-                    <property name="label" translatable="yes">X32 Atuo Connect:      </property>
+                    <property name="label" translatable="yes">X32 Auto Connect:      </property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -298,9 +301,9 @@
                 <child>
                   <object class="GtkCheckButton" id="chk-x32-connect">
                     <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="draw-indicator">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="draw_indicator">True</property>
                     <child>
                       <placeholder/>
                     </child>
