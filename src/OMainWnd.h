@@ -80,7 +80,6 @@ public:
     void on_btn_loop_start_clicked();
     void on_btn_loop_end_clicked();
     void on_btn_zoom_loop_clicked();
-    void on_btn_lock_playhead_clicked();
 
     void on_timeline_zoom_changed();
     void on_timeline_pos_changed();
@@ -179,9 +178,6 @@ private:
     Gtk::Image m_img_loop_end;
     Gtk::ToolButton *m_btn_zoom_loop;
     Gtk::Image m_img_zoom_loop;
-    Gtk::ToggleToolButton *m_btn_lock_playhead;
-    Gtk::Image m_img_lock_playhead_on;
-    Gtk::Image m_img_lock_playhead_off;
 
     Gtk::MenuBar *m_menu_box;
     Gtk::Toolbar *m_tool_box;

@@ -45,6 +45,7 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     auto refStyleContext = get_style_context();
 
     int height = allocation.get_height();
+    int q = height / 4;
     m_view_width = allocation.get_width();
 
     int m_current_time = m_mainWnd->GetPosMillis();
@@ -54,13 +55,16 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     pos = (m_range->m_loopstart - m_daw_time->m_viewstart) * m_daw_time->scale;
     cr->set_source_rgb(.0, .8, 0);
     cr->move_to(pos, height / 2);
+    cr->line_to(pos+8, height / 2 + q);
     cr->line_to(pos, height);
+    cr->line_to(pos, height / 2);
     cr->stroke();
 
     pos = (m_range->m_loopend - m_daw_time->m_viewstart) * m_daw_time->scale;
-    cr->set_source_rgb(.4, .4, 1);
     cr->move_to(pos, height / 2);
+    cr->line_to(pos-8, height / 2 + q);
     cr->line_to(pos, height);
+    cr->line_to(pos, height / 2);
     cr->stroke();
 
     int elems = 100;

@@ -84,13 +84,13 @@ void OPlayHead::on_unrealize() {
 }
 
 bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
-    const Gtk::Allocation allocation = get_allocation();
-    auto refStyleContext = get_style_context();
-
-    int height = allocation.get_height();
-    int width = allocation.get_width();
 
     if (m_active) {
+        const Gtk::Allocation allocation = get_allocation();
+        auto refStyleContext = get_style_context();
+
+        int height = allocation.get_height();
+        int width = allocation.get_width();
         cr->set_line_width(1.);
         cr->set_source_rgb(1., 0, 0);
         cr->move_to(0, 0);
@@ -99,4 +99,18 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     }
 
     return true;
+}
+
+void OPlayHead::set_x_pos(int pos) {
+    if (pos == m_last_pos)
+        return;
+    if (pos < 0) {
+        set_active(false);
+        
+    } else if (pos < 0x7fff) {
+        
+        set_active(true);
+        set_margin_start(160 + pos);
+    }
+    m_last_pos = pos;
 }

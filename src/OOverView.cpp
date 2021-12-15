@@ -274,6 +274,11 @@ bool OOverView::on_scroll_event(GdkEventScroll* scroll_event) {
 }
 
 void OOverView::SetPos(gint pos) {
+
+    
     m_pos = pos;
-    queue_draw();
+    if (m_last_pos != pos) {
+        m_last_pos = pos;
+        queue_draw();
+    }
 }

@@ -30,6 +30,8 @@ public:
     bool get_initialized() { return m_initialized; }
     void set_initialized(bool val) { m_initialized = val; }
     
+    void set_x_pos(int pos);
+    
 protected:
 
     //Overrides:
@@ -44,6 +46,9 @@ protected:
     Glib::RefPtr<Gdk::Window> m_refGdkWindow;
     
 private:
+    
+    int m_pos;
+    int m_last_pos;
     bool m_initialized = false;
     bool m_active = false;
 };

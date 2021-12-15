@@ -123,11 +123,6 @@ bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
         return true;
     }
 
-    if (key_event->keyval == GDK_KEY_f) {
-        m_btn_lock_playhead->set_active(!m_btn_lock_playhead->get_active());
-        return true;
-    }
-
     return Gtk::Window::on_key_release_event(key_event);
 }
 
@@ -293,7 +288,7 @@ void OMainWnd::on_button_play_clicked() {
 
     if (!m_button_play->get_active()) {
         m_project.SetPlaying(false);
-        if (m_project.GetProjectLocation() != "")
+        if (m_project.GetProjectLocation() != "" && m_project.GetDirty())
             m_project.Save();
         m_trackslayout.StopRecord();
         if (!m_lock_play)
@@ -320,14 +315,6 @@ void OMainWnd::on_button_back_clicked() {
 void OMainWnd::on_button_test_clicked() {
 
 }
-
-void OMainWnd::on_btn_lock_playhead_clicked() {
-
-    m_btn_lock_playhead->set_icon_widget(m_btn_lock_playhead->get_active() ? m_img_lock_playhead_on : m_img_lock_playhead_off);
-    m_btn_lock_playhead->show_all();
-    m_project.LockPlayhead(m_btn_lock_playhead->get_active());
-}
-
 
 void OMainWnd::on_timeline_pos_changed() {
     m_lock_daw_time_event = true;
@@ -362,6 +349,8 @@ void OMainWnd::UpdateDawTime(bool redraw) {
 void OMainWnd::UpdatePlayhead() {
     daw_time* dt = m_project.GetDawTime();
     gint pos = ((GetPosMillis()) - dt->m_viewstart) * dt->scale;
+    m_playhead->set_x_pos(pos);
+#if 0    
     if (pos < 0) {
         m_playhead->set_active(false);
         pos = 0;
@@ -372,14 +361,14 @@ void OMainWnd::UpdatePlayhead() {
             dt->m_viewstart -= offset / dt->scale;
             //queue_draw();
             m_playhead->set_active(true);
-            m_overview->SetPos(GetPosMillis());
         } else {
             m_playhead->set_active(true);
             m_playhead->set_margin_start(160 + pos);
             //queue_draw();
-            m_overview->SetPos(GetPosMillis());
         }
     }
+#endif
+    m_overview->SetPos(GetPosMillis());
 }
 
 

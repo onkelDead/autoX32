@@ -58,9 +58,13 @@ void ODAW::ShortMessage(const char *cmd) {
 }
 
 void ODAW::SetRange(int start, int end, bool enable) {
+    
+    long sample_start = ((long) start ) / 12 * m_bitrate;
+    long sample_end = ((long) end ) / 12 * m_bitrate;
+    
     lo_message msg = lo_message_new();
-    lo_message_add_int32(msg, start * m_bitrate / 12);
-    lo_message_add_int32(msg, end * m_bitrate / 12);
+    lo_message_add_int32(msg, (uint32_t) sample_start);
+    lo_message_add_int32(msg, (uint32_t) sample_end);
     gint ret = lo_send_message(m_client, "/loop_location", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));

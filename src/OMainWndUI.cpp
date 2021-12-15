@@ -179,7 +179,6 @@ void OMainWnd::create_view() {
     ui->get_widget < Gtk::ToolButton > ("loop-start", m_btn_loop_start);
     ui->get_widget < Gtk::ToolButton > ("loop-end", m_btn_loop_end);
     ui->get_widget < Gtk::ToolButton > ("zoom-loop", m_btn_zoom_loop);
-    ui->get_widget < Gtk::ToggleToolButton > ("lock-playhead", m_btn_lock_playhead);
 
     ui->get_widget < Gtk::Label > ("lbl-status", m_lbl_status);
     ui->get_widget < Gtk::Label > ("lbl-ardour", m_lbl_ardour);
@@ -192,8 +191,6 @@ void OMainWnd::create_view() {
     m_img_loop_start.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)loop_start_inline, FALSE));
     m_img_loop_end.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)loop_end_inline, FALSE));
     m_img_zoom_loop.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)zoom_loop_inline, FALSE));
-    m_img_lock_playhead_off.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)lock_playhead_off_inline, FALSE));
-    m_img_lock_playhead_on.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)lock_playhead_on_inline, FALSE));
     m_img_back.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)go_start_inline, FALSE));
 
     m_button_play->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_play_clicked));
@@ -215,10 +212,6 @@ void OMainWnd::create_view() {
     m_btn_zoom_loop->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_btn_zoom_loop_clicked));
     m_btn_zoom_loop->set_icon_widget(m_img_zoom_loop);
     m_btn_zoom_loop->show_all();
-
-    m_btn_lock_playhead->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_btn_lock_playhead_clicked));
-    m_btn_lock_playhead->set_icon_widget(m_img_lock_playhead_off);
-    m_btn_lock_playhead->show_all();
 
     m_button_back->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_back_clicked));
     m_button_back->set_icon_widget(m_img_back);

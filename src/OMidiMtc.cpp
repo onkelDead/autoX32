@@ -48,11 +48,13 @@ void OMidiMtc::QuarterFrame(uint8_t data) {
 }
 
 int OMidiMtc::GetMillis() {
+    int ret;
     while (lock_millis);
-    return hour * 432000 
+    ret = hour * 432000 
             + min * 7200 
             + sec * 120 
             + (frame * 4) + (subframe);
+    return ret;
 }
 
 void OMidiMtc::SetFrame(int f) {
