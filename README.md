@@ -2,12 +2,11 @@
 Automation Recorder for audio production with Ardour and Behringer X32.
 
 Features:
-    - Record any Behringer X32 fader or knob changes in relation to Ardours MTC time.
-    - Automation resolution depends on Ardours Timecode Settings (e.g. 30fps -> 60 changes per second).
-    - Playback automation time synchronously.
-    - Capable to communication with Ardour based on Jack on ALSA Seq.
-    - Detect current Ardour session to store automation beside Audio data.
-
+- Record any Behringer X32 fader or knob changes in relation to Ardours MTC time.
+- Automation resolution depends on Ardours Timecode Settings (e.g. 30fps -> 60 changes per second).
+- Playback automation time synchronously.
+- Capable to communication with Ardour based on Jack on ALSA Seq.
+- Detect current Ardour session to store automation beside Audio data.
    
 
 ![screenshot.png](/screenshot.png?raw=true)
