@@ -20,7 +20,7 @@
 #include <giomm/settingsschemasource.h>
 #include <giomm/settings.h>
 
-
+#include "OConfig.h"
 #include "OTypes.h"
 #include "OscCmd.h"
 #include "IOTrackView.h"
@@ -32,7 +32,7 @@ public:
     virtual void notify_mixer(OscCmd*) = 0;
     virtual void notify_overview() = 0;
     virtual void remove_track(IOTrackView*) = 0;
-    virtual Gio::Settings* GetSettings() = 0;
+    virtual OConfig* GetConfig() = 0;
     virtual void SelectTrack(std::string, bool) = 0;
     virtual gint GetPosMillis() = 0;
     virtual void TrackViewUp(std::string) = 0;

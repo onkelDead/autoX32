@@ -52,6 +52,8 @@ int ODAW::disconnect() {
 }
 
 void ODAW::ShortMessage(const char *cmd) {
+    if (!m_client)
+        return;
     lo_message msg = lo_message_new();
     lo_send_message(m_client, cmd, msg);
     lo_message_free(msg);

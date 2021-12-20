@@ -41,7 +41,8 @@ autoX32_SOURCES = \
     src/embedded/main.cpp \
     src/embedded/timeview.cpp \
     src/embedded/trackview.cpp \
-    src/embedded/trackdlg.cpp 
+    src/embedded/trackdlg.cpp \
+    src/OConfig.cpp
 
 noinst_HEADERS = \
     src/OTimeDraw.h \
@@ -66,7 +67,8 @@ noinst_HEADERS = \
     src/OMidiMtc.h \
     src/OTimer.h \
     src/ODlgLayout.h \
-    src/ODlgProlog.h
+    src/ODlgProlog.h \
+    src/OConfig.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0
@@ -80,19 +82,12 @@ data_DATA = data/media/autoX32.png
 
 dist_data_DATA = data/media/autoX32.png
 
-
 desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
+
     
-autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} -DPKGDATADIR='"$(datadir)"'
-autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} -ljack -lpthread	
-
-gsettings_SCHEMAS = de.paraair.autoX32.gschema.xml
-@GSETTINGS_RULES@
-
-EXTRA_DIST = $(gsettings_SCHEMAS) \
-	     $(pixmaps_DATA) \
-	     $(desktop_DATA)
+autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
+autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread	
 
 TESTS = check_TrackStore
 check_PROGRAMS = check_TrackStore

@@ -17,29 +17,25 @@
 #include <gtkmm.h>
 #include "OMainWnd.h"
 #include "ODlgProlog.h"
+#include "embedded/autoX32.h"
 #include "embedded/main.h"
 
  int main(int argc, char *argv[]) {
-    auto app = Gtk::Application::create(argc, argv, AUTOX32_SCHEMA_ID);
+    auto app = Gtk::Application::create(argc, argv);
 
     int midi_backend = 0;
     
-    OMainWnd* window;
+    OMainWnd window;
 
-    Glib::RefPtr<Gio::Settings> settings;    
-    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
-   
-    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
-    if (schema) {
-        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
-        midi_backend = settings->get_int(SETTINGS_MIDI_BACKEND);
-    }
+    window.set_icon(Gdk::Pixbuf::create_from_inline(sizeof(autoX32_inline), autoX32_inline, false));
     
-    g_settings_schema_unref(schema);    
+    midi_backend = window.GetConfig()->get_int(SETTINGS_MIDI_BACKEND);
     
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(main_inline_glade);    
     ODlgProlog *pDialog = nullptr;
     builder->get_widget_derived("dlg-prolog", pDialog);
+    
+    pDialog->set_icon(window.get_icon());
     
     pDialog->SetMidiBackend(midi_backend);
     
@@ -49,21 +45,18 @@
     }
     
     midi_backend = pDialog->GetMidiBackend();
+    window.GetConfig()->set_int(SETTINGS_MIDI_BACKEND, midi_backend);
     
-    window = new OMainWnd();
     
-    if (window->SetupBackend(midi_backend)) {
-        Gtk::MessageDialog dialog(*window, "Failed to start backend.",
+    if (window.SetupBackend(midi_backend)) {
+        Gtk::MessageDialog dialog(window, "Failed to start backend.",
                 false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
         dialog.run();   
-        delete window;
         return 1;
     }
 
-    window->AutoConnect();
+    window.AutoConnect();
     
-    
-    int result = app->run((Gtk::Window&)*window);
-    delete window;
+    int result = app->run((Gtk::Window&)window);
     return result;
 }

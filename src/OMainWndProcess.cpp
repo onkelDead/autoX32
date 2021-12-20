@@ -28,11 +28,11 @@ void OMainWnd::OnJackEvent() {
             case MTC_COMPLETE:
                 if (m_shot_refresh) {
                     if (!--m_shot_refresh)
-                        if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
+                        if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
                             this->get_window()->freeze_updates();
                 } else if (m_backend->GetMidiMtc()->m_edge_sec) {
                     m_backend->GetMidiMtc()->m_edge_sec = false;
-                    if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
+                    if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
                         this->get_window()->thaw_updates();
                     m_shot_refresh = 3;
                 }

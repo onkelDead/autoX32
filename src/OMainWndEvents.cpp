@@ -31,20 +31,20 @@ void OMainWnd::on_menu_file_connection() {
     builder->get_widget_derived("connect-dlg", pDialog);
 
     // fill dialog with data
-    pDialog->SetArdourHost(settings->get_string(SETTINGS_DAW_HOST));
-    pDialog->SetArdourPort(settings->get_string(SETTINGS_DAW_PORT));
-    pDialog->SetArdourReplyPort(settings->get_string(SETTINGS_DAW__REPLAY_PORT));
-    pDialog->SetArdourAutoConnect(settings->get_boolean(SETTINGS_DAW_AUTOCONNECT));
-    pDialog->SetX32Host(settings->get_string(SETTINGS_MIXER_HOST));
-    pDialog->SetX32AutoConnect(settings->get_boolean(SETTINGS_MIXER_AUTOCONNECT));
+    pDialog->SetArdourHost(m_config.get_string(SETTINGS_DAW_HOST));
+    pDialog->SetArdourPort(m_config.get_string(SETTINGS_DAW_PORT));
+    pDialog->SetArdourReplyPort(m_config.get_string(SETTINGS_DAW__REPLAY_PORT));
+    pDialog->SetArdourAutoConnect(m_config.get_boolean(SETTINGS_DAW_AUTOCONNECT));
+    pDialog->SetX32Host(m_config.get_string(SETTINGS_MIXER_HOST));
+    pDialog->SetX32AutoConnect(m_config.get_boolean(SETTINGS_MIXER_AUTOCONNECT));
     pDialog->run();
     if (pDialog->GetResult()) {
 
         if (ConnectDaw(pDialog->GetArdourHost(), pDialog->GetArdourPort(), pDialog->GetArdourReplyPort())) {
-            settings->set_string(SETTINGS_DAW_HOST, pDialog->GetArdourHost());
-            settings->set_string(SETTINGS_DAW_PORT, pDialog->GetArdourPort());
-            settings->set_string(SETTINGS_DAW__REPLAY_PORT, pDialog->GetArdourReplyPort());
-            settings->set_boolean(SETTINGS_DAW_AUTOCONNECT, pDialog->GetArdoutAutoConnect());
+            m_config.set_string(SETTINGS_DAW_HOST, pDialog->GetArdourHost().c_str());
+            m_config.set_string(SETTINGS_DAW_PORT, pDialog->GetArdourPort().c_str());
+            m_config.set_string(SETTINGS_DAW__REPLAY_PORT, pDialog->GetArdourReplyPort().c_str());
+            m_config.set_boolean(SETTINGS_DAW_AUTOCONNECT, pDialog->GetArdoutAutoConnect());
         } else {
             Gtk::MessageDialog dialog(*this, "Failed to connect to Ardour.",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -53,8 +53,8 @@ void OMainWnd::on_menu_file_connection() {
         }
 
         if (ConnectMixer(pDialog->GetX32Host())) {
-            settings->set_string(SETTINGS_MIXER_HOST, pDialog->GetX32Host());
-            settings->set_boolean(SETTINGS_MIXER_AUTOCONNECT, pDialog->GetX32AutoConnect());
+            m_config.set_string(SETTINGS_MIXER_HOST, pDialog->GetX32Host().c_str());
+            m_config.set_boolean(SETTINGS_MIXER_AUTOCONNECT, pDialog->GetX32AutoConnect());
         } else {
             Gtk::MessageDialog dialog(*this, "Failed to connect to Behringer X32.",
                     false, Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK);
@@ -152,7 +152,8 @@ void OMainWnd::on_menu_project_open() {
         m_trackslayout.RemoveAllTackViews();
         OpenProject(m_project.GetProjectLocation());
         m_project.AddRecentProject(m_project.GetProjectLocation());
-        settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+        // TODO: reimplement
+        // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
         UpdateMenuRecent();
         show_all_children(true);
     }
@@ -167,7 +168,8 @@ void OMainWnd::on_menu_recent(std::string location) {
 
     OpenProject(location);
     m_project.AddRecentProject(m_project.GetProjectLocation());
-    settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+    // TODO: reimplement
+    // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
     UpdateDawTime(false);
     show_all_children(true);
@@ -179,7 +181,8 @@ void OMainWnd::on_menu_project_save() {
     }
     m_project.Save();
     m_project.AddRecentProject(m_project.GetProjectLocation());
-    settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+    // TODO: remimplement
+    //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
 }
 
@@ -189,7 +192,8 @@ void OMainWnd::on_menu_project_save_as() {
     }
     m_project.Save();
     m_project.AddRecentProject(m_project.GetProjectLocation());
-    settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+    // TODO: reimplement
+    //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
     set_title("autoX32 - [" + m_project.GetProjectLocation() + "]");
 }
@@ -211,13 +215,13 @@ void OMainWnd::on_menu_prefs() {
     builder->get_widget_derived("dlg-prefs", pDialog);
 
     // fill dialog with data
-    pDialog->SetShowTrackPath(settings->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK));
-    pDialog->SetSmoothScreen(settings->get_boolean(SETTING_SMOOTH_SCREEN));
+    pDialog->SetShowTrackPath(m_config.get_boolean(SETTINGS_SHOW_PATH_ON_TRACK));
+    pDialog->SetSmoothScreen(m_config.get_boolean(SETTING_SMOOTH_SCREEN));
 
     pDialog->run();
     if (pDialog->m_result) {
-        settings->set_boolean(SETTINGS_SHOW_PATH_ON_TRACK, pDialog->GetShowTrackPath());
-        settings->set_boolean(SETTING_SMOOTH_SCREEN, pDialog->GetSmoothScreen());
+        m_config.set_boolean(SETTINGS_SHOW_PATH_ON_TRACK, pDialog->GetShowTrackPath());
+        m_config.set_boolean(SETTING_SMOOTH_SCREEN, pDialog->GetSmoothScreen());
     }
     //queue_draw();
 }
@@ -294,7 +298,7 @@ void OMainWnd::on_button_play_clicked() {
         if (!m_lock_play)
             //m_daw.Stop();
             m_backend->Stop();
-        if (!m_shot_refresh && settings->get_boolean(SETTING_SMOOTH_SCREEN))
+        if (!m_shot_refresh && m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
     } else {
@@ -302,7 +306,7 @@ void OMainWnd::on_button_play_clicked() {
         if (!m_lock_play)
             //m_daw.Play();
             m_backend->Play();
-        if (settings->get_boolean(SETTING_SMOOTH_SCREEN))
+        if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->freeze_updates();
     }
 }

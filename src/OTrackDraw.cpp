@@ -94,7 +94,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
         cr->stroke();
     }
 
-    if (m_parent->GetSettings()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
+    if (m_parent->GetConfig()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
         draw_text(cr, 2, 2, cmd->GetPath());
 
     if (m_selected) {

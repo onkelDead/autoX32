@@ -25,6 +25,7 @@
 #include "IOMainWnd.h"
 #include "OResource.h"
 
+#include "OConfig.h"
 #include "OX32.h"
 #include "ODAW.h"
 #include "OJack.h"
@@ -38,10 +39,8 @@
 #include "OTimer.h"
 
 #define PACKAGE_STRING "autoX32"
-#define PACKAGE_VERSION "0.1"
+#define PACKAGE_VERSION "0.6"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
-
-#define AUTOX32_SCHEMA_ID "de.paraair.autoX32"
 
 class OMainWnd : public Gtk::Window, IOMainWnd {
 public:
@@ -128,7 +127,7 @@ public:
 
 
     /// application settings
-    Gio::Settings* GetSettings();
+    OConfig* GetConfig();
 
     OTimer *m_timer = nullptr;
 
@@ -137,7 +136,8 @@ protected:
 
 private:
 
-    Glib::RefPtr<Gio::Settings> settings;
+    OConfig m_config;
+    //Glib::RefPtr<Gio::Settings> settings;
 
     Glib::RefPtr<Gtk::ActionGroup> m_refActionGroup;
 

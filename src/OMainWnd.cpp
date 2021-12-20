@@ -63,14 +63,14 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
 
     m_project.SetTracksLayout(&m_trackslayout);
 
-    
-    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
-    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
-    if (schema) {
-        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
-        m_project.m_recent_projects = settings->get_string_array(SETTINGS_RECENT_PROJECTS);
-    }
-    g_settings_schema_unref(schema);
+//    
+//    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
+//    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
+//    if (schema) {
+//        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
+//        m_project.m_recent_projects = settings->get_string_array(SETTINGS_RECENT_PROJECTS);
+//    }
+//    g_settings_schema_unref(schema);
 
     ApplyWindowSettings(); 
     
@@ -117,8 +117,8 @@ OMainWnd::~OMainWnd() {
     delete m_bbox;
 }
 
-Gio::Settings* OMainWnd::GetSettings() {
-    return settings.get();
+OConfig* OMainWnd::GetConfig() {
+    return &m_config;
 }
 
 bool OMainWnd::SaveProject() {
@@ -132,7 +132,8 @@ bool OMainWnd::SaveProject() {
                 NewProject();
                 m_project.Save();
                 m_project.AddRecentProject(m_project.GetProjectLocation());
-                settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+                //TODO: reimplement
+                //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
                 UpdateMenuRecent();
                 return true;
             } else {
@@ -141,7 +142,8 @@ bool OMainWnd::SaveProject() {
         } else {
             m_project.Save();
             m_project.AddRecentProject(m_project.GetProjectLocation());
-            settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+            //TODO: reimplement
+            // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
             UpdateMenuRecent();
             return true;
         }
@@ -162,31 +164,31 @@ bool OMainWnd::Shutdown() {
     int width, height;
     get_size(width, height);
 
-    settings->set_int(SETTINGS_WINDOW_WIDTH, width);
-    settings->set_int(SETTINGS_WINDOW_HEIGHT, height);
+    m_config.set_int(SETTINGS_WINDOW_WIDTH, width);
+    m_config.set_int(SETTINGS_WINDOW_HEIGHT, height);
     get_position(width, height);
-    settings->set_int(SETTINGS_WINDOW_LEFT, width);
-    settings->set_int(SETTINGS_WINDOW_TOP, height);
+    m_config.set_int(SETTINGS_WINDOW_LEFT, width);
+    m_config.set_int(SETTINGS_WINDOW_TOP, height);
     return ret_code;
 }
 
 void OMainWnd::ApplyWindowSettings() {
-    if (settings) {
-        set_default_size(settings->get_int(SETTINGS_WINDOW_WIDTH), settings->get_int(SETTINGS_WINDOW_HEIGHT));
-        move(settings->get_int(SETTINGS_WINDOW_LEFT), settings->get_int(SETTINGS_WINDOW_TOP));
-    }
+    int width = m_config.get_int(SETTINGS_WINDOW_WIDTH, 400);
+    int height = m_config.get_int(SETTINGS_WINDOW_HEIGHT, 300);
+    
+    set_default_size(width, height);
+    move(m_config.get_int(SETTINGS_WINDOW_LEFT), m_config.get_int(SETTINGS_WINDOW_TOP));
 }
 
 void OMainWnd::AutoConnect() {
-    std::string reply_port = settings->get_string(SETTINGS_DAW__REPLAY_PORT);
-    printf ("reply: %s\n", reply_port.c_str());
-    if (settings->get_boolean(SETTINGS_MIXER_AUTOCONNECT)) {
-        ConnectMixer(settings->get_string(SETTINGS_MIXER_HOST));
+    std::string reply_port = m_config.get_string(SETTINGS_DAW__REPLAY_PORT);
+    if (m_config.get_boolean(SETTINGS_MIXER_AUTOCONNECT)) {
+        ConnectMixer(m_config.get_string(SETTINGS_MIXER_HOST));
     }
 
-    if (settings && settings->get_boolean(SETTINGS_DAW_AUTOCONNECT)) {
-        ConnectDaw(settings->get_string(SETTINGS_DAW_HOST)
-                , settings->get_string(SETTINGS_DAW_PORT)
+    if (m_config.get_boolean(SETTINGS_DAW_AUTOCONNECT)) {
+        ConnectDaw(m_config.get_string(SETTINGS_DAW_HOST)
+                , m_config.get_string(SETTINGS_DAW_PORT)
                 , reply_port);
     }
     m_backend->Start();

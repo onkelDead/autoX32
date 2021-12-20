@@ -86,10 +86,8 @@ void OTracksLayout::RemoveAllTackViews() {
 
 void OTracksLayout::RemoveTrackView(std::string path) {
     trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list->next != nullptr) {
+
+    while(list != nullptr) {
         if (list->item->GetCmd()->GetPath() == path) {
             trackview_entry* d = list;
             if (list->next)
@@ -98,6 +96,7 @@ void OTracksLayout::RemoveTrackView(std::string path) {
                 list->prev->next = list->next;
             remove (*d->item);
             delete d;
+            list = list->next;
         }
     }
 }
