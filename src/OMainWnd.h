@@ -26,6 +26,7 @@
 #include "OResource.h"
 
 #include "OConfig.h"
+#include "ODlgProlog.h"
 #include "OX32.h"
 #include "ODAW.h"
 #include "OJack.h"
@@ -102,7 +103,7 @@ public:
 
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
 
-    bool SetupBackend(int index);
+    bool SetupBackend();
 
     gint GetPosMillis();
 

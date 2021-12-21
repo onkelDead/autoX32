@@ -333,8 +333,9 @@ void OMainWnd::on_timeline_zoom_changed() {
 }
 
 void OMainWnd::OnOverViewEvent() {
-    UpdateDawTime(false);
+    UpdateDawTime(true);
     m_overview->queue_draw();
+    m_trackslayout.queue_draw();
 }
 
 void OMainWnd::notify_overview() {
@@ -354,24 +355,6 @@ void OMainWnd::UpdatePlayhead() {
     daw_time* dt = m_project.GetDawTime();
     gint pos = ((GetPosMillis()) - dt->m_viewstart) * dt->scale;
     m_playhead->set_x_pos(pos);
-#if 0    
-    if (pos < 0) {
-        m_playhead->set_active(false);
-        pos = 0;
-    } else if (pos >= 0 && pos < 0xffff) {
-        if (m_btn_lock_playhead->get_active() && m_button_play->get_active()) {
-            gint offset = m_playhead->get_margin_start() - 160 - pos;
-            dt->m_viewend -= offset / dt->scale;
-            dt->m_viewstart -= offset / dt->scale;
-            //queue_draw();
-            m_playhead->set_active(true);
-        } else {
-            m_playhead->set_active(true);
-            m_playhead->set_margin_start(160 + pos);
-            //queue_draw();
-        }
-    }
-#endif
     m_overview->SetPos(GetPosMillis());
 }
 

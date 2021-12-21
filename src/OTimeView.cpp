@@ -21,71 +21,72 @@
 #include "embedded/timeview.h"
 
 OTimeView::OTimeView(IOMainWnd* wnd) :
-		Gtk::Box(), m_box(0), ui { Gtk::Builder::create_from_string(
-				timeview_inline_glade) }, m_daw_time(0) {
+Gtk::Box(), m_box(0), ui{Gtk::Builder::create_from_string(
+    timeview_inline_glade)}
+, m_daw_time(0) {
 
-	m_mainWnd = wnd;
+    m_mainWnd = wnd;
 
-	ui->get_widget < Gtk::Box > ("time-box", m_box);
-	ui->get_widget < Gtk::Label > ("o-timecode", m_timecode);
-	ui->get_widget < Gtk::Label > ("o-viewstart", m_viewstart);
-	ui->get_widget < Gtk::Label > ("o-viewend", m_viewend);
+    ui->get_widget < Gtk::Box > ("time-box", m_box);
+    ui->get_widget < Gtk::Label > ("o-timecode", m_timecode);
+    ui->get_widget < Gtk::Label > ("o-viewstart", m_viewstart);
+    ui->get_widget < Gtk::Label > ("o-viewend", m_viewend);
 
-	m_timedraw = new OTimeDraw(wnd);
-	m_timedraw->set_hexpand(true);
-	m_timedraw->set_halign(Gtk::ALIGN_FILL);
-	m_box->add(*m_timedraw);
+    m_timedraw = new OTimeDraw(wnd);
+    m_timedraw->set_hexpand(true);
+    m_timedraw->set_halign(Gtk::ALIGN_FILL);
+    m_box->add(*m_timedraw);
 
-	m_timedraw->SetSignalPosChange(this);
-	m_timedraw->SetSignalZoomChange(this);
+    m_timedraw->SetSignalPosChange(this);
+    m_timedraw->SetSignalZoomChange(this);
 
-	add(*m_box);
+    add(*m_box);
 }
 
 OTimeView::~OTimeView() {
-	if (m_timedraw)
-		delete m_timedraw;
+    if (m_timedraw)
+        delete m_timedraw;
 }
 
 void OTimeView::SetRange(daw_range *range) {
-	m_range = range;
-	m_timedraw->SetRange(range);
+    m_range = range;
+    m_timedraw->SetRange(range);
 }
 
 void OTimeView::SetDawTime(daw_time *dt) {
-	m_daw_time = dt;
-	m_timedraw->SetDawTime(dt);
+    m_daw_time = dt;
+    m_timedraw->SetDawTime(dt);
 }
 
 void OTimeView::SetTimeCode(std::string code) {
-	m_timecode->set_text(code);
+    m_timecode->set_text(code);
 
 }
 
 void OTimeView::UpdateDawTime(bool redraw) {
-	char t[32];
+    char t[32];
 
-	m_timedraw->GetMillisString(m_daw_time->m_viewstart, t);
-	m_viewstart->set_text(t);
+    m_timedraw->GetMillisString(m_daw_time->m_viewstart, t);
+    m_viewstart->set_text(t);
 
-	m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
-	m_viewend->set_text(t);
+    m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
+    m_viewend->set_text(t);
 
-//	if (redraw)
-//		m_timedraw->queue_draw();
+    //	if (redraw)
+    //		m_timedraw->queue_draw();
 }
 
 void OTimeView::EnableZoom(bool val) {
-	m_timedraw->EnableZoom(val);
+    m_timedraw->EnableZoom(val);
 }
 
 void OTimeView::SetZoomLoop() {
-	m_timedraw->SetZoomLoop();
-	ScaleView();
+    m_timedraw->SetZoomLoop();
+    ScaleView();
 }
 
 void OTimeView::SetLoopStart() {
-	m_timedraw->SetLoopStart();
+    m_timedraw->SetLoopStart();
 }
 
 int OTimeView::GetLoopStart() {
@@ -93,28 +94,28 @@ int OTimeView::GetLoopStart() {
 }
 
 void OTimeView::SetLoopEnd() {
-	m_timedraw->SetLoopEnd();
+    m_timedraw->SetLoopEnd();
 }
 
 int OTimeView::GetLoopEnd() {
     return m_timedraw->GetLoopEnd();
 }
 
-void OTimeView::ScaleView(){
-	m_daw_time->scale = (gfloat) m_timedraw->get_width() / (gfloat)(m_daw_time->m_viewend - m_daw_time->m_viewstart);
+void OTimeView::ScaleView() {
+    m_daw_time->scale = (gfloat) m_timedraw->get_width() / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
 }
 
 void OTimeView::on_timedraw_pos_changed() {
 
-	signal_pos_changed.emit();
+    signal_pos_changed.emit();
 }
 
 void OTimeView::on_timedraw_zoom_changed() {
-	UpdateDawTime(false);
-	m_timedraw->queue_draw();
-	signal_zoom_changed.emit();
+    UpdateDawTime(false);
+    m_timedraw->queue_draw();
+    signal_zoom_changed.emit();
 }
 
 int OTimeView::GetClickMillis() {
-	return m_timedraw->GetClickMillis();
+    return m_timedraw->GetClickMillis();
 }

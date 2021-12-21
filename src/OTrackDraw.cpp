@@ -55,10 +55,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     track_entry *it = m_trackstore->GetTracks();
     OscCmd* cmd = m_trackstore->GetOscCommand();
 
-    if (m_trackstore->IsPlaying()) {
-        //return true;
-    }
-    
     if (m_in_drag) {
         cr->set_source_rgb(.3, .3, .3);
         cr->rectangle(m_left, 0, m_right - m_left, height);
@@ -222,6 +218,8 @@ bool OTrackDraw::on_motion_notify_event(GdkEventMotion *motion_event) {
                 m_daw_time->m_viewstart -= ((float) offset / (float) m_width) * (m_daw_time->m_viewend - m_daw_time->m_viewstart);
                 m_daw_time->m_viewend -= ((float) offset / (float) m_width) * (m_daw_time->m_viewend - start);
                 m_parent->notify_overview();
+                queue_draw();
+                
             }
             m_last_x = (gint) e->x;
         }

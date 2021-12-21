@@ -22,7 +22,8 @@
 
 #include "OscCmd.h"
 
-#include "embedded/main.h"
+#include "embedded/autoX32.h"
+
 
 void check_ardour_recent(void* user_Data) {
     FILE* file_recent;
@@ -60,17 +61,8 @@ Gtk::Window(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
 {
 
     set_name("OMainWnd");
-
+    set_icon(Gdk::Pixbuf::create_from_inline(sizeof(autoX32_inline), autoX32_inline, false));
     m_project.SetTracksLayout(&m_trackslayout);
-
-//    
-//    GSettingsSchemaSource *source = g_settings_schema_source_get_default();
-//    GSettingsSchema *schema = g_settings_schema_source_lookup(source, AUTOX32_SCHEMA_ID, true);
-//    if (schema) {
-//        settings = Gio::Settings::create(AUTOX32_SCHEMA_ID);
-//        m_project.m_recent_projects = settings->get_string_array(SETTINGS_RECENT_PROJECTS);
-//    }
-//    g_settings_schema_unref(schema);
 
     ApplyWindowSettings(); 
     
@@ -297,9 +289,23 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_trackslayout.GetTrackview(path)->set_name("OTrackView");
 }
 
-bool OMainWnd::SetupBackend(gint index) {
+bool OMainWnd::SetupBackend() {
 
-    switch(index) {
+    ODlgProlog *pDialog = nullptr;
+    ui->get_widget_derived("dlg-prolog", pDialog);
+    
+    pDialog->set_icon(get_icon());
+    
+    pDialog->SetMidiBackend(GetConfig()->get_int(SETTINGS_MIDI_BACKEND));
+    
+    pDialog->run();
+    if (!pDialog->GetResult()) {
+        return 0;
+    }
+    
+    GetConfig()->set_int(SETTINGS_MIDI_BACKEND, pDialog->GetMidiBackend());
+    
+    switch(pDialog->GetMidiBackend()) {
         case 0:
             m_backend = new OAlsa();
             break;
@@ -307,12 +313,12 @@ bool OMainWnd::SetupBackend(gint index) {
             m_backend = new OJack();
             break;
         default:
-            return 1;
+            return 0;
     }
 
     m_backend->Connect(this);
 
-    return 0;
+    return 1;
 }
 
 gint OMainWnd::GetPosMillis() {

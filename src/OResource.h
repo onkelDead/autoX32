@@ -21,6 +21,7 @@
 extern "C" {
 #endif
 
+#include "embedded/main.h"
 #include "embedded/go_start.h"
 #include "embedded/lock_playhead_off.h"
 #include "embedded/lock_playhead_on.h"

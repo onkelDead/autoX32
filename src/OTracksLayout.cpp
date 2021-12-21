@@ -58,7 +58,7 @@ OTrackView* OTracksLayout::GetTrackview(std::string path) {
 
 
 void OTracksLayout::redraw() {
-    //    queue_draw();
+    queue_draw();
 }
 
 void OTracksLayout::StopRecord() {
