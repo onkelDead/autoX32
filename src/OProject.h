@@ -29,7 +29,7 @@
 #include "IOProject.h"
 #include "OTimer.h"
 
-#include "IOX32.h"
+#include "IOMixer.h"
 #include "IOTracksLayout.h"
 
 class OProject : public IOProject{
@@ -68,7 +68,7 @@ public:
     IOTrackStore *GetTrack(std::string);
     std::map<std::string, IOTrackStore*> GetTracks();
     
-    void SetMixer(IOX32*);
+    void SetMixer(IOMixer*);
     
     bool UpdatePos(gint, bool);
     bool ProcessPos(IOTrackStore*, OscCmd*, gint);
@@ -100,7 +100,7 @@ private:
     
     bool m_lock_playhead = false;
 
-    IOX32* m_mixer = nullptr;
+    IOMixer* m_mixer = nullptr;
     
     IOTracksLayout *m_layout;
 

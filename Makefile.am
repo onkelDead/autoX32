@@ -6,69 +6,72 @@ autoX32kdir = src
 bin_PROGRAMS = autoX32 check_TrackStore
 
 autoX32_SOURCES = \
-    src/OMainWndEvents.cpp \
-    src/OMainWnd.cpp \
-    src/OMainWndUI.cpp \
-    src/OMainWndProcess.cpp \
-    src/OPlayHead.cpp \
-    src/OOverView.cpp \
-    src/OscCmd.cpp \
-    src/OTimeView.cpp \
-    src/OTracksLayout.cpp \
-    src/OTrackDlg.cpp \
-    src/OConnectDlg.cpp \
-    src/ODlgPrefs.cpp \
-    src/OTrackView.cpp \
+    src/ui/OMainWnd.cpp \
+    src/ui/OMainWndUI.cpp \
+    src/ui/OMainWndEvents.cpp \
+    src/ui/OMainWndProcess.cpp \
+    src/ui/OTimeView.cpp \
+    src/ui/OTimeDraw.cpp \
+    src/ui/OTracksLayout.cpp \
+    src/ui/OTrackView.cpp \
+    src/ui/OTrackDraw.cpp \
+    src/ui/OOverView.cpp \
+    src/ui/OTrackSizer.cpp \
+    src/ui/OCustomWidget.cpp \
+    src/ui/OPlayHead.cpp \
+    src/dlg/OTrackDlg.cpp \
+    src/dlg/OConnectDlg.cpp \
+    src/dlg/ODlgPrefs.cpp \
     src/OTrackStore.cpp \
-    src/OTimeDraw.cpp \
-    src/OTrackDraw.cpp \
-    src/OTrackSizer.cpp \
     src/OProject.cpp \
-    src/ODAW.cpp \
-    src/OX32.cpp \
+    src/backend/OscCmd.cpp \
+    src/backend/ODAW.cpp \
+    src/backend/OX32.cpp \
     src/autoX32.cpp \
-    src/OQueue.cpp \
-    src/OCustomWidget.cpp \
-    src/OJack.cpp \
-    src/OAlsa.cpp \
-    src/OBackend.cpp \
-    src/OMidiMtc.cpp \
-    src/OTimer.cpp \
-    src/ODlgLayout.cpp \
-    src/ODlgProlog.cpp \
-    src/embedded/autoX32_css.cpp \
-    src/embedded/connectDlg.cpp \
-    src/embedded/main.cpp \
-    src/embedded/timeview.cpp \
-    src/embedded/trackview.cpp \
-    src/embedded/trackdlg.cpp \
-    src/OConfig.cpp
+    src/backend/OJack.cpp \
+    src/backend/OAlsa.cpp \
+    src/backend/OBackend.cpp \
+    src/backend/OMidiMtc.cpp \
+    src/dlg/ODlgLayout.cpp \
+    src/dlg/ODlgProlog.cpp \
+    src/res/autoX32_css.cpp \
+    src/res/connectDlg.cpp \
+    src/res/main.cpp \
+    src/res/timeview.cpp \
+    src/res/trackview.cpp \
+    src/res/trackdlg.cpp \
+    src/utils/OTimer.cpp \
+    src/utils/OQueue.cpp \
+    src/utils/OConfig.cpp
 
 noinst_HEADERS = \
-    src/OTimeDraw.h \
-    src/OMainWnd.h \
-    src/OPlayHead.h \
-    src/OOverView.h \
-    src/OTrackDraw.h \
-    src/OTrackSizer.h \
-    src/OTimeView.h \
+    src/ui/OMainWnd.h \
+    src/ui/OOverView.h \
+    src/ui/OTracksLayout.h \
+    src/ui/OTrackView.h \
+    src/ui/OTimeDraw.h \
+    src/ui/OTrackDraw.h \
+    src/ui/OOverView.h \
+    src/ui/OTrackSizer.h \
+    src/ui/OTimeView.h \
+    src/ui/OCustomWidget.h \
+    src/ui/OPlayHead.h \
     src/OTrackStore.h \
-    src/ODAW.h \
-    src/OscCmd.h \
+    src/backend/ODAW.h \
+    src/backend/OscCmd.h \
     src/OProject.h \
-    src/OTrackDlg.h \
-    src/OConnectDlg.h \
-    src/ODlgPrefs.h \
-    src/OX32.h \
-    src/OQueue.h \
-    src/OCustomWidget.h \
-    src/OJack.h \
-    src/OAlsa.h \
-    src/OMidiMtc.h \
-    src/OTimer.h \
-    src/ODlgLayout.h \
-    src/ODlgProlog.h \
-    src/OConfig.h
+    src/dlg/OTrackDlg.h \
+    src/dlg/OConnectDlg.h \
+    src/dlg/ODlgPrefs.h \
+    src/backend/OX32.h \
+    src/backend/OJack.h \
+    src/backend/OAlsa.h \
+    src/backend/OMidiMtc.h \
+    src/dlg/ODlgLayout.h \
+    src/dlg/ODlgProlog.h \
+    src/utils/OQueue.h \
+    src/utils/OTimer.h \
+    src/utils/OConfig.h
 
 if DEBUG
     AM_CFLAGS = -g3 -O0
@@ -86,11 +89,11 @@ desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
 
     
-autoX32_CPPFLAGS = -std=c++11 ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
+autoX32_CPPFLAGS = -std=c++11 -Isrc -Isrc/backend -Isrc/ui -Isrc/dlg -Isrc/utils ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
 autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread	
 
 TESTS = check_TrackStore
 check_PROGRAMS = check_TrackStore
 check_TrackStore_SOURCES = tests/test_trackstore.cpp
-check_TrackStore_CPPFLAGS = -g -O0 -std=c++11 -I../src ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
-check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/autoX32-OscCmd.o ${GTKMM3_LIBS}
+check_TrackStore_CPPFLAGS = -g -O0 -std=c++11 -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscCmd.o ${GTKMM3_LIBS}

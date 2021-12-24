@@ -14,15 +14,25 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <gtkmm.h>
-#include "OMainWnd.h"
+#ifndef IOX32_H
+#define IOX32_H
 
- int main(int argc, char *argv[]) {
-    auto app = Gtk::Application::create(argc, argv);
+typedef void(*MixerCallback)(OscCmd*, void*);
 
-    OMainWnd window;
-
-    app->signal_activate().connect(sigc::mem_fun(window, &OMainWnd::on_activate));
+class IOMixer {
+public:
     
-    return app->run((Gtk::Window&)window);
-}
+    virtual int Connect(std::string) = 0;
+    virtual int Disconnect() = 0;
+
+    virtual void SetMixerCallback(MixerCallback, void*) = 0;
+    
+    virtual int IsConnected() = 0;
+    
+    virtual void SendFloat(std::string, float) = 0;
+    virtual void SendInt(std::string, int ) = 0;
+    virtual void Send(std::string) = 0;
+};
+
+#endif /* IOX32_H */
+

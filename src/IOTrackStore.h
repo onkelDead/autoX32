@@ -23,7 +23,7 @@
 
 class IOTrackStore {
 public:
-    virtual track_entry *GetTracks() = 0;
+    virtual track_entry *GetHeadEntry() = 0;
     virtual OscCmd* GetOscCommand() = 0;
     virtual bool IsPlaying() = 0;
     virtual bool IsRecording() = 0;
@@ -31,16 +31,20 @@ public:
     virtual void SetRecording(bool val) = 0;
     
     virtual track_entry* UpdatePlayhead(gint, bool) = 0;
+    virtual track_entry* GetPlayhead() = 0;
     
     virtual bool IsDirty() = 0;
     virtual void SetDirty(bool val) = 0;
     
     virtual void AddEntry(OscCmd*, gint) = 0;
+    virtual void RemoveEntry(track_entry *entry) = 0; 
     virtual gint GetCountEntries() = 0;
     virtual track_layout* GetLayout() = 0;
     
     virtual void SaveData(const char* filepath) = 0;
     virtual void LoadData(const char* filepath) = 0;
+    
+    virtual void CheckData(int* count, int* errors) = 0; 
 };
 
 #endif /* IOTRACKSTORE_H */

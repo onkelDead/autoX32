@@ -11,8 +11,6 @@ config.h
 config.status
 stamp-h1
 config.log
-src/.deps/
-src/.dirstamp
 src/embedded/.deps/
 src/embedded/.dirstamp
 de.paraair.autoX32.gschema.valid
@@ -25,4 +23,18 @@ check_*
 *.log
 *.trs
 test-driver
+
+src/.deps/
+src/.dirstamp
+src/backend/.deps/
+src/backend/.dirstamp
+src/dlg/.deps/
+src/dlg/.dirstamp
+src/res/.deps/
+src/res/.dirstamp
+src/ui/.deps/
+src/ui/.dirstamp
+src/utils/.deps/
+src/utils/.dirstamp
+
 

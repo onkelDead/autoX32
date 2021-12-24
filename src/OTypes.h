@@ -36,7 +36,8 @@ enum JACK_EVENT {
     MMC_STOP,
     MMC_LOCATE,
     MMC_RESET, 
-    CTL_PLAYSTOP,
+    CTL_PLAY,
+    CTL_STOP,
     CTL_TEACH_ON,
     CTL_TEACH_OFF,
     CTL_COMMAND,
@@ -82,7 +83,6 @@ typedef struct track_entry {
     track_entry* prev;
     int time;
     lo_arg val;
-    lo_arg delta;
     track_entry* next;
 } track_entry;
 
@@ -92,6 +92,7 @@ typedef struct track_layout {
     bool m_visible;
     int m_index;    
 } track_layout;
+
 
 
 #endif /* OTYPES_H */

@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include "../src/OTrackStore.h"
+#include "OTrackStore.h"
 
 /*
  * Simple C++ Test Suite
@@ -47,14 +47,14 @@ int test1() {
     std::cout << "Count entries ts " << ts->GetCountEntries() << std::endl;
     TEST_EQUAL(ts->GetCountEntries(), 3, result, "CountEntries != 3");
     TEST_EQUAL(ts->GetOscCommand(), cmd, result, "GetOscCommand != cmd");
-    TEST_EQUAL(e, ts->GetEntry(1), result, "e != GetEntry(1)");
+    TEST_EQUAL(e, ts->GetEntryAtPosition(1), result, "e != GetEntry(1)");
     ts->UpdatePlayhead(1, true);
     TEST_EQUAL(e, ts->GetPlayhead(), result, "e != Playhead");
-    ts->SaveData("/tmp/test_trackstore");
+    ts->SaveData("/tmp/test.xml");
     OscCmd* cmd1 = new OscCmd("test-path", "test-types");
     OTrackStore* ts1 = new OTrackStore(cmd1);
     std::cout << "Load Data" << std::endl;
-    ts1->LoadData("/tmp/test_trackstore");
+    ts1->LoadData("/tmp/test.xml");
     std::cout << "Count entries ts1 " << ts1->GetCountEntries() << std::endl;
     TEST_EQUAL(ts->GetCountEntries(), ts1->GetCountEntries(), result, "ts->GetEntries != ts1->GetEnbtries");
     ts->RemoveEntry(e);
@@ -96,6 +96,13 @@ int test2() {
     
     std::cout << "elapse time: " << time_spent << " µsec." << std::endl;
     
+    int count = 0;
+    int errors = 0;
+    
+    ts->CheckData(&count, &errors);
+    std::cout << "CheckData: count " << count << " entries " << std::endl;    
+    TEST_EQUAL(errors, 0, result, "ts->CheckData() failed with errors.")
+    
     delete ts;
     delete cmd;
     
@@ -108,7 +115,7 @@ int test2() {
     begin = clock();
     
     for (int i = 1; i <= TEST2_NUM_ENTRIES; i++) {
-        ts->AddEntry(cmd, rand());
+        ts->UpdatePlayhead(rand(), true);
     }
     end = clock();
     time_spent = (double)(end - begin); //in microseconds
@@ -124,6 +131,14 @@ int test2() {
     time_spent = (double)(end - begin); //in microseconds
     std::cout << "elapse time: " << time_spent << " µsec." << std::endl;
 
+    count = 0;
+    errors = 0;
+    
+    ts->CheckData(&count, &errors);
+    std::cout << "CheckData: count " << count << " entries " << std::endl;
+    TEST_EQUAL(errors, 0, result, "ts->CheckData() failed with errors.")
+    
+    
     delete ts;
     delete cmd;
     

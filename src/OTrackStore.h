@@ -27,14 +27,16 @@ public:
     virtual ~OTrackStore();
 
     OscCmd* GetOscCommand();
-    track_entry *GetTracks();
+    track_entry *GetHeadEntry();
 
     void AddTimePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     
+    void CheckData(int* count, int* errors);
+    
     track_entry* NewEntry(gint pos = 0);
-    track_entry* GetEntry(int);
+    track_entry* GetEntryAtPosition(int);
     
     void RemoveEntry(track_entry*);
     void AddEntry(OscCmd*, gint);
@@ -55,16 +57,16 @@ public:
     
     inline track_layout* GetLayout() { return &m_layout; }
     
-    
     void Clear();
     
 private:
-    void Init();
+    
+    char m_typechar;
     
     bool m_record = false;
     bool m_playing = false;    
 
-    track_entry* m_tracks = nullptr;
+    track_entry* m_entries = nullptr;
     bool m_dirty = false;
     
     track_layout m_layout;
@@ -72,14 +74,18 @@ private:
     inline void Lock();
     inline void Unlock();    
     
-    inline void RemoveEntryInternal(track_entry*);
-    inline track_entry* GetEntryInternal(gint);
-    inline void AddtimePointInternal(track_entry *e);
+    inline void InternalRemoveEntry(track_entry*);
+    inline track_entry* InternalGetEntryAtPosition(gint);
+    inline void InternalAddTimePoint(track_entry*);
+    inline void InternalSetCmdValue(track_entry*);
     
     std::mutex m_mutex;
     
     track_entry* m_playhead = nullptr;
     OscCmd* m_cmd = nullptr;
+    
+    char m_file_name[128];
+    void EvalFileName();
    
 };
 

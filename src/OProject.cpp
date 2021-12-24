@@ -21,7 +21,7 @@
 
 #include "OProject.h"
 #include "OTrackStore.h"
-#include "IOX32.h"
+#include "IOMixer.h"
 
 OProject::OProject() {
     m_daw_range.m_loopend = -1;
@@ -58,7 +58,7 @@ void OProject::SetTracksLayout(IOTracksLayout *layout) {
     m_layout = layout;
 }
 
-void OProject::SetMixer(IOX32* mixer) {
+void OProject::SetMixer(IOMixer* mixer) {
     m_mixer = mixer;
 }
 
@@ -455,7 +455,6 @@ bool OProject::UpdatePos(gint current, bool jump) {
 
         IOTrackStore* trackstore = it->second;
         ret_code = PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
-
     }
     return ret_code;
 }
