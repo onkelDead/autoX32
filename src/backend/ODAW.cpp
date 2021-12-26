@@ -34,10 +34,62 @@ ODAW::ODAW() {
 }
 
 ODAW::~ODAW() {
-    disconnect();
+    Disconnect();
 }
 
-int ODAW::disconnect() {
+int ODAW::Connect(const char *host, const char *port, const char *replyport, IOMainWnd *wnd) {
+
+    m_parent = wnd;
+
+    if (m_server == nullptr) {
+        m_server = lo_server_thread_new(replyport, daw_err_handler);
+        if (m_server == NULL) {
+            return 1;
+        }
+        lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
+        lo_server_thread_start(m_server);
+    }
+
+    if (m_client != nullptr) {
+        lo_address_free(m_client);
+    }
+    m_client = lo_address_new(host, port);
+
+    lo_message msg = lo_message_new();
+    lo_message_add_int32(msg, 0);
+    lo_message_add_int32(msg, 0);
+    lo_message_add_int32(msg, FEEDBACK_MASTER + FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
+    lo_message_add_int32(msg, 1);
+
+    gint ret = lo_send_message(m_client, "/set_surface", msg);
+    if (ret == -1) {
+        fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
+    }
+    lo_message_free(msg);
+    time_t connect_timeout;
+    time(&connect_timeout);
+
+    m_keep_on = 2;
+
+    while (m_keep_on == 2) {
+        time_t now;
+        time(&now);
+
+        if (difftime(now, connect_timeout) > 2) {
+            printf("\ntimeout during connect to DAW\n");
+            lo_server_thread_stop(m_server);
+            return 1;
+        }
+    }
+    
+    ShortMessage("/refresh");
+    ShortMessage("/strip/list");
+    ShortMessage("/transport_sample");    
+
+    return 0;
+}
+
+int ODAW::Disconnect() {
     if (m_client) {
         lo_address_free(m_client);
         m_client = nullptr;
@@ -86,54 +138,6 @@ int ODAW::GetKeepOn() {
 
 void ODAW::SetKeepOn(int val) {
     m_keep_on = val;
-}
-
-int ODAW::connect(const char *host, const char *port, const char *replyport, IOMainWnd *wnd) {
-
-    m_parent = wnd;
-
-    if (m_server == nullptr) {
-        m_server = lo_server_thread_new(replyport, daw_err_handler);
-        if (m_server == NULL) {
-            return 1;
-        }
-        lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
-        lo_server_thread_start(m_server);
-    }
-
-    if (m_client != nullptr) {
-        lo_address_free(m_client);
-    }
-    m_client = lo_address_new(host, port);
-
-    lo_message msg = lo_message_new();
-    lo_message_add_int32(msg, 0);
-    lo_message_add_int32(msg, 0);
-    lo_message_add_int32(msg, FEEDBACK_MASTER + /* FEEDBACK_HMSMS + */ FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
-    lo_message_add_int32(msg, 1);
-
-    gint ret = lo_send_message(m_client, "/set_surface", msg);
-    if (ret == -1) {
-        fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
-    }
-    lo_message_free(msg);
-    time_t connect_timeout;
-    time(&connect_timeout);
-
-    m_keep_on = 2;
-
-    while (m_keep_on == 2) {
-        time_t now;
-        time(&now);
-
-        if (difftime(now, connect_timeout) > 2) {
-            printf("\ntimeout during connect to DAW\n");
-            return 1;
-        }
-    }
-    m_keep_on = 1;
-
-    return 0;
 }
 
 void ODAW::ProcessCmd(const char *entry, lo_message msg) {

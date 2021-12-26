@@ -40,18 +40,26 @@ public:
     void ControllerShowStop();
     void ControllerShowTeachOn();
     void ControllerShowTeachOff();
-    
+    void ControllerShowTeachMode(bool);
+        
     void ControllerShowLCDName(std::string);
     void ControllerShowLevel(float);
     
+    void ControlerShowMtcComplete(uint8_t);
+    void ControlerShowMtcQuarter(uint8_t);
+    void ControllerShowScrub();
+    
     void Locate(gint);
+    void Shuffle(bool);
 
     OMidiMtc* GetMidiMtc() { return &m_midi_mtc; }
     
     int GetMillis();
     void SetFrame(gint);
-
+    void QuarterFrame(uint8_t);
+    
     std::string GetTimeCode();
+    uint8_t* GetTimeDiggits();
     
     void LoopStart();
     void LoopEnd();

@@ -34,6 +34,7 @@
 
 #include "IOMainWnd.h"
 #include "IOMixer.h"
+#include "OTimer.h"
 
 #define X32_BUFFER_MAX 512
 
@@ -46,27 +47,31 @@ public:
     int Connect(std::string);
     int Disconnect();
 
-       
+
     int IsConnected();
 
     void SetMixerCallback(MixerCallback, void*);
-    
-    void ProcessOscCmd(char* entry, size_t len);
+
 
     virtual void SendFloat(std::string path, float val);
     virtual void SendInt(std::string path, int val);
     virtual void Send(std::string);
 
+    bool on_timeout();
+
+
 private:
 
     void do_work(IOMixer*);
 
+    void ProcessOscCmd(char* entry, size_t len);
+
     int m_X32_socket_fd = -1;
-    struct sockaddr_in m_Socket; 
+    struct sockaddr_in m_Socket;
     struct sockaddr *m_SocketPtr = (struct sockaddr*) &m_Socket;
     struct timeval m_timeout;
 
-    fd_set m_in_fd; 
+    fd_set m_in_fd;
 
     char m_in_buffer[X32_BUFFER_MAX];
     size_t m_in_length = 0;
@@ -80,8 +85,8 @@ private:
     MixerCallback m_callback;
     void* m_caller;
 
-    bool on_timeout();
-    sigc::connection m_timer;
+    OTimer m_timer;
+    //sigc::connection m_timer;
 };
 
 

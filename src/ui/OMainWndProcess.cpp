@@ -22,8 +22,8 @@
 
 void OMainWnd::OnJackEvent() {
     if (m_jackqueue.size() > 0) {
-        JACK_EVENT c = m_jackqueue.front();
-        switch (c) {
+        JACK_EVENT event = m_jackqueue.front();
+        switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
                 if (m_shot_refresh) {
@@ -37,7 +37,14 @@ void OMainWnd::OnJackEvent() {
                     m_shot_refresh = 3;
                 }
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
-                UpdatePos(m_backend->GetMillis(), c == MTC_COMPLETE);
+                if (event != MTC_COMPLETE) {
+                    UpdatePos(m_backend->GetMillis(), false);
+                    //m_backend->ControlerShowMtcQuarter((uint8_t)m_backend->GetMidiMtc()->GetMillis());
+                }
+                else {
+                    UpdatePos(m_backend->GetMillis(), true);
+                    m_backend->ControlerShowMtcComplete(0);
+                }
                 UpdatePlayhead();
                 break;
             case MMC_PLAY:
@@ -62,9 +69,9 @@ void OMainWnd::OnJackEvent() {
                 if (!m_button_play->get_active()) {
                     m_button_play->set_active(true);
                     m_backend->Play();
-//                } else {
-//                    m_button_play->set_active(false);
-//                    m_backend->Stop();
+                    //                } else {
+                    //                    m_button_play->set_active(false);
+                    //                    m_backend->Stop();
                 }
                 m_lock_play = false;
                 break;
@@ -73,19 +80,47 @@ void OMainWnd::OnJackEvent() {
                 if (m_button_play->get_active()) {
                     m_button_play->set_active(false);
                     m_backend->Stop();
-//                } else {
-//                    m_button_play->set_active(false);
-//                    m_backend->Stop();
+                    //                } else {
+                    //                    m_button_play->set_active(false);
+                    //                    m_backend->Stop();
                 }
                 m_lock_play = false;
-                break;                
+                break;
             case CTL_TEACH_ON:
-                m_btn_teach->set_active(true);
+                if (m_teach_mode) {
+                    if (m_btn_teach->get_active())
+                        m_btn_teach->set_active(false);
+                    else
+                        m_btn_teach->set_active(true);
+                } else {
+                    m_btn_teach->set_active(true);
+                }
                 //on_btn_teach_clicked();
                 break;
             case CTL_TEACH_OFF:
-                m_btn_teach->set_active(false);
+                if (!m_teach_mode) {
+                    m_btn_teach->set_active(false);
+                }
                 //on_btn_teach_clicked();
+                break;
+            case CTL_FADER:
+                if (m_trackslayout.GetSelectedTrackView()) {
+                    IOTrackStore* store = m_trackslayout.GetSelectedTrackView()->GetTrackStore();
+                    printf("update: %s, %f\n", store->GetOscCommand()->GetPath().c_str(), (float) m_backend->m_fader_val / 127.);
+                    OscCmd* cmd = new OscCmd(*store->GetOscCommand());
+                    cmd->SetLastFloat((float) m_backend->m_fader_val / 127.);
+                    notify_mixer(cmd);
+                }
+
+                break;
+            case CTL_TOUCH_RELEASE:
+                if (m_btn_teach->get_active()) {
+                    m_btn_teach->set_active(false);
+                }
+                break;
+            case CTL_TEACH_MODE:
+                m_teach_mode = !m_teach_mode;
+                m_backend->ControllerShowTeachMode(m_teach_mode);
                 break;
             case CTL_LOOP_SET:
                 if (!m_backend->GetLoopState()) {
@@ -106,6 +141,36 @@ void OMainWnd::OnJackEvent() {
             case CTL_HOME:
                 on_button_back_clicked();
                 break;
+            case CTL_NEXT_TRACK:
+            {
+                std::string n = m_trackslayout.GetNextTrack();
+                if (n != "")
+                    SelectTrack(n, true);
+                break;
+            }
+            case CTL_PREV_TRACK:
+                SelectTrack(m_trackslayout.GetPrevTrack(), true);
+                break;
+            case CTL_SCRUB_ON:
+                m_backend->m_scrub = !m_backend->m_scrub;
+                m_backend->ControllerShowScrub();
+                break;
+            case CTL_SCRUB_OFF:
+//                m_backend->m_scrub = false;
+//                m_backend->ControllerShowScrub();
+                break;
+            case CTL_JUMP_FORWARD:
+                if (m_backend->m_scrub) 
+                    m_backend->Shuffle(false);
+                else
+                    m_backend->Locate(m_backend->GetMillis() + 360);                
+                break;
+            case CTL_JUMP_BACKWARD:
+                if (m_backend->m_scrub)
+                    m_backend->Shuffle(true);
+                else
+                    m_backend->Locate(m_backend->GetMillis() - 360);                
+                break;
         }
     }
     m_jackqueue.pop();
@@ -115,24 +180,6 @@ void OMainWnd::OnDawEvent() {
     if (my_dawqueue.size() > 0) {
         DAW_PATH c = my_dawqueue.front();
         switch (c) {
-                /*
-                 * 	interval = 10ms | 0.01s
-                 * 	bitrate = 48000Hz | 48000 samples per sec.
-                 * 	=> 480 samples per interval.
-                 *
-                 * 	now timer pos stores real samples
-                 * 	to store only steps, samples must be devide by 480
-                 *
-                 * 	48000 * 0.01 == 480
-                 *
-                 * 	512 == 0b100000000 (9 bits)
-                 *
-                 * 	48000 / 512 == new sample rate
-                 *
-                 *
-                 *
-                 */
-
             case DAW_PATH::reply:
                 m_project.SetMaxMillis(m_daw.GetMaxMillis());
                 m_project.SetBitRate(m_daw.GetBitRate());
@@ -140,11 +187,11 @@ void OMainWnd::OnDawEvent() {
                 m_timeview->SetZoomLoop();
                 break;
             case DAW_PATH::samples:
-                 m_backend->SetFrame(m_daw.GetSample() / 400 );
+                m_backend->SetFrame(m_daw.GetSample() / 400);
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 UpdatePos(m_backend->GetMillis(), true);
                 UpdatePlayhead();
-                
+
                 break;
             default:
                 break;
@@ -183,6 +230,7 @@ void OMainWnd::OnMixerEvent() {
     while (my_mixerqueue.size() > 0) {
         bool cmd_used = false;
         OscCmd *cmd = my_mixerqueue.front();
+        std::string path = cmd->GetPath();
         cmd->Parse();
         if (cmd->IsConfig()) {
             OscCmd *c = m_project.ProcessConfig(cmd);
@@ -192,14 +240,15 @@ void OMainWnd::OnMixerEvent() {
                     tv->UpdateConfig();
                 }
             }
-        } else {
+        } else if (path.at(1) != '-') { // skip status messages
+
             // is this track already known ?
-            IOTrackStore *trackstore = m_project.GetTrack(cmd->GetPath());
+            IOTrackStore *trackstore = m_project.GetTrack(path);
             OTrackView *tv = NULL;
 
             if (trackstore) { // the track is known
                 trackstore->GetOscCommand()->CopyLastVal(cmd);
-                tv = m_trackslayout.GetTrackview(cmd->GetPath());
+                tv = m_trackslayout.GetTrackview(path);
                 if (tv) { // we have a trackview for it
                     if (m_btn_teach->get_active()) { // trackview is configured for touch
                         tv->SetRecord(true);

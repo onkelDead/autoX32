@@ -37,14 +37,20 @@ public:
     void Play();
     void Stop();
     void Locate(gint);
+    void Shuffle(bool);
     void SetFrame(gint);
+    void QuarterFrame(uint8_t);
 
     void ControllerShowPlay();
     void ControllerShowStop();
     void ControllerShowTeachOn();
     void ControllerShowTeachOff();
+    void ControllerShowTeachMode(bool);
     void ControllerShowLCDName(std::string);
     void ControllerShowLevel(float);
+    void ControlerShowMtcComplete(uint8_t);
+    void ControlerShowMtcQuarter(uint8_t);
+    void ControllerShowScrub();
     void LoopStart();
     void LoopEnd();
     bool GetLoopState();

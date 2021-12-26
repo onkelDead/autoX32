@@ -14,22 +14,41 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
 
         if (data[0] == 0x90) {
             switch (data[1]) {
-                case 0x17: // PLAY
+                case 0x5e: // PLAY
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_PLAY);
                     }
                     break;
-                case 0x16: // STOP
+                case 0x5d: // STOP
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_STOP);
                     }
                     break;
-                    
-                case 2: // Toggle teach
-                    if (data[2])
+
+                case 0x5f: // Toggle teach
+                    if (data[2] == 0x7f)
                         backend->Notify(CTL_TEACH_ON);
-                    else
-                        backend->Notify(CTL_TEACH_OFF);
+                    break;
+                case 0x36:
+                    if (data[2]) {
+                        backend->Notify(CTL_TEACH_MODE);
+                    }
+                    break;
+                case 0x65:
+                    if (data[2]) {
+                        backend->Notify(CTL_SCRUB_ON);
+                    }
+                    break;
+                case 0x68:
+                    backend->m_fader_touched = true;
+                    break;
+                case 0x60:
+                    if (data[2])
+                        backend->Notify(CTL_PREV_TRACK);
+                    break;
+                case 0x61:
+                    if (data[2])
+                        backend->Notify(CTL_NEXT_TRACK);
                     break;
                 case 3:
                     if (data[2]) // button on down
@@ -49,13 +68,46 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_TOGGLE_LOOP);
                     }
                     break;
-                case 6:
+                case 0x5b:
                     if (data[2]) {
                         backend->Notify(CTL_HOME);
                     }
                     break;
             }
             return 1;
+        }
+
+        if (data[0] == 0x80) {
+            switch (data[1]) {
+                case 0x65:
+                    backend->Notify(CTL_SCRUB_OFF);
+                    break;
+                case 0x68:
+                    backend->m_fader_touched = false;
+                    backend->Notify(CTL_TOUCH_RELEASE);
+                    break;
+                case 0x5f:
+                    backend->Notify(CTL_TEACH_OFF);
+                    break;
+            }
+        }
+        if (data[0] == 0xe0) {
+            if (backend->m_fader_touched) {
+                uint16_t v = data[2] << 7;
+                v += (data[1] << 1);
+                backend->m_fader_val = v >> 7;
+                backend->Notify(CTL_FADER);
+            }
+        }
+        if (data[0] == 0xb0) {
+            if (data[1] = 0x3c) {
+                if (data[2] == 0x41) {
+                    backend->Notify(CTL_JUMP_BACKWARD);
+                }
+                if (data[2] == 0x01) {
+                    backend->Notify(CTL_JUMP_FORWARD);
+                }
+            }
         }
     }
     return 0;
@@ -87,7 +139,7 @@ int process_mtc_event(uint8_t* data, IOBackend* backend) {
     uint8_t s;
 
     if (data[0] == 0xf1) {
-        backend->GetMidiMtc()->QuarterFrame(data[1]);
+        backend->QuarterFrame(data[1]);
         if (backend->GetMidiMtc()->m_edge_sec == 1) {
             backend->Notify(MTC_QUARTER_FRAME_SEC);
         }

@@ -21,25 +21,22 @@
 class OMidiMtc {
 public:
 
-	void FullFrame(uint8_t* frame_data);
-	void QuarterFrame(uint8_t data);
-        void SetFrame(int);
-	int GetMillis();
-	std::string GetTimeCode();
-        bool m_edge_sec = false;
+    void FullFrame(uint8_t* frame_data);
+    int QuarterFrame(uint8_t data);
+    void SetFrame(int);
+    int GetMillis();
+    std::string GetTimeCode();
+    bool m_edge_sec = false;
+    uint8_t diggit[4] = {0, 0, 0, 0};
 
 private:
-	uint8_t hour = 0;
-	uint8_t min = 0;
-	uint8_t sec = 0;
-	uint8_t frame = 0;
-	uint8_t subframe = 0;
+    uint8_t subframe = 0;
 
-	uint8_t n1 = 0;
-	uint8_t n2 = 0;
-	std::string m_timecode;
-	int millis;
-	bool lock_millis = false;
+    uint8_t n1 = 0;
+    uint8_t n2 = 0;
+    std::string m_timecode;
+    int millis;
+    bool lock_millis = false;
 };
 
 

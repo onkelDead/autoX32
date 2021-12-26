@@ -213,6 +213,8 @@ private:
     /// prevent loop back daw-event when position changed from here
     bool m_lock_daw_time_event;
 
+    bool m_teach_mode = false;
+    
     /// dialogs
     Gtk::AboutDialog m_Dialog;
 

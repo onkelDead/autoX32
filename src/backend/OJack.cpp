@@ -40,13 +40,15 @@ static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
 
 static bool doLocate = false;
 static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
+static bool doShuffle = false;
+static jack_midi_data_t shuffle[] = {0xF0, 0x7F, 0x7e, 0x06, 0x47, 0x03, 0b00000000, 0x00, 0x00, 0xF7};
 
 static int process(jack_nframes_t nframes, void *arg) {
-    
+
     OJack* jack = (OJack*) arg;
-    
+
     jack->ReconnectPorts();
-    
+
     int i;
     void *port_buf = jack_port_get_buffer(mmc_in_port, nframes);
     jack_midi_event_t in_event;
@@ -99,12 +101,19 @@ static int process(jack_nframes_t nframes, void *arg) {
         doLocate = false;
     }
 
-    if (!jack->ctl_out.empty()) {
-        int c = jack->ctl_out.front();
-        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, 3);
-        buffer[0] = (c >> 16) & 0xff;
-        buffer[1] = (c >> 8) & 0xff;
-        buffer[2] = (c) & 0xff;
+    if (doShuffle) {
+        unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (shuffle));
+        memcpy(buffer, shuffle, sizeof (shuffle));
+        doShuffle = false;
+    }    
+    
+    while (!jack->ctl_out.empty()) {
+        ctl_command* c = jack->ctl_out.front();
+        unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, c->len);
+        for (int i = 0; i < c->len; i++) {
+            buffer[i] = c->buf[i];
+        }
+        delete c;
         jack->ctl_out.pop();
     }
 
@@ -130,7 +139,7 @@ static int process(jack_nframes_t nframes, void *arg) {
 }
 
 void OJack::Start() {
-    
+
 }
 
 static void jack_shutdown(void *arg) {
@@ -139,11 +148,12 @@ static void jack_shutdown(void *arg) {
 }
 
 // class OJack
+
 void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg) {
-    
+
     OJack* jack = (OJack*) arg;
-    
-    if (connect)    
+
+    if (connect)
         printf("Connect ");
     else
         printf("Disconnect ");
@@ -151,38 +161,38 @@ void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg)
 }
 
 void on_register_client(const char* name, int reg, void *arg) {
-    if (reg)    
+    if (reg)
         printf("Register ");
     else
         printf("Unregister ");
     printf("Client '%s'\n", name);
-    
+
     return;
 }
 
 void on_register_port(jack_port_id_t port, int reg, void *arg) {
     OJack* jack = (OJack*) arg;
-    
+
     const char* port_name = jack_port_name(jack_port_by_id(jack->m_jack_client, port));
-    
-    if (reg) 
+
+    if (reg)
         printf("Register ");
     else
         printf("Unregister ");
     printf(" Port '%s'\n", port_name);
-    
+
     if (reg) {
         if (strcmp("ardour:MTC out", port_name) == 0)
             jack->m_reconnect_mtc_out = true;
         if (strcmp("ardour:MMC out", port_name) == 0)
-            jack->m_reconnect_mmc_out = true;       
+            jack->m_reconnect_mmc_out = true;
         if (strcmp("ardour:MMC in", port_name) == 0)
-            jack->m_reconnect_mmc_in = true;            
+            jack->m_reconnect_mmc_in = true;
         if (strcmp("OSerialBridge:out", port_name) == 0)
-            jack->m_reconnect_ctl_out = true;            
+            jack->m_reconnect_ctl_out = true;
         if (strcmp("OSerialBridge:in", port_name) == 0)
-            jack->m_reconnect_ctl_in = true;            
-        
+            jack->m_reconnect_ctl_in = true;
+
     }
 }
 
@@ -205,51 +215,69 @@ void OJack::Connect(IOMainWnd* wnd) {
     ctl_in_port = jack_port_register(m_jack_client, "Onkel Controller in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_out_port = jack_port_register(m_jack_client, "Onkel Controller out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
-    
+
     jack_set_client_registration_callback(m_jack_client, on_register_client, this);
     jack_set_port_registration_callback(m_jack_client, on_register_port, this);
     jack_set_port_connect_callback(m_jack_client, on_port_connect, this);
-    
+
     if (jack_activate(m_jack_client)) {
         fprintf(stderr, "cannot activate client");
         return;
     }
 
-//    jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
+    //    jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
     jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
     jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
     jack_connect(m_jack_client, "a2j:X-Touch One [28] (capture): X-Touch One MIDI 1", "autoX32:Onkel Controller in");
     jack_connect(m_jack_client, "autoX32:Onkel Controller out", "a2j:X-Touch One [28] (playback): X-Touch One MIDI 1");
-    
-    ControllerShowStop();
-    
-//    ctl_out.push(CTL_COMMAND(0xb8, 0, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xb9, 1, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xba, 2, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbb, 0, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbc, 1, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbd, 2, 64));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xb8, 0, 0));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xb9, 1, 0));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xba, 2, 0));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbb, 0, 0));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbc, 1, 0));
-//    usleep(100000);
-//    ctl_out.push(CTL_COMMAND(0xbd, 2, 0));
 
-//    Play();
-//    usleep(100000);
-//    Stop();
+    ControllerShowStop();
+    ControllerShowTeachOff();
+    ControllerShowTeachMode(false);
+
+    ControllerShowScrub();
+    
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x71;
+    c->buf[2] = 0x7f;
+    ctl_out.push(c);
+
+
+    ctl_command* c1 = new ctl_command;
+    c1->len = 3;
+    c1->buf[0] = 0x90;
+    c1->buf[1] = 0x72;
+    c1->buf[2] = 0x00;
+    ctl_out.push(c1);
+    //    ctl_out.push(CTL_COMMAND(0xb8, 0, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xb9, 1, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xba, 2, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbb, 0, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbc, 1, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbd, 2, 64));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xb8, 0, 0));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xb9, 1, 0));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xba, 2, 0));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbb, 0, 0));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbc, 1, 0));
+    //    usleep(100000);
+    //    ctl_out.push(CTL_COMMAND(0xbd, 2, 0));
+
+    //    Play();
+    //    usleep(100000);
+    //    Stop();
 }
 
 void OJack::Play() {
@@ -258,16 +286,16 @@ void OJack::Play() {
 }
 
 void OJack::ReconnectPorts() {
-        if (m_reconnect_mtc_out) {
+    if (m_reconnect_mtc_out) {
         m_reconnect_mtc_out = false;
         jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
     }
-    
+
     if (m_reconnect_mmc_out) {
         m_reconnect_mmc_out = false;
         jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
-    }  
-    
+    }
+
     if (m_reconnect_mmc_in) {
         m_reconnect_mmc_in = false;
         jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
@@ -279,7 +307,7 @@ void OJack::ReconnectPorts() {
         m_reconnect_ctl_in = false;
     }
     if (m_reconnect_ctl_out) {
-        jack_connect(m_jack_client, "autoX32:Onkel Controller out", "OSerialBridge:in");        
+        jack_connect(m_jack_client, "autoX32:Onkel Controller out", "OSerialBridge:in");
         m_reconnect_ctl_out = false;
     }
 }
@@ -301,12 +329,40 @@ void OJack::Locate(gint millis) {
     doLocate = true;
 }
 
+void OJack::Shuffle(bool s) {
+    if (m_shuffle_speed==0)
+        Play();
+    m_shuffle_speed = s 
+            ? MAX(-7 , m_shuffle_speed - 1)
+            : MIN(7 , m_shuffle_speed + 1);
+
+    shuffle[6] = 0x00;
+    if (m_shuffle_speed != 0) {
+        
+        if (m_shuffle_speed<0)
+            shuffle[6] |= 0x40;
+
+        shuffle[6] |= (abs(m_shuffle_speed));
+        doShuffle = true;
+    }
+    else {
+        Stop();
+    }
+    printf("Shuffle speed %d %d %02x\n", s, m_shuffle_speed, shuffle[6]);
+    
+}
+
 int OJack::GetMillis() {
     return m_midi_mtc.GetMillis();
 }
 
 void OJack::SetFrame(gint frame) {
     m_midi_mtc.SetFrame(frame);
+}
+
+void OJack::QuarterFrame(uint8_t q) {
+    int s = m_midi_mtc.QuarterFrame(q);
+    ControlerShowMtcComplete(s);
 }
 
 void OJack::Notify(JACK_EVENT event) {
@@ -317,52 +373,147 @@ std::string OJack::GetTimeCode() {
     return m_midi_mtc.GetTimeCode();
 }
 
+uint8_t* OJack::GetTimeDiggits() {
+    return m_midi_mtc.diggit;
+}
+
 void OJack::ControllerShowPlay() {
-    ctl_out.push(CTL_COMMAND(0x90, 0x16, 0x00));
-    ctl_out.push(CTL_COMMAND(0x90, 0x17, 127));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x5d;
+    c->buf[2] = 0x00;
+    ctl_out.push(c);
+    ctl_command* d = new ctl_command;
+    d->len = 3;
+    d->buf[0] = 0x90;
+    d->buf[1] = 0x5e;
+    d->buf[2] = 0x7f;
+    ctl_out.push(d);
 }
 
 void OJack::ControllerShowStop() {
-    ctl_out.push(CTL_COMMAND(0x90, 0x16, 0x41));
-    ctl_out.push(CTL_COMMAND(0x90, 0x17, 0x00));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x5d;
+    c->buf[2] = 0x41;
+    ctl_out.push(c);
+    ctl_command* d = new ctl_command;
+    d->len = 3;
+    d->buf[0] = 0x90;
+    d->buf[1] = 0x5e;
+    d->buf[2] = 0x00;
+    ctl_out.push(d);
+
 }
 
 void OJack::ControllerShowTeachOn() {
-    ctl_out.push(CTL_COMMAND(0xb9, 2, 4));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x5f;
+    c->buf[2] = 0x41;
+    ctl_out.push(c);
 }
 
 void OJack::ControllerShowTeachOff() {
-    ctl_out.push(CTL_COMMAND(0xb9, 2, 0));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x5f;
+    c->buf[2] = 0x00;
+    ctl_out.push(c);
+}
+
+void OJack::ControllerShowTeachMode(bool val) {
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x90;
+    c->buf[1] = 0x36;
+    c->buf[2] = val ? 0x41 : 0x00;
+    ctl_out.push(c);
 }
 
 void OJack::ControllerShowLCDName(std::string name) {
-//    char* s = strdup(name.c_str());
-//    int l = strlen(s);
-//    
-//    uint8_t syext[22] = { 0xF0, 0x00, 0x20, 0x32, 0x40, 0x00, 
-//        0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 
-//        0x7f };
-//    
-//    memcpy(syext + 6, s, l);
-//    ctl_out.push(syext);
-    
+    char* s = strdup(name.c_str());
+    int l = strlen(s);
+
+    uint8_t syext[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x00, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
+    uint8_t syext1[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x38, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
+
+    ctl_command* c = new ctl_command;
+    memcpy(syext + 7, s, MIN(7, strlen(s)));
+    c->len = sizeof (syext);
+    memcpy(c->buf, syext, sizeof (syext));
+
+    ctl_command* c1 = new ctl_command;
+    if (strlen(s) > 7)
+        memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
+    c1->len = sizeof (syext1);
+    memcpy(c1->buf, syext1, sizeof (syext));
+
+
+    ctl_out.push(c);
+    ctl_out.push(c1);
+
 }
 
 void OJack::ControllerShowLevel(float f) {
-    ctl_out.push(CTL_COMMAND(0xb0, 0x46, (uint8_t)(127 * f)));
+    ctl_command* c = new ctl_command;
+    uint16_t val = (uint16_t) (16383 * f);
+    uint8_t h = val >> 7;
+    uint8_t l = (val & 0xff) >> 1;
+    c->len = 3;
+    c->buf[0] = 0xe0;
+    c->buf[1] = l;
+    c->buf[2] = h;
+    ctl_out.push(c);
 }
 
+void OJack::ControlerShowMtcComplete(uint8_t s) {
+
+    uint8_t* tc = GetTimeDiggits();
+    for (int i = s; i < 8; i++) {
+        
+        uint8_t d = tc[i/2];
+        uint8_t e = (i & 1) ? d / 10 : d % 10;
+        ctl_command* c = new ctl_command;
+        c->len = 3;
+        c->buf[0] = 0xb0;
+        c->buf[1] = 0x41 + i;
+        c->buf[2] = 0x30 + e;
+        ctl_out.push(c);
+    }
+}
+
+void OJack::ControlerShowMtcQuarter(uint8_t q) {
+    ctl_command* c0 = new ctl_command;
+    c0->len = 2;
+    c0->buf[0] = 0xd0;
+    c0->buf[1] = q;
+    ctl_out.push(c0);
+}
+
+void OJack::ControllerShowScrub() {
+    ctl_command* c0 = new ctl_command;
+    c0->len = 3;
+    c0->buf[0] = 0x90;
+    c0->buf[1] = 0x65;
+    c0->buf[2] = m_scrub ? 0x7f : 0x00;
+    ctl_out.push(c0);    
+}
 
 void OJack::LoopStart() {
     m_loop_state = true;
-    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
+    //    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
+    //    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
 }
 
 void OJack::LoopEnd() {
     m_loop_state = false;
-    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
+    //    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
+    //    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
 }
 
 bool OJack::GetLoopState() {
@@ -370,7 +521,7 @@ bool OJack::GetLoopState() {
 }
 
 void OJack::SetLoopState(bool state) {
-    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
+    //    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
+    //    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
     m_loop_state = state;
 }

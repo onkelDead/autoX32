@@ -176,24 +176,57 @@ void OAlsa::Locate(gint millis) {
         printf("Play: %s\n", snd_strerror(err));
 }
 
+void OAlsa::Shuffle(bool) {
+    
+}
+
 void OAlsa::SetFrame(gint frame) {
     m_midi_mtc.SetFrame(frame);
 }
 
+void OAlsa::QuarterFrame(uint8_t q) {
+    
+}
+
+
 void OAlsa::ControllerShowPlay() {
-    ctl_out.push(CTL_COMMAND(0xb8, 1, 4));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x8b;
+    c->buf[1] = 1;
+    c->buf[2] = 4;
+    ctl_out.push(c);
 }
 
 void OAlsa::ControllerShowStop() {
-    ctl_out.push(CTL_COMMAND(0xb8, 1, 0));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x8b;
+    c->buf[1] = 1;
+    c->buf[2] = 0;    
+    ctl_out.push(c);
 }
 
 void OAlsa::ControllerShowTeachOn() {
-    ctl_out.push(CTL_COMMAND(0xb9, 2, 4));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0xb9;
+    c->buf[1] = 2;
+    c->buf[2] = 4;    
+    ctl_out.push(c);
 }
 
 void OAlsa::ControllerShowTeachOff() {
-    ctl_out.push(CTL_COMMAND(0xb9, 2, 0));
+    ctl_command* c = new ctl_command;
+    c->len = 3;
+    c->buf[0] = 0x8b;
+    c->buf[1] = 1;
+    c->buf[2] = 0;    
+    ctl_out.push(c);
+}
+
+void OAlsa::ControllerShowTeachMode(bool) {
+    
 }
 
 void OAlsa::ControllerShowLCDName(std::string) {
@@ -204,16 +237,28 @@ void OAlsa::ControllerShowLevel(float f) {
     
 }
 
+void OAlsa::ControlerShowMtcComplete(uint8_t s) {
+    
+}
+
+void OAlsa::ControlerShowMtcQuarter(uint8_t q) {
+    
+}
+
+void OAlsa::ControllerShowScrub() {
+
+}
+
 void OAlsa::LoopStart() {
     m_loop_state = true;
-    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
+//    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
+//    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
 }
 
 void OAlsa::LoopEnd() {
     m_loop_state = false;
-    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
+//    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
+//    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
 }
 
 bool OAlsa::GetLoopState() {
@@ -221,8 +266,8 @@ bool OAlsa::GetLoopState() {
 }
 
 void OAlsa::SetLoopState(bool state) {
-    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
+//    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
+//    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
     m_loop_state = state;
 }
 

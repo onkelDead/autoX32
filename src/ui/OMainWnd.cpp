@@ -37,7 +37,7 @@ void check_ardour_recent(void* user_Data) {
 
     OMainWnd* mainWnd = (OMainWnd*) user_Data;
 
-    file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
+    file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
     if (file_recent != NULL) {
         dummy = fscanf(file_recent, "%s", name);
         dummy = fscanf(file_recent, "%s", path);
@@ -137,7 +137,7 @@ bool OMainWnd::SaveProject() {
                 m_project.Save();
                 m_project.AddRecentProject(m_project.GetProjectLocation());
                 //TODO: reimplement
-                //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+                m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
                 UpdateMenuRecent();
                 return true;
             } else {
@@ -147,7 +147,7 @@ bool OMainWnd::SaveProject() {
             m_project.Save();
             m_project.AddRecentProject(m_project.GetProjectLocation());
             //TODO: reimplement
-            // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+            m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
             UpdateMenuRecent();
             return true;
         }
@@ -163,7 +163,7 @@ bool OMainWnd::Shutdown() {
     }
 
     m_x32->Disconnect();
-    m_daw.disconnect();
+    m_daw.Disconnect();
 
     int width, height;
     get_size(width, height);
@@ -214,13 +214,11 @@ bool OMainWnd::ConnectMixer(std::string host) {
 }
 
 bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replyport) {
-    if (!m_daw.connect(ip.data(), port.data(), replyport.data(), this)) {
-        m_daw.ShortMessage("/refresh");
-        m_daw.ShortMessage("/strip/list");
-        m_daw.ShortMessage("/transport_sample");
+    if (!m_daw.Connect(ip.data(), port.data(), replyport.data(), this)) {
+
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer(check_ardour_recent, 500, this);
+        m_timer = new OTimer(check_ardour_recent, 5000, this);
         m_timer->start();
         return true;
     }
@@ -299,6 +297,7 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
     m_trackslayout.SelectTrack(path, selected);
     if (selected) {
         m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
+        m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
     }
 }
 

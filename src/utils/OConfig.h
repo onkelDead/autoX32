@@ -17,6 +17,8 @@
 #ifndef OCONFIG_H
 #define OCONFIG_H
 
+#include <vector>
+#include <string>
 #include <libconfig.h>
 
 #define CONF_FORMATTER "%s/.config/autoX32/autoX32.conf"
@@ -39,6 +41,8 @@ public:
     
     const char* get_string(const char* path);
     void set_string(const char* path, const char* val);
+    
+    void set_string_array(const char* path, std::vector<std::string> strings);
     
 private:
     char m_conf_path[256];

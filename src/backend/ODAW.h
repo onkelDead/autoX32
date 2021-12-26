@@ -47,14 +47,11 @@ public:
     ODAW();
     virtual ~ODAW();
 
+    int Connect(const char* host, const char* port, const char* replyport, IOMainWnd*);
+    int Disconnect();
+
     gint GetMaxMillis();
     gint GetBitRate();
-
-    void ProcessCmd(const char*, lo_message);
-
-
-    int connect(const char* host, const char* port, const char* replyport, IOMainWnd*);
-    int disconnect();
 
     void ShortMessage(const char* cmd);
     
@@ -66,6 +63,8 @@ public:
     
     gint GetSample();
 
+    void ProcessCmd(const char*, lo_message);
+    
 private:
     int m_keep_on = 1;
 

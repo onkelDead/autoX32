@@ -17,6 +17,13 @@
 #include <stdio.h>
 #include <string.h>
 #include "OX32.h"
+#include "OTimer.h"
+
+static void on_Timeout(void* obj) {
+    OX32* o = (OX32*)obj;
+
+    o->on_timeout();
+}
 
 OX32::OX32() {
 }
@@ -89,14 +96,21 @@ int OX32::Connect(std::string host) {
     }
     m_IsConnected = 1;
 
-    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &OX32::on_timeout);
-    m_timer = Glib::signal_timeout().connect(my_slot, 1000);
+    m_timer.SetUserData(this);
+    m_timer.setInterval(1000);
+    m_timer.setFunc(on_Timeout);
+    m_timer.start();
+//    
+//    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &OX32::on_timeout);
+//    m_timer = Glib::signal_timeout().connect(my_slot, 1000);
 
     m_WorkerThread = new std::thread([this] {
         do_work(this);
     });
     return 0;
 }
+
+
 
 bool OX32::on_timeout() {
     socklen_t ip_len = sizeof (m_Socket);
@@ -112,7 +126,7 @@ bool OX32::on_timeout() {
 
 int OX32::Disconnect() {
 
-    m_timer.disconnect();
+    m_timer.stop();
     if (m_IsConnected) {
         m_IsConnected = 0;
         m_WorkerThread->join();

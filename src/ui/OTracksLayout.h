@@ -37,7 +37,9 @@ public:
     void AddTrack(OTrackView *v, bool show);
     OTrackView* GetTrackview(std::string);
     trackview_entry* GetTrackHead();
-
+    trackview_entry* GetTrackTail();
+    trackview_entry* GetTrackSelected();
+    
     void RemoveTrackView(std::string path);
     void RemoveAllTackViews();
 
@@ -57,6 +59,12 @@ public:
     
     std::string GetSelectedTrackName();
     float GetSelectedTrackValue();
+    OTrackView* GetSelectedTrackView();     
+    
+    void SelectNextTrack();
+    std::string GetNextTrack();
+    void SelectPrevTrack();
+    std::string GetPrevTrack();
     
     void EditLayout();
     void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);

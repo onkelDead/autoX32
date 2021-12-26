@@ -149,3 +149,17 @@ void OConfig::set_string(const char* path, const char* val) {
     }
     config_setting_set_string(s, val);
 }
+
+void OConfig::set_string_array(const char* path, std::vector<std::string> strings) {
+    // first remove list
+    config_setting_t* s;
+    
+    s = config_setting_lookup(m_root, path);
+    if (!s) {
+        s = config_setting_add(m_root, path, CONFIG_TYPE_ARRAY);        
+    }    
+    int c = 0;
+    for (std::vector<std::string>::iterator it = strings.begin(); it != strings.end(); ++it) {
+        config_setting_set_string_elem(s, c, it->c_str());
+    }
+}

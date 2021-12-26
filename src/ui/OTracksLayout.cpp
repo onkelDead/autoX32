@@ -46,6 +46,23 @@ trackview_entry* OTracksLayout::GetTrackHead() {
     return m_tracklist;
 }
 
+trackview_entry* OTracksLayout::GetTrackTail() {
+    trackview_entry* tv = m_tracklist;
+    while(tv->next) 
+        tv = tv->next;
+    return tv;
+}
+
+trackview_entry* OTracksLayout::GetTrackSelected() {
+    trackview_entry* tv = m_tracklist;
+    while(tv) {
+        if (tv->item == m_selectedView)
+            return tv;
+        tv = tv->next;
+    }
+    return nullptr;
+}
+
 OTrackView* OTracksLayout::GetTrackview(std::string path) {
     trackview_entry* list = m_tracklist;
     if (list == nullptr) {
@@ -217,8 +234,11 @@ void OTracksLayout::TrackHide(std::string path, bool hide) {
         if (list->item->GetCmd()->GetPath().compare(path) == 0) {
             list->item->GetTrackStore()->GetLayout()->m_visible = hide;
             list->item->GetTrackStore()->SetDirty(true);
-            if (!hide)
+            if (!hide) {
                 remove (*list->item);
+                if (m_selectedView == list->item)
+                    m_selectedView = nullptr;
+            }
             else {
                 add(*list->item);
                 reorder_child(*list->item, list->item->GetTrackStore()->GetLayout()->m_index);
@@ -335,4 +355,96 @@ std::string OTracksLayout::GetSelectedTrackName() {
 
 float OTracksLayout::GetSelectedTrackValue() {
     return m_selectedView->GetTrackStore()->GetPlayhead()->val.f;
+}
+
+OTrackView* OTracksLayout::GetSelectedTrackView() {
+    return m_selectedView;
+}
+
+void OTracksLayout::SelectNextTrack() {
+    if (!m_selectedView)
+        SelectTrack(m_tracklist->item->GetCmd()->GetPath(), true);
+    else {
+        trackview_entry* head = GetTrackHead();
+        trackview_entry* tv = head;
+        while (tv) {
+            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+                break;
+            tv = tv->next;
+        }
+        tv = tv->next;
+        SelectTrack(m_selectedView->GetCmd()->GetPath(), false);
+        if (tv)
+            SelectTrack(tv->item->GetCmd()->GetPath(), true);
+        else
+            SelectTrack(head->item->GetCmd()->GetPath(), true);
+    }
+}
+
+void OTracksLayout::SelectPrevTrack(){
+    if (!m_selectedView)
+        SelectTrack(GetTrackTail()->item->GetCmd()->GetPath(), true);
+    else {
+        trackview_entry* tail = GetTrackTail();
+        trackview_entry* tv = tail;
+        while (tv) {
+            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+                break;
+            tv = tv->prev;
+        }
+        tv = tv->prev;
+        SelectTrack(m_selectedView->GetCmd()->GetPath(), false);
+        if (tv)
+            SelectTrack(tv->item->GetCmd()->GetPath(), true);
+        else
+            SelectTrack(tail->item->GetCmd()->GetPath(), true);
+    }    
+}
+
+
+
+std::string OTracksLayout::GetNextTrack() {
+    trackview_entry* head = GetTrackHead();
+//    if (!head) 
+//        head = GetTrackHead();
+//    trackview_entry* tv = head;
+//    while (tv->next) {
+//        if (tv->next->item->GetTrackStore()->GetLayout()->m_visible)
+//            return tv->next->item->GetCmd()->GetPath();
+//        tv = tv->next;
+//    }
+//    return "";
+    
+    if (!m_selectedView) {
+        return head->item->GetCmd()->GetPath();    
+    }
+    else {
+        trackview_entry* tv = head;
+        while (tv) {
+            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+                break;
+            tv = tv->next;
+        }
+        if (tv->next)
+            return tv->next->item->GetCmd()->GetPath();
+    }
+    return head->item->GetCmd()->GetPath();
+}
+
+std::string OTracksLayout::GetPrevTrack() {
+    if (!m_selectedView)
+        return GetTrackTail()->item->GetCmd()->GetPath();    
+    else {
+        trackview_entry* tail = GetTrackTail();
+        trackview_entry* tv = tail;
+        while (tv) {
+            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+                break;
+            tv = tv->prev;
+        }
+        tv = tv->prev;
+        if (tv)
+            return tv->item->GetCmd()->GetPath();
+        return tail->item->GetCmd()->GetPath();
+    }        
 }

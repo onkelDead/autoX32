@@ -125,7 +125,7 @@ void OscCmd::SplitPath(std::string s) {
 
     m_elements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
 
-    if (m_elements.at(1) == "ch" || m_elements.at(1) == "bus") {
+    if (m_elements.at(1) == "ch" || m_elements.at(1) == "bus" || m_elements.at(1) == "dca") {
         char qn[64];
         sprintf(qn, "/%s/%s/config/name", m_elements.at(1).data(), m_elements.at(2).data());
         m_config_request_name = qn;

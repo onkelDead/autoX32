@@ -16,62 +16,68 @@
 // JackMtc
 
 void OMidiMtc::FullFrame(uint8_t *frame_data) {
-    hour = frame_data[5] & 0x1f;
-    min = frame_data[6];
-    sec = frame_data[7];
-    frame = frame_data[8];
+    diggit[3] = frame_data[5] & 0x1f;
+    diggit[2] = frame_data[6];
+    diggit[1] = frame_data[7];
+    diggit[0] = frame_data[8];
     subframe = 0;
 }
 
-void OMidiMtc::QuarterFrame(uint8_t data) {
+int OMidiMtc::QuarterFrame(uint8_t data) {
+    int ret = 0;
     lock_millis = true;
     subframe++;
     if (subframe == 4) {
         subframe = 0;
-        frame++;
+        diggit[0]++;
+        ret = 2;
     }
-    if (frame == 30) {
-        frame = 0;
-        sec++;
+    if (diggit[0] == 30) {
+        diggit[0] = 0;
+        diggit[1]++;
         m_edge_sec = true;
+        ret = 4;
     }
-    if (sec == 60) {
-        sec = 0;
-        min++;
+    if (diggit[1] == 60) {
+        diggit[1] = 0;
+        diggit[2]++;
+        ret = 6;
     }
-    if (min == 60) {
-        min = 0;
-        hour++;
+    if (diggit[2] == 60) {
+        diggit[2] = 0;
+        diggit[3]++;
+        ret = 8;
     }
 
     lock_millis = false;
+    return ret;
 }
 
 int OMidiMtc::GetMillis() {
     int ret;
     while (lock_millis);
-    ret = hour * 432000 
-            + min * 7200 
-            + sec * 120 
-            + (frame * 4) + (subframe);
+    ret = diggit[3] * 432000 
+            + diggit[2] * 7200 
+            + diggit[1] * 120 
+            + (diggit[0] * 4) + (subframe);
     return ret;
 }
 
 void OMidiMtc::SetFrame(int f) {
-    hour = f / 432000;
-    f -= hour * 432000 ;
-    min = (f / 7200 % 60);
-    f -= min * 7200;
-    sec = (f / 120) % 60;
-    f -= sec * 120;
-    frame = (f / 4 ) % 30;
+    diggit[3] = f / 432000;
+    f -= diggit[3] * 432000 ;
+    diggit[2] = (f / 7200 % 60);
+    f -= diggit[2] * 7200;
+    diggit[2] = (f / 120) % 60;
+    f -= diggit[1] * 120;
+    diggit[0] = (f / 4 ) % 30;
     subframe = 0;
 }
 
 std::string OMidiMtc::GetTimeCode() {
     char t[32];
 
-    sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, frame);
+    sprintf(t, "%02d:%02d:%02d:%02d", diggit[3], diggit[2], diggit[1], diggit[0]);
     m_timecode = t;
     return m_timecode;
 }
