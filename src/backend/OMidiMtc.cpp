@@ -68,7 +68,7 @@ void OMidiMtc::SetFrame(int f) {
     f -= diggit[3] * 432000 ;
     diggit[2] = (f / 7200 % 60);
     f -= diggit[2] * 7200;
-    diggit[2] = (f / 120) % 60;
+    diggit[1] = (f / 120) % 60;
     f -= diggit[1] * 120;
     diggit[0] = (f / 4 ) % 30;
     subframe = 0;
