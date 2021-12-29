@@ -26,16 +26,16 @@ void OMainWnd::OnJackEvent() {
         switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-                if (m_shot_refresh) {
-                    if (!--m_shot_refresh)
-                        if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
-                            this->get_window()->freeze_updates();
-                } else if (m_backend->GetMidiMtc()->m_edge_sec) {
-                    m_backend->GetMidiMtc()->m_edge_sec = false;
-                    if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
-                        this->get_window()->thaw_updates();
-                    m_shot_refresh = 3;
-                }
+//                if (m_shot_refresh) {
+//                    if (!--m_shot_refresh)
+//                        if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
+//                            this->get_window()->freeze_updates();
+//                } else if (m_backend->GetMidiMtc()->m_edge_sec) {
+//                    m_backend->GetMidiMtc()->m_edge_sec = false;
+//                    if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
+//                        this->get_window()->thaw_updates();
+//                    m_shot_refresh = 3;
+//                }
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 if (event != MTC_COMPLETE) {
                     UpdatePos(m_backend->GetMillis(), false);
@@ -45,7 +45,10 @@ void OMainWnd::OnJackEvent() {
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                UpdatePlayhead();
+                if (m_backend->GetMidiMtc()->m_edge_sec || !m_project.GetPlaying()) {
+                    m_backend->GetMidiMtc()->m_edge_sec = false;
+                    UpdatePlayhead();
+                }
                 break;
             case MMC_PLAY:
                 m_lock_play = true;

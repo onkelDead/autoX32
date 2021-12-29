@@ -32,10 +32,14 @@ int OMidiMtc::QuarterFrame(uint8_t data) {
         diggit[0]++;
         ret = 2;
     }
+    
+    if (diggit[0] % 10 == 0) {
+        m_edge_sec = true;
+    }
+    
     if (diggit[0] == 30) {
         diggit[0] = 0;
         diggit[1]++;
-        m_edge_sec = true;
         ret = 4;
     }
     if (diggit[1] == 60) {
