@@ -66,7 +66,17 @@ enum UI_EVENTS {
     nothing,
     load,
     new_track,
-    draw_trackview
+    draw_trackview,
+    new_pos,
+    play,
+    stop,
+    touch_on,
+    touch_off,
+    home,
+    next_track,
+    prev_track,
+    jump_forward,
+    jump_backward,
 };
 
 typedef struct ui_event_type {

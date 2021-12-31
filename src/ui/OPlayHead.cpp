@@ -110,6 +110,7 @@ void OPlayHead::set_x_pos(int pos) {
     } else if (pos < 0x7fff) {
         
         set_active(true);
+        
         set_margin_start(160 + pos);
     }
     m_last_pos = pos;

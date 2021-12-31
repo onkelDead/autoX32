@@ -37,11 +37,15 @@ void OTimer::start() {
 
     m_thread = std::thread([&]() {
         while (m_running) {
-            auto delta = std::chrono::steady_clock::now() + std::chrono::milliseconds(m_interval);
+            auto now = std::chrono::steady_clock::now();
+            auto delta = now + std::chrono::milliseconds(m_interval);
 
             // task execution
             m_task_function(m_userData);
 
+            if (delta < std::chrono::steady_clock::now())
+                printf("X");
+            
             std::this_thread::sleep_until(delta);
         }
     });

@@ -24,6 +24,13 @@
 
 #include "res/autoX32.h"
 
+
+void on_jack_event(void *obj) {
+    OMainWnd* wnd = (OMainWnd*)obj;
+    wnd->OnJackEvent();
+    wnd->OnMixerEvent();
+}
+
 static void mixer_callback(OscCmd* cmd, void* user_data) {
     ((OMainWnd*)user_data)->notify_mixer(cmd);
 }
@@ -80,11 +87,16 @@ OMainWnd::OMainWnd() : Gtk::Window()
 
     create_about_dlg();
 
-    m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
+    m_jackTimer.setInterval(10);
+    m_jackTimer.SetUserData(this);
+    m_jackTimer.setFunc(on_jack_event);
+    m_jackTimer.start();
+    
+    //m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
 
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
-    m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
+    //m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 

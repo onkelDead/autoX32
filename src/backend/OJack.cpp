@@ -330,8 +330,6 @@ void OJack::Locate(gint millis) {
 }
 
 void OJack::Shuffle(bool s) {
-    if (m_shuffle_speed==0)
-        Play();
     m_shuffle_speed = s 
             ? MAX(-7 , m_shuffle_speed - 1)
             : MIN(7 , m_shuffle_speed + 1);
@@ -344,6 +342,7 @@ void OJack::Shuffle(bool s) {
 
         shuffle[6] |= (abs(m_shuffle_speed));
         doShuffle = true;
+        Play();
     }
     else {
         Stop();

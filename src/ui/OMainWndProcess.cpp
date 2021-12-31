@@ -21,98 +21,47 @@
 #include "OscCmd.h"
 
 void OMainWnd::OnJackEvent() {
-    if (m_jackqueue.size() > 0) {
+    while (m_jackqueue.size() > 0) {
         JACK_EVENT event = m_jackqueue.front();
         switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-//                if (m_shot_refresh) {
-//                    if (!--m_shot_refresh)
-//                        if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
-//                            this->get_window()->freeze_updates();
-//                } else if (m_backend->GetMidiMtc()->m_edge_sec) {
-//                    m_backend->GetMidiMtc()->m_edge_sec = false;
-//                    if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
-//                        this->get_window()->thaw_updates();
-//                    m_shot_refresh = 3;
-//                }
-                m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 if (event != MTC_COMPLETE) {
                     UpdatePos(m_backend->GetMillis(), false);
-                    //m_backend->ControlerShowMtcQuarter((uint8_t)m_backend->GetMidiMtc()->GetMillis());
-                }
-                else {
+                } else {
+                    m_timeview->SetTimeCode(m_backend->GetTimeCode());
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
                 if (m_backend->GetMidiMtc()->m_edge_sec || !m_project.GetPlaying()) {
                     m_backend->GetMidiMtc()->m_edge_sec = false;
-                    UpdatePlayhead();
+                    PublishUiEvent(UI_EVENTS::new_pos, NULL);
                 }
                 break;
+            case CTL_PLAY:
             case MMC_PLAY:
-                m_lock_play = true;
-                m_button_play->set_active(true);
-                m_backend->ControllerShowPlay();
-                m_lock_play = false;
+                PublishUiEvent(UI_EVENTS::play, NULL);
                 break;
+            case CTL_STOP:
             case MMC_STOP:
-                m_lock_play = true;
-                m_button_play->set_active(false);
-                m_backend->ControllerShowStop();
-                this->queue_draw();
-                m_lock_play = false;
+                PublishUiEvent(UI_EVENTS::stop, NULL);
                 break;
             case MMC_RESET:
                 m_daw.ShortMessage("/refresh");
                 m_daw.ShortMessage("/strip/list");
                 break;
-            case CTL_PLAY:
-                m_lock_play = true;
-                if (!m_button_play->get_active()) {
-                    m_button_play->set_active(true);
-                    m_backend->Play();
-                    //                } else {
-                    //                    m_button_play->set_active(false);
-                    //                    m_backend->Stop();
-                }
-                m_lock_play = false;
-                break;
-            case CTL_STOP:
-                m_lock_play = true;
-                if (m_button_play->get_active()) {
-                    m_button_play->set_active(false);
-                    m_backend->Stop();
-                    //                } else {
-                    //                    m_button_play->set_active(false);
-                    //                    m_backend->Stop();
-                }
-                m_lock_play = false;
-                break;
             case CTL_TEACH_ON:
-                if (m_teach_mode) {
-                    if (m_btn_teach->get_active())
-                        m_btn_teach->set_active(false);
-                    else
-                        m_btn_teach->set_active(true);
-                } else {
-                    m_btn_teach->set_active(true);
-                }
-                //on_btn_teach_clicked();
+                PublishUiEvent(UI_EVENTS::touch_on, NULL);
                 break;
             case CTL_TEACH_OFF:
-                if (!m_teach_mode) {
-                    m_btn_teach->set_active(false);
-                }
-                //on_btn_teach_clicked();
+                PublishUiEvent(UI_EVENTS::touch_off, NULL);
                 break;
             case CTL_FADER:
                 if (m_trackslayout.GetSelectedTrackView()) {
                     IOTrackStore* store = m_trackslayout.GetSelectedTrackView()->GetTrackStore();
-                    printf("update: %s, %f\n", store->GetOscCommand()->GetPath().c_str(), (float) m_backend->m_fader_val / 127.);
                     OscCmd* cmd = new OscCmd(*store->GetOscCommand());
                     cmd->SetLastFloat((float) m_backend->m_fader_val / 127.);
-                    notify_mixer(cmd);
+                    my_mixerqueue.push(cmd);
                 }
 
                 break;
@@ -125,58 +74,46 @@ void OMainWnd::OnJackEvent() {
                 m_teach_mode = !m_teach_mode;
                 m_backend->ControllerShowTeachMode(m_teach_mode);
                 break;
-            case CTL_LOOP_SET:
-                if (!m_backend->GetLoopState()) {
-                    on_btn_loop_start_clicked();
-                    m_backend->LoopStart();
-                } else {
-                    on_btn_loop_end_clicked();
-                    m_backend->LoopEnd();
-                }
-                break;
-            case CTL_LOOP_CLEAR:
-                m_backend->SetLoopState(false);
-                m_daw.ClearRange();
-                break;
-            case CTL_TOGGLE_LOOP:
-                m_daw.ShortMessage("/loop_toggle");
-                break;
+                //            case CTL_LOOP_SET:
+                //                if (!m_backend->GetLoopState()) {
+                //                    on_btn_loop_start_clicked();
+                //                    m_backend->LoopStart();
+                //                } else {
+                //                    on_btn_loop_end_clicked();
+                //                    m_backend->LoopEnd();
+                //                }
+                //                break;
+                //            case CTL_LOOP_CLEAR:
+                //                m_backend->SetLoopState(false);
+                //                m_daw.ClearRange();
+                //                break;
+                //            case CTL_TOGGLE_LOOP:
+                //                m_daw.ShortMessage("/loop_toggle");
+                //                break;
             case CTL_HOME:
-                on_button_back_clicked();
+                PublishUiEvent(UI_EVENTS::home, NULL);
                 break;
             case CTL_NEXT_TRACK:
-            {
-                std::string n = m_trackslayout.GetNextTrack();
-                if (n != "")
-                    SelectTrack(n, true);
+                PublishUiEvent(next_track, NULL);
                 break;
-            }
             case CTL_PREV_TRACK:
-                SelectTrack(m_trackslayout.GetPrevTrack(), true);
+                PublishUiEvent(prev_track, NULL);
                 break;
             case CTL_SCRUB_ON:
                 m_backend->m_scrub = !m_backend->m_scrub;
                 m_backend->ControllerShowScrub();
                 break;
             case CTL_SCRUB_OFF:
-//                m_backend->m_scrub = false;
-//                m_backend->ControllerShowScrub();
                 break;
             case CTL_JUMP_FORWARD:
-                if (m_backend->m_scrub) 
-                    m_backend->Shuffle(false);
-                else
-                    m_backend->Locate(m_backend->GetMillis() + 360);                
+                PublishUiEvent(UI_EVENTS::jump_forward, NULL);
                 break;
             case CTL_JUMP_BACKWARD:
-                if (m_backend->m_scrub)
-                    m_backend->Shuffle(true);
-                else
-                    m_backend->Locate(m_backend->GetMillis() - 360);                
+                PublishUiEvent(UI_EVENTS::jump_backward, NULL);
                 break;
         }
+        m_jackqueue.pop();
     }
-    m_jackqueue.pop();
 }
 
 void OMainWnd::OnDawEvent() {
@@ -210,7 +147,7 @@ void OMainWnd::notify_daw(DAW_PATH path) {
 
 void OMainWnd::notify_jack(JACK_EVENT jack_event) {
     m_jackqueue.push(jack_event);
-    m_JackDispatcher.emit();
+    //m_JackDispatcher.emit();
 }
 
 void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {
@@ -234,8 +171,8 @@ void OMainWnd::OnMixerEvent() {
         bool cmd_used = false;
         OscCmd *cmd = my_mixerqueue.front();
         std::string path = cmd->GetPath();
-        cmd->Parse();
-        if (cmd->IsConfig()) {
+        //cmd->Parse();
+        /* if (cmd->IsConfig()) {
             OscCmd *c = m_project.ProcessConfig(cmd);
             if (c) {
                 OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
@@ -243,7 +180,8 @@ void OMainWnd::OnMixerEvent() {
                     tv->UpdateConfig();
                 }
             }
-        } else if (path.at(1) != '-') { // skip status messages
+        } else */
+        if (path.at(1) != '-') { // skip status messages
 
             // is this track already known ?
             IOTrackStore *trackstore = m_project.GetTrack(path);
@@ -260,14 +198,7 @@ void OMainWnd::OnMixerEvent() {
             } else { // the track is not known
                 if (m_btn_teach->get_active()) { // I'm configured for teach-in, so create track and trackview
                     OscCmd *c = new OscCmd(*cmd);
-                    c->Parse(); // TODO: check if obsolete, view above cmd->parse()
-                    m_project.AddCommand(c);
-                    cmd->SetName(cmd->GetPath());
-                    trackstore = m_project.NewTrack(c);
-                    trackstore->SetPlaying(m_project.m_playing);
-                    m_x32->Send(c->GetConfigRequestName());
-                    m_x32->Send(c->GetConfigRequestColor());
-                    PublishUiEvent(UI_EVENTS::new_track, trackstore);
+                    PublishUiEvent(UI_EVENTS::new_track, c);
                 }
             }
             if (m_project.ProcessPos(trackstore, cmd, GetPosMillis())) {
@@ -286,11 +217,7 @@ void OMainWnd::OnMixerEvent() {
 
 void OMainWnd::notify_mixer(OscCmd *cmd) {
     my_mixerqueue.push(cmd);
-    m_MixerDispatcher.emit();
-}
-
-void OMainWnd::TimerEvent(void *data) {
-
+    //m_MixerDispatcher.emit();
 }
 
 void OMainWnd::OnViewEvent() {
@@ -301,7 +228,16 @@ void OMainWnd::OnViewEvent() {
         switch (e->what) {
             case UI_EVENTS::new_track:
             {
-                IOTrackStore *trackstore = (IOTrackStore*) e->with;
+                OscCmd* cmd = (OscCmd*) e->with;
+
+                //c->Parse(); // TODO: check if obsolete, view above cmd->parse()
+                m_project.AddCommand(cmd);
+                cmd->SetName(cmd->GetPath());
+                IOTrackStore *trackstore = m_project.NewTrack(cmd);
+                trackstore->SetPlaying(m_project.m_playing);
+                //                    m_x32->Send(c->GetConfigRequestName());
+                //                    m_x32->Send(c->GetConfigRequestColor());
+
                 if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                     trackview->SetTrackStore(trackstore);
@@ -319,6 +255,54 @@ void OMainWnd::OnViewEvent() {
                 delete e;
             }
                 break;
+            case UI_EVENTS::new_pos:
+                UpdatePlayhead();
+                break;
+            case UI_EVENTS::play:
+                m_button_play->set_active(true);
+                m_backend->ControllerShowPlay();
+                break;
+            case UI_EVENTS::stop:
+                m_button_play->set_active(false);
+                m_backend->ControllerShowStop();
+                break;
+            case UI_EVENTS::touch_on:
+                if (m_teach_mode) {
+                    if (m_btn_teach->get_active())
+                        m_btn_teach->set_active(false);
+                    else
+                        m_btn_teach->set_active(true);
+                } else {
+                    m_btn_teach->set_active(true);
+                }
+                break;
+            case UI_EVENTS::touch_off:
+                if (!m_teach_mode) {
+                    m_btn_teach->set_active(false);
+                }
+                break;
+            case UI_EVENTS::home:
+                on_button_back_clicked();
+                break;
+            case UI_EVENTS::next_track:
+                SelectTrack(m_trackslayout.GetNextTrack(), true);
+                break;
+            case UI_EVENTS::prev_track:
+                SelectTrack(m_trackslayout.GetPrevTrack(), true);
+                break;                
+            case UI_EVENTS::jump_forward:
+                if (m_backend->m_scrub)
+                    m_backend->Shuffle(false);
+                else
+                    m_backend->Locate(m_backend->GetMillis() + 120);
+                break;
+            case UI_EVENTS::jump_backward:
+                if (m_backend->m_scrub)
+                    m_backend->Shuffle(true);
+                else
+                    m_backend->Locate(m_backend->GetMillis() - 120);
+                break;
+                
         }
     }
 }

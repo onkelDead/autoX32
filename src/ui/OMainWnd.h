@@ -222,6 +222,8 @@ private:
     std::queue<DAW_PATH> my_dawqueue;
     Glib::Dispatcher m_JackDispatcher;
     std::queue<JACK_EVENT> m_jackqueue;
+    
+    OTimer m_jackTimer;
 
     Glib::Dispatcher m_MixerDispatcher;
     std::queue<OscCmd*> my_mixerqueue;
@@ -235,7 +237,6 @@ private:
     ODAW m_daw;
     IOBackend* m_backend = nullptr;
 
-    void TimerEvent(void*);
     int m_last_playhead_update = 0;
     int m_last_pos_update = 0;
 
