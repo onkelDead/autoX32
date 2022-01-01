@@ -72,11 +72,13 @@ enum UI_EVENTS {
     stop,
     touch_on,
     touch_off,
+    touch_release,
     home,
     next_track,
     prev_track,
     jump_forward,
     jump_backward,
+    conf_track,
 };
 
 typedef struct ui_event_type {

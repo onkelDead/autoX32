@@ -66,9 +66,7 @@ void OMainWnd::OnJackEvent() {
 
                 break;
             case CTL_TOUCH_RELEASE:
-                if (m_btn_teach->get_active()) {
-                    m_btn_teach->set_active(false);
-                }
+                PublishUiEvent(UI_EVENTS::touch_release, NULL);
                 break;
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;
@@ -172,16 +170,12 @@ void OMainWnd::OnMixerEvent() {
         OscCmd *cmd = my_mixerqueue.front();
         std::string path = cmd->GetPath();
         //cmd->Parse();
-        /* if (cmd->IsConfig()) {
-            OscCmd *c = m_project.ProcessConfig(cmd);
-            if (c) {
-                OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
-                if (tv) {
-                    tv->UpdateConfig();
-                }
-            }
-        } else */
-        if (path.at(1) != '-') { // skip status messages
+        int d = path.find("/config/");
+        if (d > 0) {
+            OscCmd *c = new OscCmd(*cmd);
+            PublishUiEvent(UI_EVENTS::conf_track, c);
+        } else
+            if (path.at(1) != '-') { // skip status messages
 
             // is this track already known ?
             IOTrackStore *trackstore = m_project.GetTrack(path);
@@ -230,20 +224,20 @@ void OMainWnd::OnViewEvent() {
             {
                 OscCmd* cmd = (OscCmd*) e->with;
 
-                //c->Parse(); // TODO: check if obsolete, view above cmd->parse()
                 m_project.AddCommand(cmd);
                 cmd->SetName(cmd->GetPath());
                 IOTrackStore *trackstore = m_project.NewTrack(cmd);
                 trackstore->SetPlaying(m_project.m_playing);
-                //                    m_x32->Send(c->GetConfigRequestName());
-                //                    m_x32->Send(c->GetConfigRequestColor());
-
+                cmd->Parse();
+                m_x32->Send(cmd->GetConfigRequestName());
+                m_x32->Send(cmd->GetConfigRequestColor());
                 if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
                     trackview->UpdateConfig();
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
+
                 }
                 delete e;
             }
@@ -289,7 +283,7 @@ void OMainWnd::OnViewEvent() {
                 break;
             case UI_EVENTS::prev_track:
                 SelectTrack(m_trackslayout.GetPrevTrack(), true);
-                break;                
+                break;
             case UI_EVENTS::jump_forward:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
@@ -302,7 +296,21 @@ void OMainWnd::OnViewEvent() {
                 else
                     m_backend->Locate(m_backend->GetMillis() - 120);
                 break;
-                
+            case UI_EVENTS::touch_release:
+                if (m_btn_teach->get_active()) {
+                    m_btn_teach->set_active(false);
+                }
+                break;
+            case UI_EVENTS::conf_track:
+            {
+                OscCmd* cmd = (OscCmd*) e->with;
+                OscCmd* c = m_project.ProcessConfig(cmd);
+                OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
+                if (tv) {
+                    tv->UpdateConfig();
+                }
+            }
+                break;
         }
     }
 }

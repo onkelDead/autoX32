@@ -29,6 +29,7 @@ OscCmd::OscCmd(OscCmd &src) {
     m_types = src.m_types;
     m_last_float = src.GetLastFloat();
     m_last_int = src.GetLastInt();
+    m_last_str = src.GetLastStr();
     m_colorindex = src.m_colorindex;
 }
 

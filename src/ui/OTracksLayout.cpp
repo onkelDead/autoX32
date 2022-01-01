@@ -405,15 +405,6 @@ void OTracksLayout::SelectPrevTrack(){
 
 std::string OTracksLayout::GetNextTrack() {
     trackview_entry* head = GetTrackHead();
-//    if (!head) 
-//        head = GetTrackHead();
-//    trackview_entry* tv = head;
-//    while (tv->next) {
-//        if (tv->next->item->GetTrackStore()->GetLayout()->m_visible)
-//            return tv->next->item->GetCmd()->GetPath();
-//        tv = tv->next;
-//    }
-//    return "";
     
     if (!m_selectedView) {
         return head->item->GetCmd()->GetPath();    
