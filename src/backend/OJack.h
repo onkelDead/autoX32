@@ -38,8 +38,8 @@ public:
     void Stop();
     void ControllerShowPlay();
     void ControllerShowStop();
-    void ControllerShowTeachOn();
-    void ControllerShowTeachOff();
+    void ControllerShowRecOn();
+    void ControllerShowRecOff();
     void ControllerShowTeachMode(bool);
         
     void ControllerShowLCDName(std::string);
@@ -48,6 +48,8 @@ public:
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);
     void ControllerShowScrub();
+    
+    void ControllerShowWheelMode();
     
     void Locate(gint);
     void Shuffle(bool);

@@ -43,14 +43,15 @@ public:
 
     void ControllerShowPlay();
     void ControllerShowStop();
-    void ControllerShowTeachOn();
-    void ControllerShowTeachOff();
+    void ControllerShowRecOn();
+    void ControllerShowRecOff();
     void ControllerShowTeachMode(bool);
     void ControllerShowLCDName(std::string);
     void ControllerShowLevel(float);
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);
     void ControllerShowScrub();
+    void ControllerShowWheelMode() {}
     void LoopStart();
     void LoopEnd();
     bool GetLoopState();

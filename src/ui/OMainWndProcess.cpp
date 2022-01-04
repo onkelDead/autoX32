@@ -109,6 +109,9 @@ void OMainWnd::OnJackEvent() {
             case CTL_JUMP_BACKWARD:
                 PublishUiEvent(UI_EVENTS::jump_backward, NULL);
                 break;
+            case CTL_WHEEL_MODE:
+                m_backend->ControllerShowWheelMode();
+                break;
         }
         m_jackqueue.pop();
     }

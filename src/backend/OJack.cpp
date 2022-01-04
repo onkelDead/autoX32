@@ -43,6 +43,8 @@ static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0,
 static bool doShuffle = false;
 static jack_midi_data_t shuffle[] = {0xF0, 0x7F, 0x7e, 0x06, 0x47, 0x03, 0b00000000, 0x00, 0x00, 0xF7};
 
+
+
 static int process(jack_nframes_t nframes, void *arg) {
 
     OJack* jack = (OJack*) arg;
@@ -105,15 +107,16 @@ static int process(jack_nframes_t nframes, void *arg) {
         unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (shuffle));
         memcpy(buffer, shuffle, sizeof (shuffle));
         doShuffle = false;
-    }    
-    
+    }
+
     while (!jack->ctl_out.empty()) {
         ctl_command* c = jack->ctl_out.front();
         unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, c->len);
         for (int i = 0; i < c->len; i++) {
             buffer[i] = c->buf[i];
         }
-        delete c;
+        if (c->mbf)
+            delete c;
         jack->ctl_out.pop();
     }
 
@@ -153,11 +156,25 @@ void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg)
 
     OJack* jack = (OJack*) arg;
 
+    const char* port_name_a = jack_port_name(jack_port_by_id(jack->m_jack_client, a));
+    const char* port_name_b = jack_port_name(jack_port_by_id(jack->m_jack_client, b));
+
+    if (connect) {
+        if (strcmp(port_name_b, ONKEL_C_IN_PORT_NAME) == 0) {
+            jack->m_parent->GetConfig()->set_string("controller_in_port", port_name_a);
+        }
+        if (strcmp(port_name_a, ONKEL_C_OUT_PORT_NAME) == 0) {
+            jack->m_parent->GetConfig()->set_string("controller_out_port", port_name_b);
+        }
+
+    }
+
+
     if (connect)
         printf("Connect ");
     else
         printf("Disconnect ");
-    printf("Connect '%s' to '%s'\n", jack_port_name(jack_port_by_id(jack->m_jack_client, a)), jack_port_name(jack_port_by_id(jack->m_jack_client, b)));
+    printf("Connect '%s' to '%s'\n", port_name_a, port_name_b);
 }
 
 void on_register_client(const char* name, int reg, void *arg) {
@@ -212,8 +229,8 @@ void OJack::Connect(IOMainWnd* wnd) {
     mmc_in_port = jack_port_register(m_jack_client, "Ardour MMC in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     mmc_out_port = jack_port_register(m_jack_client, "Ardour MMC out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
     mtc_port = jack_port_register(m_jack_client, "Ardour MTC in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-    ctl_in_port = jack_port_register(m_jack_client, "Onkel Controller in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-    ctl_out_port = jack_port_register(m_jack_client, "Onkel Controller out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
+    ctl_in_port = jack_port_register(m_jack_client, ONKEL_C_IN_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    ctl_out_port = jack_port_register(m_jack_client, ONKEL_C_OUT_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
 
     jack_set_client_registration_callback(m_jack_client, on_register_client, this);
@@ -225,59 +242,30 @@ void OJack::Connect(IOMainWnd* wnd) {
         return;
     }
 
-    //    jack_connect(m_jack_client, "ardour:MTC out", "autoX32:Ardour MTC in");
-    jack_connect(m_jack_client, "ardour:MMC out", "autoX32:Ardour MMC in");
-    jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
-    jack_connect(m_jack_client, "a2j:X-Touch One [28] (capture): X-Touch One MIDI 1", "autoX32:Onkel Controller in");
-    jack_connect(m_jack_client, "autoX32:Onkel Controller out", "a2j:X-Touch One [28] (playback): X-Touch One MIDI 1");
+    jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME);
+    jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"));
 
     ControllerShowStop();
-    ControllerShowTeachOff();
+    ControllerShowRecOff();
     ControllerShowTeachMode(false);
 
     ControllerShowScrub();
-    
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x71;
-    c->buf[2] = 0x7f;
-    ctl_out.push(c);
+
+    //    ctl_command* c = new ctl_command;
+    //    c->len = 3;
+    //    c->buf[0] = 0x90;
+    //    c->buf[1] = 0x71;
+    //    c->buf[2] = 0x7f;
+    //    ctl_out.push(c);
 
 
-    ctl_command* c1 = new ctl_command;
-    c1->len = 3;
-    c1->buf[0] = 0x90;
-    c1->buf[1] = 0x72;
-    c1->buf[2] = 0x00;
-    ctl_out.push(c1);
-    //    ctl_out.push(CTL_COMMAND(0xb8, 0, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xb9, 1, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xba, 2, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbb, 0, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbc, 1, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbd, 2, 64));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xb8, 0, 0));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xb9, 1, 0));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xba, 2, 0));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbb, 0, 0));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbc, 1, 0));
-    //    usleep(100000);
-    //    ctl_out.push(CTL_COMMAND(0xbd, 2, 0));
+    //    ctl_command* c1 = new ctl_command;
+    //    c1->len = 3;
+    //    c1->buf[0] = 0x90;
+    //    c1->buf[1] = 0x72;
+    //    c1->buf[2] = 0x00;
+    //    ctl_out.push(c1);
 
-    //    Play();
-    //    usleep(100000);
-    //    Stop();
 }
 
 void OJack::Play() {
@@ -330,25 +318,24 @@ void OJack::Locate(gint millis) {
 }
 
 void OJack::Shuffle(bool s) {
-    m_shuffle_speed = s 
-            ? MAX(-7 , m_shuffle_speed - 1)
-            : MIN(7 , m_shuffle_speed + 1);
+    m_shuffle_speed = s
+            ? MAX(-7, m_shuffle_speed - 1)
+            : MIN(7, m_shuffle_speed + 1);
 
     shuffle[6] = 0x00;
     if (m_shuffle_speed != 0) {
-        
-        if (m_shuffle_speed<0)
+
+        if (m_shuffle_speed < 0)
             shuffle[6] |= 0x40;
 
         shuffle[6] |= (abs(m_shuffle_speed));
         doShuffle = true;
         Play();
-    }
-    else {
+    } else {
         Stop();
     }
     printf("Shuffle speed %d %d %02x\n", s, m_shuffle_speed, shuffle[6]);
-    
+
 }
 
 int OJack::GetMillis() {
@@ -377,61 +364,28 @@ uint8_t* OJack::GetTimeDiggits() {
 }
 
 void OJack::ControllerShowPlay() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x5d;
-    c->buf[2] = 0x00;
-    ctl_out.push(c);
-    ctl_command* d = new ctl_command;
-    d->len = 3;
-    d->buf[0] = 0x90;
-    d->buf[1] = 0x5e;
-    d->buf[2] = 0x7f;
-    ctl_out.push(d);
+    ctl_out.push(&s_stop_off);
+    ctl_out.push(&s_play_on);
 }
 
 void OJack::ControllerShowStop() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x5d;
-    c->buf[2] = 0x41;
-    ctl_out.push(c);
-    ctl_command* d = new ctl_command;
-    d->len = 3;
-    d->buf[0] = 0x90;
-    d->buf[1] = 0x5e;
-    d->buf[2] = 0x00;
-    ctl_out.push(d);
-
+    ctl_out.push(&s_stop_on);
+    ctl_out.push(&s_play_off);
 }
 
-void OJack::ControllerShowTeachOn() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x5f;
-    c->buf[2] = 0x41;
-    ctl_out.push(c);
+void OJack::ControllerShowRecOn() {
+    ctl_out.push(&s_rec_on);
 }
 
-void OJack::ControllerShowTeachOff() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x5f;
-    c->buf[2] = 0x00;
-    ctl_out.push(c);
+void OJack::ControllerShowRecOff() {
+    ctl_out.push(&s_rec_off);
 }
 
 void OJack::ControllerShowTeachMode(bool val) {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x90;
-    c->buf[1] = 0x36;
-    c->buf[2] = val ? 0x41 : 0x00;
-    ctl_out.push(c);
+    if (val)
+        ctl_out.push(&s_f1_on);
+    else
+        ctl_out.push(&s_f1_off);
 }
 
 void OJack::ControllerShowLCDName(std::string name) {
@@ -445,13 +399,14 @@ void OJack::ControllerShowLCDName(std::string name) {
     memcpy(syext + 7, s, MIN(7, strlen(s)));
     c->len = sizeof (syext);
     memcpy(c->buf, syext, sizeof (syext));
+    c->mbf = true;
 
     ctl_command* c1 = new ctl_command;
     if (strlen(s) > 7)
         memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
     c1->len = sizeof (syext1);
     memcpy(c1->buf, syext1, sizeof (syext));
-
+    c1->mbf = true;
 
     ctl_out.push(c);
     ctl_out.push(c1);
@@ -467,6 +422,7 @@ void OJack::ControllerShowLevel(float f) {
     c->buf[0] = 0xe0;
     c->buf[1] = l;
     c->buf[2] = h;
+    c->mbf = true;
     ctl_out.push(c);
 }
 
@@ -474,14 +430,15 @@ void OJack::ControlerShowMtcComplete(uint8_t s) {
 
     uint8_t* tc = GetTimeDiggits();
     for (int i = s; i < 8; i++) {
-        
-        uint8_t d = tc[i/2];
+
+        uint8_t d = tc[i / 2];
         uint8_t e = (i & 1) ? d / 10 : d % 10;
         ctl_command* c = new ctl_command;
         c->len = 3;
         c->buf[0] = 0xb0;
         c->buf[1] = 0x41 + i;
         c->buf[2] = 0x30 + e;
+        c->mbf = true;
         ctl_out.push(c);
     }
 }
@@ -491,16 +448,23 @@ void OJack::ControlerShowMtcQuarter(uint8_t q) {
     c0->len = 2;
     c0->buf[0] = 0xd0;
     c0->buf[1] = q;
+    c0->mbf = true;
     ctl_out.push(c0);
 }
 
 void OJack::ControllerShowScrub() {
-    ctl_command* c0 = new ctl_command;
-    c0->len = 3;
-    c0->buf[0] = 0x90;
-    c0->buf[1] = 0x65;
-    c0->buf[2] = m_scrub ? 0x7f : 0x00;
-    ctl_out.push(c0);    
+    if (m_scrub) 
+        ctl_out.push(&s_scrub_on);
+    else
+        ctl_out.push(&s_scrub_off);
+}
+
+void OJack::ControllerShowWheelMode() {
+    if (m_wheel_mode)
+        ctl_out.push(&s_wheel_mode_on);
+    else
+        ctl_out.push(&s_wheel_mode_off);
+        
 }
 
 void OJack::LoopStart() {

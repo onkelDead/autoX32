@@ -19,12 +19,35 @@
 #include "IOMainWnd.h"
 #include "OMidiMtc.h"
 
+#define ONKEL_C_IN_PORT "Onkel Controller in"
+#define ONKEL_C_IN_PORT_NAME "autoX32:Onkel Controller in"
+#define ONKEL_C_OUT_PORT "Onkel Controller out"
+#define ONKEL_C_OUT_PORT_NAME "autoX32:Onkel Controller out"
+
+
 #define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
 typedef struct {
     uint8_t len;
     uint8_t buf[64];
+    uint8_t mbf;
 } ctl_command;
+
+extern ctl_command s_stop_on;
+
+extern ctl_command s_stop_off;
+
+extern ctl_command s_play_on;
+
+extern ctl_command s_play_off;
+extern ctl_command s_rec_on;
+extern ctl_command s_rec_off;
+extern ctl_command s_f1_on;
+extern ctl_command s_f1_off;
+extern ctl_command s_scrub_on;
+extern ctl_command s_scrub_off;
+extern ctl_command s_wheel_mode_on;
+extern ctl_command s_wheel_mode_off;
 
 class IOBackend {
 public:
@@ -38,8 +61,8 @@ public:
 
     virtual void ControllerShowPlay() = 0;
     virtual void ControllerShowStop() = 0;
-    virtual void ControllerShowTeachOn() = 0;
-    virtual void ControllerShowTeachOff() = 0;   
+    virtual void ControllerShowRecOn() = 0;
+    virtual void ControllerShowRecOff() = 0;   
     virtual void ControllerShowTeachMode(bool) = 0;
     
     virtual void ControllerShowLCDName(std::string name) = 0;
@@ -49,6 +72,8 @@ public:
     virtual void ControlerShowMtcQuarter(uint8_t) = 0;
     
     virtual void ControllerShowScrub() = 0;
+    
+    virtual void ControllerShowWheelMode() = 0;
     
     virtual void Play() = 0;
     virtual void Stop() = 0;
@@ -71,6 +96,7 @@ public:
     bool m_fader_touched = false;
     bool m_scrub = false;
     int m_shuffle_speed = 0;
+    bool m_wheel_mode = false;
     
 protected: 
 

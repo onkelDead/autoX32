@@ -190,39 +190,39 @@ void OAlsa::QuarterFrame(uint8_t q) {
 
 
 void OAlsa::ControllerShowPlay() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x8b;
-    c->buf[1] = 1;
-    c->buf[2] = 4;
-    ctl_out.push(c);
+//    ctl_command* c = new ctl_command;
+//    c->len = 3;
+//    c->buf[0] = 0x8b;
+//    c->buf[1] = 1;
+//    c->buf[2] = 4;
+//    ctl_out.push(c);
 }
 
 void OAlsa::ControllerShowStop() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x8b;
-    c->buf[1] = 1;
-    c->buf[2] = 0;    
-    ctl_out.push(c);
+//    ctl_command* c = new ctl_command;
+//    c->len = 3;
+//    c->buf[0] = 0x8b;
+//    c->buf[1] = 1;
+//    c->buf[2] = 0;    
+//    ctl_out.push(c);
 }
 
-void OAlsa::ControllerShowTeachOn() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0xb9;
-    c->buf[1] = 2;
-    c->buf[2] = 4;    
-    ctl_out.push(c);
+void OAlsa::ControllerShowRecOn() {
+//    ctl_command* c = new ctl_command;
+//    c->len = 3;
+//    c->buf[0] = 0xb9;
+//    c->buf[1] = 2;
+//    c->buf[2] = 4;    
+//    ctl_out.push(c);
 }
 
-void OAlsa::ControllerShowTeachOff() {
-    ctl_command* c = new ctl_command;
-    c->len = 3;
-    c->buf[0] = 0x8b;
-    c->buf[1] = 1;
-    c->buf[2] = 0;    
-    ctl_out.push(c);
+void OAlsa::ControllerShowRecOff() {
+//    ctl_command* c = new ctl_command;
+//    c->len = 3;
+//    c->buf[0] = 0x8b;
+//    c->buf[1] = 1;
+//    c->buf[2] = 0;    
+//    ctl_out.push(c);
 }
 
 void OAlsa::ControllerShowTeachMode(bool) {

@@ -9,6 +9,57 @@
 
 time_t t;
 
+ctl_command s_stop_on = {
+    3,
+    { 0x90, 0x5d, 0x41}, false
+};
+
+ctl_command s_stop_off = {
+    3,
+    { 0x90, 0x5d, 0x00}, false
+};
+
+ctl_command s_play_on = {
+    3,
+    { 0x90, 0x5e, 0x41}, false
+};
+ctl_command s_play_off = {
+    3,
+    { 0x90, 0x5e, 0x00}, false
+};
+ctl_command s_rec_on = {
+    3,
+    { 0x90, 0x5f, 0x41}, false
+};
+ctl_command s_rec_off = {
+    3,
+    { 0x90, 0x5f, 0x00}, false
+};
+ctl_command s_f1_on = {
+    3,
+    { 0x90, 0x36, 0x40}, false
+};
+ctl_command s_f1_off = {
+    3,
+    { 0x90, 0x36, 0x00}, false
+};
+ctl_command s_scrub_on = {
+    3,
+    { 0x90, 0x65, 0x7f}, false
+};
+ctl_command s_scrub_off = {
+    3,
+    { 0x90, 0x65, 0x00}, false
+};
+ctl_command s_wheel_mode_on = {
+    3,
+    { 0x90, 0x64, 0x40}, false
+};
+ctl_command s_wheel_mode_off = {
+    3,
+    { 0x90, 0x64, 0x00}, false
+};
+
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
     if (len == 3) {
 
@@ -50,6 +101,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     if (data[2])
                         backend->Notify(CTL_NEXT_TRACK);
                     break;
+                case 0x64:
+                    backend->m_wheel_mode = !backend->m_wheel_mode;
+                    backend->Notify(CTL_WHEEL_MODE);
+                    break;
                 case 3:
                     if (data[2]) // button on down
                         time(&t);
@@ -89,6 +144,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case 0x5f:
                     backend->Notify(CTL_TEACH_OFF);
                     break;
+//                case 0x64:
+//                    backend->m_wheel_mode = false;
+//                    backend->Notify(CTL_WHEEL_MODE);
+//                    break;                    
             }
         }
         if (data[0] == 0xe0) {
@@ -102,10 +161,16 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
         if (data[0] == 0xb0) {
             if (data[1] = 0x3c) {
                 if (data[2] == 0x41) {
-                    backend->Notify(CTL_JUMP_BACKWARD);
+                    if (!backend->m_wheel_mode)
+                        backend->Notify(CTL_JUMP_BACKWARD);
+                    else
+                        backend->Notify(CTL_PREV_TRACK);
                 }
                 if (data[2] == 0x01) {
-                    backend->Notify(CTL_JUMP_FORWARD);
+                    if (!backend->m_wheel_mode)
+                        backend->Notify(CTL_JUMP_FORWARD);
+                    else
+                        backend->Notify(CTL_NEXT_TRACK);
                 }
             }
         }

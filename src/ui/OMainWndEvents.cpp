@@ -255,9 +255,9 @@ void OMainWnd::on_btn_teach_clicked() {
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
     if (m_btn_teach->get_active()) {
-        m_backend->ControllerShowTeachOn();
+        m_backend->ControllerShowRecOn();
     } else {
-        m_backend->ControllerShowTeachOff();
+        m_backend->ControllerShowRecOff();
         m_trackslayout.StopTeach();
 
     }
