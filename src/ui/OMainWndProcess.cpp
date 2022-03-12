@@ -62,6 +62,8 @@ void OMainWnd::OnJackEvent() {
                     OscCmd* cmd = new OscCmd(*store->GetOscCommand());
                     cmd->SetLastFloat((float) m_backend->m_fader_val / 127.);
                     my_mixerqueue.push(cmd);
+                    m_x32->SendFloat(cmd->GetPath(), cmd->GetLastFloat());
+                    m_backend->ControllerShowLevel(cmd->GetLastFloat());
                 }
 
                 break;
@@ -201,6 +203,7 @@ void OMainWnd::OnMixerEvent() {
             if (m_project.ProcessPos(trackstore, cmd, GetPosMillis())) {
                 if (tv && !m_project.GetPlaying()) {
                     PublishUiEvent(UI_EVENTS::draw_trackview, tv);
+                    m_backend->ControllerShowLevel(cmd->GetLastFloat());
                 }
             }
             step_processed = true;

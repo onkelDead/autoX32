@@ -110,6 +110,8 @@ void OTracksLayout::RemoveTrackView(std::string path) {
 
     while(list != nullptr) {
         if (list->item->GetCmd()->GetPath() == path) {
+            if (m_selectedView == list->item)
+                m_selectedView = nullptr;
             trackview_entry* d = list;
             if (list->next)
                 list->next->prev = list->prev;
