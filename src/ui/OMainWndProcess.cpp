@@ -282,7 +282,7 @@ void OMainWnd::OnViewEvent() {
                 }
                 break;
             case UI_EVENTS::home:
-                on_button_back_clicked();
+                on_button_home_clicked();
                 break;
             case UI_EVENTS::next_track:
                 SelectTrack(m_trackslayout.GetNextTrack(), true);

@@ -769,12 +769,13 @@ Key: Space</property>
       </packing>
     </child>
     <child>
-      <object class="GtkToolButton" id="back-button">
-        <property name="name">back-button</property>
+      <object class="GtkToggleToolButton" id="teach-button">
+        <property name="name">teachbutton</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Go Back to start of range\n
-Key: Home</property>
+        <property name="tooltip_text" translatable="yes">Teach Mode active\n
+If enabled, a change on Behringer X32 will add a new track.\n
+Key: T</property>
       </object>
       <packing>
         <property name="expand">False</property>
@@ -782,13 +783,12 @@ Key: Home</property>
       </packing>
     </child>
     <child>
-      <object class="GtkToggleToolButton" id="teach-button">
-        <property name="name">teachbutton</property>
+      <object class="GtkToolButton" id="back-button">
+        <property name="name">back-button</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Teach mode active\n
-If enabled, a change on Behringer X32 will add a new track.\n
-Key: T</property>
+        <property name="tooltip_text" translatable="yes">Go Back to start of range\n
+Key: Home</property>
       </object>
       <packing>
         <property name="expand">False</property>

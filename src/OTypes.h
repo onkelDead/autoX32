@@ -75,6 +75,7 @@ enum UI_EVENTS {
     touch_off,
     touch_release,
     home,
+    end,
     next_track,
     prev_track,
     jump_forward,

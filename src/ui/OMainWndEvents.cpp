@@ -100,7 +100,7 @@ bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
     }
 
     if (key_event->keyval == GDK_KEY_Home) {
-        on_button_back_clicked();
+        on_button_home_clicked();
         return true;
     }
 
@@ -311,7 +311,7 @@ void OMainWnd::on_button_play_clicked() {
     }
 }
 
-void OMainWnd::on_button_back_clicked() {
+void OMainWnd::on_button_home_clicked() {
     m_backend->Locate(m_project.GetLoopStart());
     UpdatePlayhead();
 }

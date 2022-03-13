@@ -213,7 +213,7 @@ void OMainWnd::create_view() {
     m_btn_zoom_loop->set_icon_widget(m_img_zoom_loop);
     m_btn_zoom_loop->show_all();
 
-    m_button_back->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_back_clicked));
+    m_button_back->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_home_clicked));
     m_button_back->set_icon_widget(m_img_back);
     m_button_back->show_all();
 

@@ -76,7 +76,7 @@ public:
 
     /// button/UI events
     void on_button_play_clicked();
-    void on_button_back_clicked();
+    void on_button_home_clicked();
     void on_button_test_clicked();
     void on_btn_teach_clicked();
     void on_btn_loop_start_clicked();

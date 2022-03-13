@@ -35,11 +35,11 @@ autoX32_SOURCES = \
     src/dlg/ODlgLayout.cpp \
     src/dlg/ODlgProlog.cpp \
     src/res/autoX32_css.cpp \
-    src/res/connectDlg.cpp \
-    src/res/main.cpp \
-    src/res/timeview.cpp \
-    src/res/trackview.cpp \
-    src/res/trackdlg.cpp \
+    src/embedded/connectDlg.cpp \
+    src/embedded/main.cpp \
+    src/embedded/timeview.cpp \
+    src/embedded/trackview.cpp \
+    src/embedded/trackdlg.cpp \
     src/utils/OTimer.cpp \
     src/utils/OQueue.cpp \
     src/utils/OConfig.cpp
