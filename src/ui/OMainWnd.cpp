@@ -311,6 +311,9 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
         m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
     }
+    else {
+        m_backend->ControllerShowLCDName("");
+    }
 }
 
 bool OMainWnd::SetupBackend() {
