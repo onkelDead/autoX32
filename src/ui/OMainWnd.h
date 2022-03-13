@@ -77,6 +77,7 @@ public:
     /// button/UI events
     void on_button_play_clicked();
     void on_button_home_clicked();
+    void on_button_end_clicked();
     void on_button_test_clicked();
     void on_btn_teach_clicked();
     void on_btn_loop_start_clicked();
@@ -173,7 +174,9 @@ private:
     Gtk::Image m_img_play_on;
     Gtk::Image m_img_play_off;
     Gtk::ToolButton* m_button_back;
+    Gtk::ToolButton* m_button_end;
     Gtk::Image m_img_back;
+    Gtk::Image m_img_end;
     Gtk::ToggleToolButton *m_btn_teach;
     Gtk::Image m_img_teach_on;
     Gtk::Image m_img_teach_off;

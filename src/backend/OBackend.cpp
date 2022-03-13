@@ -128,6 +128,11 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_HOME);
                     }
                     break;
+                case 0x5c:
+                    if (data[2]) {
+                        backend->Notify(CTL_END);
+                    }
+                    break;                    
             }
             return 1;
         }

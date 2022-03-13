@@ -175,6 +175,7 @@ void OMainWnd::create_view() {
     // setup toolbar buttons
     ui->get_widget < Gtk::ToggleToolButton > ("play-button", m_button_play);
     ui->get_widget < Gtk::ToolButton > ("back-button", m_button_back);
+    ui->get_widget < Gtk::ToolButton > ("end-button", m_button_end);
     ui->get_widget < Gtk::ToggleToolButton > ("teach-button", m_btn_teach);
     ui->get_widget < Gtk::ToolButton > ("loop-start", m_btn_loop_start);
     ui->get_widget < Gtk::ToolButton > ("loop-end", m_btn_loop_end);
@@ -192,6 +193,7 @@ void OMainWnd::create_view() {
     m_img_loop_end.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)loop_end_inline, FALSE));
     m_img_zoom_loop.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)zoom_loop_inline, FALSE));
     m_img_back.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)go_start_inline, FALSE));
+    m_img_end.set(Gdk::Pixbuf::create_from_inline(-1, (const unsigned char*)go_end_inline, FALSE));
 
     m_button_play->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_play_clicked));
     m_button_play->set_icon_widget(m_img_play_off);
@@ -217,6 +219,10 @@ void OMainWnd::create_view() {
     m_button_back->set_icon_widget(m_img_back);
     m_button_back->show_all();
 
+    m_button_end->signal_clicked().connect(sigc::mem_fun(*this, &OMainWnd::on_button_end_clicked));
+    m_button_end->set_icon_widget(m_img_end);
+    m_button_end->show_all();
+    
     m_timeview->signal_pos_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_pos_changed));
     m_timeview->signal_zoom_changed.connect(sigc::mem_fun(*this, &OMainWnd::on_timeline_zoom_changed));
 

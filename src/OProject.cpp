@@ -382,6 +382,10 @@ int OProject::GetLoopStart() {
     return m_daw_range.m_loopstart;
 }
 
+int OProject::GetLoopEnd() {
+    return m_daw_range.m_loopend;
+}
+
 void OProject::SetBitRate(int rate) {
     m_daw_time.m_bitrate = rate;
 }

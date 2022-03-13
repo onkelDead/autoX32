@@ -104,6 +104,11 @@ bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
         return true;
     }
 
+    if (key_event->keyval == GDK_KEY_End) {
+        on_button_end_clicked();
+        return true;
+    }
+
     if (key_event->keyval == GDK_KEY_t) {
         m_btn_teach->set_active(!m_btn_teach->get_active());
         return true;
@@ -313,6 +318,11 @@ void OMainWnd::on_button_play_clicked() {
 
 void OMainWnd::on_button_home_clicked() {
     m_backend->Locate(m_project.GetLoopStart());
+    UpdatePlayhead();
+}
+
+void OMainWnd::on_button_end_clicked() {
+    m_backend->Locate(m_project.GetLoopEnd());
     UpdatePlayhead();
 }
 

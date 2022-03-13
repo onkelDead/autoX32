@@ -93,6 +93,9 @@ void OMainWnd::OnJackEvent() {
             case CTL_HOME:
                 PublishUiEvent(UI_EVENTS::home, NULL);
                 break;
+            case CTL_END:
+                PublishUiEvent(UI_EVENTS::end, NULL);
+                break;                
             case CTL_NEXT_TRACK:
                 PublishUiEvent(next_track, NULL);
                 break;
@@ -284,6 +287,10 @@ void OMainWnd::OnViewEvent() {
             case UI_EVENTS::home:
                 on_button_home_clicked();
                 break;
+            case UI_EVENTS::end:
+                on_button_end_clicked();
+                break;
+
             case UI_EVENTS::next_track:
                 SelectTrack(m_trackslayout.GetNextTrack(), true);
                 break;

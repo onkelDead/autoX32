@@ -23,6 +23,7 @@ extern "C" {
 
 #include "main.h"
 #include "go_start.h"
+#include "go_end.h"
 #include "lock_playhead_off.h"
 #include "lock_playhead_on.h"
 #include "loop_end.h"

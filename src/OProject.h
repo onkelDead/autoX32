@@ -53,6 +53,7 @@ public:
     bool GetPlaying();
     daw_range* GetTimeRange();
     int GetLoopStart();
+    int GetLoopEnd();
     daw_time* GetDawTime();
     void SetMaxMillis(int max_millis);
     void SetBitRate(int);
