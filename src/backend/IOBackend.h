@@ -48,6 +48,8 @@ extern ctl_command s_scrub_on;
 extern ctl_command s_scrub_off;
 extern ctl_command s_wheel_mode_on;
 extern ctl_command s_wheel_mode_off;
+extern ctl_command s_select_on;
+extern ctl_command s_select_off;
 
 class IOBackend {
 public:
@@ -64,6 +66,8 @@ public:
     virtual void ControllerShowRecOn() = 0;
     virtual void ControllerShowRecOff() = 0;   
     virtual void ControllerShowTeachMode(bool) = 0;
+    virtual void ControllerShowSelect(bool) = 0;
+     
     
     virtual void ControllerShowLCDName(std::string name) = 0;
     virtual void ControllerShowLevel(float) = 0;

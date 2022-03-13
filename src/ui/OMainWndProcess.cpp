@@ -102,6 +102,9 @@ void OMainWnd::OnJackEvent() {
             case CTL_PREV_TRACK:
                 PublishUiEvent(prev_track, NULL);
                 break;
+            case CTL_UNSELECT:
+                PublishUiEvent(UI_EVENTS::unselect, NULL);
+                break;
             case CTL_SCRUB_ON:
                 m_backend->m_scrub = !m_backend->m_scrub;
                 m_backend->ControllerShowScrub();
@@ -296,6 +299,9 @@ void OMainWnd::OnViewEvent() {
                 break;
             case UI_EVENTS::prev_track:
                 SelectTrack(m_trackslayout.GetPrevTrack(), true);
+                break;
+            case UI_EVENTS::unselect:
+                UnselectTrack();
                 break;
             case UI_EVENTS::jump_forward:
                 if (m_backend->m_scrub)

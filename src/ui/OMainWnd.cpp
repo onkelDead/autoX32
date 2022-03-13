@@ -310,9 +310,20 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
     if (selected) {
         m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
         m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
+        m_backend->ControllerShowSelect(true);
     }
     else {
         m_backend->ControllerShowLCDName("");
+        m_backend->ControllerShowSelect(false);
+    }
+}
+
+void OMainWnd::UnselectTrack() {
+    trackview_entry* tv = m_trackslayout.GetTrackSelected();
+    if (tv) {
+        SelectTrack(tv->item->GetCmd()->GetPath(), false);
+        m_backend->ControllerShowLCDName("");
+        m_backend->ControllerShowSelect(false);        
     }
 }
 

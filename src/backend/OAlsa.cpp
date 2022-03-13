@@ -229,6 +229,10 @@ void OAlsa::ControllerShowTeachMode(bool) {
     
 }
 
+void OAlsa::ControllerShowSelect(bool) {
+    
+}
+
 void OAlsa::ControllerShowLCDName(std::string) {
     
 }

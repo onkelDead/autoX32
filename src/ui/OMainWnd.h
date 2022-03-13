@@ -127,6 +127,7 @@ public:
     void UpdatePlayhead();
 
     void SelectTrack(std::string, bool);
+    void UnselectTrack();
     void TrackViewUp(std::string path);    
     void TrackViewDown(std::string path);
     void TrackViewHide(std::string path);

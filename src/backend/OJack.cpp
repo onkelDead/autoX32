@@ -388,6 +388,13 @@ void OJack::ControllerShowTeachMode(bool val) {
         ctl_out.push(&s_f1_off);
 }
 
+void OJack::ControllerShowSelect(bool val) {
+    if (val)
+        ctl_out.push(&s_select_on);
+    else
+        ctl_out.push(&s_select_off);
+}
+
 void OJack::ControllerShowLCDName(std::string name) {
     char* s = strdup(name.c_str());
     int l = strlen(s);

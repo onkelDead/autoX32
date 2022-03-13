@@ -40,8 +40,8 @@ public:
     void ControllerShowStop();
     void ControllerShowRecOn();
     void ControllerShowRecOff();
+    void ControllerShowSelect(bool val);        
     void ControllerShowTeachMode(bool);
-        
     void ControllerShowLCDName(std::string);
     void ControllerShowLevel(float);
     

@@ -60,6 +60,16 @@ ctl_command s_wheel_mode_off = {
     { 0x90, 0x64, 0x00}, false
 };
 
+ctl_command s_select_on = {
+    3,
+    { 0x90, 0x18, 0x41}, false
+};
+ctl_command s_select_off = {
+    3,
+    { 0x90, 0x18, 0x00}, false
+};
+
+
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
     if (len == 3) {
 
@@ -131,6 +141,11 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case 0x5c:
                     if (data[2]) {
                         backend->Notify(CTL_END);
+                    }
+                    break;   
+                case 0x18:
+                    if (data[2]) {
+                        backend->Notify(CTL_UNSELECT);
                     }
                     break;                    
             }
