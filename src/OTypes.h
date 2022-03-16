@@ -57,6 +57,7 @@ enum JACK_EVENT {
     CTL_JUMP_FORWARD,
     CTL_WHEEL_MODE,
     CTL_UNSELECT,
+    CTL_TOGGLE_SOLO
 };
 
 enum DAW_PATH {
@@ -81,6 +82,7 @@ enum UI_EVENTS {
     next_track,
     prev_track,
     unselect,
+    toggle_solo,
     jump_forward,
     jump_backward,
     conf_track,

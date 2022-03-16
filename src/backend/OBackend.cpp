@@ -147,7 +147,12 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     if (data[2]) {
                         backend->Notify(CTL_UNSELECT);
                     }
-                    break;                    
+                    break; 
+                case 0x08:
+                    if (data[2] == 0x7f) {
+                        backend->Notify(CTL_TOGGLE_SOLO);
+                    }
+                    break;                     
             }
             return 1;
         }

@@ -36,7 +36,13 @@ public:
     
     std::string GetTypes();
     void SetTypes(std::string);
+    
+    bool GetSolo();
+    void SetSolo(bool);
 
+    int GetChIndex();
+    void SetChIndex(int);
+    
     float GetLastFloat();
     void SetLastFloat(float);
 
@@ -53,19 +59,25 @@ public:
     
     std::string GetConfigRequestName();
     std::string GetConfigRequestColor();
+    std::string GetStatsRequestSolo();
     
     void SetColorIndex(int);
     
     bool IsConfig();
     
 private:
+    
     void SplitPath(std::string s);
-    std::vector<std::string> m_elements;
-    std::string m_config_request_name;
-    std::string m_config_request_color;
-
+    
+    std::vector<std::string> m_path_elements;
+   
+    std::string m_name_request = "";
+    std::string m_color_request = "";
+    std::string m_solo_request = "";
+    
     std::string m_path = "";
     std::string m_name = "";
+    int m_ch_index = 0;
     std::string m_types = "";
     int m_colorindex = 0;
     Gdk::RGBA m_color;
@@ -73,6 +85,7 @@ private:
     float m_last_float = 0.;
     int m_last_int = 0;
     std::string m_last_str = "";
+    bool m_solo = false;
 
 };
 

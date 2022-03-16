@@ -20,17 +20,22 @@ OscCmd::OscCmd(const char* path, const char* types) : m_path(path), m_types(type
     m_color.set_rgba_u(32768, 32768, 32768);
     m_last_float = 0.0;
     m_last_int = 0;
-
+    m_ch_index = -1;
+    m_solo_request = "";
 }
 
 OscCmd::OscCmd(OscCmd &src) {
     m_color.set_rgba_u(32768, 32768, 32768);
     m_path = src.m_path;
+    m_ch_index = -1;
     m_types = src.m_types;
     m_last_float = src.GetLastFloat();
     m_last_int = src.GetLastInt();
     m_last_str = src.GetLastStr();
     m_colorindex = src.m_colorindex;
+    m_path_elements = src.m_path_elements;
+    m_solo_request = "";
+    Parse();
 }
 
 OscCmd::~OscCmd() {
@@ -53,12 +58,28 @@ void OscCmd::SetName(std::string name) {
     m_name = name;
 }
 
+int OscCmd::GetChIndex() {
+    return m_ch_index;
+}
+
+void OscCmd::SetChIndex(int val) {
+    m_ch_index = val;
+}
+
 std::string OscCmd::GetTypes() {
     return m_types;
 }
 
 void OscCmd::SetTypes(std::string types) {
     m_types = types;
+}
+
+bool OscCmd::GetSolo() {
+    return m_solo;
+}
+
+void OscCmd::SetSolo(bool val) {
+    m_solo = val;
 }
 
 float OscCmd::GetLastFloat() {
@@ -94,45 +115,70 @@ void OscCmd::SetColor(Gdk::RGBA color) {
 }
 
 void OscCmd::Parse() {
-    if (m_path != "")
+    if (m_path != "") {
         SplitPath(m_path);
+        if (m_path_elements.at(1) == "ch" || m_path_elements.at(1) == "bus" || m_path_elements.at(1) == "dca") {
+            m_ch_index = atoi(m_path_elements.at(2).data());
+        }
+        else if (m_path_elements.at(1) == "-stat") {
+            m_ch_index = atoi(m_path_elements.at(3).data());
+        }
+    }
 }
 
 bool OscCmd::IsConfig() {
-    if (m_elements.size() > 3 && m_elements.at(3) == "config")
+    if (m_path_elements.size() > 3 && (m_path_elements.at(3) == "config" || m_path_elements.at(1) == "-stat"))
         return true;
     return false;
 }
 
 std::string OscCmd::GetConfigRequestName() {
-    return m_config_request_name;
+    if (m_name_request == "") {
+        char qn[64];
+        if (m_path_elements.size() > 2) {
+            sprintf(qn, "/%s/%s/config/name", m_path_elements.at(1).data(), m_path_elements.at(2).data());
+            m_name_request = qn;
+        }
+    }
+    return m_name_request;
 }
 
 std::string OscCmd::GetConfigRequestColor() {
-    return m_config_request_color;
+    if (m_color_request == "") {
+        char qn[64];
+
+        if (m_path_elements.size() > 2) {
+            sprintf(qn, "/%s/%s/config/color", m_path_elements.at(1).data(), m_path_elements.at(2).data());
+            m_color_request = qn;
+        }
+    }    
+    return m_color_request;
+}
+
+std::string OscCmd::GetStatsRequestSolo() {
+    if (m_solo_request == "") {
+        char qn[64];
+        if (m_path_elements.size() > 2) {
+            sprintf(qn, "/-stat/solosw/%s", m_path_elements.at(2).data());
+        }
+        m_solo_request =  qn;
+    }
+    return m_solo_request;
 }
 
 void OscCmd::SplitPath(std::string s) {
-    m_elements.clear();
+    m_path_elements.clear();
     std::string::size_type prev_pos = 0, pos = 0;
 
     while ((pos = s.find('/', pos)) != std::string::npos) {
         std::string substring(s.substr(prev_pos, pos - prev_pos));
 
-        m_elements.push_back(substring);
+        m_path_elements.push_back(substring);
 
         prev_pos = ++pos;
     }
 
-    m_elements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
-
-    if (m_elements.at(1) == "ch" || m_elements.at(1) == "bus" || m_elements.at(1) == "dca") {
-        char qn[64];
-        sprintf(qn, "/%s/%s/config/name", m_elements.at(1).data(), m_elements.at(2).data());
-        m_config_request_name = qn;
-        sprintf(qn, "/%s/%s/config/color", m_elements.at(1).data(), m_elements.at(2).data());
-        m_config_request_color = qn;
-    }
+    m_path_elements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
 }
 
 void OscCmd::SetColorIndex(int index) {

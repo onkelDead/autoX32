@@ -327,6 +327,20 @@ void OMainWnd::UnselectTrack() {
     }
 }
 
+void OMainWnd::ToggleSolo() {
+    trackview_entry* tv = m_trackslayout.GetTrackSelected();
+    if (tv) {
+        int idx = tv->item->GetCmd()->GetChIndex();
+        if (idx >= 0) {
+            char path[32];
+            sprintf(path, "/-stat/solosw/%d", idx);
+            m_x32->Send(path);
+//            sprintf(path, "/~stat/solo");
+//            m_x32->SendInt(path, 1);            
+        }
+    }
+}
+
 bool OMainWnd::SetupBackend() {
 
     ODlgProlog *pDialog = nullptr;

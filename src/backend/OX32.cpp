@@ -110,8 +110,6 @@ int OX32::Connect(std::string host) {
     return 0;
 }
 
-
-
 bool OX32::on_timeout() {
     socklen_t ip_len = sizeof (m_Socket);
     lo_message msg = lo_message_new();

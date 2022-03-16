@@ -154,7 +154,9 @@ void OProject::Load(std::string location) {
 
                 char* path = strdup((char*) xmlPath);
                 char* types = strdup((char*) xmlTypes);
-                m_known_mixer_commands[path] = new OscCmd(path, types);
+                OscCmd* cmd = new OscCmd(path, types);
+                cmd->Parse();
+                m_known_mixer_commands[path] = cmd;
                 xmlFree(xmlPath);
                 xmlFree(xmlTypes);
                 char* name = (char*) xmlGetProp(node, BAD_CAST "name");
@@ -184,7 +186,8 @@ void OProject::Load(std::string location) {
             if (node->type == XML_ELEMENT_NODE) {
                 if (strcmp((const char*)node->name, "track") != 0)
                     break;
-                char* path = (char*) xmlGetProp(node, BAD_CAST "path");
+                char* path = (char*) xmlGetProp(node, BAD_CAST "pat"
+                "h");
                 char* expanded = (char*) xmlGetProp(node, BAD_CAST "expand");
                 char* height = (char*) xmlGetProp(node, BAD_CAST "height");
                 char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
@@ -482,11 +485,19 @@ OscCmd* OProject::ProcessConfig(OscCmd* cmd) {
             it->second->SetName(cmd->GetLastStr());
             return it->second;
         }
-        if (it->second->GetConfigRequestColor() == cmd->GetPath()) {
+        else if (it->second->GetConfigRequestColor() == cmd->GetPath()) {
             it->second->SetColorIndex(cmd->GetLastInt());
+            return it->second;
+        }
+        else if (it->second->GetStatsRequestSolo() == cmd->GetPath()) {
+            it->second->SetSolo(cmd->GetLastInt());
             return it->second;
         }
 
     }
     return NULL;
+}
+
+void OProject::ProcessStats(OscCmd* cmd) {
+    
 }

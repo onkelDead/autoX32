@@ -79,6 +79,7 @@ public:
     IOTrackStore* NewTrack(OscCmd*);
     
     OscCmd* ProcessConfig(OscCmd*);
+    void ProcessStats(OscCmd*);
 
     void AddRecentProject(std::string);
     
