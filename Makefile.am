@@ -3,7 +3,7 @@ datadir = $(prefix)/share/autoX32/
 desktopdir       = $(prefix)/share/applications
 pixmapsdir       = $(prefix)/share/pixmaps
 autoX32kdir = src
-bin_PROGRAMS = autoX32 check_TrackStore
+bin_PROGRAMS = autoX32 check_TrackStore check_OscCmd
 
 autoX32_SOURCES = \
     src/ui/OMainWnd.cpp \
@@ -27,6 +27,7 @@ autoX32_SOURCES = \
     src/OTrackStore.cpp \
     src/OProject.cpp \
     src/backend/OscCmd.cpp \
+    src/backend/OscMessage.cpp \
     src/backend/ODAW.cpp \
     src/backend/OX32.cpp \
     src/autoX32.cpp \
@@ -94,8 +95,13 @@ pixmaps_DATA     = data/media/autoX32.png
 autoX32_CPPFLAGS = -std=c++11 -Isrc -Isrc/backend -Isrc/ui -Isrc/dlg -Isrc/utils ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
 autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread	
 
-TESTS = check_TrackStore
-check_PROGRAMS = check_TrackStore
-check_TrackStore_SOURCES = tests/test_trackstore.cpp
+TESTS = check_TrackStore check_OscCmd
+check_PROGRAMS = check_TrackStore check_OscCmd
+
+check_TrackStore_SOURCES = tests/test_trackstore.cpp 
 check_TrackStore_CPPFLAGS = -g -O0 -std=c++11 -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
 check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscCmd.o ${GTKMM3_LIBS}
+
+check_OscCmd_SOURCES = tests/test_OscCmd.cpp
+check_OscCmd_CPPFLAGS = -g -O0 -std=c++11 -Isrc -Isrc/ui -Isrc/utils -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+check_OscCmd_LDADD = src/backend/autoX32-OscCmd.o src/backend/autoX32-OX32.o src/utils/autoX32-OTimer.o ${GTKMM3_LIBS} ${LO_LIBS} -lpthread 

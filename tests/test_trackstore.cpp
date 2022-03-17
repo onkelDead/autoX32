@@ -19,10 +19,6 @@
 #include <iostream>
 #include "OTrackStore.h"
 
-/*
- * Simple C++ Test Suite
- */
-
 #define TEST2_NUM_ENTRIES 100000
 
 #define TEST_EQUAL(a, b, c, d) \

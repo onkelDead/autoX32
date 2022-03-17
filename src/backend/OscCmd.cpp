@@ -120,7 +120,7 @@ void OscCmd::Parse() {
         if (m_path_elements.at(1) == "ch" || m_path_elements.at(1) == "bus" || m_path_elements.at(1) == "dca") {
             m_ch_index = atoi(m_path_elements.at(2).data());
         }
-        else if (m_path_elements.at(1) == "-stat") {
+        else if (m_path_elements.at(1) == "-stat" && m_path_elements.size() > 3) {
             m_ch_index = atoi(m_path_elements.at(3).data());
         }
     }
@@ -168,7 +168,7 @@ std::string OscCmd::GetStatsRequestSolo() {
 
 void OscCmd::SplitPath(std::string s) {
     m_path_elements.clear();
-    std::string::size_type prev_pos = 0, pos = 0;
+    std::string::size_type prev_pos = 0, pos = 1;
 
     while ((pos = s.find('/', pos)) != std::string::npos) {
         std::string substring(s.substr(prev_pos, pos - prev_pos));

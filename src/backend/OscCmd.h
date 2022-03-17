@@ -65,6 +65,8 @@ public:
     
     bool IsConfig();
     
+    size_t NumPathElements() { return m_path_elements.size(); }
+    
 private:
     
     void SplitPath(std::string s);
@@ -86,6 +88,8 @@ private:
     int m_last_int = 0;
     std::string m_last_str = "";
     bool m_solo = false;
+    
+    bool m_has_value;
 
 };
 

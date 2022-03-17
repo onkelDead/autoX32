@@ -59,12 +59,12 @@ public:
 
     bool on_timeout();
 
+    void ProcessOscCmd(char* entry, size_t len);
 
 private:
 
     void do_work(IOMixer*);
 
-    void ProcessOscCmd(char* entry, size_t len);
 
     int m_X32_socket_fd = -1;
     struct sockaddr_in m_Socket;

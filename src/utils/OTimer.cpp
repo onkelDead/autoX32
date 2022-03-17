@@ -20,10 +20,11 @@
 #include "OMainWnd.h"
 
 OTimer::OTimer() {
+    m_stopped = true;
 }
 
 OTimer::OTimer(std::function<void(void*) > task_function, const long &interval, void *userData) :
-m_userData(userData), m_task_function(task_function), m_interval(interval) {
+m_userData(userData), m_task_function(task_function), m_interval(interval), m_stopped(true) {
 }
 
 OTimer::~OTimer() {
