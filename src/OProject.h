@@ -24,8 +24,11 @@
 #include <map>
 #include <vector>
 
-#include "OscCmd.h"
-#include "OTrackStore.h"
+#include <gtkmm.h>
+#include <gdkmm/rgba.h>
+
+//#include "OscCmd.h"
+#include "IOTrackStore.h"
 #include "IOProject.h"
 #include "OTimer.h"
 
@@ -61,10 +64,10 @@ public:
     
     void SetPlaying(bool val);
 
-    virtual OscCmd* GetCommand(char* path);
-    virtual void AddCommand(OscCmd*);
+    virtual IOscMessage* GetCommand(char* path);
+    virtual void AddCommand(IOscMessage*);
 
-    void RemoveCommand(OscCmd*);
+    void RemoveCommand(IOscMessage*);
     
     IOTrackStore *GetTrack(std::string);
     std::map<std::string, IOTrackStore*> GetTracks();
@@ -72,14 +75,13 @@ public:
     void SetMixer(IOMixer*);
     
     bool UpdatePos(gint, bool);
-    bool ProcessPos(IOTrackStore*, OscCmd*, gint);
 
     bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
 
-    IOTrackStore* NewTrack(OscCmd*);
+    IOTrackStore* NewTrack(IOscMessage*);    
     
-    OscCmd* ProcessConfig(OscCmd*);
-    void ProcessStats(OscCmd*);
+    IOscMessage* ProcessConfig(IOscMessage*);
+    void ProcessStats(IOscMessage*);
 
     void AddRecentProject(std::string);
     
@@ -106,7 +108,7 @@ private:
     
     IOTracksLayout *m_layout;
 
-    std::map<std::string, OscCmd*> m_known_mixer_commands;
+    std::map<std::string, IOscMessage*> m_known_mixer_commands;
     std::map<std::string, IOTrackStore*> m_tracks;
 
     void SaveRange(xmlTextWriterPtr writer);

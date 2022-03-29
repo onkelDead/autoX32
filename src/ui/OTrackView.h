@@ -20,7 +20,7 @@
 #include <gtkmm.h>
 #include <gtkmm/widget.h>
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 #include "OTimeDraw.h"
 #include "OTrackSizer.h"
@@ -34,7 +34,7 @@ public:
     OTrackView(IOMainWnd*, daw_time*);
     virtual ~OTrackView();
 
-    OscCmd* GetCmd();
+//    IOscMessage* GetMessage();
 
     void SetTrackStore(IOTrackStore*);
     IOTrackStore* GetTrackStore();
@@ -50,16 +50,29 @@ public:
     bool GetSelected() { return m_trackdraw->GetSelected(); }
 
     void UpdateConfig();
+    void SetTrackName(std::string);
+    std::string GetTrackName();
+    void SetTrackColor(int);
     
     void ExpandCollapse(bool expand);
     void Reset();
     void SetHeight(gint);
+
+    void SetPath(std::string path) {
+        m_path = path;
+    }
+
+    std::string GetPath() const {
+        return m_path;
+    }
     
 protected:
     
     virtual bool on_motion_notify_event(GdkEventMotion* motion_event) override;
 
 private:
+    
+    std::string m_path;
     
     bool m_in_resize = 0;
     int m_last_y;

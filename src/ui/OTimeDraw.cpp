@@ -159,7 +159,7 @@ void OTimeDraw::EnableZoom(bool val) {
 void OTimeDraw::SetLoopStart() {
     m_range->m_loopstart = m_mainWnd->GetPosMillis();
     m_range->m_dirty = true;
-//    queue_draw();
+    queue_draw();
 }
 
 int OTimeDraw::GetLoopStart() {
@@ -169,7 +169,7 @@ int OTimeDraw::GetLoopStart() {
 void OTimeDraw::SetLoopEnd() {
     m_range->m_loopend = m_mainWnd->GetPosMillis();
     m_range->m_dirty = true;
-//    queue_draw();
+    queue_draw();
 }
 
 int OTimeDraw::GetLoopEnd() {

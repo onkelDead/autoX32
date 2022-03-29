@@ -12,7 +12,7 @@
  */
 
 #include "OMainWnd.h"
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 
 void OMainWnd::notify_jack(JACK_EVENT jack_event) {
@@ -26,10 +26,10 @@ void OMainWnd::OnJackEvent() {
         switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
+                m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 if (event != MTC_COMPLETE) {
                     UpdatePos(m_backend->GetMillis(), false);
                 } else {
-                    m_timeview->SetTimeCode(m_backend->GetTimeCode());
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
@@ -59,11 +59,12 @@ void OMainWnd::OnJackEvent() {
             case CTL_FADER:
                 if (m_trackslayout.GetSelectedTrackView()) {
                     IOTrackStore* store = m_trackslayout.GetSelectedTrackView()->GetTrackStore();
-                    OscCmd* cmd = new OscCmd(*store->GetOscCommand());
-                    cmd->SetLastFloat((float) m_backend->m_fader_val / 127.);
-                    my_mixerqueue.push(cmd);
-                    m_x32->SendFloat(cmd->GetPath(), cmd->GetLastFloat());
-                    m_backend->ControllerShowLevel(cmd->GetLastFloat());
+                    IOscMessage* msg = store->GetMessage();
+                    msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
+                    my_messagequeue.push(msg);
+                    m_MessageDispatcher.emit();                    
+                    m_x32->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+                    m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                 }
 
                 break;

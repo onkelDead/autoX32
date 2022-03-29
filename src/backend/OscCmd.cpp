@@ -14,7 +14,7 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 OscCmd::OscCmd(const char* path, const char* types) : m_path(path), m_types(types) {
     m_color.set_rgba_u(32768, 32768, 32768);
@@ -86,7 +86,7 @@ float OscCmd::GetLastFloat() {
     return m_last_float;
 }
 
-void OscCmd::SetLastFloat(float val) {
+void OscCmd::SetLastFloat(const float val) {
     m_last_float = val;
 }
 
@@ -236,3 +236,12 @@ void OscCmd::CopyLastVal(OscCmd* src) {
     SetLastFloat(src->GetLastFloat());
     SetLastInt(src->GetLastInt());
 }
+
+void OscCmd::CopyLastVal(IOscMessage* src) {
+    const OscValue* v = src->GetVal(0);
+
+    SetLastFloat(v->GetFloat());
+    SetLastInt(src->GetVal(0)->GetInteger());
+    
+}
+    

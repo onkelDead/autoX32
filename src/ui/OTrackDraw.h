@@ -23,7 +23,7 @@
 #include <lo/lo.h>
 
 #include "OCustomWidget.h"
-#include "OscCmd.h"
+//#include "OscCmd.h"
 #include "OTimeDraw.h"
 #include "IOTrackStore.h"
 #include "IOMainWnd.h"
@@ -35,8 +35,8 @@ public:
 
 	void SetTrackStore(IOTrackStore*);
 	IOTrackStore* GetTrackStore();
-	OscCmd* GetCmd();
-
+        IOscMessage* GetMessage();
+        
 	void SetRecord(bool val);
 
 	void SetSelected(bool);
@@ -63,6 +63,8 @@ private:
 	daw_time *m_daw_time;
 
 	float GetHeight(lo_arg it, char t);
+        void GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index);
+        
 	IOTrackStore *m_trackstore = nullptr;
 
 	bool m_in_drag = 0;

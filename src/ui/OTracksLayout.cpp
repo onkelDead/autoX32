@@ -28,53 +28,46 @@ OTracksLayout::OTracksLayout() : Gtk::VBox() {
 OTracksLayout::~OTracksLayout() {
 }
 
-void OTracksLayout::AddTrack(OTrackView *v, bool show) {
-    v->set_hexpand(true);
-    v->set_halign(Gtk::ALIGN_FILL);
-    v->set_valign(Gtk::ALIGN_START);
-    trackview_entry* entry = new_entry();
-    entry->item = v;
-    append_entry(entry);
+void OTracksLayout::AddTrack(OTrackView *view, bool show) {
+    view->set_hexpand(true);
+    view->set_halign(Gtk::ALIGN_FILL);
+    view->set_valign(Gtk::ALIGN_START);
+    append_entry(view);
     //m_trackmap[v->GetCmd()->GetPath()] = v;
     if (show) {
-        add(*v);
-        v->show();
+        add(*view);
+        view->show();
     }
 }
 
-trackview_entry* OTracksLayout::GetTrackHead() {
-    return m_tracklist;
+OTrackView* OTracksLayout::GetTrackHead() {
+    if (m_tracklist.size() == 0)
+        return nullptr;
+    return m_tracklist.at(0);
 }
 
-trackview_entry* OTracksLayout::GetTrackTail() {
-    trackview_entry* tv = m_tracklist;
-    while(tv->next) 
-        tv = tv->next;
-    return tv;
+OTrackView* OTracksLayout::GetTrackTail() {
+    if (m_tracklist.size() == 0)
+        return nullptr;
+    return m_tracklist.at(m_tracklist.size());
 }
 
-trackview_entry* OTracksLayout::GetTrackSelected() {
-    trackview_entry* tv = m_tracklist;
-    while(tv) {
-        if (tv->item == m_selectedView)
+OTrackView* OTracksLayout::GetTrackSelected() {
+    for (OTrackView* tv : m_tracklist) {
+        if (tv == m_selectedView)
             return tv;
-        tv = tv->next;
     }
     return nullptr;
 }
 
 OTrackView* OTracksLayout::GetTrackview(std::string path) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
+    if (m_tracklist.size() == 0)
         return nullptr;
-    }
-    while(list != nullptr) {
-        if (list->item->GetCmd()->GetPath() == path)
-            return list->item;
-        list = list->next;
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetPath() == path)
+            return list;
     }
     return nullptr;
-    
 }
 
 
@@ -83,58 +76,46 @@ void OTracksLayout::redraw() {
 }
 
 void OTracksLayout::StopRecord() {
-    trackview_entry* list = m_tracklist;
-    while(list) {
-        list->item->SetRecord(false);
-        list = list->next;
+    for (OTrackView* list : m_tracklist) { 
+        list->SetRecord(false);
     }
 }
+
 void OTracksLayout::StopTeach() {
     StopRecord();
 }
 
 void OTracksLayout::RemoveAllTackViews() {
-    trackview_entry* list = m_tracklist;
-    while(list) {
-        remove(*list->item);
-        trackview_entry* d = list;
-        list->prev = nullptr;
-        list = list->next;
-        delete d;
+    for (OTrackView* list : m_tracklist) { 
+        remove(*list);
+        delete list;
     }
-    m_tracklist = nullptr;
+    m_tracklist.clear();
 }
 
 void OTracksLayout::RemoveTrackView(std::string path) {
-    trackview_entry* list = m_tracklist;
-
-    while(list != nullptr) {
-        if (list->item->GetCmd()->GetPath() == path) {
-            if (m_selectedView == list->item)
+    int index = 0;
+    for (OTrackView* list : m_tracklist) { 
+        if (list->GetPath() == path) {
+            if (m_selectedView == list)
                 m_selectedView = nullptr;
-            trackview_entry* d = list;
-            if (list->next)
-                list->next->prev = list->prev;
-            if (list->prev)
-                list->prev->next = list->next;
-            remove (*d->item);
-            delete d;
+            remove (*list);
+            m_tracklist.erase(m_tracklist.begin() + index);
+            delete list;
         }
-        list = list->next;
+        index++;
     }
 }
 
 gint OTracksLayout::GetTrackIndex(std::string path) {
-    trackview_entry* list = m_tracklist;
     gint index = 0;
-    if (list == nullptr) {
+    if (m_tracklist.size() == 0) {
         return -1;
     }
-    while(list != nullptr) {
-        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
+    for (OTrackView* list : m_tracklist) {     
+        if (list->GetPath().compare(path) == 0) {
             return index;
         }
-        list = list->next;
         index++;
     }
     return -1;
@@ -157,13 +138,11 @@ void OTracksLayout::EditLayout() {
     ODlgLayout *pDialog = nullptr;
     builder->get_widget_derived("dlg-layout", pDialog);  
             
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
+    if (m_tracklist.size() == 0) {
         return;
     }
-    while(list != nullptr) {
-        pDialog->AddTrack(this, list->item);
-        list = list->next;
+    for (OTrackView* list : m_tracklist) { 
+        pDialog->AddTrack(this, list);
     }
     
     pDialog->show_all_children(true);
@@ -173,7 +152,7 @@ void OTracksLayout::EditLayout() {
 
 void OTracksLayout::on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check) 
 {
-    TrackHide(view->GetCmd()->GetPath(), check->get_active());
+    TrackHide(view->GetPath(), check->get_active());
 }
 
 void OTracksLayout::on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check)
@@ -182,26 +161,16 @@ void OTracksLayout::on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check)
 }
 
 void OTracksLayout::ExpandCollapseAll(bool expand) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list != nullptr) {
-        list->item->ExpandCollapse(expand);
-        list = list->next;
+    for (OTrackView* list : m_tracklist) { 
+        list->ExpandCollapse(expand);
     }    
 }
 
 void OTracksLayout::ResetAll() {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list != nullptr) {
-        if (!list->item->GetTrackStore()->GetLayout()->m_visible)
-            TrackHide(list->item->GetCmd()->GetPath(), true);
-        list->item->Reset();
-        list = list->next;
+    for (OTrackView* list : m_tracklist) {
+        if (!list->GetTrackStore()->GetLayout()->m_visible)
+            TrackHide(list->GetPath(), true);
+        list->Reset();
     }        
 }
 
@@ -210,148 +179,120 @@ void OTracksLayout::FitView(gint full_size) {
     if (count_visible == 0)
         return;
     gint req_size = full_size / count_visible;
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
+
+    if (m_tracklist.size() == 0) {
         return;
     }
-    while(list != nullptr) {
-        if (list->item->GetTrackStore()->GetLayout()->m_visible) {
-            list->item->SetHeight(req_size);
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetTrackStore()->GetLayout()->m_visible) {
+            list->SetHeight(req_size);
         }
-        if (!list->item->GetTrackStore()->GetLayout()->m_expanded) {
-            list->item->ExpandCollapse(true);
+        if (!list->GetTrackStore()->GetLayout()->m_expanded) {
+            list->ExpandCollapse(true);
         }
-
-        list = list->next;
     }    
     show_all_children(true);
 }
 
 void OTracksLayout::TrackHide(std::string path, bool hide) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list != nullptr) {
-        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
-            list->item->GetTrackStore()->GetLayout()->m_visible = hide;
-            list->item->GetTrackStore()->SetDirty(true);
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetPath().compare(path) == 0) {
+            list->GetTrackStore()->GetLayout()->m_visible = hide;
+            list->GetTrackStore()->SetDirty(true);
             if (!hide) {
-                remove (*list->item);
-                if (m_selectedView == list->item)
+                remove (*list);
+                if (m_selectedView == list)
                     m_selectedView = nullptr;
             }
             else {
-                add(*list->item);
-                reorder_child(*list->item, list->item->GetTrackStore()->GetLayout()->m_index);
+                add(*list);
+                reorder_child(*list, list->GetTrackStore()->GetLayout()->m_index);
                 show_all_children(true);
             }
             return;
         }   
-        list = list->next;
     }
 }
 
 void OTracksLayout::TrackUp(std::string path) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list != nullptr) {
-        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
-            if (list->prev) {
-                trackview_entry* tt = list->prev;
-                while(tt) {
-                    remove(*tt->item);
-                    tt = tt->next;
+    int index = 0;
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetPath().compare(path) == 0) {
+            if (index > 0) {
+                int i1 = 0;
+                for (OTrackView* m : m_tracklist) {
+                    if (i1 >= index);
+                        remove(*m);
+                    i1++;
                 }
-                swap_tracks(list->prev, list);
-                tt = list->prev;
-                while(tt) {
-                    add(*tt->item);
-                    tt = tt->next;
+                i1 = 0;
+                iter_swap(m_tracklist.begin() + index - 1, m_tracklist.begin() + index);
+                for (OTrackView* m : m_tracklist) {
+                    if (i1 >= index);
+                        add(*m);
+                        i1++;
                 }
                 break;
             }
             
         }
-        list = list->next;
+        index++;
     }
-    
 }
 
 void OTracksLayout::TrackDown(std::string path) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return;
-    }
-    while(list->next != nullptr) {
-        if (list->item->GetCmd()->GetPath().compare(path) == 0) {
-            if (list->next) {
-                trackview_entry* tt = list;
-                while(tt) {
-                    remove(*tt->item);
-                    tt = tt->next;
+    int index = 0;
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetPath().compare(path) == 0) {
+            if (index < m_tracklist.size() - 1) {
+                int i1 = 0;
+                for (OTrackView* m : m_tracklist) {
+                    if (i1 >= index);
+                        remove(*m);
+                    i1++;
                 }
-                swap_tracks(list, list->next);
-                tt = list;
-                while(tt) {
-                    add(*tt->item);
-                    tt = tt->next;
+                i1 = 0;
+                iter_swap(m_tracklist.begin() + index, m_tracklist.begin() + index + 1);
+                for (OTrackView* m : m_tracklist) {
+                    if (i1 >= index);
+                        add(*m);
+                        i1++;
                 }
                 break;
             }
             
         }
-        list = list->next;
+        index++;
     }
     
 }
-void OTracksLayout::swap_tracks(trackview_entry* t1, trackview_entry* t2) {
-    OTrackView* tmp = t1->item;
-    t1->item = t2->item;
-    t2->item = tmp;
+void OTracksLayout::swap_tracks(OTrackView* t1, OTrackView* t2) {
+    OTrackView* tmp = t1;
+    t1 = t2;
+    t2 = tmp;
 }
+//
+//OTrackView* OTracksLayout::new_entry() {
+//    OTrackView* entry = new trackview_entry;
+//    return entry;
+//}
 
-trackview_entry* OTracksLayout::new_entry() {
-    trackview_entry* entry = new trackview_entry;
-    entry->prev = nullptr;
-    entry->next = nullptr;
-    return entry;
-}
-
-void OTracksLayout::append_entry(trackview_entry* entry) {
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        m_tracklist = entry;
-        return;
-    }
-        
-    while( list->next) {
-        list = list->next;
-    }
-    list->next = entry;
-    entry->prev = list;
+void OTracksLayout::append_entry(OTrackView* entry) {
+    m_tracklist.push_back(entry);
 }
 
 gint OTracksLayout::get_count_visible() {
     gint c = 0;
-    trackview_entry* list = m_tracklist;
-    if (list == nullptr) {
-        return 0;
-    }
-        
-    while( list) {
-        if (list->item->GetTrackStore()->GetLayout()->m_visible)
+    for (OTrackView* list : m_tracklist) {
+        if (list->GetTrackStore()->GetLayout()->m_visible)
             c++;
-        list = list->next;
     }
     return c;
 }
 
 std::string OTracksLayout::GetSelectedTrackName() {
     
-    return m_selectedView->GetCmd()->GetName();
+    return ""; //m_selectedView->GetCmd()->GetName();
     
 }
 
@@ -365,79 +306,70 @@ OTrackView* OTracksLayout::GetSelectedTrackView() {
 
 void OTracksLayout::SelectNextTrack() {
     if (!m_selectedView)
-        SelectTrack(m_tracklist->item->GetCmd()->GetPath(), true);
+        SelectTrack(m_tracklist.at(0)->GetPath(), true);
     else {
-        trackview_entry* head = GetTrackHead();
-        trackview_entry* tv = head;
+        OTrackView* head = GetTrackHead();
+        OTrackView* tv = head;
         while (tv) {
-            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+            if (tv->GetPath() == m_selectedView->GetPath())
                 break;
-            tv = tv->next;
         }
-        tv = tv->next;
-        SelectTrack(m_selectedView->GetCmd()->GetPath(), false);
+        SelectTrack(m_selectedView->GetPath(), false);
         if (tv)
-            SelectTrack(tv->item->GetCmd()->GetPath(), true);
+            SelectTrack(tv->GetPath(), true);
         else
-            SelectTrack(head->item->GetCmd()->GetPath(), true);
+            SelectTrack(head->GetPath(), true);
     }
 }
 
 void OTracksLayout::SelectPrevTrack(){
     if (!m_selectedView)
-        SelectTrack(GetTrackTail()->item->GetCmd()->GetPath(), true);
+        SelectTrack(GetTrackTail()->GetPath(), true);
     else {
-        trackview_entry* tail = GetTrackTail();
-        trackview_entry* tv = tail;
+        OTrackView* tail = GetTrackTail();
+        OTrackView* tv = tail;
         while (tv) {
-            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+            if (tv->GetPath() == m_selectedView->GetPath())
                 break;
-            tv = tv->prev;
         }
-        tv = tv->prev;
-        SelectTrack(m_selectedView->GetCmd()->GetPath(), false);
+        SelectTrack(m_selectedView->GetPath(), false);
         if (tv)
-            SelectTrack(tv->item->GetCmd()->GetPath(), true);
+            SelectTrack(tv->GetPath(), true);
         else
-            SelectTrack(tail->item->GetCmd()->GetPath(), true);
+            SelectTrack(tail->GetPath(), true);
     }    
 }
 
 
 
 std::string OTracksLayout::GetNextTrack() {
-    trackview_entry* head = GetTrackHead();
+    OTrackView* head = GetTrackHead();
     
     if (!m_selectedView) {
-        return head->item->GetCmd()->GetPath();    
+        return head->GetPath();    
     }
     else {
-        trackview_entry* tv = head;
+        OTrackView* tv = head;
         while (tv) {
-            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+            if (tv->GetPath() == m_selectedView->GetPath())
                 break;
-            tv = tv->next;
         }
-        if (tv->next)
-            return tv->next->item->GetCmd()->GetPath();
     }
-    return head->item->GetCmd()->GetPath();
+    return head->GetPath();
 }
 
 std::string OTracksLayout::GetPrevTrack() {
     if (!m_selectedView)
-        return GetTrackTail()->item->GetCmd()->GetPath();    
+        return GetTrackTail()->GetPath();    
     else {
-        trackview_entry* tail = GetTrackTail();
-        trackview_entry* tv = tail;
+        OTrackView* tail = GetTrackTail();
+        OTrackView* tv = tail;
         while (tv) {
-            if (tv->item->GetCmd()->GetPath() == m_selectedView->GetCmd()->GetPath())
+            if (tv->GetPath() == m_selectedView->GetPath())
                 break;
-            tv = tv->prev;
         }
-        tv = tv->prev;
         if (tv)
-            return tv->item->GetCmd()->GetPath();
-        return tail->item->GetCmd()->GetPath();
+            return tv->GetPath();
+        return tail->GetPath();
     }        
 }

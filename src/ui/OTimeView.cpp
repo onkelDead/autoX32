@@ -60,7 +60,7 @@ void OTimeView::SetDawTime(daw_time *dt) {
 
 void OTimeView::SetTimeCode(std::string code) {
     m_timecode->set_text(code);
-
+//    m_timecode->queue_draw();
 }
 
 void OTimeView::UpdateDawTime(bool redraw) {

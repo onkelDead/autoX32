@@ -17,32 +17,40 @@
 #ifndef OTRACKSTORE_H
 #define OTRACKSTORE_H
 
+#include <mutex>
+#include "IOTrackView.h"
+#include "IOMessageHandler.h"
+#include "IOscMessage.h"
 #include "IOTrackStore.h"
 #include "OTypes.h"
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 class OTrackStore : public IOTrackStore {
 public:
-    OTrackStore(OscCmd* cmd);
+    OTrackStore(IOscMessage *msg);
     virtual ~OTrackStore();
 
-    OscCmd* GetOscCommand();
     track_entry *GetHeadEntry();
 
     void AddTimePoint(track_entry* e);    
     void SaveData(const char* filepath);
     void LoadData(const char* filepath);
     
+    int NewMessageCallback(IOscMessage*);
+    int UpdateMessageCallback(IOscMessage*);    
+    
     void CheckData(int* count, int* errors);
     
-    track_entry* NewEntry(gint pos = 0);
+    track_entry* NewEntry(int pos = 0);
     track_entry* GetEntryAtPosition(int);
     
+    bool ProcessMsg(IOscMessage*, int);
+    
     void RemoveEntry(track_entry*);
-    void AddEntry(OscCmd*, gint);
+    void AddEntry(int);
     
     track_entry* GetPlayhead();
-    track_entry* UpdatePlayhead(gint, bool);
+    track_entry* UpdatePlayhead(int, bool);
 
     inline bool IsPlaying() { return m_playing; };
     inline void SetPlaying(bool val) { m_playing = val; }
@@ -53,11 +61,45 @@ public:
     inline bool IsDirty() { return m_dirty; }
     inline void SetDirty(bool val) { m_dirty = val; }
     
-    gint GetCountEntries();
+    int GetCountEntries();
     
     inline track_layout* GetLayout() { return &m_layout; }
     
     void Clear();
+
+    void SetMessage(IOscMessage* message) {
+        m_message = message;
+    }
+
+    IOscMessage* GetMessage() {
+        return m_message;
+    }
+
+    std::string GetConfigRequestName() {
+        m_config_name_path = m_message->GetConfigRequestName();
+        return m_config_name_path;
+    }
+    
+    std::string GetConfigRequestColor() {
+        m_config_color_path = m_message->GetConfigRequestColor();
+        return m_config_color_path;
+    }
+
+    void SetView(IOTrackView* view) {
+        m_view = view;
+    }
+
+    IOTrackView* GetView() const {
+        return m_view;
+    }
+
+    void SetColor_index(int color_index) {
+        m_color_index = color_index;
+    }
+
+    int GetColor_index() const {
+        return m_color_index;
+    }
     
 private:
     
@@ -75,18 +117,26 @@ private:
     inline void Unlock();    
     
     inline void InternalRemoveEntry(track_entry*);
-    inline track_entry* InternalGetEntryAtPosition(gint);
+    inline track_entry* InternalGetEntryAtPosition(int);
     inline void InternalAddTimePoint(track_entry*);
     inline void InternalSetCmdValue(track_entry*);
     
     std::mutex m_mutex;
     
     track_entry* m_playhead = nullptr;
-    OscCmd* m_cmd = nullptr;
+    IOscMessage* m_message = nullptr;
+    
+    IOTrackView* m_view = nullptr;
     
     char m_file_name[128];
     void EvalFileName();
    
+    std::string m_config_name_path;
+    std::string m_config_color_path;
+    
+    int m_color_index;
+    
+    
 };
 
 #endif /* OTRACKSTORE_H */

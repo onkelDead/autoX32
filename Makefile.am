@@ -26,10 +26,12 @@ autoX32_SOURCES = \
     src/dlg/ODlgPrefs.cpp \
     src/OTrackStore.cpp \
     src/OProject.cpp \
-    src/backend/OscCmd.cpp \
     src/backend/OscMessage.cpp \
+    src/backend/OscValue.cpp \
+    src/backend/OscCache.cpp \
     src/backend/ODAW.cpp \
     src/backend/OX32.cpp \
+    src/backend/OCallbackHandler.cpp \
     src/autoX32.cpp \
     src/backend/OJack.cpp \
     src/backend/OAlsa.cpp \
@@ -61,7 +63,6 @@ noinst_HEADERS = \
     src/ui/OPlayHead.h \
     src/OTrackStore.h \
     src/backend/ODAW.h \
-    src/backend/OscCmd.h \
     src/OProject.h \
     src/dlg/OTrackDlg.h \
     src/dlg/OConnectDlg.h \
@@ -92,16 +93,27 @@ desktop_DATA = data/autoX32.desktop
 pixmaps_DATA     = data/media/autoX32.png
 
     
-autoX32_CPPFLAGS = -std=c++11 -Isrc -Isrc/backend -Isrc/ui -Isrc/dlg -Isrc/utils ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
+autoX32_CPPFLAGS = -std=c++2a -Isrc -Isrc/backend -Isrc/ui -Isrc/dlg -Isrc/utils ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
 autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread	
 
 TESTS = check_TrackStore check_OscCmd
 check_PROGRAMS = check_TrackStore check_OscCmd
 
 check_TrackStore_SOURCES = tests/test_trackstore.cpp 
-check_TrackStore_CPPFLAGS = -g -O0 -std=c++11 -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
-check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscCmd.o ${GTKMM3_LIBS}
+check_TrackStore_CPPFLAGS = -g -O0 -std=c++2a -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscMessage.o src/backend/autoX32-OscValue.o src/backend/autoX32-OscCache.o ${GTKMM3_LIBS}
 
 check_OscCmd_SOURCES = tests/test_OscCmd.cpp
-check_OscCmd_CPPFLAGS = -g -O0 -std=c++11 -Isrc -Isrc/ui -Isrc/utils -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
-check_OscCmd_LDADD = src/backend/autoX32-OscCmd.o src/backend/autoX32-OX32.o src/utils/autoX32-OTimer.o ${GTKMM3_LIBS} ${LO_LIBS} -lpthread 
+check_OscCmd_CPPFLAGS = -g -O0 -std=c++2a -Isrc -Isrc/ui -Isrc/utils -Isrc/backend \
+    src/backend/autoX32-OscMessage.o \
+    src/backend/autoX32-OscValue.o \
+    ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+
+check_OscCmd_LDADD = \
+    src/backend/autoX32-OscMessage.o \
+    src/backend/autoX32-OscValue.o \
+    src/backend/autoX32-OscCache.o \
+    src/backend/autoX32-OCallbackHandler.o \
+    src/backend/autoX32-OX32.o \
+    src/utils/autoX32-OTimer.o \
+    ${GTKMM3_LIBS} ${LO_LIBS} -lpthread 

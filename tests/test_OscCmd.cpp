@@ -13,34 +13,37 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include "OscCmd.h"
+#include <vector>
+#include <cassert>
+
+//#include "OscCmd.h"
 #include "OX32.h"
+#include "OscCache.h"
+#include "OCallbackHandler.h"
+#include "OscMessage.h"
+
 
 /*
  * Simple C++ Test Suite
  */
 
-static void mixer_callback(OscCmd* oscCmd, void* user_data) {
-    std::cout << "check_OscCmd: mixer_callback: path: " << oscCmd->GetPath() << std::endl;
-    std::cout << "check_OscCmd: mixer_callback: types: " << oscCmd->GetTypes() << std::endl;
-    const char* c = oscCmd->GetTypes().c_str();
-    switch(c[0]) {
-        case 'f':
-            std::cout << "check_OscCmd: mixer_callback: float: " << oscCmd->GetLastFloat() << std::endl;
-            break;
-        case 'i':
-            std::cout << "check_OscCmd: mixer_callback: float: " << oscCmd->GetLastInt() << std::endl;
-            break;
-        case 's':
-            std::cout << "check_OscCmd: mixer_callback: float: " << oscCmd->GetLastStr() << std::endl;
-            break;
-           
+
+static void message_callback(char* entry, size_t len, void* oCache) {
+    int result;
+    lo_message msg = lo_message_deserialise(entry, len, &result);
+    int argc = lo_message_get_argc(msg);
+    lo_arg **argv = lo_message_get_argv(msg);
+    OscMessage *cmd = new OscMessage(entry, lo_message_get_types(msg));
+
+    int i = 0;
+    while(char c = cmd->GetTypes()[i]) {
+        cmd->SetVal(new OscValue(*argv[i], c));
+        i++;
     }
-    oscCmd->Parse();
-
-    std::cout << "check_OscCmd: mixer_callback: count path elements: " << oscCmd->NumPathElements() << std::endl;
-
-
+    
+    ((OscCache*)oCache)->ProcessMessage(cmd);
+    
+    lo_message_free(msg);    
 }
 
 static const unsigned char entry1[28] = {
@@ -49,25 +52,87 @@ static const unsigned char entry1[28] = {
 
 int test1() {
     std::cout << "test_OscCmd test 1" << std::endl;
-    OscCmd* oscCmd = new OscCmd((const char*) entry1, "f");
-
-    std::cout << "check_OscCmd: test1: path: " << oscCmd->GetPath() << std::endl;
-
-    delete oscCmd;
+//    OscCmd* oscCmd = new OscCmd((const char*) entry1, "f");
+//
+//    std::cout << "check_OscCmd: test1: path: " << oscCmd->GetPath() << std::endl;
+//
+//    delete oscCmd;
     return EXIT_SUCCESS;
 }
 
 int test2() {
     std::cout << "test_OscCmd test 2" << std::endl;
     OX32* x32 = new OX32();
+    OCallbackHandler ch;
+//    OscCache* oCache = new OscCache();
+    //x32->SetMessageHandler(&ch);
 
-    x32->SetMixerCallback(mixer_callback, NULL);
-    x32->Connect("192.168.178.43");
+//    x32->SetMsg_callback(message_callback, (void*)oCache);
+    assert(x32->Connect("192.168.178.43") == 0);
     sleep(1);
-    x32->Send("/info");
+    
+    float val;
+    assert(x32->GetCachedValue("/ch/14/mix/fader", &val) == false);
+    x32->Send("/ch/14/mix/fader");
+    sleep(5);
+    assert(x32->GetCachedValue("/ch/14/mix/fader", &val) == true);
+    std::cout << "test 2: got cached float value " << val << std::endl;
+    
+    int integer;
+    assert(x32->GetCachedValue("/ch/14/config/color", &integer) == false);
+    x32->Send("/ch/14/config/color");
     sleep(1);
+    assert(x32->GetCachedValue("/ch/14/config/color", &integer) == true);
+    std::cout << "test 2: got cached int value " << integer << std::endl;
+   
+    std::string name;
+    assert(x32->GetCachedValue("/ch/14/config/name", &name) == false);
+    x32->Send("/ch/14/config/name");
+    sleep(1);
+    assert(x32->GetCachedValue("/ch/14/config/name", &name) == true);
+    std::cout << "test 2: got cached string value " << name << std::endl;
+    
+    std::cout << "test_OscCmd test 2: finally the cache contained " << x32->GetCacheSize() << " elements." << std::endl;
+    
     x32->Disconnect();
     delete x32;
+
+    return EXIT_SUCCESS;
+}
+
+int test3() {
+    std::cout << "test_OscCmd test 3" << std::endl;
+    OX32* x32 = new OX32();
+
+    assert(x32->Connect("192.168.178.43") == 0);
+    sleep(1);
+    
+    float val;
+    assert(x32->GetCachedValue("/ch/14/mix/fader", &val) == false);
+    x32->Send("/ch/14/mix/fader");
+    sleep(5);
+    assert(x32->GetCachedValue("/ch/14/mix/fader", &val) == true);
+    std::cout << "test 3: got cached float value " << val << std::endl;
+    
+    int integer;
+    assert(x32->GetCachedValue("/ch/14/config/color", &integer) == false);
+    x32->Send("/ch/14/config/color");
+    sleep(1);
+    assert(x32->GetCachedValue("/ch/14/config/color", &integer) == true);
+    std::cout << "test 3: got cached int value " << integer << std::endl;
+   
+    std::string name;
+    assert(x32->GetCachedValue("/ch/14/config/name", &name) == false);
+    x32->Send("/ch/14/config/name");
+    sleep(1);
+    assert(x32->GetCachedValue("/ch/14/config/name", &name) == true);
+    std::cout << "test 3: got cached string value " << name << std::endl;
+    
+    std::cout << "test_OscCmd test 3: finally the cache contained " << x32->GetCacheSize() << " elements." << std::endl;
+    
+    x32->Disconnect();
+    delete x32;
+
     return EXIT_SUCCESS;
 }
 
@@ -76,8 +141,9 @@ int main(int argc, char** argv) {
     int result = EXIT_SUCCESS;
 
     std::cout << "%TEST_STARTED% test1 (test_OscCmd)" << std::endl;
-    result |= test1();
+    //result |= test1();
     result |= test2();
+    //result |= test3();
     std::cout << "%TEST_FINISHED% time=0 test1 (test_OscCmd)" << std::endl;
 
     return (EXIT_SUCCESS);

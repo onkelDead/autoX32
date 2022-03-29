@@ -15,6 +15,7 @@
  */
 
 #include <iostream>
+#include <vector>
 #include <gtkmm.h>
 #include "OMainWnd.h"
 #include "OConnectDlg.h"

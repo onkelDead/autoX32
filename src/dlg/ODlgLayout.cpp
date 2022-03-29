@@ -79,7 +79,7 @@ void ODlgLayout::AddTrack(IOTracksLayout* parent, IOTrackView* view) {
 
     m_view->add(*track);
     m_view->show_all_children(true);
-    m_expanders[view->GetCmd()->GetPath()] = track;
+    m_expanders[view->GetPath()] = track;
 }
 
 ODlgLayoutTrack::ODlgLayoutTrack(IOTracksLayout* parent, IOTrackView* view) : Gtk::Box(), ui{Gtk::Builder::create_from_string(main_inline_glade)}
@@ -105,14 +105,14 @@ ODlgLayoutTrack::ODlgLayoutTrack(IOTracksLayout* parent, IOTrackView* view) : Gt
 
     m_label = new Gtk::Label();
     m_label->set_name("OTrackLayoutLabel");
-    m_label->set_text(view->GetCmd()->GetPath());
+    m_label->set_text(view->GetTrackName());
     m_label->set_hexpand(true);
     m_label->set_alignment(0.0, 0.0);
     m_label->set_halign(Gtk::ALIGN_FILL);
 
     m_name = new Gtk::Label();
     m_name->set_name("OTrackLayoutName");
-    m_name->set_text(view->GetCmd()->GetName());
+//    m_name->set_text(view->GetMessage()->GetName());
     m_name->set_hexpand(true);
     m_name->set_alignment(0.0, 0.0);
     m_name->set_halign(Gtk::ALIGN_FILL);

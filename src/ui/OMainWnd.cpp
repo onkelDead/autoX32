@@ -20,7 +20,7 @@
 #include <giomm/simpleactiongroup.h>
 #include "OMainWnd.h"
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 #include "res/autoX32.h"
 
@@ -28,13 +28,8 @@
 void on_jack_event(void *obj) {
     OMainWnd* wnd = (OMainWnd*)obj;
     wnd->OnJackEvent();
-    wnd->OnMixerEvent();
+//    wnd->OnMixerEvent();
 }
-
-static void mixer_callback(OscCmd* cmd, void* user_data) {
-    ((OMainWnd*)user_data)->notify_mixer(cmd);
-}
-
 
 void check_ardour_recent(void* user_Data) {
     FILE* file_recent;
@@ -97,6 +92,7 @@ OMainWnd::OMainWnd() : Gtk::Window()
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
     //m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
+    m_MessageDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMessageEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
@@ -105,6 +101,7 @@ OMainWnd::OMainWnd() : Gtk::Window()
     show_all_children(true);
     queue_draw();
     m_x32 = new OX32();
+    m_x32->SetMessageHandler(this);
 
     m_lock_play = false;
     m_lock_daw_time = false;
@@ -217,7 +214,6 @@ bool OMainWnd::ConnectMixer(std::string host) {
     if (!m_x32->Connect(host)) {
         m_project.SetMixer(m_x32);
         m_lbl_x32->set_label("X32: connected");
-        m_x32->SetMixerCallback(mixer_callback, this);
         return true;
     }
     m_project.SetMixer(NULL);
@@ -299,10 +295,10 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 }
 
 void OMainWnd::remove_track(IOTrackView* view) {
-    OscCmd* cmd = view->GetCmd();
-    printf("remove %s\n", cmd->GetPath().data());
-    m_trackslayout.RemoveTrackView(cmd->GetPath());
-    m_project.RemoveCommand(cmd);
+    printf("remove %s\n", view->GetPath().data());
+    m_trackslayout.RemoveTrackView(view->GetPath());
+    m_x32->ReleaseCacheMessage(view->GetPath());
+    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
@@ -319,25 +315,25 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
 }
 
 void OMainWnd::UnselectTrack() {
-    trackview_entry* tv = m_trackslayout.GetTrackSelected();
+    OTrackView* tv = m_trackslayout.GetTrackSelected();
     if (tv) {
-        SelectTrack(tv->item->GetCmd()->GetPath(), false);
+        SelectTrack(tv->GetPath(), false);
         m_backend->ControllerShowLCDName("");
         m_backend->ControllerShowSelect(false);        
     }
 }
 
 void OMainWnd::ToggleSolo() {
-    trackview_entry* tv = m_trackslayout.GetTrackSelected();
+    OTrackView* tv = m_trackslayout.GetTrackSelected();
     if (tv) {
-        int idx = tv->item->GetCmd()->GetChIndex();
-        if (idx >= 0) {
-            char path[32];
-            sprintf(path, "/-stat/solosw/%d", idx);
-            m_x32->Send(path);
-//            sprintf(path, "/~stat/solo");
-//            m_x32->SendInt(path, 1);            
-        }
+//        int idx = tv->item->GetMessage()->GetChIndex();
+//        if (idx >= 0) {
+//            char path[32];
+//            sprintf(path, "/-stat/solosw/%d", idx);
+//            m_x32->Send(path);
+////            sprintf(path, "/~stat/solo");
+////            m_x32->SendInt(path, 1);            
+//        }
     }
 }
 
@@ -378,15 +374,26 @@ gint OMainWnd::GetPosMillis() {
 }
 
 void OMainWnd::UpdatePos(gint current, bool jump) {
-    trackview_entry* tv = m_trackslayout.GetTrackHead();
-    while (tv) {
-        IOTrackStore* trackstore = tv->item->GetTrackStore();
-        track_entry* entry = trackstore->UpdatePlayhead(current, jump);
-        if (entry) {
-            m_project.PlayTrackEntry(trackstore, entry);
-            if (tv->item->GetSelected())
-                m_backend->ControllerShowLevel(entry->val.f);
-        }
-        tv = tv->next;
-    }
+    m_project.UpdatePos(current, jump);
+//    for (std::map<std::string, IOTrackStore*>::iterator it = m_project.GetTracks().begin(); it != m_project.GetTracks().end(); ++it) {
+//        IOTrackStore* trackstore = it->second;
+//        if (trackstore) {
+//            track_entry* entry = trackstore->UpdatePlayhead(current, jump);
+//            if (entry) {
+//                m_project.PlayTrackEntry(trackstore, entry);
+//                if (trackstore->GetView()->GetSelected())
+//                    m_backend->ControllerShowLevel(entry->val.f);
+//            }        
+//        }
+//    }
+//    OTrackView* tv = m_trackslayout.GetTrackHead();
+//    while (tv) {
+//        IOTrackStore* trackstore = tv->GetTrackStore();
+//        track_entry* entry = trackstore->UpdatePlayhead(current, jump);
+//        if (entry) {
+//            m_project.PlayTrackEntry(trackstore, entry);
+//            if (tv->GetSelected())
+//                m_backend->ControllerShowLevel(entry->val.f);
+//        }
+//    }
 }

@@ -17,7 +17,9 @@
 #ifndef IOX32_H
 #define IOX32_H
 
-typedef void(*MixerCallback)(OscCmd*, void*);
+#include "IOMessageHandler.h"
+
+typedef void(*MessageCallback)(char*, size_t, void*);
 
 class IOMixer {
 public:
@@ -25,7 +27,10 @@ public:
     virtual int Connect(std::string) = 0;
     virtual int Disconnect() = 0;
 
-    virtual void SetMixerCallback(MixerCallback, void*) = 0;
+    virtual void SetMessageHandler(IOMessageHandler* MessageHandler) = 0;
+    
+    virtual IOscMessage* AddCacheMessage(const char*, const char*) = 0;
+    virtual void ReleaseCacheMessage(std::string) = 0;
     
     virtual int IsConnected() = 0;
     

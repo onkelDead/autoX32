@@ -12,24 +12,45 @@
  */
 
 #include "OscMessage.h"
-
+#include <string.h>
 
 
 OscMessage::OscMessage() {
+}
+
+void OscMessage::SetVal(OscValue* val) {
+    m_vals.push_back(val);
+}
+
+OscValue* OscMessage::GetVal(int index) const{
+    return m_vals.at(index);
 }
 
 OscMessage::OscMessage(const OscMessage& orig) {
 }
 
 OscMessage::~OscMessage() {
+    for (OscValue* v : m_vals)
+        delete v;
+    if (m_types) 
+        free(m_types);
 }
 
-OscMessage::OscMessage(const char* path, const char* types) {
+OscMessage::OscMessage(char const* path, const char* types) {
     m_path = path;
-    m_types = types;
+    m_types = strdup(types);
+    int i = 0;
+    while(types[i]) {
+        m_vals.push_back(new OscValue(types[i++]));
+    }
+    if (Parse() > 3) {
+        if (m_PathElements.at(2) == "config") {
+            m_isConfig = true;
+        }
+    }
 }
 
-bool OscMessage::Parse() {
+int OscMessage::Parse() {
     m_PathElements.clear();
     std::string::size_type prev_pos = 0, pos = 1;
     std::string s = GetPath();
@@ -44,7 +65,7 @@ bool OscMessage::Parse() {
 
     m_PathElements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
     
-    return true;
+    return (int)m_PathElements.size();
 }
 
 void OscMessage::SetPathElements(std::vector<std::string> PathElements) {
@@ -55,4 +76,23 @@ std::vector<std::string> OscMessage::GetPathElements() const {
     return m_PathElements;
 }
 
-
+void OscMessage::Print() {
+    std::cout << "OscMessage: path: " << m_path << std::endl;
+    std::cout << "OscMessage: types: " << m_types << std::endl;
+    
+    int i = 0;
+    for (OscValue* arg : m_vals) {
+        std::cout << "OscMessage: arg: ";
+        switch(arg->GetType()) {
+            case 's':
+                std::cout << arg->GetString() << std::endl;
+                break;
+            case 'i':
+                std::cout << arg->GetInteger() << std::endl;
+                break;
+            case 'f':
+                std::cout << arg->GetFloat() << std::endl;
+                break;
+        }
+    }
+}

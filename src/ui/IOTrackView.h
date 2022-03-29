@@ -17,17 +17,26 @@
 #ifndef IOTRACKVIEW_H
 #define IOTRACKVIEW_H
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 #include "IOTrackStore.h"
 
 class IOTrackView {
 public:
-    virtual OscCmd* GetCmd() = 0;
+//    virtual IOscMessage* GetMessage() = 0;
     virtual IOTrackStore* GetTrackStore() = 0;
+    virtual void SetTrackStore(IOTrackStore*) = 0;
+    virtual void SetRecord(bool) = 0;
     virtual void Resize(bool) = 0;
     virtual void ExpandCollapse(bool) = 0;
+    virtual void SetSelected(bool) = 0;
+    virtual bool GetSelected() = 0;
     virtual void Reset() = 0;
-    virtual void SetHeight(gint) = 0;
+    virtual void SetHeight(int) = 0;
+    virtual void SetTrackName(std::string) = 0;
+    virtual std::string GetTrackName() = 0;
+    virtual void SetTrackColor(int) = 0;
+    virtual void SetPath(std::string path) = 0;
+    virtual std::string GetPath() const = 0;
 };
 
 

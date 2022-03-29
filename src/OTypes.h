@@ -70,6 +70,7 @@ enum UI_EVENTS {
     nothing,
     load,
     new_track,
+    new_channel,
     draw_trackview,
     new_pos,
     play,

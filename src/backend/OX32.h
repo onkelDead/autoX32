@@ -33,12 +33,16 @@
 #include <sigc++/connection.h>
 
 #include "IOMainWnd.h"
+#include "IOMessageHandler.h"
 #include "IOMixer.h"
+#include "IOCacheCallbackHandler.h"
 #include "OTimer.h"
+
+#include "OscCache.h"
 
 #define X32_BUFFER_MAX 512
 
-class OX32 : public IOMixer {
+class OX32 : public IOMixer, IOCacheCallbackHandler {
 public:
     OX32();
     virtual ~OX32();
@@ -50,17 +54,36 @@ public:
 
     int IsConnected();
 
-    void SetMixerCallback(MixerCallback, void*);
-
-
+    int NewMessageCallback(IOscMessage*);
+    int UpdateMessageCallback(IOscMessage*);
+    
+    IOscMessage* AddCacheMessage(const char*, const char*);
+    void ReleaseCacheMessage(std::string);
+    
     virtual void SendFloat(std::string path, float val);
     virtual void SendInt(std::string path, int val);
     virtual void Send(std::string);
 
+    bool GetCachedValue(std::string path, float*);
+    bool GetCachedValue(std::string path, int*);
+    bool GetCachedValue(std::string path, std::string*);    
+    
     bool on_timeout();
 
-    void ProcessOscCmd(char* entry, size_t len);
+    void FrameCallback(char* entry, size_t len);
+    
 
+    
+    void SetMsg_callback(MessageCallback msg_callback, void* ustPtr);
+
+    size_t GetCacheSize() {
+        return m_cache.GetCacheSize();
+    }
+
+    void SetMessageHandler(IOMessageHandler* MessageHandler) {
+        m_MessageHandler = MessageHandler;
+    }
+    
 private:
 
     void do_work(IOMixer*);
@@ -82,8 +105,13 @@ private:
 
     std::thread* m_WorkerThread = nullptr;
 
-    MixerCallback m_callback;
-    void* m_caller;
+    OscCache m_cache;
+    
+    MessageCallback m_msg_callback = nullptr;
+    
+    IOMessageHandler* m_MessageHandler = nullptr;
+    
+    void* m_userPtr;
 
     OTimer m_timer;
     //sigc::connection m_timer;

@@ -17,12 +17,12 @@
 #ifndef IPROJECT_H
 #define IPROJECT_H
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 class IOProject {
 public:
-    virtual OscCmd* GetCommand(char* path) = 0;
-    virtual void AddCommand(OscCmd*) = 0;
+    virtual IOscMessage* GetCommand(char* path) = 0;
+    virtual void AddCommand(IOscMessage*) = 0;
 };
 
 #endif /* IPROJECT_H */

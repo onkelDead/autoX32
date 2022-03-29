@@ -47,14 +47,16 @@ float OTrackDraw::GetHeight(lo_arg it, char t) {
 bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     const Gtk::Allocation allocation = get_allocation();
     auto refStyleContext = get_style_context();
-
+    char t;
+    std::string path;
+    
     int height = allocation.get_height();
     m_width = allocation.get_width();
     int last_val;
 
     track_entry *it = m_trackstore->GetHeadEntry();
-    OscCmd* cmd = m_trackstore->GetOscCommand();
-    char t = cmd->GetTypes().data()[0];
+    t = m_trackstore->GetMessage()->GetVal(0)->GetType();
+    path = m_trackstore->GetMessage()->GetPath();
 
     if (m_in_drag) {
         cr->set_source_rgb(.3, .3, .3);
@@ -64,7 +66,10 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
 
     cr->set_line_width(1);
-    cr->set_source_rgba(cmd->GetColor().get_red(), cmd->GetColor().get_green(), cmd->GetColor().get_blue(), cmd->GetColor().get_alpha());
+    
+    GetColorByIndex(cr, m_trackstore->GetColor_index());
+    
+//    cr->set_source_rgb(1, 1, 1);
 
     while (it->next && it->next->time < m_daw_time->m_viewstart) {
         it = it->next;
@@ -92,7 +97,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
 
     if (m_parent->GetConfig()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
-        draw_text(cr, 2, 2, cmd->GetPath());
+        draw_text(cr, 2, 2, path);
 
     if (m_selected) {
         cr->set_source_rgb(1., 0., 0.);
@@ -140,8 +145,8 @@ IOTrackStore* OTrackDraw::GetTrackStore() {
     return m_trackstore;
 }
 
-OscCmd* OTrackDraw::GetCmd() {
-    return m_trackstore->GetOscCommand();
+IOscMessage* OTrackDraw::GetMessage() {
+    return m_trackstore->GetMessage();
 }
 
 bool OTrackDraw::on_button_press_event(GdkEventButton *event) {
@@ -175,7 +180,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
             m_parent->notify_overview();
         } else {
             SetSelected(!m_selected);
-            m_parent->SelectTrack(m_trackstore->GetOscCommand()->GetPath(), m_selected);
+            m_parent->SelectTrack(m_trackstore->GetMessage()->GetPath(), m_selected);
             queue_draw();
         }
     }
@@ -226,4 +231,55 @@ bool OTrackDraw::on_motion_notify_event(GdkEventMotion *motion_event) {
         }
     }
     return true;
+}
+
+void OTrackDraw::GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index) {
+    switch (index) {
+        case 0:
+        case 8:
+            cr->set_source_rgb(0, 0, 0);
+            break;
+        case 1:
+            cr->set_source_rgb(32768, 0, 0);
+            break;
+        case 2:
+            cr->set_source_rgb(0, 32768, 0);
+            break;
+        case 3:
+            cr->set_source_rgb(32768, 32768, 0);
+            break;
+        case 4:
+            cr->set_source_rgb(0, 0, 32768);
+            break;
+        case 5:
+            cr->set_source_rgb(32768, 0, 32768);
+            break;
+        case 6:
+            cr->set_source_rgb(0, 32768, 32768);
+            break;
+        case 7:
+            cr->set_source_rgb(32768, 32768, 32768);
+            break;
+        case 9:
+            cr->set_source_rgb(65535, 0, 0);
+            break;
+        case 10:
+            cr->set_source_rgb(0, 65535, 0);
+            break;
+        case 11:
+            cr->set_source_rgb(65535, 65535, 0);
+            break;
+        case 12:
+            cr->set_source_rgb(0, 0, 65535);
+            break;
+        case 13:
+            cr->set_source_rgb(65535, 0, 65535);
+            break;
+        case 14:
+            cr->set_source_rgb(0, 65535, 65535);
+            break;
+        case 15:
+            cr->set_source_rgb(65535, 65535, 65535);
+            break;
+    }
 }

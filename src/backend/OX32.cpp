@@ -18,14 +18,17 @@
 #include <string.h>
 #include "OX32.h"
 #include "OTimer.h"
+#include "OscMessage.h"
 
 static void on_Timeout(void* obj) {
     OX32* o = (OX32*)obj;
 
     o->on_timeout();
+    
 }
 
 OX32::OX32() {
+    m_cache.SetCallback_handler(this);
 }
 
 OX32::~OX32() {
@@ -83,7 +86,7 @@ int OX32::Connect(std::string host) {
             if (strcmp(m_in_buffer, "/xinfo") == 0) {
                 int result;
                 lo_message msg = lo_message_deserialise(m_in_buffer, m_in_length, &result);
-                printf("%s ", m_in_buffer);
+                //printf("%s ", m_in_buffer);
                 lo_message_free(msg);
                 break; // Connected!
             }
@@ -133,11 +136,6 @@ int OX32::Disconnect() {
     return 0;
 }
 
-void OX32::SetMixerCallback(MixerCallback callback, void* user_data) {
-    m_callback = callback;
-    m_caller = user_data;
-}
-
 void OX32::do_work(IOMixer *caller) {
     socklen_t ip_len = sizeof (m_Socket);
     int p_status; 
@@ -159,7 +157,12 @@ void OX32::do_work(IOMixer *caller) {
             if ((m_in_length = recvfrom(m_X32_socket_fd, m_in_buffer,
                     X32_BUFFER_MAX, 0, m_SocketPtr, &ip_len)) > 0) {
                 gettimeofday(&t_rec, NULL); // get precise time
-                ProcessOscCmd(m_in_buffer, m_in_length);
+//                if (m_cache. != nullptr) {
+                    FrameCallback(m_in_buffer, m_in_length);
+//                }
+//                else {
+//                    ProcessOscCmd(m_in_buffer, m_in_length);                    
+//                }
             }
         }
     }
@@ -167,28 +170,10 @@ void OX32::do_work(IOMixer *caller) {
         close(m_X32_socket_fd);
 }
 
-void OX32::ProcessOscCmd(char *entry, size_t len) {
-    int result;
-    lo_message msg = lo_message_deserialise(entry, len, &result);
-    int argc = lo_message_get_argc(msg);
-    lo_arg **argv = lo_message_get_argv(msg);
-    OscCmd *cmd = new OscCmd(entry, lo_message_get_types(msg));
 
-    if (argc > 0) {
-        switch (cmd->GetTypes().data()[0]) {
-            case 'f':
-                cmd->SetLastFloat(argv[0]->f);
-                break;
-            case 'i':
-                cmd->SetLastInt(argv[0]->i);
-                break;
-            case 's':
-                cmd->SetLastStr(&argv[0]->s);
-                break;
-        }
-    }
-    m_callback(cmd, m_caller);
-    lo_message_free(msg);
+void OX32::SetMsg_callback(MessageCallback msg_callback, void* userPtr) {
+    m_msg_callback = msg_callback;
+    m_userPtr = userPtr;
 }
 
 int OX32::IsConnected() {
@@ -226,4 +211,75 @@ void OX32::Send(std::string path) {
         m_IsConnected = 0;
     }
     lo_message_free(msg);
+}
+
+
+void OX32::FrameCallback(char* entry, size_t len) {
+    int result;
+    lo_message msg = lo_message_deserialise(entry, len, &result);
+    int argc = lo_message_get_argc(msg);
+    lo_arg **argv = lo_message_get_argv(msg);
+    IOscMessage *cmd = new OscMessage(entry, lo_message_get_types(msg));
+
+    int i = 0;
+    while(char c = cmd->GetTypes()[i]) {
+        switch(c) {
+            case 'f':
+                cmd->GetVal(0)->SetFloat(argv[i]->f);
+                break;
+            case 's':
+                cmd->GetVal(0)->SetString(&argv[i]->s);
+                break;
+            case 'i':
+                cmd->GetVal(0)->SetInteger(argv[i]->i32);
+                break;
+        }
+        i++;
+    }
+    
+    if (m_cache.ProcessMessage(cmd)) {
+        delete cmd;
+    }        
+        
+    
+    lo_message_free(msg);    
+}
+
+int OX32::NewMessageCallback(IOscMessage* msg) {
+    if (m_MessageHandler != nullptr) {
+        m_MessageHandler->NewMessageCallback(msg);
+    }
+    else {
+        std::cout << "OX32::NewMessageCallback called with no handler." << std::endl;
+    }
+    return 0;
+}
+
+int OX32::UpdateMessageCallback(IOscMessage* val) {
+    if (m_MessageHandler != nullptr) {
+        m_MessageHandler->UpdateMessageCallback(val);
+    }
+    else {    
+        std::cout << "OX32::UpdateMessageCallback called with no handler." << std::endl;
+    }
+    return 0;
+}
+
+bool OX32::GetCachedValue(std::string path, float* val) {
+    return m_cache.GetCachedValue(path, val);
+}
+bool OX32::GetCachedValue(std::string path, int* val) {
+    return m_cache.GetCachedValue(path, val);
+}
+
+bool OX32::GetCachedValue(std::string path, std::string* val) {
+    return m_cache.GetCachedValue(path, val);
+}
+
+IOscMessage* OX32::AddCacheMessage(const char* path, const char* types) {
+    return m_cache.AddCacheMessage(path, types);
+}
+
+void OX32::ReleaseCacheMessage(std::string path) {
+    m_cache.ReleaseCacheMessage(path);
 }

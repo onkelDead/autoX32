@@ -18,7 +18,7 @@
 #include <gtkmm.h>
 #include "OMainWnd.h"
 
-#include "OscCmd.h"
+//#include "OscCmd.h"
 
 
 void OMainWnd::OnDawEvent() {
@@ -71,29 +71,61 @@ void OMainWnd::OnViewEvent() {
     if (e) {
 
         switch (e->what) {
-            case UI_EVENTS::new_track:
+            case UI_EVENTS::new_channel:
             {
-                OscCmd* cmd = (OscCmd*) e->with;
+                IOscMessage* msg = (IOscMessage*) e->with;
 
-                m_project.AddCommand(cmd);
-                cmd->SetName(cmd->GetPath());
-                IOTrackStore *trackstore = m_project.NewTrack(cmd);
+                m_project.AddCommand(msg);
+//                cmd->SetName(cmd->GetPath());
+                IOTrackStore *trackstore = m_project.NewTrack(msg);
+                msg->SetTrackstore(trackstore);
                 trackstore->SetPlaying(m_project.m_playing);
-                m_x32->Send(cmd->GetConfigRequestName());
-                m_x32->Send(cmd->GetConfigRequestColor());
-                m_x32->Send(cmd->GetStatsRequestSolo());
+                std::string conf_name = trackstore->GetConfigRequestName();
+                m_x32->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
+                m_x32->Send(conf_name);
+                conf_name = trackstore->GetConfigRequestColor();
+                m_x32->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
+                m_x32->Send(conf_name);
                 
-                if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
+//                m_x32->Send(cmd->GetConfigRequestColor());
+//                m_x32->Send(cmd->GetStatsRequestSolo());
+                
+                if (!m_trackslayout.GetTrackview(msg->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
+                    trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
-                    trackview->UpdateConfig();
+                    //trackview->UpdateConfig();
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
+                    trackstore->SetView(trackview);
 
                 }
-                delete e;
+//                delete e;
             }
                 break;
+//            case UI_EVENTS::new_track:
+//            {
+//                OscCmd* cmd = (OscCmd*) e->with;
+//
+//                m_project.AddCommand(cmd);
+//                cmd->SetName(cmd->GetPath());
+//                IOTrackStore *trackstore = m_project.NewTrack(cmd);
+//                trackstore->SetPlaying(m_project.m_playing);
+//                m_x32->Send(cmd->GetConfigRequestName());
+//                m_x32->Send(cmd->GetConfigRequestColor());
+//                m_x32->Send(cmd->GetStatsRequestSolo());
+//                
+//                if (!m_trackslayout.GetTrackview(trackstore->GetOscCommand()->GetPath())) {
+//                    OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
+//                    trackview->SetTrackStore(trackstore);
+//                    trackview->SetRecord(true);
+//                    trackview->UpdateConfig();
+//                    m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
+//
+//                }
+//                delete e;
+//            }
+//                break;
 
             case UI_EVENTS::draw_trackview:
             {
@@ -163,18 +195,18 @@ void OMainWnd::OnViewEvent() {
                     m_btn_teach->set_active(false);
                 }
                 break;
-            case UI_EVENTS::conf_track:
-            {
-                OscCmd* cmd = (OscCmd*) e->with;
-                OscCmd* c = m_project.ProcessConfig(cmd);
-                if (c) {
-                    OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
-                    if (tv) {
-                        tv->UpdateConfig();
-                    }
-                }
-            }
-                break;
+//            case UI_EVENTS::conf_track:
+//            {
+//                OscCmd* cmd = (OscCmd*) e->with;
+//                OscCmd* c = m_project.ProcessConfig(cmd);
+//                if (c) {
+//                    OTrackView *tv = m_trackslayout.GetTrackview(c->GetPath());
+//                    if (tv) {
+//                        tv->UpdateConfig();
+//                    }
+//                }
+//            }
+//                break;
         }
     }
 }

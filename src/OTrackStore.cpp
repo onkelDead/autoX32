@@ -14,20 +14,24 @@
  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <iostream>
 #include <libgen.h>
+#include <string.h>
+#include <limits.h>
 #include "OTrackStore.h"
 
-// c'tor
-OTrackStore::OTrackStore(OscCmd *cmd) : m_cmd(cmd) {
+
+OTrackStore::OTrackStore(IOscMessage *msg) : m_message(msg) {
     m_layout.m_expanded = true;
     m_layout.m_height = 80;
     m_layout.m_visible = true;
     m_layout.m_index = -1;    
-    m_typechar = m_cmd->GetTypes().c_str()[0];
+    m_typechar = m_message->GetTypes()[0];
     m_entries = NewEntry();
     m_playhead = m_entries;
     EvalFileName();
 }
+
 
 OTrackStore::~OTrackStore() {
     Clear();
@@ -48,10 +52,6 @@ void OTrackStore::Clear() {
     Unlock();
 }
 
-OscCmd* OTrackStore::GetOscCommand() {
-    return m_cmd;
-}
-
 track_entry* OTrackStore::GetHeadEntry() {
     return m_entries;
 }
@@ -60,7 +60,7 @@ track_entry* OTrackStore::GetPlayhead() {
     return m_playhead;
 }
 
-track_entry* OTrackStore::NewEntry(gint timepos) {
+track_entry* OTrackStore::NewEntry(int timepos) {
     track_entry* entry = new track_entry;
     memset(entry, 0, sizeof (track_entry));
     entry->time = timepos;
@@ -89,7 +89,23 @@ void OTrackStore::AddTimePoint(track_entry *e) {
     Unlock();
 }
 
-void OTrackStore::AddEntry(OscCmd* cmd, gint timepos) {
+bool OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
+    if (msg == GetMessage()) {
+        AddEntry(timepos);
+        return true;
+    }
+    if (msg->GetPath() == m_config_name_path) {
+        m_view->SetTrackName(msg->GetVal(0)->GetString());
+        return true;
+    }
+    if (msg->GetPath() == m_config_color_path) {
+        m_color_index = msg->GetVal(0)->GetInteger();
+        return true;
+    }    
+    return false;
+}
+
+void OTrackStore::AddEntry(int timepos) {
     bool is_new = false;
     Lock();
     track_entry *entry = NULL;
@@ -121,7 +137,7 @@ void OTrackStore::RemoveEntry(track_entry *entry) {
     Unlock();
 }
 
-track_entry* OTrackStore::UpdatePlayhead(gint current, bool jump) {
+track_entry* OTrackStore::UpdatePlayhead(int current, bool jump) {
     track_entry *new_pos = nullptr;
     Lock();
     track_entry* entry = InternalGetEntryAtPosition(current);
@@ -189,7 +205,7 @@ void OTrackStore::LoadData(const char *filepath) {
     fclose(io);
 }
 
-gint OTrackStore::GetCountEntries() {
+int OTrackStore::GetCountEntries() {
     int counter = 0;
     track_entry *e = m_entries;
     while (e) {
@@ -223,7 +239,7 @@ void OTrackStore::Unlock() {
     m_mutex.unlock();
 }
 
-track_entry* OTrackStore::InternalGetEntryAtPosition(gint pos) {
+track_entry* OTrackStore::InternalGetEntryAtPosition(int pos) {
     bool changed = false;
 
     track_entry *entry = m_playhead;
@@ -259,14 +275,25 @@ void OTrackStore::InternalAddTimePoint(track_entry *e) {
 }
 
 void OTrackStore::InternalSetCmdValue(track_entry* entry) {
-    switch (m_typechar) {
-        case 'f':
-            entry->val.f = m_cmd->GetLastFloat();
-            break;
-        case 'i':
-            entry->val.i = m_cmd->GetLastInt();
-            break;
-    }    
+    if (m_message) {
+        switch(m_message->GetVal(0)->GetType()) {
+            case 'i':
+               entry->val.i = m_message->GetVal(0)->GetInteger();
+               break;
+            case 'f':
+               entry->val.f = m_message->GetVal(0)->GetFloat();
+               break;
+        }
+        return;
+    }
+//    switch (m_typechar) {
+//        case 'f':
+//            entry->val.f = m_cmd->GetLastFloat();
+//            break;
+//        case 'i':
+//            entry->val.i = m_cmd->GetLastInt();
+//            break;
+//    }    
 }
 
 void OTrackStore::InternalRemoveEntry(track_entry *entry) {
@@ -281,8 +308,17 @@ void OTrackStore::InternalRemoveEntry(track_entry *entry) {
 }
 
 void OTrackStore::EvalFileName() {
-    int len = m_cmd->GetPath().length();
-    char *s = strdup(m_cmd->GetPath().data());
+    int len;
+    char *s;
+    if (m_message) {
+        len = m_message->GetPath().length();
+        s = strdup(m_message->GetPath().data());
+    }
+//    else {
+//        len = m_cmd->GetPath().length();
+//        s = strdup(m_cmd->GetPath().data());
+//        
+//    }
     int i;
     char x[256];
 
@@ -293,4 +329,14 @@ void OTrackStore::EvalFileName() {
 
     free(s);
     sprintf(m_file_name, "%s.dat", x);
+}
+
+int OTrackStore::NewMessageCallback(IOscMessage* msg) {
+    std::cout << "OTrackStore::NewMessageCallback: called." << std::endl;
+    return 0;
+}
+
+int OTrackStore::UpdateMessageCallback(IOscMessage* msg) {
+    std::cout << "OTrackStore::UpdateMessageCallback: called." << std::endl;
+    return 0;    
 }

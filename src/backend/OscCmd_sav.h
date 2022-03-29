@@ -20,6 +20,8 @@
 #include <gtkmm.h>
 #include <gdkmm/rgba.h>
 
+#include "OscMessage.h"
+
 class OscCmd {
 public:
     OscCmd(const char*, const char*);
@@ -27,6 +29,7 @@ public:
     virtual ~OscCmd();
 
     void CopyLastVal(OscCmd* src);
+    void CopyLastVal(OscMessage* src);
     
     std::string GetPath();
     void SetPath(std::string m_path);
@@ -44,7 +47,7 @@ public:
     void SetChIndex(int);
     
     float GetLastFloat();
-    void SetLastFloat(float);
+    void SetLastFloat(const float);
 
     int GetLastInt();
     void SetLastInt(int);

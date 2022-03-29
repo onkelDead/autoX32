@@ -15,7 +15,7 @@
  */
 
 #include <libgen.h>
-#include "OTrackStore.h"
+#include "IOTrackStore.h"
 #include "OTrackView.h"
 #include "OTrackDlg.h"
 #include "res/OResource.h"
@@ -114,13 +114,25 @@ IOTrackStore* OTrackView::GetTrackStore() {
     return m_trackdraw->GetTrackStore();
 }
 
-OscCmd* OTrackView::GetCmd() {
+//IOscMessage* OTrackView::GetMessage() {
+//
+//    return m_trackdraw->GetMessage();
+//}
 
-    return m_trackdraw->GetCmd();
+void OTrackView::SetTrackName(std::string name) {
+    m_label->set_text(name);
+}
+
+std::string OTrackView::GetTrackName() {
+    return m_label->get_text();
+}
+
+void OTrackView::SetTrackColor(int c) {
+    
 }
 
 void OTrackView::UpdateConfig() {
-    m_label->set_text(m_trackdraw->GetCmd()->GetName());
+    //m_label->set_text(m_trackdraw->GetCmd()->GetName());
 }
 
 void OTrackView::SetRecord(bool val) {
@@ -144,25 +156,25 @@ void OTrackView::on_menu_popup_edit() {
     Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(trackdlg_inline_glade);
     OTrackDlg *pDialog = nullptr;
     builder->get_widget_derived("track-dlg", pDialog);
-    pDialog->SetName(m_trackdraw->GetCmd()->GetName());
-    pDialog->SetPath(m_trackdraw->GetCmd()->GetPath());
-    pDialog->SetColor(m_trackdraw->GetCmd()->GetColor());
+//    pDialog->SetName(m_trackdraw->GetCmd()->GetName());
+    pDialog->SetPath(m_trackdraw->GetMessage()->GetPath());
+//    pDialog->SetColor(m_trackdraw->GetCmd()->GetColor());
     pDialog->SetCountEntries(m_trackdraw->GetTrackStore()->GetCountEntries());
 
     pDialog->run();
     if (pDialog->GetResult()) {
-        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
-        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
+//        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
+//        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
         UpdateConfig();
     }
 }
 
 void OTrackView::on_menu_popup_up() {
-    m_parent->TrackViewUp(this->GetCmd()->GetPath());
+    m_parent->TrackViewUp(this->GetPath());
 }
 
 void OTrackView::on_menu_popup_down() {
-    m_parent->TrackViewDown(this->GetCmd()->GetPath());
+    m_parent->TrackViewDown(this->GetPath());
 }
 
 void OTrackView::on_menu_popup_remove() {
@@ -178,7 +190,7 @@ void OTrackView::on_menu_popup_rectoggle() {
 }
 
 void OTrackView::on_menu_popup_hide() {
-    m_parent->TrackViewHide(this->GetCmd()->GetPath());
+    m_parent->TrackViewHide(this->GetPath());
 }
 
 void OTrackView::on_menu_check_data() {

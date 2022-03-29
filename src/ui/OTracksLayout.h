@@ -22,13 +22,6 @@
 #include "IOTracksLayout.h"
 #include "ODlgLayout.h"
 
-typedef struct trackview_entry {
-    trackview_entry* prev;
-    OTrackView* item;
-    trackview_entry* next;
-    
-} trackview_entry;
-
 class OTracksLayout : public Gtk::VBox, public IOTracksLayout {
 public:
     OTracksLayout();
@@ -36,9 +29,9 @@ public:
 
     void AddTrack(OTrackView *v, bool show);
     OTrackView* GetTrackview(std::string);
-    trackview_entry* GetTrackHead();
-    trackview_entry* GetTrackTail();
-    trackview_entry* GetTrackSelected();
+    OTrackView* GetTrackHead();
+    OTrackView* GetTrackTail();
+    OTrackView* GetTrackSelected();
     
     void RemoveTrackView(std::string path);
     void RemoveAllTackViews();
@@ -77,12 +70,12 @@ public:
 private:
     
     OTrackView* m_selectedView = nullptr;
-    trackview_entry* new_entry();
-    void append_entry(trackview_entry* entry);
-    void swap_tracks(trackview_entry* t1, trackview_entry* t2);
+    OTrackView* new_entry();
+    void append_entry(OTrackView* entry);
+    void swap_tracks(OTrackView* t1, OTrackView* t2);
     gint get_count_visible();
     
-    trackview_entry* m_tracklist = nullptr;
+    std::vector<OTrackView*> m_tracklist;
     Gtk::Grid m_grig;
     Gtk::Box m_bbox;
 };

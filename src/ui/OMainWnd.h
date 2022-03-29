@@ -23,6 +23,7 @@
 
 
 #include "IOMainWnd.h"
+#include "IOMessageHandler.h"
 #include "res/OResource.h"
 
 #include "OConfig.h"
@@ -43,7 +44,7 @@
 #define PACKAGE_VERSION "0.6"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OMainWnd : public Gtk::Window, IOMainWnd {
+class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler {
 public:
     OMainWnd();
     virtual ~OMainWnd();
@@ -92,8 +93,8 @@ public:
     void notify_jack(JACK_EVENT);
     void OnDawEvent();
     void notify_daw(DAW_PATH);
+    void OnMessageEvent();
     void OnMixerEvent();
-    void notify_mixer(OscCmd*);
     void OnOverViewEvent();
     void OnViewEvent();
     void notify_overview();
@@ -104,6 +105,9 @@ public:
     void AutoConnect();
     bool ConnectMixer(std::string);
 
+    int NewMessageCallback(IOscMessage*);
+    int UpdateMessageCallback(IOscMessage*);    
+    
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
 
     bool SetupBackend();
@@ -230,8 +234,9 @@ private:
     
     OTimer m_jackTimer;
 
-    Glib::Dispatcher m_MixerDispatcher;
-    std::queue<OscCmd*> my_mixerqueue;
+    Glib::Dispatcher m_MessageDispatcher;
+    std::queue<IOscMessage*> my_messagequeue;
+
     Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;
     OQueue m_new_ts_queue;
