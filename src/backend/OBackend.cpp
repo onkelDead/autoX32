@@ -69,6 +69,20 @@ ctl_command s_select_off = {
     { 0x90, 0x18, 0x00}, false
 };
 
+ctl_command s_level = {
+    3, 
+    { 0xE0, 0, 0}, false
+};
+
+ctl_command s_lcd_1 = {
+    15,
+    {0, }, false
+};
+
+ctl_command s_lcd_2 = {
+    15,
+    {0, }, false
+};
 
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
     if (len == 3) {
@@ -116,22 +130,22 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     backend->Notify(CTL_WHEEL_MODE);
                     break;
                 case 3:
-                    if (data[2]) // button on down
-                        time(&t);
-                    else {
-                        time_t now;
-                        time(&now);
-                        if (now > t + 1) {
-                            backend->Notify(CTL_LOOP_CLEAR);
-                        } else {
-                            backend->Notify(CTL_LOOP_SET);
-                        }
-                    }
+//                    if (data[2]) // button on down
+//                        time(&t);
+//                    else {
+//                        time_t now;
+//                        time(&now);
+//                        if (now > t + 1) {
+//                            backend->Notify(CTL_LOOP_CLEAR);
+//                        } else {
+//                            backend->Notify(CTL_LOOP_SET);
+//                        }
+//                    }
                     break;
                 case 4:
-                    if (data[2]) {
-                        backend->Notify(CTL_TOGGLE_LOOP);
-                    }
+//                    if (data[2]) {
+//                        backend->Notify(CTL_TOGGLE_LOOP);
+//                    }
                     break;
                 case 0x5b:
                     if (data[2]) {
@@ -184,7 +198,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
             }
         }
         if (data[0] == 0xb0) {
-            if (data[1] = 0x3c) {
+            if (data[1] == 0x3c) {
                 if (data[2] == 0x41) {
                     if (!backend->m_wheel_mode)
                         backend->Notify(CTL_JUMP_BACKWARD);
@@ -226,17 +240,16 @@ int process_mmc_event(uint8_t* data, size_t len, IOBackend* backend) {
 }
 
 int process_mtc_event(uint8_t* data, IOBackend* backend) {
-    uint8_t s;
 
     if (data[0] == 0xf1) {
         backend->QuarterFrame(data[1]);
-        if (backend->GetMidiMtc()->m_edge_sec == 1) {
-            backend->Notify(MTC_QUARTER_FRAME_SEC);
-        }
-        if (backend->GetMidiMtc()->m_edge_sec == 2) {
-            backend->Notify(MTC_QUARTER_FRAME_SEC1);
-            backend->GetMidiMtc()->m_edge_sec = 0;
-        } else
+//        if (backend->GetMidiMtc()->m_edge_sec == 1) {
+//            backend->Notify(MTC_QUARTER_FRAME_SEC);
+//        }
+//        if (backend->GetMidiMtc()->m_edge_sec == 2) {
+//            backend->Notify(MTC_QUARTER_FRAME_SEC1);
+//            backend->GetMidiMtc()->m_edge_sec = 0;
+//        } else
             backend->Notify(MTC_QUARTER_FRAME);
     } else if (data[0] == 0xf0) {
         backend->GetMidiMtc()->FullFrame(data);

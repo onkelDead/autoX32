@@ -54,7 +54,7 @@ public:
         m_path = path;
     }
 
-    std::string GetPath() {
+    const std::string GetPath() {
         return m_path;
     }
 
@@ -65,7 +65,9 @@ public:
     const char* GetTypes() const {
         return m_types;
     }
-    void SetVal(OscValue* vals);
+    void AddVal(OscValue* vals);
+    
+    void SetVal(OscValue*);
     
     OscValue* GetVal(int index) const;
 

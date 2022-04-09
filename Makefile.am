@@ -100,14 +100,14 @@ TESTS = check_TrackStore check_OscCmd
 check_PROGRAMS = check_TrackStore check_OscCmd
 
 check_TrackStore_SOURCES = tests/test_trackstore.cpp 
-check_TrackStore_CPPFLAGS = -g -O0 -std=c++2a -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
-check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscMessage.o src/backend/autoX32-OscValue.o src/backend/autoX32-OscCache.o ${GTKMM3_LIBS}
+check_TrackStore_CPPFLAGS = -g -O0 -std=c++2a -Isrc -Isrc/backend ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS}
+check_TrackStore_LDADD = src/autoX32-OTrackStore.o src/backend/autoX32-OscMessage.o src/backend/autoX32-OscValue.o src/backend/autoX32-OscCache.o ${GTKMM3_LIBS} ${XML2_LIBS}
 
 check_OscCmd_SOURCES = tests/test_OscCmd.cpp
 check_OscCmd_CPPFLAGS = -g -O0 -std=c++2a -Isrc -Isrc/ui -Isrc/utils -Isrc/backend \
     src/backend/autoX32-OscMessage.o \
     src/backend/autoX32-OscValue.o \
-    ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS}
+    ${CHECK_FLAGS} ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS}
 
 check_OscCmd_LDADD = \
     src/backend/autoX32-OscMessage.o \
@@ -116,4 +116,4 @@ check_OscCmd_LDADD = \
     src/backend/autoX32-OCallbackHandler.o \
     src/backend/autoX32-OX32.o \
     src/utils/autoX32-OTimer.o \
-    ${GTKMM3_LIBS} ${LO_LIBS} -lpthread 
+    ${GTKMM3_LIBS} ${LO_LIBS} ${XML2_LIBS} -lpthread 

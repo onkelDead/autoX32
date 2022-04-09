@@ -319,12 +319,12 @@ void OMainWnd::on_button_play_clicked() {
 
 void OMainWnd::on_button_home_clicked() {
     m_backend->Locate(m_project.GetLoopStart());
-    UpdatePlayhead();
+    UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_end_clicked() {
     m_backend->Locate(m_project.GetLoopEnd());
-    UpdatePlayhead();
+    UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_test_clicked() {
@@ -354,16 +354,17 @@ void OMainWnd::notify_overview() {
 void OMainWnd::UpdateDawTime(bool redraw) {
     if (!m_lock_daw_time) {
         m_lock_daw_time = true;
-        UpdatePlayhead();
+        
+        UpdatePlayhead(true);
         m_timeview->UpdateDawTime(redraw);
         m_lock_daw_time = false;
     }
 }
 
-void OMainWnd::UpdatePlayhead() {
-    daw_time* dt = m_project.GetDawTime();
-    gint pos = ((GetPosMillis()) - dt->m_viewstart) * dt->scale;
-    m_playhead->set_x_pos(pos);
+void OMainWnd::UpdatePlayhead(bool doCalc) {
+    if (doCalc)
+        m_playhead->calc_new_pos(m_project.GetDawTime(), GetPosMillis());
+    m_playhead->set_x_pos(0);
     m_overview->SetPos(GetPosMillis());
 }
 

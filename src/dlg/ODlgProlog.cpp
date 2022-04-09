@@ -47,9 +47,6 @@ ODlgProlog::ODlgProlog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
     m_btn_start->signal_clicked().connect(sigc::mem_fun(*this, &ODlgProlog::on_btn_start));
 }
 
-ODlgProlog::ODlgProlog(const ODlgProlog& orig) {
-}
-
 ODlgProlog::~ODlgProlog() {
 }
 

@@ -14,16 +14,30 @@
 #include "OscMessage.h"
 #include <string.h>
 
-
 OscMessage::OscMessage() {
 }
 
-void OscMessage::SetVal(OscValue* val) {
+void OscMessage::AddVal(OscValue* val) {
     m_vals.push_back(val);
 }
 
-OscValue* OscMessage::GetVal(int index) const{
+OscValue* OscMessage::GetVal(int index) const {
     return m_vals.at(index);
+}
+
+void OscMessage::SetVal(OscValue* new_val) {
+    switch (new_val->GetType()) {
+        case 's':
+            m_vals.at(0)->SetString(new_val->GetString());
+            break;
+        case 'i':
+            m_vals.at(0)->SetInteger(new_val->GetInteger());
+            break;
+        case 'f':
+            std::cout << "new float " << new_val->GetFloat() << std::endl;
+            m_vals.at(0)->SetFloat(new_val->GetFloat());
+            break;
+    }
 }
 
 OscMessage::OscMessage(const OscMessage& orig) {
@@ -32,7 +46,7 @@ OscMessage::OscMessage(const OscMessage& orig) {
 OscMessage::~OscMessage() {
     for (OscValue* v : m_vals)
         delete v;
-    if (m_types) 
+    if (m_types)
         free(m_types);
 }
 
@@ -40,7 +54,7 @@ OscMessage::OscMessage(char const* path, const char* types) {
     m_path = path;
     m_types = strdup(types);
     int i = 0;
-    while(types[i]) {
+    while (types[i]) {
         m_vals.push_back(new OscValue(types[i++]));
     }
     if (Parse() > 3) {
@@ -64,8 +78,8 @@ int OscMessage::Parse() {
     }
 
     m_PathElements.push_back(s.substr(prev_pos, pos - prev_pos)); // Last word
-    
-    return (int)m_PathElements.size();
+
+    return (int) m_PathElements.size();
 }
 
 void OscMessage::SetPathElements(std::vector<std::string> PathElements) {
@@ -79,11 +93,10 @@ std::vector<std::string> OscMessage::GetPathElements() const {
 void OscMessage::Print() {
     std::cout << "OscMessage: path: " << m_path << std::endl;
     std::cout << "OscMessage: types: " << m_types << std::endl;
-    
-    int i = 0;
+
     for (OscValue* arg : m_vals) {
         std::cout << "OscMessage: arg: ";
-        switch(arg->GetType()) {
+        switch (arg->GetType()) {
             case 's':
                 std::cout << arg->GetString() << std::endl;
                 break;

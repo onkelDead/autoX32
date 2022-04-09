@@ -221,16 +221,14 @@ void OTracksLayout::TrackUp(std::string path) {
             if (index > 0) {
                 int i1 = 0;
                 for (OTrackView* m : m_tracklist) {
-                    if (i1 >= index);
-                        remove(*m);
+                    remove(*m);
                     i1++;
                 }
                 i1 = 0;
                 iter_swap(m_tracklist.begin() + index - 1, m_tracklist.begin() + index);
                 for (OTrackView* m : m_tracklist) {
-                    if (i1 >= index);
-                        add(*m);
-                        i1++;
+                    add(*m);
+                    i1++;
                 }
                 break;
             }
@@ -241,22 +239,20 @@ void OTracksLayout::TrackUp(std::string path) {
 }
 
 void OTracksLayout::TrackDown(std::string path) {
-    int index = 0;
+    size_t index = 0;
     for (OTrackView* list : m_tracklist) {
         if (list->GetPath().compare(path) == 0) {
             if (index < m_tracklist.size() - 1) {
-                int i1 = 0;
+                size_t i1 = 0;
                 for (OTrackView* m : m_tracklist) {
-                    if (i1 >= index);
-                        remove(*m);
+                    remove(*m);
                     i1++;
                 }
                 i1 = 0;
                 iter_swap(m_tracklist.begin() + index, m_tracklist.begin() + index + 1);
                 for (OTrackView* m : m_tracklist) {
-                    if (i1 >= index);
-                        add(*m);
-                        i1++;
+                    add(*m);
+                    i1++;
                 }
                 break;
             }
@@ -292,7 +288,7 @@ gint OTracksLayout::get_count_visible() {
 
 std::string OTracksLayout::GetSelectedTrackName() {
     
-    return ""; //m_selectedView->GetCmd()->GetName();
+    return m_selectedView->GetTrackName();
     
 }
 

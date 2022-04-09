@@ -108,6 +108,7 @@ void OTrackView::on_button_x32_rec_clicked() {
 void OTrackView::SetTrackStore(IOTrackStore *trackstore) {
     m_trackdraw->SetTrackStore(trackstore);
     m_expander->set_expanded(trackstore->GetLayout()->m_expanded);
+    SetPath(trackstore->GetMessage()->GetPath());
 }
 
 IOTrackStore* OTrackView::GetTrackStore() {
@@ -153,20 +154,7 @@ bool OTrackView::on_button_press_event(GdkEventButton *event) {
 }
 
 void OTrackView::on_menu_popup_edit() {
-    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(trackdlg_inline_glade);
-    OTrackDlg *pDialog = nullptr;
-    builder->get_widget_derived("track-dlg", pDialog);
-//    pDialog->SetName(m_trackdraw->GetCmd()->GetName());
-    pDialog->SetPath(m_trackdraw->GetMessage()->GetPath());
-//    pDialog->SetColor(m_trackdraw->GetCmd()->GetColor());
-    pDialog->SetCountEntries(m_trackdraw->GetTrackStore()->GetCountEntries());
-
-    pDialog->run();
-    if (pDialog->GetResult()) {
-//        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
-//        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
-        UpdateConfig();
-    }
+    m_parent->EditTrack(m_trackdraw->GetMessage()->GetPath());
 }
 
 void OTrackView::on_menu_popup_up() {

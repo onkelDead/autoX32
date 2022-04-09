@@ -19,17 +19,18 @@
 
 #include <gtkmm.h>
 #include <gtkmm/widget.h>
+#include "OTypes.h"
 
 class OPlayHead : public Gtk::Widget {
 public:
     OPlayHead();
-    OPlayHead(const OPlayHead& orig);
     virtual ~OPlayHead();
 
     void set_active(bool val) { m_active = val; }
     bool get_initialized() { return m_initialized; }
     void set_initialized(bool val) { m_initialized = val; }
     
+    bool calc_new_pos(daw_time* dt, int millis);
     void set_x_pos(int pos);
     
 protected:
@@ -48,7 +49,7 @@ protected:
 private:
     
     int m_pos;
-    int m_last_pos;
+    int m_last_pos = 0;
     bool m_initialized = false;
     bool m_active = false;
 };

@@ -22,21 +22,23 @@ OscCache::OscCache(const OscCache& orig) {
 
 OscCache::~OscCache() {
     for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
-        delete it->second;
+        delete (OscMessage*)it->second;
     }
     m_cache.clear();
 }
 
 bool OscCache::ProcessMessage(IOscMessage* msg) {
+    
+    // Message not known in cache
     if (!m_cache.contains(msg->GetPath())) {
-        m_cache[msg->GetPath()] = msg;
-        m_callback_handler->NewMessageCallback(msg);
+        IOscMessage* new_msg = new OscMessage(msg->GetPath().c_str(), msg->GetTypes());
+        new_msg->SetVal(msg->GetVal(0));
+        m_cache[msg->GetPath()] = new_msg;
+        m_callback_handler->NewMessageCallback(new_msg);
         return false;
     }
     else {
-        
-        *m_cache[msg->GetPath()]->GetVal(0) = *msg->GetVal(0);
-        m_callback_handler->UpdateMessageCallback(m_cache[msg->GetPath()]);
+        m_callback_handler->UpdateMessageCallback(msg);
         return true;
     }
 }
@@ -79,6 +81,32 @@ IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types) {
 }
 
 void OscCache::ReleaseCacheMessage(std::string path) {
-    IOscMessage* msg = m_cache[path];
     m_cache.erase(path);
+}
+
+IOscMessage* OscCache::GetCachedMsg(const char* path) {
+    if (m_cache.contains(path))
+        return m_cache[path];
+    return nullptr;
+}
+
+void OscCache::Save(xmlTextWriterPtr writer) {
+    //char cv[16];
+    for (std::map<std::string, IOscMessage*>::iterator it = m_cache.begin(); it != m_cache.end(); ++it) {
+        xmlTextWriterStartElement(writer, BAD_CAST "cmd");
+//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "name", "%s", it->second->GetName().data());
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->second->GetPath().data());
+        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "types", "%s", it->second->GetTypes());
+//        sprintf(cv, "%d", it->second->GetColor().get_red_u());
+//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "red", "%s", cv);
+//        sprintf(cv, "%d", it->second->GetColor().get_green_u());
+//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "green", "%s", cv);
+//        sprintf(cv, "%d", it->second->GetColor().get_blue_u());
+//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "blue", "%s", cv);
+//        sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
+//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
+        xmlTextWriterEndElement(writer);
+        printf("Project::Save: command %s saved\n", it->second->GetPath().data());
+
+    }    
 }

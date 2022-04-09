@@ -114,7 +114,6 @@ int OX32::Connect(std::string host) {
 }
 
 bool OX32::on_timeout() {
-    socklen_t ip_len = sizeof (m_Socket);
     lo_message msg = lo_message_new();
     lo_message_serialise(msg, "/xremote", m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
@@ -157,12 +156,7 @@ void OX32::do_work(IOMixer *caller) {
             if ((m_in_length = recvfrom(m_X32_socket_fd, m_in_buffer,
                     X32_BUFFER_MAX, 0, m_SocketPtr, &ip_len)) > 0) {
                 gettimeofday(&t_rec, NULL); // get precise time
-//                if (m_cache. != nullptr) {
-                    FrameCallback(m_in_buffer, m_in_length);
-//                }
-//                else {
-//                    ProcessOscCmd(m_in_buffer, m_in_length);                    
-//                }
+                FrameCallback(m_in_buffer, m_in_length);
             }
         }
     }
@@ -181,7 +175,6 @@ int OX32::IsConnected() {
 }
 
 void OX32::SendFloat(std::string path, float val) {
-    socklen_t ip_len = sizeof (m_Socket);
     lo_message msg = lo_message_new();
     lo_message_add_float(msg, val);
     lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
@@ -203,6 +196,18 @@ void OX32::SendInt(std::string path, int val) {
     lo_message_free(msg);
 }
 
+void OX32::SendString(std::string path, std::string val) {
+    lo_message msg = lo_message_new();
+    lo_message_add_string(msg, val.data());
+    lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
+    if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
+        perror("coundn't send data to X32");
+        m_IsConnected = 0;
+    }
+    lo_message_free(msg);    
+}
+
+
 void OX32::Send(std::string path) {
     lo_message msg = lo_message_new();
     lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
@@ -216,31 +221,54 @@ void OX32::Send(std::string path) {
 
 void OX32::FrameCallback(char* entry, size_t len) {
     int result;
+    
+    // filter messages here
+    if (entry[1] == '-')
+        return;
+    
     lo_message msg = lo_message_deserialise(entry, len, &result);
-    int argc = lo_message_get_argc(msg);
     lo_arg **argv = lo_message_get_argv(msg);
-    IOscMessage *cmd = new OscMessage(entry, lo_message_get_types(msg));
-
+    
     int i = 0;
-    while(char c = cmd->GetTypes()[i]) {
+    IOscMessage* cached = m_cache.GetCachedMsg(entry);
+    if (cached) {
+        while(char c = cached->GetTypes()[i]) {
+            switch(c) {
+                case 'f':
+                    cached->GetVal(i)->SetFloat(argv[i]->f);
+                    break;
+                case 's':
+                    cached->GetVal(i)->SetString(&argv[i]->s);
+                    break;
+                case 'i':
+                    cached->GetVal(i)->SetInteger(argv[i]->i32);
+                    break;
+            }
+            i++;
+        }
+        m_cache.ProcessMessage(cached);
+        lo_message_free(msg);    
+        return;
+    }
+    
+    OscMessage cmd(entry, lo_message_get_types(msg));
+
+    while(char c = cmd.GetTypes()[i]) {
         switch(c) {
             case 'f':
-                cmd->GetVal(0)->SetFloat(argv[i]->f);
+                cmd.GetVal(i)->SetFloat(argv[i]->f);
                 break;
             case 's':
-                cmd->GetVal(0)->SetString(&argv[i]->s);
+                cmd.GetVal(i)->SetString(&argv[i]->s);
                 break;
             case 'i':
-                cmd->GetVal(0)->SetInteger(argv[i]->i32);
+                cmd.GetVal(i)->SetInteger(argv[i]->i32);
                 break;
         }
         i++;
     }
     
-    if (m_cache.ProcessMessage(cmd)) {
-        delete cmd;
-    }        
-        
+    m_cache.ProcessMessage(&cmd));
     
     lo_message_free(msg);    
 }
@@ -282,4 +310,12 @@ IOscMessage* OX32::AddCacheMessage(const char* path, const char* types) {
 
 void OX32::ReleaseCacheMessage(std::string path) {
     m_cache.ReleaseCacheMessage(path);
+}
+
+IOscMessage* OX32::GetCachedMessage(std::string path) {
+    return m_cache.GetCachedMsg(path.c_str());
+}
+
+void OX32::Save(xmlTextWriterPtr writer) {
+    m_cache.Save(writer);
 }

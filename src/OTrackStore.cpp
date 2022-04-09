@@ -183,26 +183,28 @@ void OTrackStore::LoadData(const char *filepath) {
     free(path);
     FILE *io = fopen(file, "rb");
 
-    Clear();
-    Lock();
-    while (!feof(io)) {
-        size_t s;
-        track_entry *it = NewEntry();
-        s = fread(&it->time, sizeof (it->time), 1, io);
-        if (s != 1) {
-            delete it;
-            break;
+    if (io) {
+        Clear();
+        Lock();
+        while (!feof(io)) {
+            size_t s;
+            track_entry *it = NewEntry();
+            s = fread(&it->time, sizeof (it->time), 1, io);
+            if (s != 1) {
+                delete it;
+                break;
+            }
+            s = fread(&it->val, sizeof (it->val), 1, io);
+            if (s != 1) {
+                delete it;
+                break;
+            }        
+            InternalAddTimePoint(it);
         }
-        s = fread(&it->val, sizeof (it->val), 1, io);
-        if (s != 1) {
-            delete it;
-            break;
-        }        
-        InternalAddTimePoint(it);
+        Unlock();
+        m_dirty = false;
+        fclose(io);
     }
-    Unlock();
-    m_dirty = false;
-    fclose(io);
 }
 
 int OTrackStore::GetCountEntries() {

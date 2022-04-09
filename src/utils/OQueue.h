@@ -22,19 +22,24 @@
 #include <mutex>
 
 #include "OTypes.h"
+#include "IOscMessage.h"
 
+template <class T>
 class OQueue {
 public:
     OQueue();
     OQueue(const OQueue& orig);
     virtual ~OQueue();
     
-    void push(ui_event*);
-    void front_pop(ui_event**);
+    void push(T);
+    void front_pop(T*);
+    bool empty() {
+        return m_queue.empty();
+    }
     
 private:
 
-    std::queue<ui_event*> m_queue;
+    std::queue<T> m_queue;
     mutable std::mutex m_mutex;
     
 };

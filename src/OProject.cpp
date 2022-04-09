@@ -50,7 +50,7 @@ OProject::OProject(std::string location) {
 
 OProject::~OProject() {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        delete it->second;
+        delete (OTrackStore*)it->second;
     }
 }
 
@@ -117,7 +117,6 @@ void OProject::Load(std::string location) {
     xmlXPathContextPtr context;
     xmlXPathObjectPtr result;
     xmlNodeSetPtr nodeset;
-    xmlChar *keyword;
 
     doc = xmlParseFile(m_projectFile.data());
     context = xmlXPathNewContext(doc);
@@ -154,10 +153,11 @@ void OProject::Load(std::string location) {
 
                 char* path = strdup((char*) xmlPath);
                 char* types = strdup((char*) xmlTypes);
-                m_known_mixer_commands[path] = m_mixer->AddCacheMessage(path, types);
+//                m_known_mixer_commands[path] = m_mixer->AddCacheMessage(path, types);
                 xmlFree(xmlPath);
                 xmlFree(xmlTypes);
                 char* name = (char*) xmlGetProp(node, BAD_CAST "name");
+                m_mixer->AddCacheMessage(path, types);
                 //m_known_mixer_commands[path]->SetName(name);
                 xmlFree(name);
 //                Gdk::RGBA color;
@@ -191,7 +191,7 @@ void OProject::Load(std::string location) {
                 char* layout_index = (char*) xmlGetProp(node, BAD_CAST "layout_index");
                 char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
                 
-                IOscMessage* msg = m_known_mixer_commands[path];
+                IOscMessage* msg = m_mixer->GetCachedMessage(path);
                 IOTrackStore *ts = NewTrack(msg);
                 
                 ts->GetLayout()->m_expanded = atoi(expanded);
@@ -222,15 +222,11 @@ void OProject::Load(std::string location) {
 
 bool OProject::OpenFromArdurRecent() {
     FILE* file_recent;
-    char name[256];
     char path[256];
     bool ret_val = false;
-    int dummy;
 
     file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
     if (file_recent != NULL) {
-        dummy = fscanf(file_recent, "%s", name);
-        dummy = fscanf(file_recent, "%s", path);
         fclose(file_recent);
 
         strncat(path, "/autoX32", 32);
@@ -275,13 +271,12 @@ void OProject::Save() {
 
 void OProject::Close() {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        delete it->second;
+        delete (OTrackStore*)it->second;
     }
     for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
-        delete it->second;
+        delete (OscMessage*)it->second;
     }
     m_tracks.clear();
-    m_known_mixer_commands.clear();
     m_location = "";
     m_projectFile = "";
     m_daw_range.m_dirty = false;
@@ -330,24 +325,7 @@ void OProject::SaveZoom(xmlTextWriterPtr writer) {
 }
 
 void OProject::SaveCommands(xmlTextWriterPtr writer) {
-    char cv[16];
-    for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
-        xmlTextWriterStartElement(writer, BAD_CAST "cmd");
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "name", "%s", it->second->GetName().data());
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->second->GetPath().data());
-        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "types", "%s", it->second->GetTypes());
-//        sprintf(cv, "%d", it->second->GetColor().get_red_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "red", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_green_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "green", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_blue_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "blue", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
-        xmlTextWriterEndElement(writer);
-        printf("Project::Save: command %s saved\n", it->second->GetPath().data());
-
-    }
+    m_mixer->Save(writer);
 }
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
@@ -357,18 +335,18 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
         IOTrackStore* ts = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
-        sprintf(cv, "%d", it->second->GetLayout()->m_expanded);
+        sprintf(cv, "%d", ts->GetLayout()->m_expanded);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
-        sprintf(cv, "%d", it->second->GetLayout()->m_height);
+        sprintf(cv, "%d", ts->GetLayout()->m_height);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
         sprintf(cv, "%d", layout_index);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "layout_index", "%s", cv);
-        sprintf(cv, "%d", it->second->GetLayout()->m_visible);
+        sprintf(cv, "%d", ts->GetLayout()->m_visible);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "visible", "%s", cv);
 
         xmlTextWriterEndElement(writer);
-        if (it->second->IsDirty()) {
-            it->second->SaveData(m_projectFile.data());
+        if (ts->IsDirty()) {
+            ts->SaveData(m_projectFile.data());
             printf("Project::Save: track %s saved\n", it->first.data());
         }
     }
@@ -411,23 +389,6 @@ void OProject::SetPlaying(bool val) {
     }
 }
 
-IOscMessage* OProject::GetCommand(char* path) {
-    return m_known_mixer_commands[path];
-}
-
-void OProject::AddCommand(IOscMessage* cmd) {
-    m_known_mixer_commands[cmd->GetPath()] = cmd;
-}
-
-void OProject::RemoveCommand(IOscMessage* cmd) {
-    IOTrackStore *ts = m_tracks[cmd->GetPath()];
-    m_tracks.erase(cmd->GetPath());
-    delete ts;
-    m_known_mixer_commands.erase(cmd->GetPath());
-    delete cmd;
-    m_dirty = true;
-}
-
 IOTrackStore* OProject::GetTrack(std::string path) {
     auto e = m_tracks.find(path);
     if (e != m_tracks.end())
@@ -463,28 +424,4 @@ bool OProject::UpdatePos(gint current, bool jump) {
         ret_code = PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
     }
     return ret_code;
-}
-
-IOscMessage* OProject::ProcessConfig(IOscMessage* cmd) {
-    printf("ProcessConfig %s\n", cmd->GetPath().data());
-    for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
-//        if (it->second->GetConfigRequestName() == cmd->GetPath()) {
-//            it->second->SetName(cmd->GetLastStr());
-//            return it->second;
-//        }
-//        else if (it->second->GetConfigRequestColor() == cmd->GetPath()) {
-//            it->second->SetColorIndex(cmd->GetLastInt());
-//            return it->second;
-//        }
-//        else if (it->second->GetStatsRequestSolo() == cmd->GetPath()) {
-//            it->second->SetSolo(cmd->GetLastInt());
-//            return it->second;
-//        }
-
-    }
-    return NULL;
-}
-
-void OProject::ProcessStats(IOscMessage* cmd) {
-    
 }

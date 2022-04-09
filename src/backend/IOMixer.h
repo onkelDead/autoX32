@@ -17,13 +17,17 @@
 #ifndef IOX32_H
 #define IOX32_H
 
+#include <libxml/encoding.h>
+#include <libxml/xmlwriter.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include "IOMessageHandler.h"
 
 typedef void(*MessageCallback)(char*, size_t, void*);
 
 class IOMixer {
 public:
-    
     virtual int Connect(std::string) = 0;
     virtual int Disconnect() = 0;
 
@@ -31,11 +35,15 @@ public:
     
     virtual IOscMessage* AddCacheMessage(const char*, const char*) = 0;
     virtual void ReleaseCacheMessage(std::string) = 0;
+    virtual IOscMessage* GetCachedMessage(std::string   ) = 0;
+    
+    virtual void Save(xmlTextWriterPtr) = 0;
     
     virtual int IsConnected() = 0;
     
     virtual void SendFloat(std::string, float) = 0;
     virtual void SendInt(std::string, int ) = 0;
+    virtual void SendString(std::string, std::string) = 0;
     virtual void Send(std::string) = 0;
 };
 

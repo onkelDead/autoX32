@@ -33,7 +33,7 @@ int OMidiMtc::QuarterFrame(uint8_t data) {
         ret = 2;
     }
     
-    if (diggit[0] % 10 == 0) {
+    if (diggit[0] % 4 == 0) {
         m_edge_sec = true;
     }
     
@@ -79,9 +79,7 @@ void OMidiMtc::SetFrame(int f) {
 }
 
 std::string OMidiMtc::GetTimeCode() {
-    char t[32];
 
-    sprintf(t, "%02d:%02d:%02d:%02d", diggit[3], diggit[2], diggit[1], diggit[0]);
-    m_timecode = t;
+    sprintf(m_timecode.data(), "%02d:%02d:%02d:%02d", diggit[3], diggit[2], diggit[1], diggit[0]);
     return m_timecode;
 }

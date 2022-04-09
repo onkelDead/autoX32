@@ -57,7 +57,7 @@ public:
     void LoopEnd();
     bool GetLoopState();
     void SetLoopState(bool);
-
+    
     snd_seq_t *alsa_client;
     struct pollfd *pfd;
     int npfd;

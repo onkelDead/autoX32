@@ -36,13 +36,14 @@
 #include "IOMessageHandler.h"
 #include "IOMixer.h"
 #include "IOCacheCallbackHandler.h"
+#include "ISerializer.h"
 #include "OTimer.h"
 
 #include "OscCache.h"
 
 #define X32_BUFFER_MAX 512
 
-class OX32 : public IOMixer, IOCacheCallbackHandler {
+class OX32 : public IOMixer, IOCacheCallbackHandler, ISerializer {
 public:
     OX32();
     virtual ~OX32();
@@ -59,9 +60,12 @@ public:
     
     IOscMessage* AddCacheMessage(const char*, const char*);
     void ReleaseCacheMessage(std::string);
+    IOscMessage* GetCachedMessage(std::string);
+    void Save(xmlTextWriterPtr);
     
     virtual void SendFloat(std::string path, float val);
     virtual void SendInt(std::string path, int val);
+    virtual void SendString(std::string, std::string);
     virtual void Send(std::string);
 
     bool GetCachedValue(std::string path, float*);

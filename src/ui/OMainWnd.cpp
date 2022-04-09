@@ -23,6 +23,7 @@
 //#include "OscCmd.h"
 
 #include "res/autoX32.h"
+#include "res/trackdlg.h"
 
 
 void on_jack_event(void *obj) {
@@ -33,16 +34,15 @@ void on_jack_event(void *obj) {
 
 void check_ardour_recent(void* user_Data) {
     FILE* file_recent;
-    char name[256];
     char path[256];
-    int dummy;
-
+    char name[256];
+    
     OMainWnd* mainWnd = (OMainWnd*) user_Data;
 
     file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
     if (file_recent != NULL) {
-        dummy = fscanf(file_recent, "%s", name);
-        dummy = fscanf(file_recent, "%s", path);
+        fscanf(file_recent, "%s", name);
+        fscanf(file_recent, "%s", path);
         fclose(file_recent);
         strncat(path, "/autoX32", 32);
         if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
@@ -111,7 +111,7 @@ OMainWnd::OMainWnd() : Gtk::Window()
 
 OMainWnd::~OMainWnd() {
     if (m_x32)
-        delete m_x32;
+        delete (OX32*)m_x32;
     if (m_timer) {
         m_timer->stop();
         while (m_timer->isRunning());
@@ -226,7 +226,8 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer(check_ardour_recent, 5000, this);
+        m_timer = new OTimer(check_ardour_recent, 5000, (void*)this);
+        m_timer->setFunc(check_ardour_recent);
         m_timer->start();
         return true;
     }
@@ -251,13 +252,16 @@ void OMainWnd::OpenProject(std::string location) {
 
     std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
 
-    for (gint i = 0; i < tracks.size(); i++) {
+    for (size_t i = 0; i < tracks.size(); i++) {
         for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
             if (it->second->GetLayout()->m_index == i) {
+                it->second->GetMessage()->SetTrackstore(it->second);
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(it->second);
-                trackview->UpdateConfig();
+                it->second->SetView(trackview);
+//                trackview->UpdateConfig();
                 m_trackslayout.AddTrack(trackview, it->second->GetLayout()->m_visible);
+                GetTrackConfig(it->second);
             }
         }
     }
@@ -298,7 +302,7 @@ void OMainWnd::remove_track(IOTrackView* view) {
     printf("remove %s\n", view->GetPath().data());
     m_trackslayout.RemoveTrackView(view->GetPath());
     m_x32->ReleaseCacheMessage(view->GetPath());
-    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
+//    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
@@ -321,6 +325,32 @@ void OMainWnd::UnselectTrack() {
         m_backend->ControllerShowLCDName("");
         m_backend->ControllerShowSelect(false);        
     }
+}
+
+void OMainWnd::EditTrack(std::string path) {
+    Glib::RefPtr<Gtk::Builder> builder = Gtk::Builder::create_from_string(trackdlg_inline_glade);
+    OTrackDlg *pDialog = nullptr;
+    builder->get_widget_derived("track-dlg", pDialog);
+    pDialog->SetPath(path);
+
+    IOTrackStore* ts = m_project.GetTrack(path);
+
+    IOscMessage* nameMsg = m_x32->GetCachedMessage(ts->GetConfigRequestName());
+    pDialog->SetName(nameMsg->GetVal(0)->GetString());
+
+//    IOscMessage* colorMsg = m_x32->GetCachedMessage(ts->GetConfigRequestColor());
+//    pDialog->SetColor(colorMsg->GetVal(0)->GetInteger());
+
+    pDialog->SetCountEntries(ts->GetCountEntries());
+
+    pDialog->run();
+    if (pDialog->GetResult()) {
+        m_x32->SendString(nameMsg->GetPath(), pDialog->GetName());
+        m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
+//        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
+//        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
+//        UpdateConfig();
+    }    
 }
 
 void OMainWnd::ToggleSolo() {
@@ -374,26 +404,18 @@ gint OMainWnd::GetPosMillis() {
 }
 
 void OMainWnd::UpdatePos(gint current, bool jump) {
-    m_project.UpdatePos(current, jump);
-//    for (std::map<std::string, IOTrackStore*>::iterator it = m_project.GetTracks().begin(); it != m_project.GetTracks().end(); ++it) {
-//        IOTrackStore* trackstore = it->second;
-//        if (trackstore) {
-//            track_entry* entry = trackstore->UpdatePlayhead(current, jump);
-//            if (entry) {
-//                m_project.PlayTrackEntry(trackstore, entry);
-//                if (trackstore->GetView()->GetSelected())
-//                    m_backend->ControllerShowLevel(entry->val.f);
-//            }        
-//        }
-//    }
-//    OTrackView* tv = m_trackslayout.GetTrackHead();
-//    while (tv) {
-//        IOTrackStore* trackstore = tv->GetTrackStore();
-//        track_entry* entry = trackstore->UpdatePlayhead(current, jump);
-//        if (entry) {
-//            m_project.PlayTrackEntry(trackstore, entry);
-//            if (tv->GetSelected())
-//                m_backend->ControllerShowLevel(entry->val.f);
-//        }
-//    }
+    bool ret_code = false;
+    
+    std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
+    for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+
+        IOTrackStore* trackstore = it->second;
+        ret_code = m_project.PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
+        if (ret_code && trackstore->GetView()->GetSelected()) {
+            m_backend->ControllerShowLevel(trackstore->GetPlayhead()->val.f);
+            //->SendFloat(trackstore->GetMessage()->GetPath(), trackstore->GetPlayhead()->val.f);
+        }
+    }
+    //return ret_code;    
+//    m_project.UpdatePos(current, jump);
 }

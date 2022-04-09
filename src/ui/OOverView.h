@@ -68,8 +68,8 @@ private:
     gint m_pos = 0;
     gint m_last_pos = 0;
 
-    daw_time* m_daw_time = nullptr;
-    IOMainWnd* m_parent = nullptr;
+    daw_time* m_daw_time;
+    IOMainWnd* m_parent;
     
     Glib::RefPtr<Gdk::Cursor> m_default_cursor;
     Glib::RefPtr<Gdk::Cursor> m_left_cursor;

@@ -64,10 +64,6 @@ public:
     
     void SetPlaying(bool val);
 
-    virtual IOscMessage* GetCommand(char* path);
-    virtual void AddCommand(IOscMessage*);
-
-    void RemoveCommand(IOscMessage*);
     
     IOTrackStore *GetTrack(std::string);
     std::map<std::string, IOTrackStore*> GetTracks();
@@ -80,9 +76,6 @@ public:
 
     IOTrackStore* NewTrack(IOscMessage*);    
     
-    IOscMessage* ProcessConfig(IOscMessage*);
-    void ProcessStats(IOscMessage*);
-
     void AddRecentProject(std::string);
     
     std::vector<std::string> m_recent_projects;
@@ -108,7 +101,6 @@ private:
     
     IOTracksLayout *m_layout;
 
-    std::map<std::string, IOscMessage*> m_known_mixer_commands;
     std::map<std::string, IOTrackStore*> m_tracks;
 
     void SaveRange(xmlTextWriterPtr writer);

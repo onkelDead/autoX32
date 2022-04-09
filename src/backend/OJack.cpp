@@ -34,8 +34,6 @@ jack_port_t *mtc_port;
 jack_port_t *ctl_in_port;
 jack_port_t *ctl_out_port;
 
-static uint8_t mmc_command[13];
-
 static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
 
 static bool doLocate = false;
@@ -51,17 +49,16 @@ static int process(jack_nframes_t nframes, void *arg) {
 
     jack->ReconnectPorts();
 
-    int i;
+    unsigned int i;
     void *port_buf = jack_port_get_buffer(mmc_in_port, nframes);
     jack_midi_event_t in_event;
-    jack_nframes_t event_index = 0;
     jack_nframes_t event_count = jack_midi_get_event_count(port_buf);
     if (event_count > 0) {
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
             if (!process_mmc_event(in_event.buffer, in_event.size, ((OJack*) arg))) {
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
-                for (int j = 0; j < in_event.size; j++) {
+                for (size_t j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
                 }
                 printf("\n");
@@ -76,7 +73,7 @@ static int process(jack_nframes_t nframes, void *arg) {
             jack_midi_event_get(&in_event, port_buf, i);
             if (!process_mtc_event(in_event.buffer, ((OJack*) arg))) {
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
-                for (int j = 0; j < in_event.size; j++) {
+                for (size_t j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
                 }
                 printf("\n");
@@ -90,11 +87,11 @@ static int process(jack_nframes_t nframes, void *arg) {
     jack_midi_clear_buffer(ctl_buf);
 
     if (!jack->mmc_out.empty()) {
-        uint8_t c = jack->mmc_out.front();
+        uint8_t c;
+        jack->mmc_out.front_pop(&c);
         unsigned char *buffer = jack_midi_event_reserve(port_buf, 0, sizeof (midi_playstop));
         memcpy(buffer, midi_playstop, sizeof (midi_playstop));
         buffer[4] = c;
-        jack->mmc_out.pop();
     }
 
     if (doLocate) {
@@ -110,14 +107,14 @@ static int process(jack_nframes_t nframes, void *arg) {
     }
 
     while (!jack->ctl_out.empty()) {
-        ctl_command* c = jack->ctl_out.front();
+        ctl_command* c;
+        jack->ctl_out.front_pop(&c);
         unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, c->len);
         for (int i = 0; i < c->len; i++) {
             buffer[i] = c->buf[i];
         }
         if (c->mbf)
             delete c;
-        jack->ctl_out.pop();
     }
 
     port_buf = jack_port_get_buffer(ctl_in_port, nframes);
@@ -250,22 +247,6 @@ void OJack::Connect(IOMainWnd* wnd) {
     ControllerShowTeachMode(false);
 
     ControllerShowScrub();
-
-    //    ctl_command* c = new ctl_command;
-    //    c->len = 3;
-    //    c->buf[0] = 0x90;
-    //    c->buf[1] = 0x71;
-    //    c->buf[2] = 0x7f;
-    //    ctl_out.push(c);
-
-
-    //    ctl_command* c1 = new ctl_command;
-    //    c1->len = 3;
-    //    c1->buf[0] = 0x90;
-    //    c1->buf[1] = 0x72;
-    //    c1->buf[2] = 0x00;
-    //    ctl_out.push(c1);
-
 }
 
 void OJack::Play() {
@@ -397,23 +378,20 @@ void OJack::ControllerShowSelect(bool val) {
 
 void OJack::ControllerShowLCDName(std::string name) {
     char* s = strdup(name.c_str());
-    int l = strlen(s);
 
     uint8_t syext[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x00, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
     uint8_t syext1[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x38, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
 
-    ctl_command* c = new ctl_command;
+    ctl_command* c = &s_lcd_1;
     memcpy(syext + 7, s, MIN(7, strlen(s)));
     c->len = sizeof (syext);
     memcpy(c->buf, syext, sizeof (syext));
-    c->mbf = true;
 
-    ctl_command* c1 = new ctl_command;
+    ctl_command* c1 = &s_lcd_2;
     if (strlen(s) > 7)
         memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
     c1->len = sizeof (syext1);
     memcpy(c1->buf, syext1, sizeof (syext));
-    c1->mbf = true;
 
     ctl_out.push(c);
     ctl_out.push(c1);
@@ -421,17 +399,16 @@ void OJack::ControllerShowLCDName(std::string name) {
 }
 
 void OJack::ControllerShowLevel(float f) {
-    ctl_command* c = new ctl_command;
+    ctl_command* c = &s_level;
     uint16_t val = (uint16_t) (16383 * f);
     uint8_t h = val >> 7;
     uint8_t l = (val & 0xff) >> 1;
-    c->len = 3;
-    c->buf[0] = 0xe0;
     c->buf[1] = l;
     c->buf[2] = h;
-    c->mbf = true;
+    c->mbf = false;
     ctl_out.push(c);
 }
+
 
 void OJack::ControlerShowMtcComplete(uint8_t s) {
 
@@ -495,3 +472,4 @@ void OJack::SetLoopState(bool state) {
     //    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
     m_loop_state = state;
 }
+

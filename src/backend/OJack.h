@@ -27,7 +27,7 @@
 
 class OJack : public IOBackend {
 public:
-    OJack() : m_millis(0), m_jack_client(NULL) {};
+    OJack() {};
     virtual ~OJack() {};
 
     void Connect(IOMainWnd* wnd);
@@ -68,10 +68,9 @@ public:
     bool GetLoopState();
     void SetLoopState(bool);
 
+    jack_client_t *m_jack_client = nullptr;
 
-    jack_client_t *m_jack_client;
-
-    gint m_millis;
+    gint m_millis = 0;
     std::string m_timecode;
 
     void Notify(JACK_EVENT event);
@@ -88,6 +87,7 @@ private:
     bool m_loop_state = false;
 
     OMidiMtc m_midi_mtc;
+
     
 };
 

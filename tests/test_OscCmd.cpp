@@ -28,24 +28,6 @@
  */
 
 
-static void message_callback(char* entry, size_t len, void* oCache) {
-    int result;
-    lo_message msg = lo_message_deserialise(entry, len, &result);
-    int argc = lo_message_get_argc(msg);
-    lo_arg **argv = lo_message_get_argv(msg);
-    OscMessage *cmd = new OscMessage(entry, lo_message_get_types(msg));
-
-    int i = 0;
-    while(char c = cmd->GetTypes()[i]) {
-        cmd->SetVal(new OscValue(*argv[i], c));
-        i++;
-    }
-    
-    ((OscCache*)oCache)->ProcessMessage(cmd);
-    
-    lo_message_free(msg);    
-}
-
 static const unsigned char entry1[28] = {
     0x2f, 0x63, 0x68, 0x2f, 0x31, 0x36, 0x2f, 0x6d, 0x69, 0x78, 0x2f, 0x66, 0x61, 0x64, 0x65, 0x72, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x66, 0x00, 0x00, 0x3f, 0x25, 0xe9, 0x7a
 };
@@ -64,10 +46,7 @@ int test2() {
     std::cout << "test_OscCmd test 2" << std::endl;
     OX32* x32 = new OX32();
     OCallbackHandler ch;
-//    OscCache* oCache = new OscCache();
-    //x32->SetMessageHandler(&ch);
 
-//    x32->SetMsg_callback(message_callback, (void*)oCache);
     assert(x32->Connect("192.168.178.43") == 0);
     sleep(1);
     

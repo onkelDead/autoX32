@@ -62,14 +62,14 @@ private:
     float m_load = 0.;
     
     std::function<void(void*) > m_task_function;
-    long m_interval = 50;
+    long m_interval;
 
     std::thread m_thread;
     bool m_running = false;
 	bool m_stopped = false;
     bool m_active = false;
 
-    void* m_userData = nullptr;
+    void* m_userData;
 };
 
 #endif /* OTIMER_H */

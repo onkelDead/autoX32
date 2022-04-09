@@ -20,8 +20,9 @@ class IOTrackStore;
 
 class IOscMessage {
 public:
-    virtual std::string GetPath() = 0;
+    virtual const std::string GetPath() = 0;
     virtual OscValue* GetVal(int index) const = 0;
+    virtual void SetVal(OscValue*) = 0;
     virtual const char* GetTypes() const = 0;
     virtual bool IsConfig() const = 0;
     virtual std::string GetConfigRequestName() = 0;

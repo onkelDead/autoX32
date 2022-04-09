@@ -17,26 +17,40 @@
 
 #include "OQueue.h"
 
-OQueue::OQueue() {
+template <class T>
+OQueue<T>::OQueue() {
 }
 
-OQueue::OQueue(const OQueue& orig) {
+template <class T>
+OQueue<T>::OQueue(const OQueue& orig) {
 }
 
-OQueue::~OQueue() {
+template <class T>
+OQueue<T>::~OQueue() {
 }
 
-void OQueue::push(ui_event* t) {
+template <class T>
+void OQueue<T>::push(T t) {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_queue.push(t);
 }
 
-void OQueue::front_pop(ui_event** result) {
+template <class T>
+void OQueue<T>::front_pop(T* result) {
     std::lock_guard<std::mutex> lock(m_mutex);
     if (m_queue.empty()) {
-        *result = NULL;
+        result = NULL;
         return;
     }
     *result = m_queue.front();
     m_queue.pop();
 }
+
+template class OQueue<ui_event*>;
+template class OQueue<ctl_command*>;
+template class OQueue<uint8_t>;
+template class OQueue<DAW_PATH>;
+template class OQueue<JACK_EVENT>;
+template class OQueue<IOscMessage*>;
+
+

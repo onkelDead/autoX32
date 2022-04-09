@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include "IOMainWnd.h"
 #include "OMidiMtc.h"
+#include "OQueue.h"
 
 #define ONKEL_C_IN_PORT "Onkel Controller in"
 #define ONKEL_C_IN_PORT_NAME "autoX32:Onkel Controller in"
@@ -27,11 +28,6 @@
 
 #define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
-typedef struct {
-    uint8_t len;
-    uint8_t buf[64];
-    uint8_t mbf;
-} ctl_command;
 
 extern ctl_command s_stop_on;
 
@@ -50,6 +46,10 @@ extern ctl_command s_wheel_mode_on;
 extern ctl_command s_wheel_mode_off;
 extern ctl_command s_select_on;
 extern ctl_command s_select_off;
+extern ctl_command s_level;
+extern ctl_command s_lcd_1;
+extern ctl_command s_lcd_2;
+
 
 class IOBackend {
 public:
@@ -93,14 +93,16 @@ public:
     virtual bool GetLoopState() = 0;
     virtual void SetLoopState(bool) = 0;
     
-    std::queue<ctl_command*> ctl_out;
-    std::queue<uint8_t> mmc_out;    
+    OQueue<ctl_command*> ctl_out;
+
+    OQueue<uint8_t> mmc_out;    
     
     uint8_t m_fader_val = 0;
     bool m_fader_touched = false;
     bool m_scrub = false;
     int m_shuffle_speed = 0;
     bool m_wheel_mode = false;
+    
     
 protected: 
 

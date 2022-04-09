@@ -19,7 +19,7 @@
 #include <gtk-3.0/gdk/gdkevents.h>
 #include "OOverView.h"
 
-OOverView::OOverView(IOMainWnd* wnd, daw_time* dt) : m_parent(wnd), m_daw_time(dt) {
+OOverView::OOverView(IOMainWnd* wnd, daw_time* dt) : m_daw_time(dt), m_parent(wnd) {
 
     set_name("OOVerView");
 }
@@ -135,11 +135,10 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     cr->line_to(m_right, height);
     cr->stroke();
 
-    gint pos = ((float) m_pos / (float) m_daw_time->m_maxmillis) * m_width;
     cr->set_line_width(1.0);
     cr->set_source_rgb(.8, .0, .0);
-    cr->move_to(pos, 0);
-    cr->line_to(pos, height);
+    cr->move_to(m_pos, 0);
+    cr->line_to(m_pos, height);
     cr->stroke();
     
     
@@ -273,12 +272,11 @@ bool OOverView::on_scroll_event(GdkEventScroll* scroll_event) {
     return true;
 }
 
-void OOverView::SetPos(gint pos) {
+void OOverView::SetPos(gint millis) {
 
-    
-    m_pos = pos;
-    if (m_last_pos != pos) {
-        m_last_pos = pos;
+    m_pos = ((float)millis / (float) m_daw_time->m_maxmillis) * m_width;
+    if (m_last_pos != m_pos) {
+        m_last_pos = m_pos;
         queue_draw();
     }
 }

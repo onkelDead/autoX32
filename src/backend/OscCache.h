@@ -17,8 +17,9 @@
 #include <map>
 #include "IOCacheCallbackHandler.h"
 #include "IOscMessage.h"
+#include "ISerializer.h"
 
-class OscCache {
+class OscCache : ISerializer {
 public:
     OscCache();
     OscCache(const OscCache& orig);
@@ -40,6 +41,11 @@ public:
     void SetCallback_handler(IOCacheCallbackHandler* callback_handler) {
         m_callback_handler = callback_handler;
     }
+    
+    IOscMessage* GetCachedMsg(const char*);
+    
+    // Implementation ISerializer
+    void Save(xmlTextWriterPtr);
     
 private:
     

@@ -34,7 +34,7 @@ private:
 
     uint8_t n1 = 0;
     uint8_t n2 = 0;
-    std::string m_timecode;
+    std::string m_timecode = "00:00:00:00";
     int millis;
     bool lock_millis = false;
 };

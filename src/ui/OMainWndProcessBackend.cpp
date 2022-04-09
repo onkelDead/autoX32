@@ -21,21 +21,24 @@ void OMainWnd::notify_jack(JACK_EVENT jack_event) {
 }
 
 void OMainWnd::OnJackEvent() {
-    while (m_jackqueue.size() > 0) {
-        JACK_EVENT event = m_jackqueue.front();
+    while (!m_jackqueue.empty()) {
+        JACK_EVENT event;
+        m_jackqueue.front_pop(&event);
         switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-                m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 if (event != MTC_COMPLETE) {
                     UpdatePos(m_backend->GetMillis(), false);
                 } else {
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                if (m_backend->GetMidiMtc()->m_edge_sec || !m_project.GetPlaying()) {
-                    m_backend->GetMidiMtc()->m_edge_sec = false;
+                if (m_playhead->calc_new_pos(m_project.GetDawTime(),GetPosMillis()))
                     PublishUiEvent(UI_EVENTS::new_pos, NULL);
+                
+                if (m_backend->GetMidiMtc()->m_edge_sec || !m_project.GetPlaying()) {
+                    m_timeview->SetTimeCode(m_backend->GetTimeCode());
+                    m_backend->GetMidiMtc()->m_edge_sec = false;
                 }
                 break;
             case CTL_PLAY:
@@ -125,7 +128,6 @@ void OMainWnd::OnJackEvent() {
                 m_backend->ControllerShowWheelMode();
                 break;
         }
-        m_jackqueue.pop();
     }
 }
 

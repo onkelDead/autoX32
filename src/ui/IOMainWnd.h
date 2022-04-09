@@ -22,7 +22,7 @@
 
 #include "OConfig.h"
 #include "OTypes.h"
-//#include "OscCmd.h"
+#include "OProject.h"
 #include "IOTrackView.h"
 
 class IOMainWnd {
@@ -37,6 +37,8 @@ public:
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;
     virtual void TrackViewHide(std::string) = 0;
+
+    virtual void EditTrack(std::string) = 0;
 
 private:
 

@@ -30,11 +30,10 @@ extern "C" {
 enum JACK_EVENT {
     MTC_COMPLETE,
     MTC_QUARTER_FRAME,
-    MTC_QUARTER_FRAME_SEC,
-    MTC_QUARTER_FRAME_SEC1,
+//    MTC_QUARTER_FRAME_SEC,
+//    MTC_QUARTER_FRAME_SEC1,
     MMC_PLAY,
     MMC_STOP,
-    MMC_LOCATE,
     MMC_RESET, 
     CTL_PLAY,
     CTL_STOP,
@@ -42,10 +41,9 @@ enum JACK_EVENT {
     CTL_TEACH_OFF,
     CTL_TEACH_MODE, 
     CTL_TOUCH_RELEASE,
-    CTL_COMMAND,
-    CTL_LOOP_SET,
-    CTL_LOOP_CLEAR,
-    CTL_TOGGLE_LOOP,
+//    CTL_LOOP_SET,
+//    CTL_LOOP_CLEAR,
+//    CTL_TOGGLE_LOOP,
     CTL_HOME,
     CTL_END,
     CTL_FADER,
@@ -68,8 +66,6 @@ enum DAW_PATH {
 
 enum UI_EVENTS {
     nothing,
-    load,
-    new_track,
     new_channel,
     draw_trackview,
     new_pos,
@@ -86,7 +82,6 @@ enum UI_EVENTS {
     toggle_solo,
     jump_forward,
     jump_backward,
-    conf_track,
 };
 
 typedef struct ui_event_type {
@@ -119,9 +114,14 @@ typedef struct track_layout {
     bool m_expanded;
     int m_height;
     bool m_visible;
-    int m_index;    
+    size_t m_index;    
 } track_layout;
 
+typedef struct {
+    uint8_t len;
+    uint8_t buf[64];
+    uint8_t mbf;
+} ctl_command;
 
 
 #endif /* OTYPES_H */

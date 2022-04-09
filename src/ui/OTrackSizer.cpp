@@ -31,7 +31,6 @@ void OTrackSizer::on_realize() {
 }
 
 bool OTrackSizer::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
-	const Gtk::Allocation allocation = get_allocation();
 	auto refStyleContext = get_style_context();
 
 	return true;

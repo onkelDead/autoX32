@@ -34,8 +34,6 @@ OConfig::~OConfig() {
 }
 
 int OConfig::load_config() {
-    const char *str;
-    
     
     struct passwd *pw = getpwuid(getuid());
     const char *homedir = pw->pw_dir;

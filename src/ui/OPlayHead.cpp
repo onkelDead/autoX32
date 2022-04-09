@@ -14,12 +14,10 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <iostream>
 #include "OPlayHead.h"
 
 OPlayHead::OPlayHead() {
-}
-
-OPlayHead::OPlayHead(const OPlayHead& orig) {
 }
 
 OPlayHead::~OPlayHead() {
@@ -90,7 +88,6 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
         auto refStyleContext = get_style_context();
 
         int height = allocation.get_height();
-        int width = allocation.get_width();
         cr->set_line_width(1.);
         cr->set_source_rgb(1., 0, 0);
         cr->move_to(0, 0);
@@ -101,17 +98,23 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     return true;
 }
 
-void OPlayHead::set_x_pos(int pos) {
+bool OPlayHead::calc_new_pos(daw_time* dt, int millis) {
+    gint pos = (millis - dt->m_viewstart) * dt->scale;    
     if (pos == m_last_pos)
-        return;
-    if (pos < 0) {
+        return false;
+    m_last_pos = pos;
+    return true;
+}
+
+void OPlayHead::set_x_pos(int pos) {
+    
+    if (m_last_pos < 0) {
         set_active(false);
         
-    } else if (pos < 0x7fff) {
+    } else if (m_last_pos < 0x7fff) {
         
         set_active(true);
         
-        set_margin_start(160 + pos);
+        set_margin_start(160 + m_last_pos);
     }
-    m_last_pos = pos;
 }

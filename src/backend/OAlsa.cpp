@@ -14,7 +14,6 @@
 #include <queue>
 #include "OAlsa.h"
 
-static bool doLocate = false;
 static uint8_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
 
 static uint8_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
@@ -95,7 +94,6 @@ void OAlsa::Connect(IOMainWnd* wnd) {
             SND_SEQ_PORT_CAP_READ | SND_SEQ_PORT_CAP_SUBS_READ,
             SND_SEQ_PORT_TYPE_APPLICATION);
 
-    int loop = 0;
     npfd = snd_seq_poll_descriptors_count(alsa_client, POLLIN);
     pfd = (struct pollfd *) alloca(npfd * sizeof (struct pollfd));
     snd_seq_poll_descriptors(alsa_client, pfd, npfd, POLLIN);

@@ -28,6 +28,7 @@
 
 #include "OConfig.h"
 #include "ODlgProlog.h"
+#include "OTrackDlg.h"
 #include "OX32.h"
 #include "ODAW.h"
 #include "OJack.h"
@@ -97,6 +98,8 @@ public:
     void OnMixerEvent();
     void OnOverViewEvent();
     void OnViewEvent();
+    void GetTrackConfig(IOTrackStore* trackstore);
+
     void notify_overview();
     void remove_track(IOTrackView*);
 
@@ -128,15 +131,17 @@ public:
     void CloseProject();
 
     void UpdateDawTime(bool redraw);
-    void UpdatePlayhead();
+    void UpdatePlayhead(bool doCalc);
 
     void SelectTrack(std::string, bool);
+    void EditTrack(std::string);
     void UnselectTrack();
     void ToggleSolo();
     void TrackViewUp(std::string path);    
     void TrackViewDown(std::string path);
     void TrackViewHide(std::string path);
 
+    
 
     /// application settings
     OConfig* GetConfig();
@@ -228,18 +233,18 @@ private:
     Gtk::AboutDialog m_Dialog;
 
     Glib::Dispatcher m_DawDispatcher;
-    std::queue<DAW_PATH> my_dawqueue;
+    OQueue<DAW_PATH> my_dawqueue;
     Glib::Dispatcher m_JackDispatcher;
-    std::queue<JACK_EVENT> m_jackqueue;
+    OQueue<JACK_EVENT> m_jackqueue;
     
     OTimer m_jackTimer;
 
     Glib::Dispatcher m_MessageDispatcher;
-    std::queue<IOscMessage*> my_messagequeue;
+    OQueue<IOscMessage*> my_messagequeue;
 
     Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;
-    OQueue m_new_ts_queue;
+    OQueue<ui_event*> m_new_ts_queue;
 
     /// objects
     OProject m_project;

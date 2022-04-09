@@ -22,7 +22,6 @@
 class ODlgProlog : public Gtk::Dialog {
 public:
     ODlgProlog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
-    ODlgProlog(const ODlgProlog& orig);
     virtual ~ODlgProlog();
     
     void SetMidiBackend(int val) {
