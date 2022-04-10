@@ -54,8 +54,7 @@ void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {
     ui_event *ue = new ui_event;
     ue->what = what;
     ue->with = with;
-    m_new_ts_queue.push(ue);
-    m_ViewDispatcher.emit();
+    PublishUiEvent(ue);
 }
 
 void OMainWnd::PublishUiEvent(ui_event *ue) {
@@ -85,18 +84,16 @@ void OMainWnd::OnViewEvent() {
                 IOTrackStore *trackstore = m_project.NewTrack(msg);
                 msg->SetTrackstore(trackstore);
                 trackstore->SetPlaying(m_project.m_playing);
-                GetTrackConfig(trackstore);
 
                 if (!m_trackslayout.GetTrackview(msg->GetPath())) {
                     OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
-                    //trackview->UpdateConfig();
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                     trackstore->SetView(trackview);
-
                 }
+                GetTrackConfig(trackstore);
             }
                 break;
             case UI_EVENTS::draw_trackview:

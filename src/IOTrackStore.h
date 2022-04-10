@@ -24,14 +24,12 @@
 
 class IOTrackView;
 
-class IOTrackStore : public IOMessageHandler {
+class IOTrackStore {
 public:
     virtual track_entry *GetHeadEntry() = 0;
     
     virtual void SetMessage(IOscMessage* message) = 0;
     virtual IOscMessage* GetMessage() = 0;
-    
-    virtual int NewMessageCallback(IOscMessage*) = 0;
     
     virtual void SetView(IOTrackView* view) = 0;
     virtual IOTrackView* GetView() const = 0;
@@ -39,15 +37,15 @@ public:
     virtual bool ProcessMsg(IOscMessage*, int) = 0;
     
     virtual bool IsPlaying() = 0;
-    virtual bool IsRecording() = 0;
     virtual void SetPlaying(bool val) = 0;
+    virtual bool IsRecording() = 0;
     virtual void SetRecording(bool val) = 0;
-    
-    virtual track_entry* UpdatePlayhead(int, bool) = 0;
-    virtual track_entry* GetPlayhead() = 0;
-    
     virtual bool IsDirty() = 0;
     virtual void SetDirty(bool val) = 0;
+    
+    virtual track_entry* GetPlayhead() = 0;
+    virtual void SetPlayhead(track_entry* e) = 0;
+    virtual track_entry* GetEntryAtPosition(int pos, bool seek) = 0;
     
     virtual void AddEntry(int) = 0;
     virtual void RemoveEntry(track_entry *entry) = 0; 

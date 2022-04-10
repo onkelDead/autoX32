@@ -132,7 +132,8 @@ public:
 
     void UpdateDawTime(bool redraw);
     void UpdatePlayhead(bool doCalc);
-
+    bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
+    
     void SelectTrack(std::string, bool);
     void EditTrack(std::string);
     void UnselectTrack();

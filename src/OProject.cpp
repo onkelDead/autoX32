@@ -399,29 +399,3 @@ IOTrackStore* OProject::GetTrack(std::string path) {
 std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
-
-bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
-    if (entry == nullptr)
-        return false;
-    IOscMessage* cmd = trackstore->GetMessage();
-    switch (cmd->GetTypes()[0]) {
-        case 'f':
-            m_mixer->SendFloat(cmd->GetPath(), entry->val.f);
-            break;
-        case 'i':
-            m_mixer->SendInt(cmd->GetPath(), entry->val.i);
-            break;
-    }
-    return true;
-}
-
-bool OProject::UpdatePos(gint current, bool jump) {
-    bool ret_code = false;
-
-    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-
-        IOTrackStore* trackstore = it->second;
-        ret_code = PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
-    }
-    return ret_code;
-}

@@ -362,10 +362,13 @@ void OMainWnd::UpdateDawTime(bool redraw) {
 }
 
 void OMainWnd::UpdatePlayhead(bool doCalc) {
-    if (doCalc)
-        m_playhead->calc_new_pos(m_project.GetDawTime(), GetPosMillis());
-    m_playhead->set_x_pos(0);
-    m_overview->SetPos(GetPosMillis());
+    bool up = m_playhead->calc_new_pos(m_project.GetDawTime(), GetPosMillis());
+    
+    if (up) {
+        m_playhead->set_x_pos(0);
+        m_overview->SetPos(GetPosMillis());
+    }
+    m_timeview->SetTimeCode(m_backend->GetTimeCode());                
 }
 
 void OMainWnd::TrackViewUp(std::string path) {

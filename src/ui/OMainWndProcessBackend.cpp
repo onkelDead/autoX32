@@ -33,13 +33,7 @@ void OMainWnd::OnJackEvent() {
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                if (m_playhead->calc_new_pos(m_project.GetDawTime(),GetPosMillis()))
-                    PublishUiEvent(UI_EVENTS::new_pos, NULL);
-                
-                if (m_backend->GetMidiMtc()->m_edge_sec || !m_project.GetPlaying()) {
-                    m_timeview->SetTimeCode(m_backend->GetTimeCode());
-                    m_backend->GetMidiMtc()->m_edge_sec = false;
-                }
+                PublishUiEvent(UI_EVENTS::new_pos, NULL);
                 break;
             case CTL_PLAY:
             case MMC_PLAY:

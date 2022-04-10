@@ -70,10 +70,6 @@ public:
     
     void SetMixer(IOMixer*);
     
-    bool UpdatePos(gint, bool);
-
-    bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
-
     IOTrackStore* NewTrack(IOscMessage*);    
     
     void AddRecentProject(std::string);

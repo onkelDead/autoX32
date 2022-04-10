@@ -25,18 +25,17 @@
 #include "res/autoX32.h"
 #include "res/trackdlg.h"
 
-
 void on_jack_event(void *obj) {
-    OMainWnd* wnd = (OMainWnd*)obj;
+    OMainWnd* wnd = (OMainWnd*) obj;
     wnd->OnJackEvent();
-//    wnd->OnMixerEvent();
+    //    wnd->OnMixerEvent();
 }
 
 void check_ardour_recent(void* user_Data) {
     FILE* file_recent;
     char path[256];
     char name[256];
-    
+
     OMainWnd* mainWnd = (OMainWnd*) user_Data;
 
     file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
@@ -47,7 +46,7 @@ void check_ardour_recent(void* user_Data) {
         strncat(path, "/autoX32", 32);
         if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
             mainWnd->CloseProject();
-            
+
             if (access(path, F_OK)) {
                 printf("project don't exists\n");
                 if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP) != 0) {
@@ -61,17 +60,15 @@ void check_ardour_recent(void* user_Data) {
     }
 }
 
-
-OMainWnd::OMainWnd() : Gtk::Window()
-{
+OMainWnd::OMainWnd() : Gtk::Window() {
 
     set_name("OMainWnd");
     ui = Gtk::Builder::create_from_string(main_inline_glade);
-    set_icon(Gdk::Pixbuf::create_from_inline(sizeof(autoX32_inline), autoX32_inline, false));
+    set_icon(Gdk::Pixbuf::create_from_inline(sizeof (autoX32_inline), autoX32_inline, false));
     m_project.SetTracksLayout(&m_trackslayout);
 
-    ApplyWindowSettings(); 
-    
+    ApplyWindowSettings();
+
     create_view();
     create_menu();
     m_timeview->SetRange(m_project.GetTimeRange());
@@ -86,7 +83,7 @@ OMainWnd::OMainWnd() : Gtk::Window()
     m_jackTimer.SetUserData(this);
     m_jackTimer.setFunc(on_jack_event);
     m_jackTimer.start();
-    
+
     //m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
 
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
@@ -111,7 +108,7 @@ OMainWnd::OMainWnd() : Gtk::Window()
 
 OMainWnd::~OMainWnd() {
     if (m_x32)
-        delete (OX32*)m_x32;
+        delete (OX32*) m_x32;
     if (m_timer) {
         m_timer->stop();
         while (m_timer->isRunning());
@@ -126,7 +123,7 @@ void OMainWnd::on_activate() {
 
     if (!SetupBackend()) {
         exit(1);
-    }    
+    }
     AutoConnect();
 }
 
@@ -188,7 +185,7 @@ bool OMainWnd::Shutdown() {
 void OMainWnd::ApplyWindowSettings() {
     int width = m_config.get_int(SETTINGS_WINDOW_WIDTH, 400);
     int height = m_config.get_int(SETTINGS_WINDOW_HEIGHT, 300);
-    
+
     set_default_size(width, height);
     move(m_config.get_int(SETTINGS_WINDOW_LEFT), m_config.get_int(SETTINGS_WINDOW_TOP));
 }
@@ -226,7 +223,7 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer(check_ardour_recent, 5000, (void*)this);
+        m_timer = new OTimer(check_ardour_recent, 5000, (void*) this);
         m_timer->setFunc(check_ardour_recent);
         m_timer->start();
         return true;
@@ -246,28 +243,29 @@ void OMainWnd::NewProject() {
 }
 
 void OMainWnd::OpenProject(std::string location) {
+
     m_project.Load(location);
-
     set_title("autoX32 - [" + location + "]");
-
     std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
 
     for (size_t i = 0; i < tracks.size(); i++) {
         for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-            if (it->second->GetLayout()->m_index == i) {
-                it->second->GetMessage()->SetTrackstore(it->second);
+            IOTrackStore* ts = it->second;
+            if (ts->GetLayout()->m_index == i) {
+                ts->GetMessage()->SetTrackstore(ts);
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
-                trackview->SetTrackStore(it->second);
-                it->second->SetView(trackview);
-//                trackview->UpdateConfig();
-                m_trackslayout.AddTrack(trackview, it->second->GetLayout()->m_visible);
-                GetTrackConfig(it->second);
+                trackview->SetTrackStore(ts);
+                ts->SetView(trackview);
+                m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
+                track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
+                ts->SetPlayhead(e);
+                PlayTrackEntry(ts, e);
+                GetTrackConfig(ts);
             }
         }
     }
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
-    m_project.UpdatePos(GetPosMillis(), true);
 }
 
 std::string OMainWnd::GetProjectLocation() {
@@ -280,7 +278,7 @@ void OMainWnd::SetProjectLocation(std::string location) {
 
 void OMainWnd::CloseProject() {
     m_trackslayout.RemoveAllTackViews();
- 
+
     m_project.Close();
 }
 
@@ -302,7 +300,7 @@ void OMainWnd::remove_track(IOTrackView* view) {
     printf("remove %s\n", view->GetPath().data());
     m_trackslayout.RemoveTrackView(view->GetPath());
     m_x32->ReleaseCacheMessage(view->GetPath());
-//    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
+    //    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
@@ -311,8 +309,7 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
         m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
         m_backend->ControllerShowSelect(true);
-    }
-    else {
+    } else {
         m_backend->ControllerShowLCDName("");
         m_backend->ControllerShowSelect(false);
     }
@@ -323,7 +320,7 @@ void OMainWnd::UnselectTrack() {
     if (tv) {
         SelectTrack(tv->GetPath(), false);
         m_backend->ControllerShowLCDName("");
-        m_backend->ControllerShowSelect(false);        
+        m_backend->ControllerShowSelect(false);
     }
 }
 
@@ -338,8 +335,8 @@ void OMainWnd::EditTrack(std::string path) {
     IOscMessage* nameMsg = m_x32->GetCachedMessage(ts->GetConfigRequestName());
     pDialog->SetName(nameMsg->GetVal(0)->GetString());
 
-//    IOscMessage* colorMsg = m_x32->GetCachedMessage(ts->GetConfigRequestColor());
-//    pDialog->SetColor(colorMsg->GetVal(0)->GetInteger());
+    //    IOscMessage* colorMsg = m_x32->GetCachedMessage(ts->GetConfigRequestColor());
+    //    pDialog->SetColor(colorMsg->GetVal(0)->GetInteger());
 
     pDialog->SetCountEntries(ts->GetCountEntries());
 
@@ -347,23 +344,23 @@ void OMainWnd::EditTrack(std::string path) {
     if (pDialog->GetResult()) {
         m_x32->SendString(nameMsg->GetPath(), pDialog->GetName());
         m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
-//        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
-//        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
-//        UpdateConfig();
-    }    
+        //        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
+        //        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
+        //        UpdateConfig();
+    }
 }
 
 void OMainWnd::ToggleSolo() {
     OTrackView* tv = m_trackslayout.GetTrackSelected();
     if (tv) {
-//        int idx = tv->item->GetMessage()->GetChIndex();
-//        if (idx >= 0) {
-//            char path[32];
-//            sprintf(path, "/-stat/solosw/%d", idx);
-//            m_x32->Send(path);
-////            sprintf(path, "/~stat/solo");
-////            m_x32->SendInt(path, 1);            
-//        }
+        //        int idx = tv->item->GetMessage()->GetChIndex();
+        //        if (idx >= 0) {
+        //            char path[32];
+        //            sprintf(path, "/-stat/solosw/%d", idx);
+        //            m_x32->Send(path);
+        ////            sprintf(path, "/~stat/solo");
+        ////            m_x32->SendInt(path, 1);            
+        //        }
     }
 }
 
@@ -371,19 +368,19 @@ bool OMainWnd::SetupBackend() {
 
     ODlgProlog *pDialog = nullptr;
     ui->get_widget_derived("dlg-prolog", pDialog);
-    
+
     pDialog->set_icon(get_icon());
-    
+
     pDialog->SetMidiBackend(GetConfig()->get_int(SETTINGS_MIDI_BACKEND));
-    
+
     pDialog->run();
     if (!pDialog->GetResult()) {
         return 0;
     }
-    
+
     GetConfig()->set_int(SETTINGS_MIDI_BACKEND, pDialog->GetMidiBackend());
-    
-    switch(pDialog->GetMidiBackend()) {
+
+    switch (pDialog->GetMidiBackend()) {
         case 0:
             m_backend = new OAlsa();
             break;
@@ -403,19 +400,50 @@ gint OMainWnd::GetPosMillis() {
     return m_backend->GetMillis();
 }
 
-void OMainWnd::UpdatePos(gint current, bool jump) {
+void OMainWnd::UpdatePos(gint current, bool seek) {
     bool ret_code = false;
-    
+
     std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
     for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+        IOTrackStore* ts = it->second;
 
-        IOTrackStore* trackstore = it->second;
-        ret_code = m_project.PlayTrackEntry(trackstore, trackstore->UpdatePlayhead(current, jump));
-        if (ret_code && trackstore->GetView()->GetSelected()) {
-            m_backend->ControllerShowLevel(trackstore->GetPlayhead()->val.f);
-            //->SendFloat(trackstore->GetMessage()->GetPath(), trackstore->GetPlayhead()->val.f);
+        track_entry* e = ts->GetEntryAtPosition(current, seek);
+        
+        // overwrite if required
+        if (ts->IsRecording() && ts->IsPlaying()) {
+            if (ts->GetPlayhead() != e) {
+                ts->RemoveEntry(e);
+            }            
+        }
+        else {
+            if (ts->GetPlayhead() != e) {
+                PlayTrackEntry(ts, e);
+                ts->SetPlayhead(e);
+                ret_code = true;
+            }
+        }
+        
+        // update controller fader
+        if (ret_code && ts->GetView()->GetSelected()) {
+            m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
         }
     }
-    //return ret_code;    
-//    m_project.UpdatePos(current, jump);
+}
+
+bool OMainWnd::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
+    if (entry == nullptr || trackstore == nullptr)
+        return false;
+    IOscMessage* cmd = trackstore->GetMessage();
+    switch (cmd->GetTypes()[0]) {
+        case 'f':
+            m_x32->SendFloat(cmd->GetPath(), entry->val.f);
+            break;
+        case 'i':
+            m_x32->SendInt(cmd->GetPath(), entry->val.i);
+            break;
+        case 's':
+            m_x32->SendString(cmd->GetPath(), &entry->val.s);
+            break;            
+    }
+    return true;    
 }
