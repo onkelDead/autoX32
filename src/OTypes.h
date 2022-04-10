@@ -120,7 +120,6 @@ typedef struct track_layout {
 typedef struct {
     uint8_t len;
     uint8_t buf[64];
-    uint8_t mbf;
 } ctl_command;
 
 

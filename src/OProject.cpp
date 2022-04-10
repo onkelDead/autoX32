@@ -273,9 +273,9 @@ void OProject::Close() {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete (OTrackStore*)it->second;
     }
-    for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
-        delete (OscMessage*)it->second;
-    }
+//    for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
+//        delete (OscMessage*)it->second;
+//    }
     m_tracks.clear();
     m_location = "";
     m_projectFile = "";

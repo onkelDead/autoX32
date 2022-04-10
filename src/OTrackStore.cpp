@@ -90,7 +90,7 @@ void OTrackStore::AddTimePoint(track_entry *e) {
 }
 
 bool OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
-    if (msg == GetMessage()) {
+    if (msg == GetMessage() && m_record) {
         AddEntry(timepos);
         return true;
     }
@@ -100,6 +100,7 @@ bool OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
     }
     if (msg->GetPath() == m_config_color_path) {
         m_color_index = msg->GetVal(0)->GetInteger();
+        m_view->SetTrackColor(m_color_index);
         return true;
     }    
     return false;

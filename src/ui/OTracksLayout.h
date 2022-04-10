@@ -55,9 +55,9 @@ public:
     OTrackView* GetSelectedTrackView();     
     
     void SelectNextTrack();
-    std::string GetNextTrack();
+    std::string GetNextTrackPath();
     void SelectPrevTrack();
-    std::string GetPrevTrack();
+    std::string GetPrevTrackPath();
     
     void EditLayout();
     void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);

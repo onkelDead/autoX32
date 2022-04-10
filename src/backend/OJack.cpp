@@ -113,8 +113,6 @@ static int process(jack_nframes_t nframes, void *arg) {
         for (int i = 0; i < c->len; i++) {
             buffer[i] = c->buf[i];
         }
-        if (c->mbf)
-            delete c;
     }
 
     port_buf = jack_port_get_buffer(ctl_in_port, nframes);
@@ -124,10 +122,10 @@ static int process(jack_nframes_t nframes, void *arg) {
         for (i = 0; i < event_count; i++) {
             jack_midi_event_get(&in_event, port_buf, i);
             if (!process_ctl_event(in_event.buffer, in_event.size, ((OJack*) arg))) {
-#if 0                
+#if 0               
                 printf("Onkel Controller in: have %d events\n", event_count);
                 printf("    event %d time is %d size is %ld\n    ", i, in_event.time, in_event.size);
-                for (int j = 0; j < in_event.size; j++) {
+                for (size_t j = 0; j < in_event.size; j++) {
                     printf("%02x ", in_event.buffer[j]);
                 }
                 printf("\n");
@@ -245,6 +243,7 @@ void OJack::Connect(IOMainWnd* wnd) {
     ControllerShowStop();
     ControllerShowRecOff();
     ControllerShowTeachMode(false);
+    ControllerShowWheelMode();
 
     ControllerShowScrub();
 }
@@ -405,7 +404,6 @@ void OJack::ControllerShowLevel(float f) {
     uint8_t l = (val & 0xff) >> 1;
     c->buf[1] = l;
     c->buf[2] = h;
-    c->mbf = false;
     ctl_out.push(c);
 }
 
@@ -417,22 +415,21 @@ void OJack::ControlerShowMtcComplete(uint8_t s) {
 
         uint8_t d = tc[i / 2];
         uint8_t e = (i & 1) ? d / 10 : d % 10;
-        ctl_command* c = new ctl_command;
+        ctl_command* c = &s_mtc_full[i];
         c->len = 3;
         c->buf[0] = 0xb0;
         c->buf[1] = 0x41 + i;
         c->buf[2] = 0x30 + e;
-        c->mbf = true;
+        //c->mbf = true;
         ctl_out.push(c);
     }
 }
 
 void OJack::ControlerShowMtcQuarter(uint8_t q) {
-    ctl_command* c0 = new ctl_command;
+    ctl_command* c0 = &s_mtc_quarter;
     c0->len = 2;
     c0->buf[0] = 0xd0;
     c0->buf[1] = q;
-    c0->mbf = true;
     ctl_out.push(c0);
 }
 
@@ -449,6 +446,16 @@ void OJack::ControllerShowWheelMode() {
     else
         ctl_out.push(&s_wheel_mode_off);
         
+}
+
+void OJack::ControllerCustom(uint8_t com, uint8_t a, uint8_t b) {
+    ctl_command* c = &s_custom;
+    c->len = 3;
+    c->buf[0] = com;
+    c->buf[1] = a;
+    c->buf[2] = b;
+    ctl_out.push(c);
+    
 }
 
 void OJack::LoopStart() {

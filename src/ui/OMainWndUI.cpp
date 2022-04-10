@@ -33,8 +33,8 @@ void OMainWnd::create_about_dlg() {
     m_Dialog.set_program_name(PACKAGE_STRING);
     m_Dialog.set_version(PACKAGE_VERSION);
     m_Dialog.set_copyright("Copyright 2020 Detlef Urban");
-    m_Dialog.set_comments("Behringer X32 Automation Recorder");
-    m_Dialog.set_license("LGPL");
+    m_Dialog.set_comments("Behringer(c) X32 Automation Recorder");
+    m_Dialog.set_license("MIT");
 
     m_Dialog.set_website("http://www.paraair.de/autoX32");
     m_Dialog.set_website_label("http://www.paraair.de");

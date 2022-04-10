@@ -268,7 +268,7 @@ void OX32::FrameCallback(char* entry, size_t len) {
         i++;
     }
     
-    m_cache.ProcessMessage(&cmd));
+    m_cache.ProcessMessage(&cmd);
     
     lo_message_free(msg);    
 }

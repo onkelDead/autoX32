@@ -14,7 +14,8 @@ void OMainWnd::OnMessageEvent() {
         IOscMessage *msg;
         my_messagequeue.front_pop(&msg);
 
-        if (msg->GetTrackstore()) {
+        IOTrackStore* ts = msg->GetTrackstore();
+        if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
             
             if (ts->ProcessMsg(msg, GetPosMillis())) {

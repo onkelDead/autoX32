@@ -139,10 +139,10 @@ void OMainWnd::OnViewEvent() {
                 break;
 
             case UI_EVENTS::next_track:
-                SelectTrack(m_trackslayout.GetNextTrack(), true);
+                SelectTrack(m_trackslayout.GetNextTrackPath(), true);
                 break;
             case UI_EVENTS::prev_track:
-                SelectTrack(m_trackslayout.GetPrevTrack(), true);
+                SelectTrack(m_trackslayout.GetPrevTrackPath(), true);
                 break;
             case UI_EVENTS::unselect:
                 UnselectTrack();

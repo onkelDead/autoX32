@@ -49,6 +49,10 @@ extern ctl_command s_select_off;
 extern ctl_command s_level;
 extern ctl_command s_lcd_1;
 extern ctl_command s_lcd_2;
+extern ctl_command s_mtc_full[8];
+extern ctl_command s_mtc_quarter;
+
+extern ctl_command s_custom;
 
 
 class IOBackend {
@@ -78,6 +82,7 @@ public:
     virtual void ControllerShowScrub() = 0;
     
     virtual void ControllerShowWheelMode() = 0;
+    virtual void ControllerCustom(uint8_t, uint8_t, uint8_t) = 0;
     
     virtual void Play() = 0;
     virtual void Stop() = 0;

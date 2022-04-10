@@ -11,77 +11,96 @@ time_t t;
 
 ctl_command s_stop_on = {
     3,
-    { 0x90, 0x5d, 0x41}, false
+    { 0x90, 0x5d, 0x41}
 };
 
 ctl_command s_stop_off = {
     3,
-    { 0x90, 0x5d, 0x00}, false
+    { 0x90, 0x5d, 0x00}
 };
 
 ctl_command s_play_on = {
     3,
-    { 0x90, 0x5e, 0x41}, false
+    { 0x90, 0x5e, 0x41}
 };
 ctl_command s_play_off = {
     3,
-    { 0x90, 0x5e, 0x00}, false
+    { 0x90, 0x5e, 0x00}
 };
 ctl_command s_rec_on = {
     3,
-    { 0x90, 0x5f, 0x41}, false
+    { 0x90, 0x5f, 0x41}
 };
 ctl_command s_rec_off = {
     3,
-    { 0x90, 0x5f, 0x00}, false
+    { 0x90, 0x5f, 0x00}
 };
 ctl_command s_f1_on = {
     3,
-    { 0x90, 0x36, 0x40}, false
+    { 0x90, 0x36, 0x40}
 };
 ctl_command s_f1_off = {
     3,
-    { 0x90, 0x36, 0x00}, false
+    { 0x90, 0x36, 0x00}
 };
 ctl_command s_scrub_on = {
     3,
-    { 0x90, 0x65, 0x7f}, false
+    { 0x90, 0x65, 0x7f}
 };
 ctl_command s_scrub_off = {
     3,
-    { 0x90, 0x65, 0x00}, false
+    { 0x90, 0x65, 0x00}
 };
 ctl_command s_wheel_mode_on = {
     3,
-    { 0x90, 0x64, 0x40}, false
+    { 0x90, 0x64, 0x40}
 };
 ctl_command s_wheel_mode_off = {
     3,
-    { 0x90, 0x64, 0x00}, false
+    { 0x90, 0x64, 0x00}
 };
 
 ctl_command s_select_on = {
     3,
-    { 0x90, 0x18, 0x41}, false
+    { 0x90, 0x18, 0x41}
 };
 ctl_command s_select_off = {
     3,
-    { 0x90, 0x18, 0x00}, false
+    { 0x90, 0x18, 0x00}
 };
 
 ctl_command s_level = {
     3, 
-    { 0xE0, 0, 0}, false
+    { 0xE0, 0, 0}
 };
 
 ctl_command s_lcd_1 = {
     15,
-    {0, }, false
+    {0, }
 };
 
 ctl_command s_lcd_2 = {
     15,
-    {0, }, false
+    {0, }
+};
+
+ctl_command s_mtc_full[8] = {
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+};
+
+ctl_command s_mtc_quarter = {
+    3, {0, }
+};
+
+ctl_command s_custom = {
+    3, {0, }
 };
 
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
@@ -166,7 +185,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_TOGGLE_SOLO);
                     }
-                    break;                     
+                    break;  
+                default:
+                    printf("uncaught 0x90 %02x\n", data[1]);
+                    break;
             }
             return 1;
         }
@@ -186,7 +208,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
 //                case 0x64:
 //                    backend->m_wheel_mode = false;
 //                    backend->Notify(CTL_WHEEL_MODE);
-//                    break;                    
+//                    break;  
+                default:
+                    printf("uncaught 0x80 %02x\n", data[1]);
+                    break;                    
             }
         }
         if (data[0] == 0xe0) {

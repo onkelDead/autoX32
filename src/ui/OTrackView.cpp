@@ -132,10 +132,6 @@ void OTrackView::SetTrackColor(int c) {
     
 }
 
-void OTrackView::UpdateConfig() {
-    //m_label->set_text(m_trackdraw->GetCmd()->GetName());
-}
-
 void OTrackView::SetRecord(bool val) {
     m_btn_x32_rec->set_active(val);
 }

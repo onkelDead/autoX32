@@ -49,7 +49,6 @@ public:
     void SetSelected(bool);
     bool GetSelected() { return m_trackdraw->GetSelected(); }
 
-    void UpdateConfig();
     void SetTrackName(std::string);
     std::string GetTrackName();
     void SetTrackColor(int);
@@ -64,6 +63,10 @@ public:
 
     std::string GetPath() const {
         return m_path;
+    }
+    
+    bool IsVisible() {
+        return GetTrackStore()->GetLayout()->m_visible;
     }
     
 protected:

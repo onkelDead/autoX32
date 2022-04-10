@@ -33,7 +33,6 @@ void OTracksLayout::AddTrack(OTrackView *view, bool show) {
     view->set_halign(Gtk::ALIGN_FILL);
     view->set_valign(Gtk::ALIGN_START);
     append_entry(view);
-    //m_trackmap[v->GetCmd()->GetPath()] = v;
     if (show) {
         add(*view);
         view->show();
@@ -53,11 +52,7 @@ OTrackView* OTracksLayout::GetTrackTail() {
 }
 
 OTrackView* OTracksLayout::GetTrackSelected() {
-    for (OTrackView* tv : m_tracklist) {
-        if (tv == m_selectedView)
-            return tv;
-    }
-    return nullptr;
+    return m_selectedView;
 }
 
 OTrackView* OTracksLayout::GetTrackview(std::string path) {
@@ -122,15 +117,20 @@ gint OTracksLayout::GetTrackIndex(std::string path) {
 }
 
 void OTracksLayout::SelectTrack(std::string path, bool selected) {
+    OTrackView* new_selected = GetTrackview(path);
     if (selected) {
-        if (m_selectedView) {
-            m_selectedView->SetSelected(false);
+        if (new_selected) {
+            if (m_selectedView) {
+                m_selectedView->SetSelected(false);
+            }
+            m_selectedView = new_selected;
+            m_selectedView->SetSelected(true);
         }
-        m_selectedView = GetTrackview(path);
-        m_selectedView->SetSelected(true);
     }
-    else 
-        GetTrackview(path)->set_name("OTrackView");
+    else {
+        if (m_selectedView == new_selected)
+            m_selectedView->SetSelected(selected);
+    }
 }
 
 void OTracksLayout::EditLayout() {
@@ -338,34 +338,67 @@ void OTracksLayout::SelectPrevTrack(){
 
 
 
-std::string OTracksLayout::GetNextTrack() {
+std::string OTracksLayout::GetNextTrackPath() {
     OTrackView* head = GetTrackHead();
     
     if (!m_selectedView) {
-        return head->GetPath();    
+        for (OTrackView* view : m_tracklist) {
+            if (view->IsVisible()) {
+                return view->GetPath();
+            }
+        }
+        return ""; // no track visible, so select nothing
     }
     else {
-        OTrackView* tv = head;
-        while (tv) {
-            if (tv->GetPath() == m_selectedView->GetPath())
-                break;
+        bool found = false;
+        for (OTrackView* view : m_tracklist) {
+            if (!found) {
+                if (view == m_selectedView) {
+                    found = true;
+                }
+            }
+            else {
+                if (view->IsVisible()) {
+                    return view->GetPath();
+                }
+            }
         }
     }
     return head->GetPath();
 }
 
-std::string OTracksLayout::GetPrevTrack() {
-    if (!m_selectedView)
-        return GetTrackTail()->GetPath();    
-    else {
-        OTrackView* tail = GetTrackTail();
-        OTrackView* tv = tail;
-        while (tv) {
-            if (tv->GetPath() == m_selectedView->GetPath())
-                break;
+std::string OTracksLayout::GetPrevTrackPath() {
+    size_t  s = m_tracklist.size();
+    
+    
+    if (!m_selectedView) {
+        for (size_t idx = s; idx > 0; idx-- ) {
+            if (m_tracklist.at(idx-1)->IsVisible())
+                return m_tracklist.at(idx-1)->GetPath();
         }
-        if (tv)
-            return tv->GetPath();
-        return tail->GetPath();
+            
+        return GetTrackTail()->GetPath();    
+    }
+    else {
+        bool found = false;
+        for (size_t idx = s; idx > 0; idx-- ) {
+            OTrackView* view = m_tracklist.at(idx-1);
+            if (!found) {
+                if (view == m_selectedView) {
+                    found = true;
+                }
+            }
+            else {
+                if (view->IsVisible()) {
+                    return view->GetPath();
+                }
+            }
+        }
     }        
+    for (size_t idx = s; idx > 0; idx-- ) {
+        OTrackView* view = m_tracklist.at(idx-1);
+        if (view->IsVisible())
+            return view->GetPath();
+    }
+    return "";
 }
