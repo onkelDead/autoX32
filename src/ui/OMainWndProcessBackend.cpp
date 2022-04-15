@@ -33,25 +33,25 @@ void OMainWnd::OnJackEvent() {
                     UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                PublishUiEvent(UI_EVENTS::new_pos, NULL);
+                PublishUiEvent(E_OPERATION::new_pos, NULL);
                 break;
             case CTL_PLAY:
             case MMC_PLAY:
-                PublishUiEvent(UI_EVENTS::play, NULL);
+                PublishUiEvent(E_OPERATION::play, NULL);
                 break;
             case CTL_STOP:
             case MMC_STOP:
-                PublishUiEvent(UI_EVENTS::stop, NULL);
+                PublishUiEvent(E_OPERATION::stop, NULL);
                 break;
             case MMC_RESET:
                 m_daw.ShortMessage("/refresh");
                 m_daw.ShortMessage("/strip/list");
                 break;
             case CTL_TEACH_ON:
-                PublishUiEvent(UI_EVENTS::touch_on, NULL);
+                PublishUiEvent(E_OPERATION::touch_on, NULL);
                 break;
             case CTL_TEACH_OFF:
-                PublishUiEvent(UI_EVENTS::touch_off, NULL);
+                PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_FADER:
                 if (m_trackslayout.GetSelectedTrackView()) {
@@ -66,7 +66,7 @@ void OMainWnd::OnJackEvent() {
 
                 break;
             case CTL_TOUCH_RELEASE:
-                PublishUiEvent(UI_EVENTS::touch_release, NULL);
+                PublishUiEvent(E_OPERATION::touch_release, NULL);
                 break;
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;
@@ -89,10 +89,10 @@ void OMainWnd::OnJackEvent() {
                 //                m_daw.ShortMessage("/loop_toggle");
                 //                break;
             case CTL_HOME:
-                PublishUiEvent(UI_EVENTS::home, NULL);
+                PublishUiEvent(E_OPERATION::home, NULL);
                 break;
             case CTL_END:
-                PublishUiEvent(UI_EVENTS::end, NULL);
+                PublishUiEvent(E_OPERATION::end, NULL);
                 break;
             case CTL_NEXT_TRACK:
                 PublishUiEvent(next_track, NULL);
@@ -101,10 +101,13 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(prev_track, NULL);
                 break;
             case CTL_UNSELECT:
-                PublishUiEvent(UI_EVENTS::unselect, NULL);
+                PublishUiEvent(E_OPERATION::unselect, NULL);
                 break;
             case CTL_TOGGLE_SOLO:
-                PublishUiEvent(UI_EVENTS::toggle_solo, NULL);
+                PublishUiEvent(E_OPERATION::toggle_solo, NULL);
+                break;
+            case CTL_TOGGLE_REC:
+                PublishUiEvent(E_OPERATION::toggle_rec, NULL);
                 break;
             case CTL_SCRUB_ON:
                 m_backend->m_scrub = !m_backend->m_scrub;
@@ -113,10 +116,10 @@ void OMainWnd::OnJackEvent() {
             case CTL_SCRUB_OFF:
                 break;
             case CTL_JUMP_FORWARD:
-                PublishUiEvent(UI_EVENTS::jump_forward, NULL);
+                PublishUiEvent(E_OPERATION::jump_forward, NULL);
                 break;
             case CTL_JUMP_BACKWARD:
-                PublishUiEvent(UI_EVENTS::jump_backward, NULL);
+                PublishUiEvent(E_OPERATION::jump_backward, NULL);
                 break;
             case CTL_WHEEL_MODE:
                 m_backend->ControllerShowWheelMode();

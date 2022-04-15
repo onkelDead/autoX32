@@ -93,7 +93,7 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
-    m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnViewEvent));
+    m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOperation));
 
     show_all_children(true);
     queue_draw();
@@ -309,9 +309,11 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
         m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
         m_backend->ControllerShowSelect(true);
+        m_backend->ControllerShowRec(m_trackslayout.GetSelectedTrackView()->GetRecord());
     } else {
         m_backend->ControllerShowLCDName("");
         m_backend->ControllerShowSelect(false);
+        m_backend->ControllerShowRec(false);
     }
 }
 

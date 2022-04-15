@@ -34,7 +34,6 @@ void OscMessage::SetVal(OscValue* new_val) {
             m_vals.at(0)->SetInteger(new_val->GetInteger());
             break;
         case 'f':
-            std::cout << "new float " << new_val->GetFloat() << std::endl;
             m_vals.at(0)->SetFloat(new_val->GetFloat());
             break;
     }

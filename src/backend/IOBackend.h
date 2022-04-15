@@ -36,8 +36,9 @@ extern ctl_command s_stop_off;
 extern ctl_command s_play_on;
 
 extern ctl_command s_play_off;
-extern ctl_command s_rec_on;
-extern ctl_command s_rec_off;
+extern ctl_command s_record;
+extern ctl_command s_tech_on;
+extern ctl_command s_teach_off;
 extern ctl_command s_f1_on;
 extern ctl_command s_f1_off;
 extern ctl_command s_scrub_on;
@@ -67,10 +68,11 @@ public:
 
     virtual void ControllerShowPlay() = 0;
     virtual void ControllerShowStop() = 0;
-    virtual void ControllerShowRecOn() = 0;
-    virtual void ControllerShowRecOff() = 0;   
+    virtual void ControllerShowTeachOn() = 0;
+    virtual void ControllerShowTeachOff() = 0;   
     virtual void ControllerShowTeachMode(bool) = 0;
     virtual void ControllerShowSelect(bool) = 0;
+    virtual void ControllerShowRec(bool) = 0;
      
     
     virtual void ControllerShowLCDName(std::string name) = 0;

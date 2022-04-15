@@ -205,7 +205,7 @@ void OAlsa::ControllerShowStop() {
 //    ctl_out.push(c);
 }
 
-void OAlsa::ControllerShowRecOn() {
+void OAlsa::ControllerShowTeachOn() {
 //    ctl_command* c = new ctl_command;
 //    c->len = 3;
 //    c->buf[0] = 0xb9;
@@ -214,7 +214,7 @@ void OAlsa::ControllerShowRecOn() {
 //    ctl_out.push(c);
 }
 
-void OAlsa::ControllerShowRecOff() {
+void OAlsa::ControllerShowTeachOff() {
 //    ctl_command* c = new ctl_command;
 //    c->len = 3;
 //    c->buf[0] = 0x8b;

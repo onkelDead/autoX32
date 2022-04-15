@@ -53,7 +53,8 @@ enum JACK_EVENT {
     CTL_JUMP_FORWARD,
     CTL_WHEEL_MODE,
     CTL_UNSELECT,
-    CTL_TOGGLE_SOLO
+    CTL_TOGGLE_SOLO, 
+    CTL_TOGGLE_REC
 };
 
 enum DAW_PATH {
@@ -62,7 +63,7 @@ enum DAW_PATH {
     reply
 };
 
-enum UI_EVENTS {
+enum E_OPERATION {
     nothing,
     new_channel,
     draw_trackview,
@@ -78,14 +79,16 @@ enum UI_EVENTS {
     prev_track,
     unselect,
     toggle_solo,
+    toggle_rec, 
+    toggle_recview,
     jump_forward,
     jump_backward,
 };
 
 typedef struct ui_event_type {
-    UI_EVENTS what;
-    void* with;
-} ui_event;
+    E_OPERATION event;
+    void* context;
+} operation_t;
 
 typedef struct daw_time_type {
     int m_maxmillis;

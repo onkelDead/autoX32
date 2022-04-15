@@ -37,6 +37,7 @@ public:
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;
     virtual void TrackViewHide(std::string) = 0;
+    virtual void PublishUiEvent(E_OPERATION, void *) = 0;
 
     virtual void EditTrack(std::string) = 0;
 

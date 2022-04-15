@@ -19,7 +19,7 @@ void OMainWnd::OnMessageEvent() {
             IOTrackStore* ts = msg->GetTrackstore();
             
             if (ts->ProcessMsg(msg, GetPosMillis())) {
-                PublishUiEvent(UI_EVENTS::draw_trackview, ((OTrackView*)ts->GetView()));
+                PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
             }
             if (ts->GetView()->GetSelected()) {
                 m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
@@ -27,7 +27,7 @@ void OMainWnd::OnMessageEvent() {
         }
         else {
             if (m_btn_teach->get_active()) { // I'm configured for teach-in, so create new track and trackview 
-                PublishUiEvent(UI_EVENTS::new_channel, msg);
+                PublishUiEvent(E_OPERATION::new_channel, msg);
             }
         }
     }

@@ -241,7 +241,7 @@ void OJack::Connect(IOMainWnd* wnd) {
     jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"));
 
     ControllerShowStop();
-    ControllerShowRecOff();
+    ControllerShowTeachOff();
     ControllerShowTeachMode(false);
     ControllerShowWheelMode();
 
@@ -353,12 +353,12 @@ void OJack::ControllerShowStop() {
     ctl_out.push(&s_play_off);
 }
 
-void OJack::ControllerShowRecOn() {
-    ctl_out.push(&s_rec_on);
+void OJack::ControllerShowTeachOn() {
+    ctl_out.push(&s_tech_on);
 }
 
-void OJack::ControllerShowRecOff() {
-    ctl_out.push(&s_rec_off);
+void OJack::ControllerShowTeachOff() {
+    ctl_out.push(&s_teach_off);
 }
 
 void OJack::ControllerShowTeachMode(bool val) {
@@ -373,6 +373,12 @@ void OJack::ControllerShowSelect(bool val) {
         ctl_out.push(&s_select_on);
     else
         ctl_out.push(&s_select_off);
+}
+
+void OJack::ControllerShowRec(bool val) {
+    ctl_command *c = &s_record;
+    c->buf[2] = val ? 0x41 : 0x00;
+    ctl_out.push(c);
 }
 
 void OJack::ControllerShowLCDName(std::string name) {

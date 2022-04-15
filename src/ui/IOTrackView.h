@@ -26,6 +26,7 @@ public:
     virtual IOTrackStore* GetTrackStore() = 0;
     virtual void SetTrackStore(IOTrackStore*) = 0;
     virtual void SetRecord(bool) = 0;
+    virtual bool GetRecord() = 0;
     virtual void Resize(bool) = 0;
     virtual void ExpandCollapse(bool) = 0;
     virtual void SetSelected(bool) = 0;

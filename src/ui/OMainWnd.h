@@ -97,7 +97,7 @@ public:
     void OnMessageEvent();
     void OnMixerEvent();
     void OnOverViewEvent();
-    void OnViewEvent();
+    void OnOperation();
     void GetTrackConfig(IOTrackStore* trackstore);
 
     void notify_overview();
@@ -142,7 +142,8 @@ public:
     void TrackViewDown(std::string path);
     void TrackViewHide(std::string path);
 
-    
+    void PublishUiEvent(E_OPERATION, void *);
+
 
     /// application settings
     OConfig* GetConfig();
@@ -245,7 +246,7 @@ private:
 
     Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;
-    OQueue<ui_event*> m_new_ts_queue;
+    OQueue<operation_t*> m_queue_operation;
 
     /// objects
     OProject m_project;
@@ -263,8 +264,7 @@ private:
     void create_about_dlg();
 
     void on_about_dialog_response(int response_id);
-	void PublishUiEvent(UI_EVENTS, void *);
-	void PublishUiEvent(ui_event *);
+	void PublishUiEvent(operation_t *);
 };
 
 

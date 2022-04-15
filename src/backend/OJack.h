@@ -38,8 +38,9 @@ public:
     void Stop();
     void ControllerShowPlay();
     void ControllerShowStop();
-    void ControllerShowRecOn();
-    void ControllerShowRecOff();
+    void ControllerShowRec(bool);
+    void ControllerShowTeachOn();
+    void ControllerShowTeachOff();
     void ControllerShowSelect(bool val);        
     void ControllerShowTeachMode(bool);
     void ControllerShowLCDName(std::string);

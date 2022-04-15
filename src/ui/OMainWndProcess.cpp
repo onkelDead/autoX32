@@ -50,20 +50,22 @@ void OMainWnd::notify_daw(DAW_PATH path) {
     m_DawDispatcher.emit();
 }
 
-void OMainWnd::PublishUiEvent(UI_EVENTS what, void *with) {
-    ui_event *ue = new ui_event;
-    ue->what = what;
-    ue->with = with;
+void OMainWnd::PublishUiEvent(E_OPERATION what, void *with) {
+    operation_t *ue = new operation_t;
+    ue->event = what;
+    ue->context = with;
     PublishUiEvent(ue);
 }
 
-void OMainWnd::PublishUiEvent(ui_event *ue) {
-    m_new_ts_queue.push(ue);
+void OMainWnd::PublishUiEvent(operation_t *ue) {
+    m_queue_operation.push(ue);
     m_ViewDispatcher.emit();
 }
 
 void OMainWnd::GetTrackConfig(IOTrackStore* trackstore){
     std::string conf_name = trackstore->GetConfigRequestName();
+    
+        
     m_x32->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
     m_x32->Send(conf_name);
     conf_name = trackstore->GetConfigRequestColor();
@@ -71,15 +73,15 @@ void OMainWnd::GetTrackConfig(IOTrackStore* trackstore){
     m_x32->Send(conf_name);
 }
 
-void OMainWnd::OnViewEvent() {
-    ui_event *e;
-    m_new_ts_queue.front_pop(&e);
-    if (e) {
+void OMainWnd::OnOperation() {
+    operation_t *op;
+    m_queue_operation.front_pop(&op);
+    if (op) {
 
-        switch (e->what) {
-            case UI_EVENTS::new_channel:
+        switch (op->event) {
+            case E_OPERATION::new_channel:
             {
-                IOscMessage* msg = (IOscMessage*) e->with;
+                IOscMessage* msg = (IOscMessage*) op->context;
 
                 IOTrackStore *trackstore = m_project.NewTrack(msg);
                 msg->SetTrackstore(trackstore);
@@ -93,27 +95,29 @@ void OMainWnd::OnViewEvent() {
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                     trackstore->SetView(trackview);
                 }
+                // TODO: get hidden tracks for all relevant parameters.
                 GetTrackConfig(trackstore);
+                
             }
                 break;
-            case UI_EVENTS::draw_trackview:
+            case E_OPERATION::draw_trackview:
             {
-                ((OTrackView*) e->with)->queue_draw();
-                delete e;
+                ((OTrackView*) op->context)->queue_draw();
+                delete op;
             }
                 break;
-            case UI_EVENTS::new_pos:
+            case E_OPERATION::new_pos:
                 UpdatePlayhead(false);
                 break;
-            case UI_EVENTS::play:
+            case E_OPERATION::play:
                 m_button_play->set_active(true);
                 m_backend->ControllerShowPlay();
                 break;
-            case UI_EVENTS::stop:
+            case E_OPERATION::stop:
                 m_button_play->set_active(false);
                 m_backend->ControllerShowStop();
                 break;
-            case UI_EVENTS::touch_on:
+            case E_OPERATION::touch_on:
                 if (m_teach_mode) {
                     if (m_btn_teach->get_active())
                         m_btn_teach->set_active(false);
@@ -123,45 +127,65 @@ void OMainWnd::OnViewEvent() {
                     m_btn_teach->set_active(true);
                 }
                 break;
-            case UI_EVENTS::touch_off:
+            case E_OPERATION::touch_off:
                 if (!m_teach_mode) {
                     m_btn_teach->set_active(false);
                 }
                 break;
-            case UI_EVENTS::home:
+            case E_OPERATION::home:
                 on_button_home_clicked();
                 break;
-            case UI_EVENTS::end:
+            case E_OPERATION::end:
                 on_button_end_clicked();
                 break;
 
-            case UI_EVENTS::next_track:
+            case E_OPERATION::next_track:
                 SelectTrack(m_trackslayout.GetNextTrackPath(), true);
                 break;
-            case UI_EVENTS::prev_track:
+            case E_OPERATION::prev_track:
                 SelectTrack(m_trackslayout.GetPrevTrackPath(), true);
                 break;
-            case UI_EVENTS::unselect:
+            case E_OPERATION::unselect:
                 UnselectTrack();
                 break;
-            case UI_EVENTS::toggle_solo:
+            case E_OPERATION::toggle_solo:
                 ToggleSolo();
                 break;
-            case UI_EVENTS::jump_forward:
+            case E_OPERATION::toggle_rec:
+            {
+                IOTrackView* sv = m_trackslayout.GetSelectedTrackView();
+                if (sv) {
+                    sv->SetRecord(!sv->GetRecord());
+                    m_backend->ControllerShowRec(sv->GetRecord());
+                }
+            }
+                break;  
+            case E_OPERATION::toggle_recview:
+            {
+                IOTrackView* sv = m_trackslayout.GetSelectedTrackView();
+                
+                if (sv != nullptr && ((OTrackView*)op->context) == sv)
+                    m_backend->ControllerShowRec(sv->GetRecord());   
+            }
+                break;
+            case E_OPERATION::jump_forward:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
                 else
                     m_backend->Locate(m_backend->GetMillis() + 120);
                 break;
-            case UI_EVENTS::jump_backward:
+            case E_OPERATION::jump_backward:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(true);
                 else
                     m_backend->Locate(m_backend->GetMillis() - 120);
                 break;
-            case UI_EVENTS::touch_release:
+            case E_OPERATION::touch_release:
                 if (m_btn_teach->get_active()) {
                     m_btn_teach->set_active(false);
+                }
+                if (m_trackslayout.GetSelectedTrackView()->GetRecord()) {
+                    m_trackslayout.GetSelectedTrackView()->SetRecord(false);
                 }
                 break;
             default:

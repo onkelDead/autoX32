@@ -46,7 +46,7 @@ void OQueue<T>::front_pop(T* result) {
     m_queue.pop();
 }
 
-template class OQueue<ui_event*>;
+template class OQueue<operation_t*>;
 template class OQueue<ctl_command*>;
 template class OQueue<uint8_t>;
 template class OQueue<DAW_PATH>;

@@ -27,11 +27,17 @@ ctl_command s_play_off = {
     3,
     { 0x90, 0x5e, 0x00}
 };
-ctl_command s_rec_on = {
+
+ctl_command s_record = {
+    3,
+    { 0x90, 0x00, 0x41}
+};
+
+ctl_command s_tech_on = {
     3,
     { 0x90, 0x5f, 0x41}
 };
-ctl_command s_rec_off = {
+ctl_command s_teach_off = {
     3,
     { 0x90, 0x5f, 0x00}
 };
@@ -186,6 +192,12 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_TOGGLE_SOLO);
                     }
                     break;  
+                case 0x00:
+                    if (data[2] == 0x7f) {
+                        backend->Notify(CTL_TOGGLE_REC);
+                    }
+                    break;  
+                    
                 default:
                     printf("uncaught 0x90 %02x\n", data[1]);
                     break;
