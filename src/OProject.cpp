@@ -150,14 +150,17 @@ void OProject::Load(std::string location) {
                     break;
                 xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
                 xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
+                xmlChar *xmlValue = xmlGetProp(node, BAD_CAST "value");
 
                 char* path = strdup((char*) xmlPath);
                 char* types = strdup((char*) xmlTypes);
+                char* val = strdup((char*) xmlValue);
 //                m_known_mixer_commands[path] = m_mixer->AddCacheMessage(path, types);
                 xmlFree(xmlPath);
                 xmlFree(xmlTypes);
+                xmlFree(xmlValue);
                 char* name = (char*) xmlGetProp(node, BAD_CAST "name");
-                m_mixer->AddCacheMessage(path, types);
+                m_mixer->AddCacheMessage(path, types, val);
                 //m_known_mixer_commands[path]->SetName(name);
                 xmlFree(name);
 //                Gdk::RGBA color;
@@ -169,6 +172,7 @@ void OProject::Load(std::string location) {
                 //m_known_mixer_commands[path]->SetColor(color);
                 free(path);
                 free(types);
+                free(val);
             }
             node = node->next; 
         }

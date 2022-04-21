@@ -18,7 +18,7 @@ OscValue::OscValue(char t) {
 }
 
 OscValue::OscValue(const lo_arg& arg, const char t) {
-    switch(t) {
+    switch (t) {
         case 's':
             SetString(&arg.s);
             SetType(t);
@@ -41,3 +41,16 @@ OscValue::~OscValue() {
 
 }
 
+void OscValue::ToString(const char t, char* s) {
+    switch (t) {
+        case 's':
+            sprintf(s, "%s", GetString().data());
+            break;
+        case 'f':
+            sprintf(s, "%f", GetFloat());
+            break;
+        case 'i':
+            sprintf(s, "%d", GetInteger());
+            break;
+    }
+}

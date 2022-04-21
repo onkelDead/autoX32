@@ -59,6 +59,8 @@ public:
     int UpdateMessageCallback(IOscMessage*);
     
     IOscMessage* AddCacheMessage(const char*, const char*);
+    IOscMessage* AddCacheMessage(const char*, const char*, const char*);
+
     void ReleaseCacheMessage(std::string);
     IOscMessage* GetCachedMessage(std::string);
     void Save(xmlTextWriterPtr);
@@ -86,6 +88,14 @@ public:
 
     void SetMessageHandler(IOMessageHandler* MessageHandler) {
         m_MessageHandler = MessageHandler;
+    }
+    
+    void ReadAll() {
+        m_cache.ReadAllFromMixer(this);
+    }
+    
+    void WriteAll() {
+        m_cache.WriteAllToMixer(this);
     }
     
 private:

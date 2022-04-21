@@ -34,7 +34,6 @@ void OMainWnd::OnMessageEvent() {
 }
 
 int OMainWnd::NewMessageCallback(IOscMessage* msg) {
-    std::cout << "OMainWnd::NewMessageCallback: called." << std::endl;
     my_messagequeue.push(msg);
     m_MessageDispatcher.emit();
     return 0;

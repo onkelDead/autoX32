@@ -15,9 +15,31 @@
 #define OSCCACHE_H
 
 #include <map>
+#include "IOMixer.h"
 #include "IOCacheCallbackHandler.h"
 #include "IOscMessage.h"
 #include "ISerializer.h"
+
+
+typedef struct func1_t {
+    const char** func1;
+    int count;
+} func1_t;
+typedef struct funcs_t {
+    func1_t** funcs;
+    int count;
+} funcs_t;
+typedef struct object_t {
+    int count;
+    const char* name;
+    funcs_t funcs;
+    int num_idx_digits;
+    
+} object_t;
+typedef struct objects_t {
+    object_t* objs;
+    int count;
+} objects_t;
 
 class OscCache : ISerializer {
 public:
@@ -43,6 +65,9 @@ public:
     }
     
     IOscMessage* GetCachedMsg(const char*);
+    
+    void ReadAllFromMixer(IOMixer*);
+    void WriteAllToMixer(IOMixer*);
     
     // Implementation ISerializer
     void Save(xmlTextWriterPtr);

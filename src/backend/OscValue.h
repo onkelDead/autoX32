@@ -71,6 +71,7 @@ public:
         return *this;
     }
 
+    void ToString(const char t, char* s);
 
 private:
     char m_type;

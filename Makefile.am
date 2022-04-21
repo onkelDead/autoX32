@@ -116,4 +116,6 @@ check_OscCmd_LDADD = \
     src/backend/autoX32-OCallbackHandler.o \
     src/backend/autoX32-OX32.o \
     src/utils/autoX32-OTimer.o \
+    src/autoX32-OProject.o \
+    src/autoX32-OTrackStore.o \
     ${GTKMM3_LIBS} ${LO_LIBS} ${XML2_LIBS} -lpthread 
