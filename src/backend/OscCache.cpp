@@ -434,7 +434,7 @@ void OscCache::Save(xmlTextWriterPtr writer) {
 //        sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
 //        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
         xmlTextWriterEndElement(writer);
-        printf("Project::Save: command %s saved\n", msg->GetPath().data());
+//        printf("Project::Save: command %s saved\n", msg->GetPath().data());
 
     }    
 }
@@ -456,12 +456,14 @@ void OscCache::ReadAllFromMixer(IOMixer* x32) {
                             sprintf(cmd, "%s/%02d%s", objs.objs[o].name, i + 1, objs.objs[o].funcs.funcs[j]->func1[k]);
                             break;
                     }
+                    std::cout << " --> " << cmd << std::endl;
                     x32->Send(cmd);
-                    usleep(200);
+                    usleep(500);
                 }
             }
         }
     }    
+    std::cout << "Cache loaded with " << m_cache.size() << " elements." << std::endl;
 }
 
 void OscCache::WriteAllToMixer(IOMixer* x32) {
@@ -478,6 +480,6 @@ void OscCache::WriteAllToMixer(IOMixer* x32) {
                 x32->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                 break;
         }
-        usleep(200);
+        usleep(500);
     }
 }

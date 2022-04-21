@@ -211,7 +211,7 @@ bool OMainWnd::ConnectMixer(std::string host) {
     if (!m_x32->Connect(host)) {
         m_project.SetMixer(m_x32);
         m_lbl_x32->set_label("X32: connected");
-        m_x32->ReadAll();
+        //m_x32->ReadAll();
         return true;
     }
     m_project.SetMixer(NULL);
@@ -267,6 +267,7 @@ void OMainWnd::OpenProject(std::string location) {
     }
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
+    m_x32->WriteAll();
 }
 
 std::string OMainWnd::GetProjectLocation() {

@@ -63,7 +63,7 @@ void OProject::SetMixer(IOMixer* mixer) {
 }
 
 bool OProject::GetDirty() {
-    bool dirty = m_dirty;
+    bool dirty = true; //m_dirty;
 
     dirty |= m_daw_range.m_dirty;
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
@@ -119,6 +119,10 @@ void OProject::Load(std::string location) {
     xmlNodeSetPtr nodeset;
 
     doc = xmlParseFile(m_projectFile.data());
+    if (doc == nullptr) {
+        m_mixer->ReadAll();
+        return;
+    }
     context = xmlXPathNewContext(doc);
     result = xmlXPathEvalExpression(BAD_CAST "//project/range", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
@@ -222,6 +226,7 @@ void OProject::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
+    m_mixer->WriteAll();
 }
 
 bool OProject::OpenFromArdurRecent() {

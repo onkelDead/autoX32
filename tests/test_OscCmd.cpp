@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
 
     std::cout << " test1 (test_OscCmd)" << std::endl;
     //result |= test1();
-    result |= test_project_load();
+    result |= test5();
     //result |= test3();
     std::cout << std::endl << "time=0 test1 (test_OscCmd)" << std::endl;
 
