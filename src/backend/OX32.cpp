@@ -221,13 +221,24 @@ void OX32::Send(std::string path) {
 
 void OX32::FrameCallback(char* entry, size_t len) {
     int result;
+    lo_message msg;
+    lo_arg **argv;
     
     // filter messages here
-    if (entry[1] == '-')
+    if (entry[1] == '-') {
+        msg = lo_message_deserialise(entry, len, &result);
+        argv = lo_message_get_argv(msg);
+        printf("%s ", entry);
+        lo_message_pp(msg);
+        if (strcmp(entry, "/-stat/selidx") == 0) {
+            m_MessageHandler->ProcessSelectMessage((*argv)->i);
+        }
+        lo_message_free(msg);  
         return;
+    }
     
-    lo_message msg = lo_message_deserialise(entry, len, &result);
-    lo_arg **argv = lo_message_get_argv(msg);
+    msg = lo_message_deserialise(entry, len, &result);
+    argv = lo_message_get_argv(msg);
     
     int i = 0;
     IOscMessage* cached = m_cache.GetCachedMsg(entry);

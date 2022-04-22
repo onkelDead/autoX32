@@ -65,6 +65,16 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
         cr->fill();
     }
 
+    if (m_selected) {
+        cr->set_source_rgb(.4, 0., 0.);
+        cr->move_to(0, 0);
+        cr->line_to(m_width, 0);
+        cr->stroke();
+        cr->move_to(0, height);
+        cr->line_to(m_width, height);
+        cr->stroke();
+    }
+    
     cr->set_line_width(1);
     
     GetColorByIndex(cr, m_trackstore->GetColor_index());
@@ -76,7 +86,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     }
 
     if (it) {
-        last_val = height - height * GetHeight(it->val, t);
+        last_val = -3 + height - (height - 6) * GetHeight(it->val, t);
         cr->move_to(0, last_val);
         it = it->next;
         while (it) {
@@ -84,7 +94,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
             cr->line_to(pos, last_val);
             cr->stroke();
             cr->move_to(pos, last_val);
-            last_val = height - height * GetHeight(it->val, t);
+            last_val = -3 + height - (height - 6) * GetHeight(it->val, t);
             cr->line_to(pos, last_val);
             cr->stroke();
             cr->move_to(pos, last_val);
@@ -99,15 +109,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     if (m_parent->GetConfig()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
         draw_text(cr, 2, 2, path);
 
-    if (m_selected) {
-        cr->set_source_rgb(1., 0., 0.);
-        cr->move_to(0, 0);
-        cr->line_to(m_width, 0);
-        cr->stroke();
-        cr->move_to(0, height);
-        cr->line_to(m_width, height);
-        cr->stroke();
-    }
 
     return true;
 }

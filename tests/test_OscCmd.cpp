@@ -49,6 +49,7 @@ class handler : public IOMessageHandler {
     int UpdateMessageCallback(IOscMessage* msg) {
         return 0;
     }      
+    void ProcessSelectMessage(int f) {}
 };
 
 

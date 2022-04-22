@@ -24,6 +24,7 @@ public:
     
     int NewMessageCallback(IOscMessage* msg);
     int UpdateMessageCallback(IOscMessage*);
+    void ProcessSelectMessage(int);
     
 private:
 

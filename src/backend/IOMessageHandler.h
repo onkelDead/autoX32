@@ -20,6 +20,7 @@ class IOMessageHandler {
 public:
     virtual int NewMessageCallback(IOscMessage*) = 0;
     virtual int UpdateMessageCallback(IOscMessage*) = 0;
+    virtual void ProcessSelectMessage(int) = 0;
 };
 
 #endif /* IOMESSAGEHANDLER_H */

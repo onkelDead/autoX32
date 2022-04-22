@@ -44,3 +44,18 @@ int OMainWnd::UpdateMessageCallback(IOscMessage* msg) {
     m_MessageDispatcher.emit();
     return 0;
 }
+
+void OMainWnd::ProcessSelectMessage(int idx) {
+    char path[32];
+    
+    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
+
+    IOTrackView* tv = m_trackslayout.GetTrackview(path);
+    IOTrackView* st = m_trackslayout.GetTrackSelected();
+    if (st)
+        SelectTrack(st->GetPath(), false);
+    if (tv) {
+        SelectTrack(path, true);
+    }
+    return;
+}

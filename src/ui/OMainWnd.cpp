@@ -301,7 +301,7 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 void OMainWnd::remove_track(IOTrackView* view) {
     printf("remove %s\n", view->GetPath().data());
     m_trackslayout.RemoveTrackView(view->GetPath());
-    m_x32->ReleaseCacheMessage(view->GetPath());
+    // m_x32->ReleaseCacheMessage(view->GetPath());
     //    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 

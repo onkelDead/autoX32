@@ -110,6 +110,7 @@ public:
 
     int NewMessageCallback(IOscMessage*);
     int UpdateMessageCallback(IOscMessage*);    
+    void ProcessSelectMessage(int);
     
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
 

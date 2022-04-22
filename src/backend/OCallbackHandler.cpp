@@ -33,3 +33,5 @@ int OCallbackHandler::UpdateMessageCallback(IOscMessage*) {
     std::cout << "OCallbackHandler: NewValueCallback called." << std::endl;
     return 0;
 }
+
+void OCallbackHandler::ProcessSelectMessage(int) {}

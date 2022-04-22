@@ -337,6 +337,7 @@ OscCache::~OscCache() {
     m_cache.clear();
 }
 
+
 bool OscCache::ProcessMessage(IOscMessage* msg) {
     
     // Message not known in cache
@@ -403,8 +404,7 @@ IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types) {
     return m_cache[path] = new OscMessage(path, types);
 }
 
-void OscCache::ReleaseCacheMessage(std::string path) {
-    m_cache.erase(path);
+void OscCache::ReleaseCacheMessage(std::string path) {     m_cache.erase(path);
 }
 
 IOscMessage* OscCache::GetCachedMsg(const char* path) {
