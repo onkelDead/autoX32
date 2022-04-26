@@ -377,40 +377,39 @@ void OJack::ControllerShowSelect(bool val) {
 
 void OJack::ControllerShowRec(bool val) {
     ctl_command *c = &s_record;
-    c->buf[2] = val ? 0x41 : 0x00;
+    c->buf[2] = val ? 0x7f : 0x00;
     ctl_out.push(c);
 }
 
 void OJack::ControllerShowLCDName(std::string name) {
     char* s = strdup(name.c_str());
 
-    uint8_t syext[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x00, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
-    uint8_t syext1[] = {0xf0, 0x00, 0x00, 0x66, 0x14, 0x12, 0x38, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xf7};
+    uint8_t syext[] = {0xF0, 0x00, 0x20, 0x32, 0x41, 0x4C, 0x00, 0x24, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xF7};
 
     ctl_command* c = &s_lcd_1;
-    memcpy(syext + 7, s, MIN(7, strlen(s)));
+    memcpy(syext + 8, s, MIN(14, strlen(s)));
     c->len = sizeof (syext);
-    memcpy(c->buf, syext, sizeof (syext));
+    memcpy(c->buf, syext, 23);
 
-    ctl_command* c1 = &s_lcd_2;
-    if (strlen(s) > 7)
-        memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
-    c1->len = sizeof (syext1);
-    memcpy(c1->buf, syext1, sizeof (syext));
+//    ctl_command* c1 = &s_lcd_2;
+//    if (strlen(s) > 7)
+//        memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
+//    c1->len = sizeof (syext1);
+//    memcpy(c1->buf, syext1, sizeof (syext));
 
     ctl_out.push(c);
-    ctl_out.push(c1);
+//    ctl_out.push(c1);
+    free(s);
 
 }
 
 void OJack::ControllerShowLevel(float f) {
-    ctl_command* c = &s_level;
-    uint16_t val = (uint16_t) (16383 * f);
-    uint8_t h = val >> 7;
-    uint8_t l = (val & 0xff) >> 1;
-    c->buf[1] = l;
-    c->buf[2] = h;
-    ctl_out.push(c);
+    if (!m_fader_touched) {
+        ctl_command* c = &s_level;
+        c->buf[1] = 0x46;
+        c->buf[2] = (127 * f);
+        ctl_out.push(c);
+    }
 }
 
 
@@ -427,7 +426,7 @@ void OJack::ControlerShowMtcComplete(uint8_t s) {
         c->buf[1] = 0x41 + i;
         c->buf[2] = 0x30 + e;
         //c->mbf = true;
-        ctl_out.push(c);
+        //ctl_out.push(c);
     }
 }
 
@@ -436,7 +435,7 @@ void OJack::ControlerShowMtcQuarter(uint8_t q) {
     c0->len = 2;
     c0->buf[0] = 0xd0;
     c0->buf[1] = q;
-    ctl_out.push(c0);
+   // ctl_out.push(c0);
 }
 
 void OJack::ControllerShowScrub() {

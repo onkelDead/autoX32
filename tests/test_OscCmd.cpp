@@ -240,13 +240,40 @@ int test_project_load() {
     return EXIT_SUCCESS;    
 }
 
+int test_select_track(int argc, char**argv ) {
+    IOMixer* x32 = new OX32();
+    OProject* project = new OProject();
+    handler *h = new handler();
+    
+    project->SetMixer(x32);
+    x32->SetMessageHandler(h);
+    
+    assert(x32->Connect("192.168.178.43") == 0);
+    sleep(1);    
+
+//    x32->SendFloat("/ch/13/mix/fader", atof(argv[1]));
+    x32->SendInt("/-stat/selidx", atoi(argv[1]));
+    
+    sleep(1);
+
+    
+    std::cout << "test_OscCmd test 3: finally the cache contained " << x32->GetCacheSize() << " elements." << std::endl;
+    
+    x32->Disconnect();
+    delete x32;
+    delete project;
+
+    
+    return EXIT_SUCCESS;    
+}
+
 int main(int argc, char** argv) {
 
     int result = EXIT_SUCCESS;
 
     std::cout << " test1 (test_OscCmd)" << std::endl;
     //result |= test1();
-    result |= test5();
+    result |= test_select_track(argc, argv);
     //result |= test3();
     std::cout << std::endl << "time=0 test1 (test_OscCmd)" << std::endl;
 

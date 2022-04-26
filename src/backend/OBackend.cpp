@@ -11,43 +11,43 @@ time_t t;
 
 ctl_command s_stop_on = {
     3,
-    { 0x90, 0x5d, 0x41}
+    { 0xB0, 0x16, 0x41}
 };
 
 ctl_command s_stop_off = {
     3,
-    { 0x90, 0x5d, 0x00}
+    { 0xB0, 0x16, 0x00}
 };
 
 ctl_command s_play_on = {
     3,
-    { 0x90, 0x5e, 0x41}
+    { 0xB0, 0x17, 0x41}
 };
 ctl_command s_play_off = {
     3,
-    { 0x90, 0x5e, 0x00}
+    { 0xB0, 0x17, 0x00}
 };
 
 ctl_command s_record = {
     3,
-    { 0x90, 0x00, 0x41}
+    { 0xB0, 0x06, 0x41}
 };
 
 ctl_command s_tech_on = {
     3,
-    { 0x90, 0x5f, 0x41}
+    { 0xB0, 0x18, 0x41}
 };
 ctl_command s_teach_off = {
     3,
-    { 0x90, 0x5f, 0x00}
+    { 0xB0, 0x18, 0x00}
 };
 ctl_command s_f1_on = {
     3,
-    { 0x90, 0x36, 0x40}
+    { 0xB0, 0x07, 0x41}
 };
 ctl_command s_f1_off = {
     3,
-    { 0x90, 0x36, 0x00}
+    { 0xB0, 0x07, 0x00}
 };
 ctl_command s_scrub_on = {
     3,
@@ -59,29 +59,29 @@ ctl_command s_scrub_off = {
 };
 ctl_command s_wheel_mode_on = {
     3,
-    { 0x90, 0x64, 0x40}
+    { 0xB0, 0x20, 0x40}
 };
 ctl_command s_wheel_mode_off = {
     3,
-    { 0x90, 0x64, 0x00}
+    { 0xB0, 0x20, 0x00}
 };
 
 ctl_command s_select_on = {
     3,
-    { 0x90, 0x18, 0x41}
+    { 0xB0, 0x03, 0x41}
 };
 ctl_command s_select_off = {
     3,
-    { 0x90, 0x18, 0x00}
+    { 0xB0, 0x03, 0x00}
 };
 
 ctl_command s_level = {
     3, 
-    { 0xE0, 0, 0}
+    { 0xB0, 0, 0}
 };
 
 ctl_command s_lcd_1 = {
-    15,
+    23,
     {0, }
 };
 
@@ -112,26 +112,34 @@ ctl_command s_custom = {
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
     if (len == 3) {
 
-        if (data[0] == 0x90) {
+        if (data[0] == 0xb0) {
             switch (data[1]) {
-                case 0x5e: // PLAY
+                case 0x17: // PLAY
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_PLAY);
                     }
                     break;
-                case 0x5d: // STOP
+                case 0x16: // STOP
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_STOP);
                     }
                     break;
 
-                case 0x5f: // Toggle teach
+                case 0x18: // Toggle teach
                     if (data[2] == 0x7f)
                         backend->Notify(CTL_TEACH_ON);
+                    else 
+                        backend->Notify(CTL_TEACH_OFF);
                     break;
-                case 0x36:
+                case 0x07:
                     if (data[2]) {
                         backend->Notify(CTL_TEACH_MODE);
+                    }
+                    break;
+                case 0x46:
+                    if (backend->m_fader_touched) {
+                        backend->m_fader_val = data[2];
+                        backend->Notify(CTL_FADER);
                     }
                     break;
                 case 0x65:
@@ -139,22 +147,22 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_SCRUB_ON);
                     }
                     break;
-                case 0x68:
-                    backend->m_fader_touched = true;
-                    break;
-                case 0x60:
+
+                case 0x1e:
                     if (data[2])
                         backend->Notify(CTL_PREV_TRACK);
                     break;
-                case 0x61:
+                case 0x22:
                     if (data[2])
                         backend->Notify(CTL_NEXT_TRACK);
                     break;
-                case 0x64:
-                    backend->m_wheel_mode = !backend->m_wheel_mode;
-                    backend->Notify(CTL_WHEEL_MODE);
+                case 0x20:
+                    if (data[2]) {
+                        backend->m_wheel_mode = !backend->m_wheel_mode;
+                        backend->Notify(CTL_WHEEL_MODE);
+                    }
                     break;
-                case 3:
+//                case 3:
 //                    if (data[2]) // button on down
 //                        time(&t);
 //                    else {
@@ -166,23 +174,23 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
 //                            backend->Notify(CTL_LOOP_SET);
 //                        }
 //                    }
-                    break;
+//                    break;
                 case 4:
 //                    if (data[2]) {
 //                        backend->Notify(CTL_TOGGLE_LOOP);
 //                    }
                     break;
-                case 0x5b:
+                case 0x14:
                     if (data[2]) {
                         backend->Notify(CTL_HOME);
                     }
                     break;
-                case 0x5c:
+                case 0x15:
                     if (data[2]) {
                         backend->Notify(CTL_END);
                     }
                     break;   
-                case 0x18:
+                case 0x03:
                     if (data[2]) {
                         backend->Notify(CTL_UNSELECT);
                     }
@@ -192,12 +200,25 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_TOGGLE_SOLO);
                     }
                     break;  
-                case 0x00:
+                case 0x06:
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_TOGGLE_REC);
                     }
                     break;  
-                    
+                case 0x58:
+                    if (data[2] == 0x01) {
+                        if (!backend->m_wheel_mode)
+                            backend->Notify(CTL_JUMP_BACKWARD);
+                        else
+                            backend->Notify(CTL_PREV_TRACK);
+                    }
+                    if (data[2] == 0x41) {
+                        if (!backend->m_wheel_mode)
+                            backend->Notify(CTL_JUMP_FORWARD);
+                        else
+                            backend->Notify(CTL_NEXT_TRACK);
+                    }                    
+                    break;
                 default:
                     printf("uncaught 0x90 %02x\n", data[1]);
                     break;
@@ -210,7 +231,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case 0x65:
                     backend->Notify(CTL_SCRUB_OFF);
                     break;
-                case 0x68:
+                case 0x6e:
                     backend->m_fader_touched = false;
                     backend->Notify(CTL_TOUCH_RELEASE);
                     break;
@@ -227,27 +248,16 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
             }
         }
         if (data[0] == 0xe0) {
-            if (backend->m_fader_touched) {
-                uint16_t v = data[2] << 7;
-                v += (data[1] << 1);
-                backend->m_fader_val = v >> 7;
-                backend->Notify(CTL_FADER);
-            }
+//            if (backend->m_fader_touched) {
+//                uint16_t v = data[2] << 7;
+//                v += (data[1] << 1);
+//                backend->m_fader_val = v >> 7;
+//                backend->Notify(CTL_FADER);
+//            }
         }
-        if (data[0] == 0xb0) {
-            if (data[1] == 0x3c) {
-                if (data[2] == 0x41) {
-                    if (!backend->m_wheel_mode)
-                        backend->Notify(CTL_JUMP_BACKWARD);
-                    else
-                        backend->Notify(CTL_PREV_TRACK);
-                }
-                if (data[2] == 0x01) {
-                    if (!backend->m_wheel_mode)
-                        backend->Notify(CTL_JUMP_FORWARD);
-                    else
-                        backend->Notify(CTL_NEXT_TRACK);
-                }
+        if (data[0] == 0x90) {
+            if (data[1] == 0x6e) {
+                backend->m_fader_touched = true;
             }
         }
     }

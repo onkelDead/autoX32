@@ -299,9 +299,11 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 }
 
 void OMainWnd::remove_track(IOTrackView* view) {
-    printf("remove %s\n", view->GetPath().data());
-    m_trackslayout.RemoveTrackView(view->GetPath());
-    // m_x32->ReleaseCacheMessage(view->GetPath());
+    std::string path = view->GetPath();
+    printf("remove %s\n", path.data());
+    m_trackslayout.RemoveTrackView(path);
+    m_project.RemoveTrack(path);
+    m_x32->ReleaseCacheMessage(path);
     //    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
@@ -312,6 +314,11 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
         m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
         m_backend->ControllerShowSelect(true);
         m_backend->ControllerShowRec(m_trackslayout.GetSelectedTrackView()->GetRecord());
+        if (path.starts_with("/ch")) {
+            char idx[4] = {0, };
+            memcpy(idx, path.data()+4, 2);
+            m_x32->SendInt("/-stat/selidx", atoi (idx)-1);
+        }
     } else {
         m_backend->ControllerShowLCDName("");
         m_backend->ControllerShowSelect(false);

@@ -367,6 +367,11 @@ IOTrackStore* OProject::NewTrack(IOscMessage* msg) {
     return ts;
 }
 
+void OProject::RemoveTrack(std::string path) {
+    delete m_tracks[path];
+    m_tracks.erase(path);
+}
+
 int OProject::GetLoopStart() {
     return m_daw_range.m_loopstart;
 }

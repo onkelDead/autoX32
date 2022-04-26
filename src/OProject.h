@@ -71,6 +71,7 @@ public:
     void SetMixer(IOMixer*);
     
     IOTrackStore* NewTrack(IOscMessage*);    
+    void RemoveTrack(std::string path);
     
     void AddRecentProject(std::string);
     

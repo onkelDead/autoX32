@@ -404,7 +404,11 @@ IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types) {
     return m_cache[path] = new OscMessage(path, types);
 }
 
-void OscCache::ReleaseCacheMessage(std::string path) {     m_cache.erase(path);
+void OscCache::ReleaseCacheMessage(std::string path) {
+    IOscMessage* msg = m_cache[path];
+    if (msg) {
+        msg->SetTrackstore(nullptr);
+    }
 }
 
 IOscMessage* OscCache::GetCachedMsg(const char* path) {

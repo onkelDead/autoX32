@@ -184,7 +184,7 @@ void OMainWnd::OnOperation() {
                 if (m_btn_teach->get_active()) {
                     m_btn_teach->set_active(false);
                 }
-                if (m_trackslayout.GetSelectedTrackView()->GetRecord()) {
+                if (m_trackslayout.GetSelectedTrackView() != nullptr && m_trackslayout.GetSelectedTrackView()->GetRecord()) {
                     m_trackslayout.GetSelectedTrackView()->SetRecord(false);
                 }
                 break;
