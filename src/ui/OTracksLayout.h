@@ -48,7 +48,7 @@ public:
     void redraw();
     
     virtual gint GetTrackIndex(std::string path);
-    void SelectTrack(std::string, bool);
+    OTrackView* SelectTrack(std::string, bool);
     
     std::string GetSelectedTrackName();
     float GetSelectedTrackValue();

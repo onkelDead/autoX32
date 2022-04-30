@@ -308,10 +308,11 @@ void OMainWnd::remove_track(IOTrackView* view) {
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
-    m_trackslayout.SelectTrack(path, selected);
+    OTrackView* tv = m_trackslayout.SelectTrack(path, selected);
     if (selected) {
-        m_backend->ControllerShowLevel(m_trackslayout.GetSelectedTrackValue());
-        m_backend->ControllerShowLCDName(m_trackslayout.GetSelectedTrackName());
+        
+        m_backend->ControllerShowLevel(tv->GetTrackStore()->GetPlayhead()->val.f);
+        m_backend->ControllerShowLCDName(tv->GetTrackName(), tv->GetTrackStore()->GetColor_index());
         m_backend->ControllerShowSelect(true);
         m_backend->ControllerShowRec(m_trackslayout.GetSelectedTrackView()->GetRecord());
         if (path.starts_with("/ch")) {
@@ -320,7 +321,7 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
             m_x32->SendInt("/-stat/selidx", atoi (idx)-1);
         }
     } else {
-        m_backend->ControllerShowLCDName("");
+        m_backend->ControllerShowLCDName("", 0);
         m_backend->ControllerShowSelect(false);
         m_backend->ControllerShowRec(false);
     }
@@ -330,7 +331,7 @@ void OMainWnd::UnselectTrack() {
     OTrackView* tv = m_trackslayout.GetTrackSelected();
     if (tv) {
         SelectTrack(tv->GetPath(), false);
-        m_backend->ControllerShowLCDName("");
+        m_backend->ControllerShowLCDName("", 0);
         m_backend->ControllerShowSelect(false);
     }
 }

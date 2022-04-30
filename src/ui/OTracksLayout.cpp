@@ -116,7 +116,7 @@ gint OTracksLayout::GetTrackIndex(std::string path) {
     return -1;
 }
 
-void OTracksLayout::SelectTrack(std::string path, bool selected) {
+OTrackView* OTracksLayout::SelectTrack(std::string path, bool selected) {
     OTrackView* new_selected = GetTrackview(path);
     if (selected) {
         if (new_selected) {
@@ -131,6 +131,7 @@ void OTracksLayout::SelectTrack(std::string path, bool selected) {
         if (m_selectedView == new_selected)
             m_selectedView->SetSelected(selected);
     }
+    return new_selected;
 }
 
 void OTracksLayout::EditLayout() {

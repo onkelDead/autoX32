@@ -231,7 +231,7 @@ void OAlsa::ControllerShowSelect(bool) {
     
 }
 
-void OAlsa::ControllerShowLCDName(std::string) {
+void OAlsa::ControllerShowLCDName(std::string, int) {
     
 }
 

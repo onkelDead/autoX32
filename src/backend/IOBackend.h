@@ -75,7 +75,7 @@ public:
     virtual void ControllerShowRec(bool) = 0;
      
     
-    virtual void ControllerShowLCDName(std::string name) = 0;
+    virtual void ControllerShowLCDName(std::string name, int color) = 0;
     virtual void ControllerShowLevel(float) = 0;
     
     virtual void ControlerShowMtcComplete(uint8_t) = 0;

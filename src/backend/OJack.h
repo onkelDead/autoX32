@@ -43,7 +43,7 @@ public:
     void ControllerShowTeachOff();
     void ControllerShowSelect(bool val);        
     void ControllerShowTeachMode(bool);
-    void ControllerShowLCDName(std::string);
+    void ControllerShowLCDName(std::string, int color);
     void ControllerShowLevel(float);
     
     void ControlerShowMtcComplete(uint8_t);

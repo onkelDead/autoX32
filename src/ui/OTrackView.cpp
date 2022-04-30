@@ -127,6 +127,8 @@ std::string OTrackView::GetTrackName() {
     return m_label->get_text();
 }
 
+
+
 void OTrackView::SetTrackColor(int c) {
     
 }

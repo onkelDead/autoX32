@@ -48,7 +48,7 @@ public:
     void ControllerShowTeachOff();
     void ControllerShowTeachMode(bool);
     void ControllerShowSelect(bool);
-    void ControllerShowLCDName(std::string);
+    void ControllerShowLCDName(std::string, int);
     void ControllerShowLevel(float);
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);
