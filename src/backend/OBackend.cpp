@@ -105,6 +105,14 @@ ctl_command s_mtc_quarter = {
     3, {0, }
 };
 
+ctl_command s_marker = {
+    3, {0xb0, 0x0d, 0x00 }
+};
+ctl_command s_cycle = {
+    3, {0xb0, 0x0f, 0x00 }
+};
+
+
 #define SevenSeg_0 0b00111111
 #define SevenSeg_1 0b00000110
 #define SevenSeg_2 0b01011011
@@ -166,12 +174,15 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_FADER);
                     }
                     break;
-                case 0x65:
-                    if (data[2]) {
-                        backend->Notify(CTL_SCRUB_ON);
-                    }
+//                case 0x1d:
+//                    if (data[2]) {
+//                        backend->Notify(CTL_SCRUB_ON);
+//                    }
+//                    break;
+                case 0x0d:  //Marker
+                    backend->m_marker = data[2] != 0;
+                    backend->Notify(CTL_MARKER);
                     break;
-
                 case 0x1e:
                     if (data[2])
                         backend->Notify(CTL_PREV_TRACK);
@@ -186,34 +197,28 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_WHEEL_MODE);
                     }
                     break;
-//                case 3:
-//                    if (data[2]) // button on down
-//                        time(&t);
-//                    else {
-//                        time_t now;
-//                        time(&now);
-//                        if (now > t + 1) {
-//                            backend->Notify(CTL_LOOP_CLEAR);
-//                        } else {
-//                            backend->Notify(CTL_LOOP_SET);
-//                        }
-//                    }
-//                    break;
-                case 4:
-//                    if (data[2]) {
-//                        backend->Notify(CTL_TOGGLE_LOOP);
-//                    }
-                    break;
                 case 0x14:
                     if (data[2]) {
-                        backend->Notify(CTL_HOME);
+                        if (!backend->m_marker)
+                            backend->Notify(CTL_HOME);
+                        else
+                            backend->Notify(CTL_LOOP_START);
                     }
                     break;
                 case 0x15:
                     if (data[2]) {
-                        backend->Notify(CTL_END);
+                        if (!backend->m_marker)
+                            backend->Notify(CTL_END);
+                        else
+                            backend->Notify(CTL_LOOP_END);
                     }
-                    break;   
+                    break;
+                case 0x0f:
+                    if (data[2]) {
+                        backend->m_cycle = !backend->m_cycle;
+                        backend->Notify(CTL_LOOP);
+                    }
+                    break;
                 case 0x03:
                     if (data[2]) {
                         backend->Notify(CTL_UNSELECT);
@@ -244,7 +249,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     }                    
                     break;
                 default:
-                    printf("uncaught 0x90 %02x\n", data[1]);
+                    printf("uncaught 0xb0 %02x\n", data[1]);
                     break;
             }
             return 1;

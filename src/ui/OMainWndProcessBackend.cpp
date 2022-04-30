@@ -124,6 +124,22 @@ void OMainWnd::OnJackEvent() {
             case CTL_WHEEL_MODE:
                 m_backend->ControllerShowWheelMode();
                 break;
+            case CTL_MARKER:
+                m_backend->ControllerShowMarker();
+                break;
+            case CTL_LOOP_START:
+                on_btn_loop_start_clicked();
+                break;
+            case CTL_LOOP_END:
+                on_btn_loop_end_clicked();
+                break;
+            case CTL_LOOP:
+                m_backend->ControllerShowCycle();
+                m_daw.ShortMessage("/loop_toggle");
+                break;
+            default:
+                std::cout << "uncaught jack event id:" << event << std::endl;
+                break;
         }
     }
 }

@@ -143,7 +143,7 @@ private:
 
     IOTrackView* m_view = nullptr;
 
-    char m_file_name[128];
+    char m_file_name[512];
 
     std::string m_config_name_path;
     std::string m_config_color_path;

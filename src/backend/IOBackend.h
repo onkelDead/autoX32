@@ -54,6 +54,8 @@ extern ctl_command s_mtc_full[8];
 extern ctl_command s_mtc_quarter;
 extern ctl_command s_7seg;
 extern ctl_command s_custom;
+extern ctl_command s_marker;
+extern ctl_command s_cycle;
 extern uint8_t Nibble2Seven[10];
 
 class IOBackend {
@@ -86,6 +88,9 @@ public:
     virtual void ControllerShowWheelMode() = 0;
     virtual void ControllerCustom(uint8_t, uint8_t, uint8_t) = 0;
     
+    virtual void ControllerShowMarker() = 0;
+    virtual void ControllerShowCycle() = 0;
+    
     virtual void Play() = 0;
     virtual void Stop() = 0;
     
@@ -110,6 +115,8 @@ public:
     int m_shuffle_speed = 0;
     bool m_wheel_mode = false;
     
+    bool m_marker = false;
+    bool m_cycle = false;
     
 protected: 
 

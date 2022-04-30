@@ -244,7 +244,10 @@ void OJack::Connect(IOMainWnd* wnd) {
     ControllerShowTeachOff();
     ControllerShowTeachMode(false);
     ControllerShowWheelMode();
-
+    ControllerShowCycle();
+    ControllerShowMarker();
+    ControllerShowSelect(0);
+    
     ControllerShowScrub();
 }
 
@@ -359,6 +362,16 @@ void OJack::ControllerShowTeachOn() {
 
 void OJack::ControllerShowTeachOff() {
     ctl_out.push(&s_teach_off);
+}
+
+void OJack::ControllerShowMarker() {
+    s_marker.buf[2] = m_marker ? 0x40 : 0x00;
+    ctl_out.push(&s_marker);
+}
+
+void OJack::ControllerShowCycle() {
+    s_cycle.buf[2] = m_cycle ? 0x7f : 0x00;
+    ctl_out.push(&s_cycle);
 }
 
 void OJack::ControllerShowTeachMode(bool val) {

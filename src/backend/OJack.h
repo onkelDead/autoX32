@@ -49,6 +49,8 @@ public:
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);
     void ControllerShowScrub();
+    void ControllerShowMarker();
+    void ControllerShowCycle();
     
     void ControllerShowWheelMode();
     
