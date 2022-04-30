@@ -25,6 +25,7 @@ OTimer::OTimer() {
 
 OTimer::OTimer(std::function<void(void*)>task_function, const long &interval, void *userData) :
     m_interval(interval), m_stopped(true), m_userData(userData) {
+    assert(task_function != nullptr);
 }
 
 OTimer::~OTimer() {

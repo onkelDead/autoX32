@@ -17,12 +17,21 @@ void OMainWnd::OnMessageEvent() {
         IOTrackStore* ts = msg->GetTrackstore();
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
+            int upd = 0;
             
-            if (ts->ProcessMsg(msg, GetPosMillis())) {
+            if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
             }
             if (ts->GetView()->GetSelected()) {
-                m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
+                switch(upd) {
+                    case 1:
+                        m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
+                        break;
+                    case 2:
+                    case 3:
+                        m_backend->ControllerShowLCDName(ts->GetView()->GetTrackName(), ts->GetColor_index());
+                        break;
+                }
             }
         }
         else {

@@ -105,6 +105,30 @@ ctl_command s_mtc_quarter = {
     3, {0, }
 };
 
+#define SevenSeg_0 0b00111111
+#define SevenSeg_1 0b00000110
+#define SevenSeg_2 0b01011011
+#define SevenSeg_3 0b01001111
+#define SevenSeg_4 0b01100110
+#define SevenSeg_5 0b01101101
+#define SevenSeg_6 0b01111101
+#define SevenSeg_7 0b00000111
+#define SevenSeg_8 0b01111111
+#define SevenSeg_9 0b01100111
+
+uint8_t Nibble2Seven[] = { SevenSeg_0, SevenSeg_1, SevenSeg_2, SevenSeg_3, SevenSeg_4, SevenSeg_5, SevenSeg_6, SevenSeg_7, SevenSeg_8, SevenSeg_9};
+
+ctl_command s_7seg = {
+    21, {0xf0, 0x00, 0x20, 0x32, 0x41, 0x37, 
+            0x00, 0x00,         // Assignment
+            0x00, 0x00, 0x00,   // Hours
+            0x00, 0x00,         // Minutes
+            0x00, 0x00,         // Seconds
+            0x00, 0x00, 0x00,   // Frames
+            0x00, 0x00,         // Dots
+            0xf7 },
+};
+
 ctl_command s_custom = {
     3, {0, }
 };

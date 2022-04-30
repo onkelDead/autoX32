@@ -67,6 +67,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 
     if (m_selected) {
         cr->set_source_rgb(.4, 0., 0.);
+        GetColorByIndex(cr, m_trackstore->GetColor_index());
         cr->move_to(0, 0);
         cr->line_to(m_width, 0);
         cr->stroke();

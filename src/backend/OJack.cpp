@@ -416,19 +416,23 @@ void OJack::ControllerShowLevel(float f) {
 
 void OJack::ControlerShowMtcComplete(uint8_t s) {
 
+    int i;
+    ctl_command* sysex = &s_7seg;
+    
     uint8_t* tc = GetTimeDiggits();
+    uint8_t highest = 0;
     for (int i = s; i < 8; i++) {
-
         uint8_t d = tc[i / 2];
         uint8_t e = (i & 1) ? d / 10 : d % 10;
-        ctl_command* c = &s_mtc_full[i];
-        c->len = 3;
-        c->buf[0] = 0xb0;
-        c->buf[1] = 0x41 + i;
-        c->buf[2] = 0x30 + e;
-        //c->mbf = true;
-        //ctl_out.push(c);
+        
+        sysex->buf[16 - i] = Nibble2Seven[e];
+        if (e) 
+            highest = i;
     }
+    for (i = 8; i > highest; i--) {
+        sysex->buf[16 - i] = 0;
+    }
+    ctl_out.push(sysex);
 }
 
 void OJack::ControlerShowMtcQuarter(uint8_t q) {

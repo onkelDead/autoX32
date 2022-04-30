@@ -52,9 +52,9 @@ extern ctl_command s_lcd_1;
 extern ctl_command s_lcd_2;
 extern ctl_command s_mtc_full[8];
 extern ctl_command s_mtc_quarter;
-
+extern ctl_command s_7seg;
 extern ctl_command s_custom;
-
+extern uint8_t Nibble2Seven[10];
 
 class IOBackend {
 public:

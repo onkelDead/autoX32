@@ -37,7 +37,7 @@ public:
     void RemoveEntry(track_entry*);
     track_entry* GetEntryAtPosition(int pos, bool seek);
     
-    bool ProcessMsg(IOscMessage*, int);
+    int ProcessMsg(IOscMessage*, int);
     void CheckData(int* count, int* errors);
 
     // serialization

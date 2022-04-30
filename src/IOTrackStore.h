@@ -34,7 +34,7 @@ public:
     virtual void SetView(IOTrackView* view) = 0;
     virtual IOTrackView* GetView() const = 0;
     
-    virtual bool ProcessMsg(IOscMessage*, int) = 0;
+    virtual int ProcessMsg(IOscMessage*, int) = 0;
     
     virtual bool IsPlaying() = 0;
     virtual void SetPlaying(bool val) = 0;

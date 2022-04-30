@@ -436,7 +436,7 @@ void OMainWnd::UpdatePos(gint current, bool seek) {
         }
         
         // update controller fader
-        if (ret_code && ts->GetView()->GetSelected()) {
+        if (ret_code && ts->GetView() && ts->GetView()->GetSelected()) {
             m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
         }
     }

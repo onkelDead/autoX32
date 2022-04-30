@@ -103,7 +103,7 @@ void OAlsa::Connect(IOMainWnd* wnd) {
 }
 
 void OAlsa::Start() {
-    m_timer->start();
+    //m_timer->start();
 }
 
 std::string OAlsa::GetTimeCode() {

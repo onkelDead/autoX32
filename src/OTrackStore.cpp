@@ -59,19 +59,19 @@ track_entry* OTrackStore::NewEntry(int timepos) {
     return entry;
 }
 
-bool OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
+int OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
     if (msg == GetMessage() && m_record) {
         AddEntry(timepos);
-        return true;
+        return 1;
     }
     if (msg->GetPath() == m_config_name_path) {
         m_view->SetTrackName(msg->GetVal(0)->GetString());
-        return true;
+        return 2;
     }
     if (msg->GetPath() == m_config_color_path) {
         m_color_index = msg->GetVal(0)->GetInteger();
         m_view->SetTrackColor(m_color_index);
-        return true;
+        return 3;
     }
     return false;
 }
