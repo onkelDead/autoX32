@@ -94,7 +94,7 @@ pixmaps_DATA     = data/media/autoX32.png
 
     
 autoX32_CPPFLAGS = -std=c++2a -Isrc -Isrc/backend -Isrc/ui -Isrc/dlg -Isrc/utils ${GTK3_CFLAGS} ${GTKMM3_CFLAGS} ${XML2_CFLAGS} ${LO_CFLAGS} ${JACK} ${ALSA_CFLAGS} ${CONFIG_CFLAGS} -DPKGDATADIR='"$(datadir)"'
-autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread	
+autoX32_LDADD = ${GTKMM3_LIBS} ${XML2_LIBS} ${LO_LIBS} ${JACK} ${ALSA_LIBS} ${CONFIG_LIBS} -ljack -lpthread -lX11
 
 TESTS = check_TrackStore check_OscCmd
 check_PROGRAMS = check_TrackStore check_OscCmd

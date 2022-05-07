@@ -16,9 +16,11 @@
  */
 
 #include <gtkmm.h>
+#include <X11/Xlib.h>   
 #include "OMainWnd.h"
 
  int main(int argc, char *argv[]) {
+    XInitThreads();
     auto app = Gtk::Application::create(argc, argv);
 
     OMainWnd window;

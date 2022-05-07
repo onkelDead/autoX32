@@ -226,7 +226,6 @@ void OProject::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
-    m_mixer->WriteAll();
 }
 
 bool OProject::OpenFromArdurRecent() {
