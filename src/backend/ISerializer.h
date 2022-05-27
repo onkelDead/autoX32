@@ -21,6 +21,7 @@
 
 class ISerializer {
 public:
+    virtual ~ISerializer(){}
     virtual void Save(xmlTextWriterPtr) = 0;
     
 };

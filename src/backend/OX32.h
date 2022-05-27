@@ -43,7 +43,7 @@
 
 #define X32_BUFFER_MAX 512
 
-class OX32 : public IOMixer, IOCacheCallbackHandler, ISerializer {
+class OX32 : public IOMixer, IOCacheCallbackHandler, ISerializer, IOTimerEvent {
 public:
     OX32();
     virtual ~OX32();
@@ -74,7 +74,7 @@ public:
     bool GetCachedValue(std::string path, int*);
     bool GetCachedValue(std::string path, std::string*);    
     
-    bool on_timeout();
+    void OnTimer(void*);
 
     void FrameCallback(char* entry, size_t len);
     

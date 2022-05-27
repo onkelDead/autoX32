@@ -14,6 +14,7 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <filesystem>
 #include <iostream>
 #include <string.h>
 #include <unistd.h>
@@ -24,26 +25,14 @@
 #include "IOMixer.h"
 
 OProject::OProject() {
-    m_daw_range.m_loopend = -1;
-    m_daw_range.m_loopstart = 0;
-    m_daw_range.m_dirty = false;
-    m_daw_time.m_bitrate = 0;
-    m_daw_time.m_maxmillis = 1;
-    m_daw_time.scale = 1;
-    m_daw_time.m_viewstart = 0;
-    m_daw_time.m_viewend = -1;
+
 }
 
 OProject::OProject(std::string location) {
 
-    m_daw_time.m_bitrate = 0;
-    m_daw_time.m_maxmillis = 1;
-    m_daw_time.scale = 1;
-    m_daw_time.m_viewstart = 0;
-    m_daw_time.m_viewend = -1;
-
     std::string name = basename(location.data());
 
+    m_location = location;
     m_projectFile = location;
     m_projectFile.append("/").append(name.append(".xml").data());
 }
@@ -264,6 +253,10 @@ void OProject::Save() {
 
     xmlTextWriterPtr writer;
 
+    if (!std::filesystem::exists(m_location)) {
+        std::filesystem::create_directory(m_location);
+    }
+    
     writer = xmlNewTextWriterFilename(m_projectFile.data(), 0);
     xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
     xmlTextWriterStartElement(writer, BAD_CAST "project");
@@ -338,8 +331,10 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
 
 void OProject::SaveTracks(xmlTextWriterPtr writer) {
     char cv[16];
+    int index = 0;
+    
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        gint layout_index = m_layout->GetTrackIndex(it->first);
+        gint layout_index = m_layout != nullptr ? m_layout->GetTrackIndex(it->first) : index++;
         IOTrackStore* ts = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());

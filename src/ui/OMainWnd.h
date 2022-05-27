@@ -24,6 +24,7 @@
 
 #include "IOMainWnd.h"
 #include "IOMessageHandler.h"
+#include "IODawHandler.h"
 #include "res/OResource.h"
 
 #include "OConfig.h"
@@ -45,7 +46,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler {
+class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler, IOTimerEvent, IODawHandler {
 public:
     OMainWnd();
     virtual ~OMainWnd();
@@ -99,9 +100,10 @@ public:
     void OnOverViewEvent();
     void OnOperation();
     void GetTrackConfig(IOTrackStore* trackstore);
-
+    void OnTimer(void*);
+    
     void notify_overview();
-    void remove_track(IOTrackView*);
+    void remove_track(std::string path);
 
     /// operations
     void ApplyWindowSettings();

@@ -18,13 +18,13 @@
 #include "IOBackend.h"
 #include "OTimer.h"
 
-class OAlsa : public IOBackend {
+class OAlsa : public IOBackend, IOTimerEvent {
 public:
     OAlsa();
     virtual ~OAlsa();
 
     void Connect(IOMainWnd* wnd);
-    void Start();
+    void Disconnect() {};
 
     OMidiMtc* GetMidiMtc() {
         return &m_midi_mtc;
@@ -34,6 +34,8 @@ public:
 
     void Notify(JACK_EVENT event);
 
+    void OnTimer(void*);
+    
     void Play();
     void Stop();
     void Locate(gint);

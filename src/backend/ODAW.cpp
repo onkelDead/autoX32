@@ -37,7 +37,7 @@ ODAW::~ODAW() {
     Disconnect();
 }
 
-int ODAW::Connect(const char *host, const char *port, const char *replyport, IOMainWnd *wnd) {
+int ODAW::Connect(const char *host, const char *port, const char *replyport, IODawHandler *wnd) {
 
     m_parent = wnd;
 
@@ -71,11 +71,11 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOM
 
     m_keep_on = 2;
 
-    while (m_keep_on == 2) {
+    while (m_keep_on == 5) {
         time_t now;
         time(&now);
 
-        if (difftime(now, connect_timeout) > 2) {
+        if (difftime(now, connect_timeout) > 5) {
             printf("\ntimeout during connect to DAW\n");
             lo_server_thread_stop(m_server);
             return 1;
@@ -143,9 +143,9 @@ void ODAW::SetKeepOn(int val) {
 void ODAW::ProcessCmd(const char *entry, lo_message msg) {
     DAW_PATH c = DAW_PATH::unknown;
 
-//    printf("DAW: %s ", entry);
+//    std::cout << "Path: " << entry << " - ";
 //    lo_message_pp(msg);
-
+    
     if (0 == strcmp("/position/samples", entry)) {
         int argc = lo_message_get_argc(msg);
         if (argc == 1) {
@@ -159,8 +159,6 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
     }
 
     if (0 == strcmp("/reply", entry)) {
-
-
         lo_arg **argv = lo_message_get_argv(msg);
         int argc = lo_message_get_argc(msg);
         if (argc > 1) {
@@ -171,6 +169,14 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
         }
         m_wait_for_samples = true;
         c = DAW_PATH::reply;
+    }
+    
+    if (0 == strcmp("/session_name", entry)) {
+        int argc = lo_message_get_argc(msg);
+        if (argc == 1) {
+            lo_arg **argv = lo_message_get_argv(msg);
+            m_session_name = &argv[0]->s;
+        }        
     }
 
     if (c != DAW_PATH::unknown) {

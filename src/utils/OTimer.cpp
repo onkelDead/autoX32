@@ -23,7 +23,7 @@ OTimer::OTimer() {
     m_stopped = true;
 }
 
-OTimer::OTimer(std::function<void(void*)>task_function, const long &interval, void *userData) :
+OTimer::OTimer(IOTimerEvent* task_function, const long &interval, IOTimerEvent *userData) :
     m_interval(interval), m_stopped(true), m_userData(userData) {
     assert(task_function != nullptr);
 }
@@ -37,28 +37,27 @@ void OTimer::start() {
 
     gettimeofday(&m_starttime, NULL);
 
-    m_thread = std::thread([&]() {
+    m_thread = new std::thread([&]() {
         while (m_running) {
             auto now = std::chrono::steady_clock::now();
             auto delta = now + std::chrono::milliseconds(m_interval);
 
             // task execution
-            m_task_function(m_userData);
+            m_task_function->OnTimer(m_userData);
 
-            if (delta < std::chrono::steady_clock::now())
-                printf("X");
-            
             std::this_thread::sleep_until(delta);
         }
+        m_stopped = true;
     });
-    m_stopped = true;
-    m_thread.detach();
 }
 
 void OTimer::stop() {
-    m_running = false;
-    while (!m_stopped);
-    m_load = 0.;
+    if (m_running) {
+        m_running = false;
+        while (!m_stopped);
+        m_thread->join();
+        delete m_thread;
+    }
 }
 
 void OTimer::restart() {
@@ -70,7 +69,7 @@ bool OTimer::isRunning() {
     return m_running;
 }
 
-OTimer* OTimer::setFunc(std::function<void(void*) > func) {
+OTimer* OTimer::setFunc(IOTimerEvent* func) {
     m_task_function = func;
     return this;
 }

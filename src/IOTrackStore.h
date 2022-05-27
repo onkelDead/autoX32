@@ -26,6 +26,7 @@ class IOTrackView;
 
 class IOTrackStore {
 public:
+    virtual ~IOTrackStore(){}
     virtual track_entry *GetHeadEntry() = 0;
     
     virtual void SetMessage(IOscMessage* message) = 0;
@@ -46,6 +47,8 @@ public:
     virtual track_entry* GetPlayhead() = 0;
     virtual void SetPlayhead(track_entry* e) = 0;
     virtual track_entry* GetEntryAtPosition(int pos, bool seek) = 0;
+    
+    virtual track_entry* UpdatePos(int current, bool jump) = 0;
     
     virtual void AddEntry(int) = 0;
     virtual void RemoveEntry(track_entry *entry) = 0; 

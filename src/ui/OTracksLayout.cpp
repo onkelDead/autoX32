@@ -35,7 +35,7 @@ void OTracksLayout::AddTrack(OTrackView *view, bool show) {
     append_entry(view);
     if (show) {
         add(*view);
-        view->show();
+        //view->show();
     }
 }
 

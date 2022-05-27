@@ -28,6 +28,8 @@ typedef void(*MessageCallback)(char*, size_t, void*);
 
 class IOMixer {
 public:
+    virtual ~IOMixer(){}
+
     virtual int Connect(std::string) = 0;
     virtual int Disconnect() = 0;
     virtual int IsConnected() = 0;

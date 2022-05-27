@@ -166,7 +166,7 @@ void OTrackView::on_menu_popup_remove() {
     Gtk::MessageDialog dialog("Are you sure to remove this track from project?", false, Gtk::MESSAGE_QUESTION, Gtk::BUTTONS_OK_CANCEL);
     int result = dialog.run();
     if (result == Gtk::RESPONSE_OK) {
-        m_parent->remove_track(this);
+        m_parent->remove_track(GetPath());
     }
 }
 

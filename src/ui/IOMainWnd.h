@@ -23,15 +23,13 @@
 #include "OConfig.h"
 #include "OTypes.h"
 #include "OProject.h"
-#include "IOTrackView.h"
 
 class IOMainWnd {
 public:
-    virtual void notify_daw(DAW_PATH) = 0;
+    virtual ~IOMainWnd(){}
     virtual void notify_jack(JACK_EVENT) = 0;
     virtual void notify_overview() = 0;
-    virtual void remove_track(IOTrackView*) = 0;
-    virtual OConfig* GetConfig() = 0;
+    virtual void remove_track(std::string path) = 0;
     virtual void SelectTrack(std::string, bool) = 0;
     virtual gint GetPosMillis() = 0;
     virtual void TrackViewUp(std::string) = 0;
@@ -40,6 +38,7 @@ public:
     virtual void PublishUiEvent(E_OPERATION, void *) = 0;
 
     virtual void EditTrack(std::string) = 0;
+    virtual OConfig* GetConfig() = 0;
 
 private:
 

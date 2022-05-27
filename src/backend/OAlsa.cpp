@@ -65,6 +65,10 @@ void process(void* user_data) {
     }
 }
 
+void OAlsa::OnTimer(void*) {
+    process(this);
+}
+
 OAlsa::OAlsa() {
 }
 
@@ -98,12 +102,8 @@ void OAlsa::Connect(IOMainWnd* wnd) {
     pfd = (struct pollfd *) alloca(npfd * sizeof (struct pollfd));
     snd_seq_poll_descriptors(alsa_client, pfd, npfd, POLLIN);
 
-    m_timer = new OTimer(process, 0, (void*) this);
+    m_timer = new OTimer(this, 0, this);
 
-}
-
-void OAlsa::Start() {
-    //m_timer->start();
 }
 
 std::string OAlsa::GetTimeCode() {

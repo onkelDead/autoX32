@@ -60,8 +60,9 @@ extern uint8_t Nibble2Seven[10];
 
 class IOBackend {
 public:
+    virtual ~IOBackend(){}
     virtual void Connect(IOMainWnd* wnd) = 0;
-    virtual void Start() = 0;
+    virtual void Disconnect() = 0;
     virtual OMidiMtc* GetMidiMtc() = 0; 
     virtual std::string GetTimeCode() = 0;
     virtual int GetMillis() = 0;

@@ -31,7 +31,7 @@ public:
     virtual ~OJack() {};
 
     void Connect(IOMainWnd* wnd);
-    void Start();
+    void Disconnect();
     void ReconnectPorts();
 
     void Play();

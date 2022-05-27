@@ -22,13 +22,15 @@
 #include <functional>
 #include <thread>
 
+#include "IOTimerEvent.h"
+
 #include "OTypes.h"
  
 class OTimer {
 public:
     OTimer();
 
-    OTimer(std::function<void(void*) > func, const long &interval, void* userData);
+    OTimer(IOTimerEvent* func, const long &interval, IOTimerEvent* userData);
 
     virtual ~OTimer();
 
@@ -38,7 +40,7 @@ public:
 
     bool isRunning();
 
-    OTimer *setFunc(std::function<void(void*) > func);
+    OTimer *setFunc(IOTimerEvent*);
 
     OTimer *SetUserData(void*);
 
@@ -61,12 +63,12 @@ private:
     
     float m_load = 0.;
     
-    std::function<void(void*) > m_task_function;
+    IOTimerEvent *m_task_function;
     long m_interval;
 
-    std::thread m_thread;
-    bool m_running = false;
-	bool m_stopped = false;
+    std::thread *m_thread;
+    std::atomic<bool> m_running = false;
+    std::atomic<bool> m_stopped = false;
     bool m_active = false;
 
     void* m_userData;

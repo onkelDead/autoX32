@@ -20,18 +20,14 @@
 #include "OTimer.h"
 #include "OscMessage.h"
 
-static void on_Timeout(void* obj) {
-    OX32* o = (OX32*)obj;
-
-    o->on_timeout();
-    
-}
-
 OX32::OX32() {
     m_cache.SetCallback_handler(this);
 }
 
 OX32::~OX32() {
+    if (IsConnected())
+        Disconnect();
+    m_timer.stop();
 }
 
 int OX32::Connect(std::string host) {
@@ -64,6 +60,9 @@ int OX32::Connect(std::string host) {
     time_t connect_timeout;
     time(&connect_timeout);
     m_IsConnected = 1;
+    
+    lo_message msg;
+    
     while (m_IsConnected) {
         time_t now;
         time(&now);
@@ -74,8 +73,7 @@ int OX32::Connect(std::string host) {
         do {
             FD_ZERO(&m_in_fd);
             FD_SET(m_X32_socket_fd, &m_in_fd);
-            p_status = select(m_X32_socket_fd + 1, &m_in_fd, NULL, NULL,
-                    &resp_timeout);
+            p_status = select(m_X32_socket_fd + 1, &m_in_fd, NULL, NULL, &resp_timeout);
         } while (0);
         if (p_status < 0) {
             printf("Polling for data failed\n");
@@ -86,7 +84,6 @@ int OX32::Connect(std::string host) {
             if (strcmp(m_in_buffer, "/xinfo") == 0) {
                 int result;
                 lo_message msg = lo_message_deserialise(m_in_buffer, m_in_length, &result);
-                //printf("%s ", m_in_buffer);
                 lo_message_free(msg);
                 break; // Connected!
             }
@@ -99,13 +96,10 @@ int OX32::Connect(std::string host) {
     }
     m_IsConnected = 1;
 
-    m_timer.SetUserData(this);
+    m_timer.SetUserData(NULL);
+    m_timer.setFunc(this);
     m_timer.setInterval(1000);
-    m_timer.setFunc(on_Timeout);
     m_timer.start();
-//    
-//    sigc::slot<bool> my_slot = sigc::mem_fun(*this, &OX32::on_timeout);
-//    m_timer = Glib::signal_timeout().connect(my_slot, 1000);
 
     m_WorkerThread = new std::thread([this] {
         do_work(this);
@@ -113,7 +107,7 @@ int OX32::Connect(std::string host) {
     return 0;
 }
 
-bool OX32::on_timeout() {
+void OX32::OnTimer(void*) {
     lo_message msg = lo_message_new();
     lo_message_serialise(msg, "/xremote", m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
@@ -121,7 +115,6 @@ bool OX32::on_timeout() {
         m_IsConnected = 0;
     }
     lo_message_free(msg);
-    return true;
 }
 
 int OX32::Disconnect() {
@@ -212,7 +205,7 @@ void OX32::Send(std::string path) {
     lo_message msg = lo_message_new();
     lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
-        printf("coundn't send data to X32");
+        std::cerr << "OX32::Send: coundn't send data to X32." << std::endl;
         m_IsConnected = 0;
     }
     lo_message_free(msg);
@@ -320,7 +313,10 @@ IOscMessage* OX32::AddCacheMessage(const char* path, const char* types) {
 }
 
 IOscMessage* OX32::AddCacheMessage(const char* path, const char* types, const char* value) {
-    IOscMessage* msg = m_cache.AddCacheMessage(path, types);
+    IOscMessage* msg = m_cache.GetCachedMsg(path);
+    if (msg == nullptr) {
+        msg = m_cache.AddCacheMessage(path, types);
+    }
     OscValue* val = new OscValue(msg->GetTypes()[0]);
     switch(msg->GetTypes()[0]) {
         case 's':

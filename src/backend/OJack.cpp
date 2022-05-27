@@ -136,10 +136,6 @@ static int process(jack_nframes_t nframes, void *arg) {
     return 0;
 }
 
-void OJack::Start() {
-
-}
-
 static void jack_shutdown(void *arg) {
     // TODO: fix me, what to do if jack server stops
     exit(1);
@@ -249,6 +245,11 @@ void OJack::Connect(IOMainWnd* wnd) {
     ControllerShowSelect(0);
     
     ControllerShowScrub();
+}
+
+void OJack::Disconnect() {
+    jack_deactivate(m_jack_client);
+    jack_client_close(m_jack_client);
 }
 
 void OJack::Play() {

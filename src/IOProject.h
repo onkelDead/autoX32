@@ -17,8 +17,17 @@
 #ifndef IPROJECT_H
 #define IPROJECT_H
 
+#include "IOMixer.h"
+#include "IOTrackStore.h"
+
 class IOProject {
 public:
+    virtual ~IOProject(){}
+    virtual void SetMixer(IOMixer*) = 0;
+    virtual void Save() = 0;
+    virtual void Load(std::string location) = 0;
+    virtual void Close() = 0;
+    virtual IOTrackStore* NewTrack(IOscMessage*) = 0;
 
 };
 

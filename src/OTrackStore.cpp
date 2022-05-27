@@ -111,6 +111,24 @@ track_entry* OTrackStore::GetEntryAtPosition(int pos, bool seek) {
     return InternalGetEntryAtPosition(pos, seek);
 }
 
+track_entry* OTrackStore::UpdatePos(int current, bool seek) {
+    track_entry* e = GetEntryAtPosition(current, seek);
+
+    // overwrite if required
+    if (IsRecording() && IsPlaying()) {
+        if (GetPlayhead() != e) {
+            RemoveEntry(e);
+        }            
+    }
+    else {
+        if (GetPlayhead() != e) {
+            SetPlayhead(e);
+        }
+        return e;
+    }
+    return nullptr;
+}
+
 void OTrackStore::SetPlayhead(track_entry* e) {
     Lock();
     m_playhead = e;
@@ -287,11 +305,7 @@ void OTrackStore::EvalFileName() {
         len = m_message->GetPath().length();
         s = strdup(m_message->GetPath().data());
     }
-    //    else {
-    //        len = m_cmd->GetPath().length();
-    //        s = strdup(m_cmd->GetPath().data());
-    //        
-    //    }
+
     int i;
     char x[256];
 

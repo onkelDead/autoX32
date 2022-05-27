@@ -418,28 +418,15 @@ IOscMessage* OscCache::GetCachedMsg(const char* path) {
 }
 
 void OscCache::Save(xmlTextWriterPtr writer) {
-    //char cv[16];
     char val[32];
     for (std::map<std::string, IOscMessage*>::iterator it = m_cache.begin(); it != m_cache.end(); ++it) {
         IOscMessage* msg = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "cmd");
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "name", "%s", it->second->GetName().data());
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", msg->GetPath().data());
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "types", "%s", msg->GetTypes());
         msg->GetVal(0)->ToString(msg->GetTypes()[0], val);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "value", "%s", val);
-        
-//        sprintf(cv, "%d", it->second->GetColor().get_red_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "red", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_green_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "green", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_blue_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "blue", "%s", cv);
-//        sprintf(cv, "%d", it->second->GetColor().get_alpha_u());
-//        xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "alpha", "%s", cv);
         xmlTextWriterEndElement(writer);
-//        printf("Project::Save: command %s saved\n", msg->GetPath().data());
-
     }    
 }
 
@@ -460,8 +447,11 @@ void OscCache::ReadAllFromMixer(IOMixer* x32) {
                             sprintf(cmd, "%s/%02d%s", objs.objs[o].name, i + 1, objs.objs[o].funcs.funcs[j]->func1[k]);
                             break;
                     }
-                    std::cout << " --> " << cmd << std::endl;
                     x32->Send(cmd);
+                    if (!x32->IsConnected()) {
+                        std::cerr << "OscCache::ReadAllFromMixer failed." << std::endl;
+                        return;
+                    }
                     usleep(500);
                 }
             }

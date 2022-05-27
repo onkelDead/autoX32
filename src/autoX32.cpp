@@ -29,4 +29,3 @@
     
     return app->run((Gtk::Window&)window);
 }
- 

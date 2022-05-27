@@ -89,14 +89,14 @@ private:
     std::string m_projectFile;
     
     
-    daw_range m_daw_range;
-    daw_time m_daw_time;
+    daw_range m_daw_range = { 0, -1, false};
+    daw_time m_daw_time = {0, 1, 1., 0, -1};
     
     bool m_lock_playhead = false;
 
     IOMixer* m_mixer = nullptr;
     
-    IOTracksLayout *m_layout;
+    IOTracksLayout *m_layout = nullptr;
 
     std::map<std::string, IOTrackStore*> m_tracks;
 

@@ -60,6 +60,15 @@ void check_ardour_recent(void* user_Data) {
     }
 }
 
+void OMainWnd::OnTimer(void* user_data)  {
+    if (user_data == &m_jackTimer) {
+        on_jack_event(this);
+        return;
+    }
+    
+    check_ardour_recent(this);  
+}
+
 OMainWnd::OMainWnd() : Gtk::Window() {
 
     set_name("OMainWnd");
@@ -80,8 +89,8 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     create_about_dlg();
 
     m_jackTimer.setInterval(10);
-    m_jackTimer.SetUserData(this);
-    m_jackTimer.setFunc(on_jack_event);
+    m_jackTimer.SetUserData(&m_jackTimer);
+    m_jackTimer.setFunc(this);
     m_jackTimer.start();
 
     //m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
@@ -201,7 +210,6 @@ void OMainWnd::AutoConnect() {
                 , m_config.get_string(SETTINGS_DAW_PORT)
                 , reply_port);
     }
-    m_backend->Start();
 }
 
 bool OMainWnd::ConnectMixer(std::string host) {
@@ -224,8 +232,10 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer(check_ardour_recent, 5000, (void*) this);
-        m_timer->setFunc(check_ardour_recent);
+        m_timer = new OTimer();
+        m_timer->setInterval(5000);
+        m_timer->setFunc(this);
+        m_timer->SetUserData(&m_timer);
         m_timer->start();
         return true;
     }
@@ -265,6 +275,7 @@ void OMainWnd::OpenProject(std::string location) {
             }
         }
     }
+    m_trackslayout.show_all();
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
     m_x32->WriteAll();
@@ -298,8 +309,7 @@ bool OMainWnd::SelectProjectLocation(bool n) {
     return false;
 }
 
-void OMainWnd::remove_track(IOTrackView* view) {
-    std::string path = view->GetPath();
+void OMainWnd::remove_track(std::string path) {
     printf("remove %s\n", path.data());
     m_trackslayout.RemoveTrackView(path);
     m_project.RemoveTrack(path);
@@ -419,21 +429,7 @@ void OMainWnd::UpdatePos(gint current, bool seek) {
     for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
 
-        track_entry* e = ts->GetEntryAtPosition(current, seek);
-        
-        // overwrite if required
-        if (ts->IsRecording() && ts->IsPlaying()) {
-            if (ts->GetPlayhead() != e) {
-                ts->RemoveEntry(e);
-            }            
-        }
-        else {
-            if (ts->GetPlayhead() != e) {
-                PlayTrackEntry(ts, e);
-                ts->SetPlayhead(e);
-                ret_code = true;
-            }
-        }
+        PlayTrackEntry(ts, ts->UpdatePos(current, seek));
         
         // update controller fader
         if (ret_code && ts->GetView() && ts->GetView()->GetSelected()) {
