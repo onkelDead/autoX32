@@ -29,6 +29,9 @@ public:
     virtual ~IOTrackStore(){}
     virtual track_entry *GetHeadEntry() = 0;
     
+    virtual void SetView(void* view) = 0;
+    virtual void* GetView() const = 0;
+    
     virtual void SetMessage(IOscMessage* message) = 0;
     virtual IOscMessage* GetMessage() = 0;
     

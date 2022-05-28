@@ -61,7 +61,7 @@ int main_service(int argc, char** argv) {
     
     if (!service->CheckArdourRecent())
         mixer->ReadAll();
-
+    
     backend = new OJack(config);
     
     daw = new ODAW();
@@ -73,7 +73,6 @@ int main_service(int argc, char** argv) {
         delete config;
         return 1;
     }
-
     
     service->SetBackend(backend);
     

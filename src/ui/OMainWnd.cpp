@@ -266,6 +266,7 @@ void OMainWnd::OpenProject(std::string location) {
                 ts->GetMessage()->SetTrackstore(ts);
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(ts);
+                ts->SetView(trackview);
                 m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
                 track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
                 ts->SetPlayhead(e);

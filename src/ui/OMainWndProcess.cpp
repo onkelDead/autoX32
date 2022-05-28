@@ -92,6 +92,7 @@ void OMainWnd::OnOperation() {
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
+                    trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                 }
                 // TODO: get hidden tracks for all relevant parameters.

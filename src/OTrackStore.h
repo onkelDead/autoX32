@@ -108,6 +108,14 @@ public:
         }
         return m_config_color_path;
     }
+    
+    inline void SetView(void* view) {
+        m_view = view;
+    }
+
+    inline void* GetView() const {
+        return m_view;
+    }    
 
     inline void SetColor_index(int color_index) {
         m_color_index = color_index;
@@ -133,6 +141,8 @@ private:
 
     track_entry* m_playhead = nullptr;
     IOscMessage* m_message = nullptr;
+
+    void* m_view = nullptr;
 
     char m_file_name[512];
 

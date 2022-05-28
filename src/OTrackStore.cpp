@@ -66,6 +66,7 @@ int OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
     }
     if (msg->GetPath() == m_config_name_path) {
         m_name = msg->GetVal(0)->GetString();
+        //((IOTrackView*)m_view)->SetTrackName(m_name);
         return 2;
     }
     if (msg->GetPath() == m_config_color_path) {

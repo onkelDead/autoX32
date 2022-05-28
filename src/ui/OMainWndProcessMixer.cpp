@@ -21,7 +21,8 @@ void OMainWnd::OnMessageEvent() {
             IOTrackView * view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
             
             if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
-                PublishUiEvent(E_OPERATION::draw_trackview, view);
+                PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
+                //PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
             if (view->GetSelected()) {
                 switch(upd) {

@@ -150,6 +150,9 @@ void OService::Load(std::string location) {
 }
 
 void OService::Save() {
+    if (m_location == "") 
+        return;
+    
     std::string name = basename(m_location.data());
 
     m_projectFile = m_location;
@@ -303,7 +306,6 @@ bool OService::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
 
 void OService::StartProcessing() {
 
-    m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);
     
     m_dawTimer.setInterval(5000);
     m_dawTimer.SetUserData(&m_dawTimer);
@@ -314,8 +316,11 @@ void OService::StartProcessing() {
 
     m_jackTimer.setInterval(10);
     m_jackTimer.SetUserData(&m_jackTimer);
+    
     m_jackTimer.setFunc(this);
     m_jackTimer.start();    
+
+    m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);
 
     m_active = true;
     while(m_active) {
@@ -333,7 +338,7 @@ void OService::OnTimer(void* user_data)  {
         return;
     }
     
-    
+    CheckArdourRecent();
 }
 
 void OService::OnJackEvent() {
@@ -572,6 +577,7 @@ bool OService::CheckArdourRecent() {
         fclose(file_recent);
         strncat(path, "/autoX32", 32);
         if (strncmp(path, m_location.data(), strlen(path))) {
+            Save();
             Close();
 
             if (access(path, F_OK)) {
@@ -586,6 +592,8 @@ bool OService::CheckArdourRecent() {
             }
             else {
                 Load(path);
+                m_mixer->WriteAll();
+
                 return true;
             }
         }
