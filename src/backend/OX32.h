@@ -29,11 +29,6 @@
 #include <thread>
 #include <mutex>
 
-#include <gtkmm.h>
-#include <sigc++/connection.h>
-
-#include "IOMainWnd.h"
-#include "IOMessageHandler.h"
 #include "IOMixer.h"
 #include "IOCacheCallbackHandler.h"
 #include "ISerializer.h"

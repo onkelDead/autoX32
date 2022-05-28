@@ -58,6 +58,7 @@ enum JACK_EVENT {
     CTL_TOGGLE_REC,
     CTL_MARKER,
     CTL_LOOP,
+    CTL_SHUTDOWN,
 };
 
 enum DAW_PATH {

@@ -25,6 +25,7 @@
 #include "IOMainWnd.h"
 #include "IOMessageHandler.h"
 #include "IODawHandler.h"
+#include "IOJackHandler.h"
 #include "res/OResource.h"
 
 #include "OConfig.h"
@@ -46,7 +47,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler, IOTimerEvent, IODawHandler {
+class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler, IOTimerEvent, IODawHandler, IOJackHandler {
 public:
     OMainWnd();
     virtual ~OMainWnd();

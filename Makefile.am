@@ -26,6 +26,7 @@ autoX32_SOURCES = \
     src/dlg/ODlgPrefs.cpp \
     src/OTrackStore.cpp \
     src/OProject.cpp \
+    src/OService.cpp \
     src/backend/OscMessage.cpp \
     src/backend/OscValue.cpp \
     src/backend/OscCache.cpp \
@@ -33,6 +34,8 @@ autoX32_SOURCES = \
     src/backend/OX32.cpp \
     src/backend/OCallbackHandler.cpp \
     src/autoX32.cpp \
+    src/autoX32_service.cpp \
+    src/ui/autoX32_UI.cpp \
     src/backend/OJack.cpp \
     src/backend/OAlsa.cpp \
     src/backend/OBackend.cpp \

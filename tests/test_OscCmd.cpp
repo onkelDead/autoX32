@@ -28,6 +28,7 @@
 #include "IODawHandler.h"
 #include "IOBackend.h"
 #include "OJack.h"
+#include "OProject.h"
 
 #define TEST_PROJECT_FILE "/home/onkel/test_autoX32"
 
@@ -47,7 +48,6 @@ static void test_greater(auto a, auto b, std::string success) {
     assert(a > b);
     std::cout << success << " PASSED." << std::endl;
 }
-
 
 class TestMessageHandler : public IOMessageHandler {
 public:
@@ -93,7 +93,7 @@ public:
     int notify_daw_counter = 0;
 };
 
-class MainWnd_mock : public IOMainWnd {
+class MainWnd_mock : public IOJackHandler {
 public:
 
     void EditTrack(std::string) {};
@@ -445,8 +445,9 @@ int test_daw() {
 int test_backend() {
     std::cout << "test_OscCmd: Test Backend started." << std::endl;
         
-    IOBackend* backend = new OJack();
-    IOMainWnd *wnd = new MainWnd_mock();
+    OConfig config;
+    IOBackend* backend = new OJack(&config);
+    IOJackHandler *wnd = new MainWnd_mock();
     
     backend->Connect(wnd);
     sleep(1);
@@ -524,6 +525,7 @@ int main(int argc, char** argv) {
                     std::cout << "Unknown test index " << argv[i][0] << std::endl;
                     return EXIT_FAILURE;
             }
+            sleep(1);
         }
     }
     else {

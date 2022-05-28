@@ -14,7 +14,7 @@
  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "OMainWnd.h"
+#include "IOMainWnd.h"
 #include "ODAW.h"
 
 void daw_err_handler(int num, const char *msg, const char *where) {

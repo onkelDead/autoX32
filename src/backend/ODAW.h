@@ -30,9 +30,6 @@
 #include <thread>
 #include <mutex>
 
-#include <gtkmm.h>
-#include <glib-2.0/glib/gtypes.h>
-
 #define FEEDBACK_MASTER 16
 #define FEEDBACK_TIMECODE 64
 #define FEEDBACK_TRANSPORT_POSITION_SAMPLES 1024
@@ -50,8 +47,8 @@ public:
     int Connect(const char* host, const char* port, const char* replyport, IODawHandler*);
     int Disconnect();
 
-    gint GetMaxMillis();
-    gint GetBitRate();
+    int GetMaxMillis();
+    int GetBitRate();
 
     void ShortMessage(const char* cmd);
     
@@ -61,7 +58,7 @@ public:
     int GetKeepOn();
     void SetKeepOn(int);
     
-    gint GetSample();
+    int GetSample();
     std::string GetSessionName() {
         return m_session_name;
     }
@@ -71,8 +68,8 @@ public:
 private:
     int m_keep_on = 1;
 
-    gint m_sample = 0;
-    gint m_bitrate = 0;
+    int m_sample = 0;
+    int m_bitrate = 48000;
     int m_maxmillis = 0;
 
     std::string m_session_name;

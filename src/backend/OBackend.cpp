@@ -174,11 +174,11 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_FADER);
                     }
                     break;
-//                case 0x1d:
-//                    if (data[2]) {
-//                        backend->Notify(CTL_SCRUB_ON);
-//                    }
-//                    break;
+                case 0x0c:
+                    if (data[2]) {
+                        backend->Notify(CTL_SHUTDOWN);
+                    }
+                    break;
                 case 0x0d:  //Marker
                     backend->m_marker = data[2] != 0;
                     backend->Notify(CTL_MARKER);

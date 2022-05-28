@@ -18,18 +18,19 @@ void OMainWnd::OnMessageEvent() {
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
             int upd = 0;
+            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
             
             if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
-                PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
+                PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
-            if (ts->GetView()->GetSelected()) {
+            if (view->GetSelected()) {
                 switch(upd) {
                     case 1:
                         m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                         break;
                     case 2:
                     case 3:
-                        m_backend->ControllerShowLCDName(ts->GetView()->GetTrackName(), ts->GetColor_index());
+                        m_backend->ControllerShowLCDName(view->GetTrackName(), ts->GetColor_index());
                         break;
                 }
             }

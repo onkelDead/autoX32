@@ -16,7 +16,7 @@
 
 #include <queue>
 #include <stdlib.h>
-#include "IOMainWnd.h"
+#include "IOJackHandler.h"
 #include "OMidiMtc.h"
 #include "OQueue.h"
 
@@ -61,7 +61,7 @@ extern uint8_t Nibble2Seven[10];
 class IOBackend {
 public:
     virtual ~IOBackend(){}
-    virtual void Connect(IOMainWnd* wnd) = 0;
+    virtual void Connect(IOJackHandler* wnd) = 0;
     virtual void Disconnect() = 0;
     virtual OMidiMtc* GetMidiMtc() = 0; 
     virtual std::string GetTimeCode() = 0;
@@ -97,7 +97,7 @@ public:
     
     virtual void Locate(int) = 0;
     virtual void Shuffle(bool) = 0;
-    virtual void SetFrame(gint) = 0;
+    virtual void SetFrame(int) = 0;
 
     virtual void QuarterFrame(uint8_t) = 0;
     

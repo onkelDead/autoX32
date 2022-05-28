@@ -75,7 +75,7 @@ OAlsa::OAlsa() {
 OAlsa::~OAlsa() {
 }
 
-void OAlsa::Connect(IOMainWnd* wnd) {
+void OAlsa::Connect(IOJackHandler* wnd) {
     m_parent = wnd;
 
     snd_seq_client_info_malloc(&info);
@@ -150,7 +150,7 @@ void OAlsa::Stop() {
     ControllerShowStop();
 }
 
-void OAlsa::Locate(gint millis) {
+void OAlsa::Locate(int millis) {
     int mm = (millis / 4) % 30;
     int sec = (millis / 120) % 60;
     int min = (millis / 7200) % 60;
@@ -178,7 +178,7 @@ void OAlsa::Shuffle(bool) {
     
 }
 
-void OAlsa::SetFrame(gint frame) {
+void OAlsa::SetFrame(int frame) {
     m_midi_mtc.SetFrame(frame);
 }
 

@@ -152,10 +152,10 @@ void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg)
 
     if (connect) {
         if (strcmp(port_name_b, ONKEL_C_IN_PORT_NAME) == 0) {
-            jack->m_parent->GetConfig()->set_string("controller_in_port", port_name_a);
+            jack->m_config->set_string("controller_in_port", port_name_a);
         }
         if (strcmp(port_name_a, ONKEL_C_OUT_PORT_NAME) == 0) {
-            jack->m_parent->GetConfig()->set_string("controller_out_port", port_name_b);
+            jack->m_config->set_string("controller_out_port", port_name_b);
         }
 
     }
@@ -204,7 +204,7 @@ void on_register_port(jack_port_id_t port, int reg, void *arg) {
     }
 }
 
-void OJack::Connect(IOMainWnd* wnd) {
+void OJack::Connect(IOJackHandler* wnd) {
 
     m_parent = wnd;
 
@@ -233,8 +233,8 @@ void OJack::Connect(IOMainWnd* wnd) {
         return;
     }
 
-    jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME);
-    jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"));
+    jack_connect(m_jack_client, "system:midi_capture_4", ONKEL_C_IN_PORT_NAME);
+    jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, "system:midi_playback_4");
 
     ControllerShowStop();
     ControllerShowTeachOff();
@@ -289,7 +289,7 @@ void OJack::Stop() {
     ControllerShowStop();
 }
 
-void OJack::Locate(gint millis) {
+void OJack::Locate(int millis) {
     int mm = (millis / 4) % 30;
     int sec = (millis / 120) % 60;
     int min = (millis / 7200) % 60;
@@ -303,8 +303,8 @@ void OJack::Locate(gint millis) {
 
 void OJack::Shuffle(bool s) {
     m_shuffle_speed = s
-            ? MAX(-7, m_shuffle_speed - 1)
-            : MIN(7, m_shuffle_speed + 1);
+            ? std::max(-7, m_shuffle_speed - 1)
+            : std::min(7, m_shuffle_speed + 1);
 
     shuffle[6] = 0x00;
     if (m_shuffle_speed != 0) {
@@ -326,7 +326,7 @@ int OJack::GetMillis() {
     return m_midi_mtc.GetMillis();
 }
 
-void OJack::SetFrame(gint frame) {
+void OJack::SetFrame(int frame) {
     m_midi_mtc.SetFrame(frame);
 }
 
@@ -401,7 +401,7 @@ void OJack::ControllerShowLCDName(std::string name, int color) {
     uint8_t syext[] = {0xF0, 0x00, 0x20, 0x32, 0x41, 0x4C, 0x00, 0x04, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xF7};
 
     ctl_command* c = &s_lcd_1;
-    memcpy(syext + 8, s, MIN(14, strlen(s)));
+    memcpy(syext + 8, s, std::min((size_t)14, strlen(s)));
     syext[7] = color;
     c->len = sizeof (syext);
     memcpy(c->buf, syext, 23);

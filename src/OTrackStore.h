@@ -18,7 +18,6 @@
 #define OTRACKSTORE_H
 
 #include <mutex>
-#include "IOTrackView.h"
 #include "IOMessageHandler.h"
 #include "IOscMessage.h"
 #include "IOTrackStore.h"
@@ -110,14 +109,6 @@ public:
         return m_config_color_path;
     }
 
-    inline void SetView(IOTrackView* view) {
-        m_view = view;
-    }
-
-    inline IOTrackView* GetView() const {
-        return m_view;
-    }
-
     inline void SetColor_index(int color_index) {
         m_color_index = color_index;
     }
@@ -143,13 +134,12 @@ private:
     track_entry* m_playhead = nullptr;
     IOscMessage* m_message = nullptr;
 
-    IOTrackView* m_view = nullptr;
-
     char m_file_name[512];
 
     std::string m_config_name_path;
     std::string m_config_color_path;
-
+    
+    std::string m_name;
     int m_color_index;
 
     // private functions

@@ -37,23 +37,7 @@ extern "C" {
 #include "zoom_loop.h"
 
     
-#define SETTING_SMOOTH_SCREEN           "smooth-screen"    
-#define SETTINGS_DAW_HOST               "daw-host"    
-#define SETTINGS_DAW_PORT               "daw-port"
-#define SETTINGS_DAW__REPLAY_PORT       "daw-reply-port"
-#define SETTINGS_DAW_AUTOCONNECT        "daw-autoconnect"
-#define SETTINGS_MIXER_HOST             "mixer-host"
-#define SETTINGS_MIXER_AUTOCONNECT      "mixer-autoconnect"
-    
-#define SETTINGS_WINDOW_WIDTH           "window-width"    
-#define SETTINGS_WINDOW_HEIGHT          "window-height"    
-#define SETTINGS_WINDOW_TOP             "window-top"    
-#define SETTINGS_WINDOW_LEFT            "window-left"    
-    
-#define SETTINGS_SHOW_PATH_ON_TRACK     "show-path-on-track"
-    
-#define SETTINGS_RECENT_PROJECTS        "recent-projects"    
-#define SETTINGS_MIDI_BACKEND           "midi-backend"    
+  
     
 #ifdef __cplusplus
 }

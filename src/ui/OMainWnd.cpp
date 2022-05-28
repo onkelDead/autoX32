@@ -25,7 +25,7 @@
 #include "res/autoX32.h"
 #include "res/trackdlg.h"
 
-void on_jack_event(void *obj) {
+static void on_jack_event(void *obj) {
     OMainWnd* wnd = (OMainWnd*) obj;
     wnd->OnJackEvent();
     //    wnd->OnMixerEvent();
@@ -266,7 +266,6 @@ void OMainWnd::OpenProject(std::string location) {
                 ts->GetMessage()->SetTrackstore(ts);
                 OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
                 trackview->SetTrackStore(ts);
-                ts->SetView(trackview);
                 m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
                 track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
                 ts->SetPlayhead(e);
@@ -407,7 +406,7 @@ bool OMainWnd::SetupBackend() {
             m_backend = new OAlsa();
             break;
         case 1:
-            m_backend = new OJack();
+            m_backend = new OJack(GetConfig());
             break;
         default:
             return 0;
@@ -432,7 +431,8 @@ void OMainWnd::UpdatePos(gint current, bool seek) {
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
         
         // update controller fader
-        if (ret_code && ts->GetView() && ts->GetView()->GetSelected()) {
+        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+        if (ret_code && view && view->GetSelected()) {
             m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
         }
     }

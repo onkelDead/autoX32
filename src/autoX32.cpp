@@ -15,17 +15,14 @@
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <gtkmm.h>
-#include <X11/Xlib.h>   
-#include "OMainWnd.h"
+extern int main_service(int argc, char** argv);
+extern int main_ui(int argc, char** argv);
 
- int main(int argc, char *argv[]) {
-    XInitThreads();
-    auto app = Gtk::Application::create(argc, argv);
-
-    OMainWnd window;
-
-    app->signal_activate().connect(sigc::mem_fun(window, &OMainWnd::on_activate));
+int main(int argc, char *argv[]) {
     
-    return app->run((Gtk::Window&)window);
+    if (argc < 2)
+        return main_ui(argc, argv);
+    
+    return main_service(argc, argv);
+
 }

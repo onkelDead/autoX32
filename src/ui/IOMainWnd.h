@@ -17,9 +17,6 @@
 #ifndef IOMAINWND_H
 #define IOMAINWND_H
 
-#include <giomm/settingsschemasource.h>
-#include <giomm/settings.h>
-
 #include "OConfig.h"
 #include "OTypes.h"
 #include "OProject.h"
@@ -27,7 +24,6 @@
 class IOMainWnd {
 public:
     virtual ~IOMainWnd(){}
-    virtual void notify_jack(JACK_EVENT) = 0;
     virtual void notify_overview() = 0;
     virtual void remove_track(std::string path) = 0;
     virtual void SelectTrack(std::string, bool) = 0;

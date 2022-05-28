@@ -23,7 +23,7 @@ public:
     OAlsa();
     virtual ~OAlsa();
 
-    void Connect(IOMainWnd* wnd);
+    void Connect(IOJackHandler* wnd);
     void Disconnect() {};
 
     OMidiMtc* GetMidiMtc() {
@@ -38,9 +38,9 @@ public:
     
     void Play();
     void Stop();
-    void Locate(gint);
+    void Locate(int);
     void Shuffle(bool);
-    void SetFrame(gint);
+    void SetFrame(int);
     void QuarterFrame(uint8_t);
 
     void ControllerShowPlay();
@@ -69,7 +69,7 @@ public:
     int npfd;
 
 private:
-    IOMainWnd* m_parent;
+    IOJackHandler* m_parent;
     OMidiMtc m_midi_mtc;
     bool m_loop_state = false;
 

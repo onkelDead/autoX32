@@ -17,20 +17,21 @@
 #ifndef SRC_OJACK_H_
 #define SRC_OJACK_H_
 
-#include <gtkmm.h>
 #include <jack/jack.h>
 #include <jack/midiport.h>
 #include "OTypes.h"
 #include "IOBackend.h"
-#include "IOMainWnd.h"
-
+#include "IOJackHandler.h"
+#include "OConfig.h"
 
 class OJack : public IOBackend {
 public:
-    OJack() {};
+    OJack(OConfig* config) {
+        m_config = config;
+    };
     virtual ~OJack() {};
 
-    void Connect(IOMainWnd* wnd);
+    void Connect(IOJackHandler* wnd);
     void Disconnect();
     void ReconnectPorts();
 
@@ -56,13 +57,13 @@ public:
     
     void ControllerCustom(uint8_t c, uint8_t a, uint8_t b);
     
-    void Locate(gint);
+    void Locate(int);
     void Shuffle(bool);
 
     OMidiMtc* GetMidiMtc() { return &m_midi_mtc; }
     
     int GetMillis();
-    void SetFrame(gint);
+    void SetFrame(int);
     void QuarterFrame(uint8_t);
     
     std::string GetTimeCode();
@@ -75,18 +76,20 @@ public:
 
     jack_client_t *m_jack_client = nullptr;
 
-    gint m_millis = 0;
+    int m_millis = 0;
     std::string m_timecode;
 
     void Notify(JACK_EVENT event);
 
-    IOMainWnd* m_parent = nullptr;
+    IOJackHandler* m_parent = nullptr;
     
     bool m_reconnect_mtc_out = true;
     bool m_reconnect_mmc_out = true;
     bool m_reconnect_mmc_in = true;
     bool m_reconnect_ctl_out = false;
     bool m_reconnect_ctl_in = false;
+
+    OConfig *m_config;
     
 private:
     bool m_loop_state = false;
