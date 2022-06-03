@@ -41,6 +41,8 @@ extern ctl_command s_tech_on;
 extern ctl_command s_teach_off;
 extern ctl_command s_f1_on;
 extern ctl_command s_f1_off;
+extern ctl_command s_f8_on;
+extern ctl_command s_f8_off;
 extern ctl_command s_scrub_on;
 extern ctl_command s_scrub_off;
 extern ctl_command s_wheel_mode_on;
@@ -61,7 +63,7 @@ extern uint8_t Nibble2Seven[10];
 class IOBackend {
 public:
     virtual ~IOBackend(){}
-    virtual void Connect(IOJackHandler* wnd) = 0;
+    virtual int Connect(IOJackHandler* wnd) = 0;
     virtual void Disconnect() = 0;
     virtual OMidiMtc* GetMidiMtc() = 0; 
     virtual std::string GetTimeCode() = 0;
@@ -87,6 +89,7 @@ public:
     virtual void ControllerShowScrub() = 0;
     
     virtual void ControllerShowWheelMode() = 0;
+    virtual void ControllerShowActive(bool) = 0;
     virtual void ControllerCustom(uint8_t, uint8_t, uint8_t) = 0;
     
     virtual void ControllerShowMarker() = 0;

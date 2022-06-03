@@ -59,6 +59,7 @@ enum JACK_EVENT {
     CTL_MARKER,
     CTL_LOOP,
     CTL_SHUTDOWN,
+    CTL_SAVE,
 };
 
 enum DAW_PATH {

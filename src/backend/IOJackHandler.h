@@ -15,11 +15,14 @@
 #define IOJACKHANDLER_H
 
 #include "OTypes.h"
+#include "OConfig.h"
 
 class IOJackHandler {
 public:
     virtual ~IOJackHandler() {}
     virtual void notify_jack(JACK_EVENT) = 0;
+    virtual OConfig* GetConfig() = 0;
+    
 };
 
 #endif /* IOJACKHANDLER_H */

@@ -75,7 +75,7 @@ OAlsa::OAlsa() {
 OAlsa::~OAlsa() {
 }
 
-void OAlsa::Connect(IOJackHandler* wnd) {
+int OAlsa::Connect(IOJackHandler* wnd) {
     m_parent = wnd;
 
     snd_seq_client_info_malloc(&info);
@@ -103,7 +103,7 @@ void OAlsa::Connect(IOJackHandler* wnd) {
     snd_seq_poll_descriptors(alsa_client, pfd, npfd, POLLIN);
 
     m_timer = new OTimer(this, 0, this);
-
+    return 0;
 }
 
 std::string OAlsa::GetTimeCode() {

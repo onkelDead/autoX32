@@ -64,6 +64,7 @@ public:
     virtual std::string GetConfigRequestColor() = 0;
     virtual void SetColor_index(int color_index) = 0;
     virtual int GetColor_index() const = 0;
+    virtual std::string GetName() = 0;
 };
 
 #endif /* IOTRACKSTORE_H */

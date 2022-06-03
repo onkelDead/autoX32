@@ -23,7 +23,7 @@ public:
     OAlsa();
     virtual ~OAlsa();
 
-    void Connect(IOJackHandler* wnd);
+    int Connect(IOJackHandler* wnd);
     void Disconnect() {};
 
     OMidiMtc* GetMidiMtc() {
@@ -59,6 +59,7 @@ public:
     void ControllerCustom(uint8_t c, uint8_t a, uint8_t b) {}
     void ControllerShowMarker() {}
     void ControllerShowCycle() {}
+    void ControllerShowActive(bool) {};
     void LoopStart();
     void LoopEnd();
     bool GetLoopState();

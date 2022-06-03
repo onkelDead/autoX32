@@ -128,6 +128,7 @@ void ODAW::SetRange(int start, int end, bool enable) {
     if (enable) {
         ShortMessage("/loop_toggle");
     }
+    lo_message_free(msg);
 }
 
 void ODAW::ClearRange() {

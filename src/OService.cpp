@@ -1,30 +1,91 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+ Copyright 2020 Detlef Urban <onkel@paraair.de>
 
-/* 
- * File:   OService.cpp
- * Author: onkel
- * 
- * Created on May 27, 2022, 3:17 PM
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #include <string.h>
 #include <filesystem>
 
 #include "OService.h"
+#include "OX32.h"
+#include "OJack.h"
 #include "OTrackStore.h"
 
-
 OService::OService() {
+    m_mixer = new OX32();
+    m_daw = new ODAW();
+    m_backend = new OJack(&m_config);
+    
+    m_jackTimer.setInterval(10);
+    m_jackTimer.SetUserData(&m_jackTimer);
+    m_jackTimer.setFunc(this);
+    m_jackTimer.start();    
 }
 
 OService::OService(const OService& orig) {
 }
 
 OService::~OService() {
+    if (m_mixer) {
+        m_mixer->Disconnect();
+        delete m_mixer;
+        m_mixer = nullptr;
+    }
+    if (m_daw) {
+        m_daw->Disconnect();
+        delete m_daw;
+        m_daw = nullptr;
+    }
+    if (m_backend) {
+        m_jackTimer.stop();
+        m_backend->Disconnect();
+        delete m_backend;
+        m_backend = nullptr;
+    }
+}
+
+int OService::InitMixer() {
+    if (m_mixer->Connect(m_config.get_string(SETTINGS_MIXER_HOST))) {
+        std::cerr << "autoX32_service ERROR: unable to connect to mixer at address " << m_config.get_string(SETTINGS_MIXER_HOST) << std::endl;
+        delete m_mixer;
+        m_mixer = nullptr;
+        return 1;
+    }
+    m_mixer->SetMessageHandler(this);
+    
+    if (!CheckArdourRecent())
+        m_mixer->ReadAll();
+    return 0;
+}
+
+int OService::InitDaw() {
+    if (m_daw->Connect(m_config.get_string(SETTINGS_DAW_HOST), m_config.get_string(SETTINGS_DAW_PORT), m_config.get_string(SETTINGS_DAW__REPLAY_PORT), this)) {
+        std::cerr << "autoX32_service ERROR: unable to connect to mixer at address " << m_config.get_string(SETTINGS_MIXER_HOST) << std::endl;
+        delete m_daw;
+        return 1;
+    }    
+    return 0;
+}
+
+int OService::InitBackend() {
+    if (m_backend->Connect(this)) {
+        std::cerr << "autoX32_service ERROR: unable to initialize kack client" << std::endl;
+        delete m_backend;
+        return 1;
+    }
+
+    return 0;
 }
 
 void OService::Load(std::string location) {
@@ -122,6 +183,7 @@ void OService::Load(std::string location) {
                 
                 IOscMessage* msg = m_mixer->GetCachedMessage(path);
                 IOTrackStore *ts = NewTrack(msg);
+                msg->SetTrackstore(ts);
                 
                 ts->GetLayout()->m_expanded = atoi(expanded);
                 ts->GetLayout()->m_height = atoi(height);
@@ -147,6 +209,11 @@ void OService::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
+    
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        IOTrackStore* ts = it->second;
+        GetTrackConfig(ts);
+    }    
 }
 
 void OService::Save() {
@@ -260,9 +327,10 @@ void OService::OnDawEvent() {
                 std::cout << "OService::OnDawEvent session name " << m_session << std::endl;
                 break;
             case DAW_PATH::samples:
-                m_backend->SetFrame(m_daw->GetSample() / 400);
-                UpdatePos(m_backend->GetMillis(), true);
-
+                if (m_backend) {
+                    m_backend->SetFrame(m_daw->GetSample() / 400);
+                    UpdatePos(m_backend->GetMillis(), true);
+                }
                 break;
             default:
                 break;
@@ -305,29 +373,25 @@ bool OService::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
 }
 
 void OService::StartProcessing() {
-
-    
     m_dawTimer.setInterval(5000);
     m_dawTimer.SetUserData(&m_dawTimer);
     m_dawTimer.setFunc(this);
     m_dawTimer.start();
     
-    m_backend->Connect(this);
-
-    m_jackTimer.setInterval(10);
-    m_jackTimer.SetUserData(&m_jackTimer);
-    
-    m_jackTimer.setFunc(this);
-    m_jackTimer.start();    
-
     m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);
 
     m_active = true;
+
+    m_backend->ControllerShowActive(true);
     while(m_active) {
         sleep(1);
     }
-    m_backend->Disconnect();
-
+    UnselectTrack();
+    
+    m_backend->ControllerShowActive(false);
+    
+    m_jackTimer.stop();
+    m_dawTimer.stop();
 }
 
 void OService::OnTimer(void* user_data)  {
@@ -348,6 +412,9 @@ void OService::OnJackEvent() {
         switch (event) {
             case CTL_SHUTDOWN:
                 m_active = false;
+                break;
+            case CTL_SAVE:
+                Save();
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
@@ -388,6 +455,13 @@ void OService::OnJackEvent() {
                 
                 break;
             case CTL_FADER:
+                if (m_selected_track != nullptr) {
+                    IOscMessage* msg = m_selected_track->GetMessage();
+                    msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
+                    my_messagequeue.push(msg);
+                    m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+                    m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());                    
+                }
 //                if (m_trackslayout.GetSelectedTrackView()) {
 //                    IOTrackStore* store = m_trackslayout.GetSelectedTrackView()->GetTrackStore();
 //                    IOscMessage* msg = store->GetMessage();
@@ -429,19 +503,19 @@ void OService::OnJackEvent() {
                 m_backend->Locate(m_daw_range.m_loopend);
                 break;
             case CTL_NEXT_TRACK:
-                //PublishUiEvent(next_track, NULL);
+                SelectNextTrack();
                 break;
             case CTL_PREV_TRACK:
-                //PublishUiEvent(prev_track, NULL);
+                SelectPrevTrack();
                 break;
             case CTL_UNSELECT:
-//                PublishUiEvent(E_OPERATION::unselect, NULL);
+                UnselectTrack();
                 break;
             case CTL_TOGGLE_SOLO:
 //                PublishUiEvent(E_OPERATION::toggle_solo, NULL);
                 break;
             case CTL_TOGGLE_REC:
-//                PublishUiEvent(E_OPERATION::toggle_rec, NULL);
+                ToggleTrackRecord();
                 break;
             case CTL_SCRUB_ON:
                 m_backend->m_scrub = !m_backend->m_scrub;
@@ -502,7 +576,15 @@ int OService::UpdateMessageCallback(IOscMessage* msg) {
 }
 
 void OService::ProcessSelectMessage(int idx) {
-
+//    char path[32];
+//    
+//    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
+//
+//    if (m_tracks.find() == m_tracks.end())
+//        return;
+//    IOTrackView* st = m_tracks.at(path);
+//    if (st)
+//        SelectTrack(st->GetPath(), false);
     return;
 }
 
@@ -521,17 +603,17 @@ void OService::OnMessageEvent() {
             if ((upd = ts->ProcessMsg(msg, m_backend->GetMillis()))) {
 //                PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
-//            if (view->GetSelected()) {
-//                switch(upd) {
-//                    case 1:
-//                        m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
-//                        break;
-//                    case 2:
-//                    case 3:
-//                        m_backend->ControllerShowLCDName(view->GetTrackName(), ts->GetColor_index());
-//                        break;
-//                }
-//            }
+            if (ts == m_selected_track) {
+                switch(upd) {
+                    case 1:
+                        m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
+                        break;
+                    case 2:
+                    case 3:
+                        m_backend->ControllerShowLCDName(ts->GetName(), ts->GetColor_index());
+                        break;
+                }
+            }
         }
         else {
             if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview 
@@ -601,3 +683,55 @@ bool OService::CheckArdourRecent() {
     return false;
 }
 
+void OService::SelectNextTrack() {
+    int c = 0;
+    if (m_tracks.size() == 0) 
+        return;
+    m_selected_track_idx++;
+    if (m_selected_track_idx >= m_tracks.size()) {
+        m_selected_track_idx = 0;
+    }
+    
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        if (c==m_selected_track_idx) {
+            m_selected_track = it->second;
+            m_backend->ControllerShowLevel(m_selected_track->GetPlayhead()->val.f);
+            m_backend->ControllerShowLCDName(m_selected_track->GetName(), m_selected_track->GetColor_index());
+            m_backend->ControllerShowSelect(true);
+            m_backend->ControllerShowRec(m_selected_track->IsRecording());
+        }
+        c++;
+    }
+}
+
+void OService::SelectPrevTrack() {
+    
+}
+
+void OService::UnselectTrack() {
+    m_backend->ControllerShowLCDName("", 0);
+    m_backend->ControllerShowSelect(false);
+    m_backend->ControllerShowRec(false);
+    m_backend->ControllerShowLevel(0);
+    m_selected_track = nullptr;
+}
+
+void OService::GetTrackConfig(IOTrackStore* trackstore){
+    std::string conf_name = trackstore->GetConfigRequestName();
+    
+        
+    m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);
+    conf_name = trackstore->GetConfigRequestColor();
+    m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);
+}
+
+void OService::ToggleTrackRecord() {
+    if (m_selected_track == nullptr)
+        return;
+    
+    bool isRec = m_selected_track->IsRecording();
+    m_selected_track->SetRecording(!isRec);
+    m_backend->ControllerShowRec(!isRec);
+}

@@ -27,6 +27,7 @@
 
 #include "OJack.h"
 #include <queue>
+#include <iostream>
 
 jack_port_t *mmc_in_port;
 jack_port_t *mmc_out_port;
@@ -204,13 +205,14 @@ void on_register_port(jack_port_id_t port, int reg, void *arg) {
     }
 }
 
-void OJack::Connect(IOJackHandler* wnd) {
-
+int OJack::Connect(IOJackHandler* wnd) {
+    int errcode;
+    
     m_parent = wnd;
 
     if ((m_jack_client = jack_client_open("autoX32", JackNullOption, NULL)) == 0) {
         fprintf(stderr, "jack server not running?\n");
-        return;
+        return 1;
     }
 
     jack_set_process_callback(m_jack_client, process, this);
@@ -230,11 +232,13 @@ void OJack::Connect(IOJackHandler* wnd) {
 
     if (jack_activate(m_jack_client)) {
         fprintf(stderr, "cannot activate client");
-        return;
+        return 1;
     }
 
-    jack_connect(m_jack_client, "system:midi_capture_4", ONKEL_C_IN_PORT_NAME);
-    jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, "system:midi_playback_4");
+    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0)
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_IN_PORT_NAME << "failed with error code " << errcode << std::endl;
+    if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0)
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << "failed with error code " << errcode << std::endl;
 
     ControllerShowStop();
     ControllerShowTeachOff();
@@ -243,8 +247,9 @@ void OJack::Connect(IOJackHandler* wnd) {
     ControllerShowCycle();
     ControllerShowMarker();
     ControllerShowSelect(0);
-    
     ControllerShowScrub();
+
+    return 0;
 }
 
 void OJack::Disconnect() {
@@ -389,6 +394,14 @@ void OJack::ControllerShowSelect(bool val) {
         ctl_out.push(&s_select_off);
 }
 
+
+void OJack::ControllerShowActive(bool val) {
+    if (val)
+        ctl_out.push(&s_f8_on);
+    else
+        ctl_out.push(&s_f8_off);
+}
+
 void OJack::ControllerShowRec(bool val) {
     ctl_command *c = &s_record;
     c->buf[2] = val ? 0x7f : 0x00;
@@ -426,7 +439,6 @@ void OJack::ControllerShowLevel(float f) {
         ctl_out.push(c);
     }
 }
-
 
 void OJack::ControlerShowMtcComplete(uint8_t s) {
 

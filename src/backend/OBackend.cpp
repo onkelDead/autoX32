@@ -1,13 +1,23 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ Copyright 2020 Detlef Urban <onkel@paraair.de>
+
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
+
+ THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 #include <time.h>
 #include "IOBackend.h"
 
-time_t t;
+auto time_f8 = std::chrono::steady_clock::now();
 
 ctl_command s_stop_on = {
     3,
@@ -48,6 +58,14 @@ ctl_command s_f1_on = {
 ctl_command s_f1_off = {
     3,
     { 0xB0, 0x07, 0x00}
+};
+ctl_command s_f8_on = {
+    3,
+    { 0xB0, 0x0c, 0x40}
+};
+ctl_command s_f8_off = {
+    3,
+    { 0xB0, 0x0c, 0x00}
 };
 ctl_command s_scrub_on = {
     3,
@@ -176,7 +194,13 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     break;
                 case 0x0c:
                     if (data[2]) {
-                        backend->Notify(CTL_SHUTDOWN);
+                        time_f8 = std::chrono::steady_clock::now();
+                    }
+                    if (!data[2]) {
+                        if (time_f8 + std::chrono::milliseconds(3000) < std::chrono::steady_clock::now())
+                            backend->Notify(CTL_SHUTDOWN);
+                        else
+                            backend->Notify(CTL_SAVE);
                     }
                     break;
                 case 0x0d:  //Marker

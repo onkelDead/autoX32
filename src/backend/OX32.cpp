@@ -321,6 +321,7 @@ IOscMessage* OX32::AddCacheMessage(const char* path, const char* types, const ch
     switch(msg->GetTypes()[0]) {
         case 's':
             val->SetString(value);
+            
             break;
         case 'i':
             val->SetInteger(atoi(value));

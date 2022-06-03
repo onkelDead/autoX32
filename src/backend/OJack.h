@@ -31,7 +31,7 @@ public:
     };
     virtual ~OJack() {};
 
-    void Connect(IOJackHandler* wnd);
+    int Connect(IOJackHandler* wnd);
     void Disconnect();
     void ReconnectPorts();
 
@@ -56,6 +56,7 @@ public:
     void ControllerShowWheelMode();
     
     void ControllerCustom(uint8_t c, uint8_t a, uint8_t b);
+    void ControllerShowActive(bool);
     
     void Locate(int);
     void Shuffle(bool);

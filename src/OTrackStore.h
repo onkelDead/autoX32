@@ -125,6 +125,14 @@ public:
         return m_color_index;
     }
 
+    std::string GetName() {
+        return m_name;
+    }
+
+    void SetName(std::string name) {
+        m_name = name;
+    }
+
 private:
 
     char m_typechar;
