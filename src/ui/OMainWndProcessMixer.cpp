@@ -24,6 +24,11 @@ void OMainWnd::OnMessageEvent() {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
                 //PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
+            switch(upd) {
+                case 2:
+                    view->SetTrackName(ts->GetName());
+                    break;
+            }
             if (view->GetSelected()) {
                 switch(upd) {
                     case 1:
@@ -31,7 +36,7 @@ void OMainWnd::OnMessageEvent() {
                         break;
                     case 2:
                     case 3:
-                        m_backend->ControllerShowLCDName(view->GetTrackName(), ts->GetColor_index());
+                        m_backend->ControllerShowLCDName(ts->GetName(), ts->GetColor_index());
                         break;
                 }
             }

@@ -41,7 +41,7 @@ void OMainWnd::OnDawEvent() {
                 break;
             case DAW_PATH::session:
                 m_x32->PauseCallbackHandler(true);
-                if (!m_project.Load(m_daw.GetLocation())) {
+                if (!OpenProject(m_daw.GetLocation())) {
                     std::cout << "OService: Load session " << m_daw.GetProjectFile() << std::endl;
                     m_x32->WriteAll();
                 }
@@ -107,11 +107,14 @@ void OMainWnd::OnOperation() {
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
+                    trackview->SetTrackName(m_x32->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
+                    trackstore->SetColor_index(m_x32->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
                     trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
+                    m_trackslayout.show_all();
                 }
                 // TODO: get hidden tracks for all relevant parameters.
-                GetTrackConfig(trackstore);
+                
                 
             }
                 break;

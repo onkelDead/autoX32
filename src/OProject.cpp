@@ -162,7 +162,7 @@ int OProject::Load(std::string location) {
                     ts->GetLayout()->m_index = c++;
                 ts->GetLayout()->m_visible = visible ? atoi(visible) : true;
                         
-                ts->LoadData(projectFile.c_str());
+                ts->LoadData(location.c_str());
                 if (visible)
                     xmlFree(visible);
                 xmlFree(path);
@@ -287,6 +287,7 @@ void OProject::SaveTracks(xmlTextWriterPtr writer, std::string location) {
 }
 
 IOTrackStore* OProject::NewTrack(IOscMessage* msg) {
+    std::cout << "New track : " << msg->GetPath() << std::endl;
     IOTrackStore* ts = new OTrackStore(msg);
     m_tracks[msg->GetPath()] = ts;
     return ts;

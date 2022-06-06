@@ -207,9 +207,10 @@ void OMainWnd::NewProject() {
 
 }
 
-void OMainWnd::OpenProject(std::string location) {
+int OMainWnd::OpenProject(std::string location) {
 
-    m_project.Load(location);
+    if (m_project.Load(location))
+        return 1;
     set_title("autoX32 - [" + location + "]");
     std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
 
@@ -225,14 +226,17 @@ void OMainWnd::OpenProject(std::string location) {
                 track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
                 ts->SetPlayhead(e);
                 PlayTrackEntry(ts, e);
-                GetTrackConfig(ts);
+                m_trackslayout.GetTrackview(ts->GetMessage()->GetPath())->SetTrackName(m_x32->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
+                ts->SetColor_index(m_x32->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
             }
         }
     }
+    
     m_trackslayout.show_all();
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
     //m_x32->WriteAll();
+    return 0;
 }
 
 void OMainWnd::CloseProject() {

@@ -139,7 +139,7 @@ void OTrackStore::SaveData(const char *filepath) {
     char file[PATH_MAX];
     char* path = strdup(filepath);
 
-    sprintf(file, "%s/%s", dirname((char*) path), m_file_name);
+    sprintf(file, "%s/%s", path, m_file_name);
     free(path);
     FILE *io = fopen(file, "wb");
     Lock();
@@ -160,7 +160,7 @@ void OTrackStore::LoadData(const char *filepath) {
     char* path = strdup(filepath);
 
 
-    sprintf(file, "%s/%s", dirname(path), m_file_name);
+    sprintf(file, "%s/%s", path, m_file_name);
     free(path);
     FILE *io = fopen(file, "rb");
 
