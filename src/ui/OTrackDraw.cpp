@@ -56,7 +56,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 
     track_entry *it = m_trackstore->GetHeadEntry();
     t = m_trackstore->GetMessage()->GetVal(0)->GetType();
-    path = m_trackstore->GetMessage()->GetPath();
+    path = m_trackstore->GetPath();
 
     if (m_in_drag) {
         cr->set_source_rgb(.3, .3, .3);
@@ -182,7 +182,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
             m_parent->notify_overview();
         } else {
             SetSelected(!m_selected);
-            m_parent->SelectTrack(m_trackstore->GetMessage()->GetPath(), m_selected);
+            m_parent->SelectTrack(m_trackstore->GetPath(), m_selected);
             queue_draw();
         }
     }

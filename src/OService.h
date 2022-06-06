@@ -67,6 +67,9 @@ public:
     
     void StartProcessing();
     
+    void SelectTrack(std::string, bool);
+    void UnselectTrack();    
+    
 private:
     
     OConfig m_config;
@@ -97,10 +100,8 @@ private:
     void SetRecord(bool val);
     
     void GetTrackConfig(IOTrackStore* trackstore);
-    IOTrackStore* m_selected_track = nullptr;
     void SelectNextTrack();
     void SelectPrevTrack();
-    void UnselectTrack();
     void ToggleTrackRecord(); 
     int m_selected_track_idx = -1;
 };

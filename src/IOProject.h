@@ -17,6 +17,7 @@
 #ifndef IPROJECT_H
 #define IPROJECT_H
 
+#include <map>
 #include "IOMixer.h"
 #include "IOTrackStore.h"
 
@@ -27,10 +28,16 @@ public:
     virtual void Save(std::string location) = 0;
     virtual int Load(std::string location) = 0;
     virtual void Close() = 0;
+    virtual std::map<std::string, IOTrackStore*> GetTracks() = 0;
     virtual IOTrackStore* NewTrack(IOscMessage*) = 0;
     virtual void UpdatePos(int current, bool seek) = 0;
     virtual bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) = 0;
     virtual void StopRecord() = 0;
+    virtual IOTrackStore* GetTrackSelected() = 0;
+    virtual void UnselectTrack() = 0;
+    virtual IOTrackStore* SelectTrack(std::string path) = 0;
+    virtual std::string GetNextTrackPath() = 0;
+    virtual std::string GetPrevTrackPath() = 0;
 };
 
 #endif /* IPROJECT_H */

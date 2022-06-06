@@ -18,7 +18,7 @@ void OMainWnd::OnMessageEvent() {
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
             int upd = 0;
-            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetPath());
             
             if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
@@ -62,16 +62,18 @@ int OMainWnd::UpdateMessageCallback(IOscMessage* msg) {
 }
 
 void OMainWnd::ProcessSelectMessage(int idx) {
-    char path[32];
-    
-    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
-
-    IOTrackView* tv = m_trackslayout.GetTrackview(path);
-    IOTrackView* st = m_trackslayout.GetTrackSelected();
-    if (st)
-        SelectTrack(st->GetPath(), false);
-    if (tv) {
-        SelectTrack(path, true);
-    }
+//    char path[32];
+//    
+//    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
+//
+//    IOTrackStore* sts = m_project.GetTrack(path);
+//    
+//    IOTrackView* tv = m_trackslayout.GetTrackview(path);
+//    IOTrackView* st = m_trackslayout.GetTrackSelected();
+//    if (st)
+//        SelectTrack(st->GetPath(), false);
+//    if (tv) {
+//        SelectTrack(path, true);
+//    }
     return;
 }

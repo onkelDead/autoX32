@@ -31,7 +31,6 @@ public:
     OTrackView* GetTrackview(std::string);
     OTrackView* GetTrackHead();
     OTrackView* GetTrackTail();
-    OTrackView* GetTrackSelected();
     
     void RemoveTrackView(std::string path);
     void RemoveAllTackViews();
@@ -48,16 +47,13 @@ public:
     void redraw();
     
     virtual gint GetTrackIndex(std::string path);
-    OTrackView* SelectTrack(std::string, bool);
     
     std::string GetSelectedTrackName();
     float GetSelectedTrackValue();
     OTrackView* GetSelectedTrackView();     
     
-    void SelectNextTrack();
     std::string GetNextTrackPath();
     void SelectPrevTrack();
-    std::string GetPrevTrackPath();
     
     void EditLayout();
     void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);
@@ -69,7 +65,6 @@ public:
     
 private:
     
-    OTrackView* m_selectedView = nullptr;
     OTrackView* new_entry();
     void append_entry(OTrackView* entry);
     void swap_tracks(OTrackView* t1, OTrackView* t2);

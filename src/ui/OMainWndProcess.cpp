@@ -107,8 +107,9 @@ void OMainWnd::OnOperation() {
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
-                    trackview->SetTrackName(m_x32->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
+                    trackstore->SetName(m_x32->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
                     trackstore->SetColor_index(m_x32->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                    trackview->SetTrackName(trackstore->GetName());
                     trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                     m_trackslayout.show_all();
@@ -158,10 +159,10 @@ void OMainWnd::OnOperation() {
                 break;
 
             case E_OPERATION::next_track:
-                SelectTrack(m_trackslayout.GetNextTrackPath(), true);
+                SelectTrack(m_project.GetNextTrackPath(), true);
                 break;
             case E_OPERATION::prev_track:
-                SelectTrack(m_trackslayout.GetPrevTrackPath(), true);
+                SelectTrack(m_project.GetPrevTrackPath(), true);
                 break;
             case E_OPERATION::unselect:
                 UnselectTrack();
@@ -171,19 +172,19 @@ void OMainWnd::OnOperation() {
                 break;
             case E_OPERATION::toggle_rec:
             {
-                IOTrackView* sv = m_trackslayout.GetSelectedTrackView();
-                if (sv) {
-                    sv->SetRecord(!sv->GetRecord());
-                    m_backend->ControllerShowRec(sv->GetRecord());
+                IOTrackStore *sts = m_project.GetTrackSelected();
+                if (sts) {
+                    sts->SetRecording(!sts->IsRecording());
+                    m_backend->ControllerShowRec(sts->IsRecording());
                 }
             }
                 break;  
             case E_OPERATION::toggle_recview:
             {
-                IOTrackView* sv = m_trackslayout.GetSelectedTrackView();
+                IOTrackStore *sts = m_project.GetTrackSelected();
                 
-                if (sv != nullptr && ((OTrackView*)op->context) == sv)
-                    m_backend->ControllerShowRec(sv->GetRecord());   
+                if (sts != nullptr && ((OTrackView*)op->context) == m_trackslayout.GetTrackview(sts->GetPath()))
+                    m_backend->ControllerShowRec(sts->IsRecording());   
             }
                 break;
             case E_OPERATION::jump_forward:
@@ -202,8 +203,8 @@ void OMainWnd::OnOperation() {
                 if (m_btn_teach->get_active()) {
                     m_btn_teach->set_active(false);
                 }
-                if (m_trackslayout.GetSelectedTrackView() != nullptr && m_trackslayout.GetSelectedTrackView()->GetRecord()) {
-                    m_trackslayout.GetSelectedTrackView()->SetRecord(false);
+                if (m_project.GetTrackSelected() != nullptr && m_project.GetTrackSelected()->IsRecording()) {
+                    m_project.GetTrackSelected()->SetRecording(false);
                 }
                 break;
             default:

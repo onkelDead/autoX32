@@ -107,7 +107,7 @@ void OTrackView::on_button_x32_rec_clicked() {
 void OTrackView::SetTrackStore(IOTrackStore *trackstore) {
     m_trackdraw->SetTrackStore(trackstore);
     m_expander->set_expanded(trackstore->GetLayout()->m_expanded);
-    SetPath(trackstore->GetMessage()->GetPath());
+    SetPath(trackstore->GetPath());
 }
 
 IOTrackStore* OTrackView::GetTrackStore() {

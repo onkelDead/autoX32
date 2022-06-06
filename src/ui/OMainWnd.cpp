@@ -226,8 +226,9 @@ int OMainWnd::OpenProject(std::string location) {
                 track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
                 ts->SetPlayhead(e);
                 PlayTrackEntry(ts, e);
-                m_trackslayout.GetTrackview(ts->GetMessage()->GetPath())->SetTrackName(m_x32->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
+                ts->SetName(m_x32->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
                 ts->SetColor_index(m_x32->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                m_trackslayout.GetTrackview(ts->GetPath())->SetTrackName(ts->GetName());
             }
         }
     }
@@ -268,19 +269,24 @@ void OMainWnd::remove_track(std::string path) {
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
-    OTrackView* tv = m_trackslayout.SelectTrack(path, selected);
+    UnselectTrack();
+    IOTrackStore* sts = m_project.GetTrackSelected();
     if (selected) {
-        
-        m_backend->ControllerShowLevel(tv->GetTrackStore()->GetPlayhead()->val.f);
-        m_backend->ControllerShowLCDName(tv->GetTrackName(), tv->GetTrackStore()->GetColor_index());
+        if (!sts) {
+            m_project.SelectTrack(path);
+            sts = sts = m_project.GetTrackSelected();
+        }
+        m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
+        m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
         m_backend->ControllerShowSelect(true);
-        m_backend->ControllerShowRec(m_trackslayout.GetSelectedTrackView()->GetRecord());
+        m_backend->ControllerShowRec(sts->IsRecording());
         if (path.starts_with("/ch")) {
             char idx[4] = {0, };
             memcpy(idx, path.data()+4, 2);
             m_x32->SendInt("/-stat/selidx", atoi (idx)-1);
         }
     } else {
+        
         m_backend->ControllerShowLCDName("", 0);
         m_backend->ControllerShowSelect(false);
         m_backend->ControllerShowRec(false);
@@ -288,9 +294,14 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
 }
 
 void OMainWnd::UnselectTrack() {
-    OTrackView* tv = m_trackslayout.GetTrackSelected();
+    IOTrackStore* sts = m_project.GetTrackSelected();
+    
+    if (!sts) return;
+    
+    std::string path = sts->GetPath();
+    m_project.UnselectTrack();
+    OTrackView* tv = m_trackslayout.GetTrackview(path);
     if (tv) {
-        SelectTrack(tv->GetPath(), false);
         m_backend->ControllerShowLCDName("", 0);
         m_backend->ControllerShowSelect(false);
     }
@@ -323,8 +334,8 @@ void OMainWnd::EditTrack(std::string path) {
 }
 
 void OMainWnd::ToggleSolo() {
-    OTrackView* tv = m_trackslayout.GetTrackSelected();
-    if (tv) {
+//    OTrackView* tv = m_trackslayout.GetTrackSelected();
+//    if (tv) {
         //        int idx = tv->item->GetMessage()->GetChIndex();
         //        if (idx >= 0) {
         //            char path[32];
@@ -333,7 +344,7 @@ void OMainWnd::ToggleSolo() {
         ////            sprintf(path, "/~stat/solo");
         ////            m_x32->SendInt(path, 1);            
         //        }
-    }
+//    }
 }
 
 bool OMainWnd::SetupBackend() {
@@ -382,7 +393,7 @@ void OMainWnd::UpdatePos(gint current, bool seek) {
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
         
         // update controller fader
-        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetPath());
         if (ret_code && view && view->GetSelected()) {
             m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
         }

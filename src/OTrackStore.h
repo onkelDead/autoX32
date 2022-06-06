@@ -132,6 +132,8 @@ public:
     void SetName(std::string name) {
         m_name = name;
     }
+    
+    std::string GetPath() { return m_message->GetPath(); }
 
 private:
 

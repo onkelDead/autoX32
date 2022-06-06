@@ -127,6 +127,13 @@ void OService::OnDawEvent() {
                 if (!m_project->Load(m_daw->GetLocation())) {
                     std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
                     m_mixer->WriteAll();
+                    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
+                    for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+                        IOTrackStore* ts = it->second;
+                        ts->GetMessage()->SetTrackstore(ts);
+                        ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
+                        ts->SetColor_index(m_mixer->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                    }
                 }
                 else {
                     std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
@@ -225,8 +232,8 @@ void OService::OnJackEvent() {
                 
                 break;
             case CTL_FADER:
-                if (m_selected_track != nullptr) {
-                    IOscMessage* msg = m_selected_track->GetMessage();
+                if (m_project->GetTrackSelected() != nullptr) {
+                    IOscMessage* msg = m_project->GetTrackSelected()->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
@@ -368,12 +375,12 @@ void OService::OnMessageEvent() {
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
             int upd = 0;
-//            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+//            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetPath());
             
             if ((upd = ts->ProcessMsg(msg, m_backend->GetMillis()))) {
 //                PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
-            if (ts == m_selected_track) {
+            if (ts == m_project->GetTrackSelected()) {
                 switch(upd) {
                     case 1:
                         m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
@@ -415,37 +422,13 @@ void OService::SetRecord(bool val) {
 }
 
 void OService::SelectNextTrack() {
-//    int c = 0;
-//    if (m_tracks.size() == 0) 
-//        return;
-//    m_selected_track_idx++;
-//    if (m_selected_track_idx >= m_tracks.size()) {
-//        m_selected_track_idx = 0;
-//    }
-//    
-//    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-//        if (c==m_selected_track_idx) {
-//            m_selected_track = it->second;
-//            m_backend->ControllerShowLevel(m_selected_track->GetPlayhead()->val.f);
-//            m_backend->ControllerShowLCDName(m_selected_track->GetName(), m_selected_track->GetColor_index());
-//            m_backend->ControllerShowSelect(true);
-//            m_backend->ControllerShowRec(m_selected_track->IsRecording());
-//        }
-//        c++;
-//    }
+    SelectTrack(m_project->GetNextTrackPath(), true);
 }
 
 void OService::SelectPrevTrack() {
-    
+    SelectTrack(m_project->GetPrevTrackPath(), true);
 }
 
-void OService::UnselectTrack() {
-    m_backend->ControllerShowLCDName("", 0);
-    m_backend->ControllerShowSelect(false);
-    m_backend->ControllerShowRec(false);
-    m_backend->ControllerShowLevel(0);
-    m_selected_track = nullptr;
-}
 
 void OService::GetTrackConfig(IOTrackStore* trackstore){
     std::string conf_name = trackstore->GetConfigRequestName();
@@ -459,10 +442,46 @@ void OService::GetTrackConfig(IOTrackStore* trackstore){
 }
 
 void OService::ToggleTrackRecord() {
-    if (m_selected_track == nullptr)
+    if (m_project->GetTrackSelected() == nullptr)
         return;
     
-    bool isRec = m_selected_track->IsRecording();
-    m_selected_track->SetRecording(!isRec);
+    bool isRec = m_project->GetTrackSelected()->IsRecording();
+    m_project->GetTrackSelected()->SetRecording(!isRec);
     m_backend->ControllerShowRec(!isRec);
+}
+
+void OService::SelectTrack(std::string path, bool selected) {
+    UnselectTrack();
+    IOTrackStore* sts = m_project->GetTrackSelected();
+    if (selected) {
+        if (!sts) {
+            m_project->SelectTrack(path);
+            sts = sts = m_project->GetTrackSelected();
+        }
+        m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
+        m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
+        m_backend->ControllerShowSelect(true);
+        m_backend->ControllerShowRec(sts->IsRecording());
+        if (path.starts_with("/ch")) {
+            char idx[4] = {0, };
+            memcpy(idx, path.data()+4, 2);
+            m_mixer->SendInt("/-stat/selidx", atoi (idx)-1);
+        }
+    } else {
+        
+        m_backend->ControllerShowLCDName("", 0);
+        m_backend->ControllerShowSelect(false);
+        m_backend->ControllerShowRec(false);
+    }
+}
+
+void OService::UnselectTrack() {
+    IOTrackStore* sts = m_project->GetTrackSelected();
+    
+    if (!sts) return;
+    
+    std::string path = sts->GetPath();
+    m_project->UnselectTrack();
+    m_backend->ControllerShowLCDName("", 0);
+    m_backend->ControllerShowSelect(false);
 }

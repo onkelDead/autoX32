@@ -356,7 +356,7 @@ void OProject::UpdatePos(int current, bool seek) {
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
         
         // update controller fader
-//        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+//        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetPath());
 //        if (ret_code && view && view->GetSelected()) {
 //            m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
 //        }
@@ -379,4 +379,56 @@ bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
             break;            
     }
     return true;    
+}
+
+std::string OProject::GetNextTrackPath() {
+    std::map<std::string, IOTrackStore*>::iterator it;
+    IOTrackStore* ts;
+    
+    if (m_tracks.size() == 0) return "";
+    if (m_selectedTrack == nullptr) {
+        it = m_tracks.begin();
+        ts = it->second;
+        return ts->GetPath();
+    }
+     
+    for (it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        ts = it->second;
+        if (ts == m_selectedTrack) {
+            ++it;
+            if (it == m_tracks.end())
+                ts = m_tracks.begin()->second;
+            else 
+                ts = it->second;
+            break;
+        }
+    }
+    return ts->GetPath();
+}
+
+std::string OProject::GetPrevTrackPath() {
+    std::map<std::string, IOTrackStore*>::iterator it;
+    IOTrackStore* ts;    
+    if (m_tracks.size() == 0) return "";
+    if (m_selectedTrack == nullptr) {
+        it = m_tracks.end();
+        it--;
+        ts = it->second;
+        return ts->GetPath();
+    }   
+    for (it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        ts = it->second;
+        if (ts == m_selectedTrack) {
+            if (it == m_tracks. begin()) {
+                it = m_tracks.end();
+                it--;
+                ts = it->second;
+            }
+            else 
+                it--;
+                ts = it->second;
+            break;
+        }
+    }
+    return ts->GetPath();    
 }
