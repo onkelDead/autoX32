@@ -24,11 +24,13 @@ class IOProject {
 public:
     virtual ~IOProject(){}
     virtual void SetMixer(IOMixer*) = 0;
-    virtual void Save() = 0;
-    virtual void Load(std::string location) = 0;
+    virtual void Save(std::string location) = 0;
+    virtual int Load(std::string location) = 0;
     virtual void Close() = 0;
     virtual IOTrackStore* NewTrack(IOscMessage*) = 0;
-
+    virtual void UpdatePos(int current, bool seek) = 0;
+    virtual bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) = 0;
+    virtual void StopRecord() = 0;
 };
 
 #endif /* IPROJECT_H */

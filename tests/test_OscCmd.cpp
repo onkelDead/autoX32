@@ -277,8 +277,7 @@ int test_project_save() {
 
     sleep(1);
 
-    project->SetProjectLocation("/home/onkel/test-autoX32");
-    project->Save();
+    project->Save("/home/onkel/test-autoX32");
 
     std::cout << "test_OscCmd test 3: finally the cache contained " << x32->GetCacheSize() << " elements." << std::endl;
 
@@ -301,8 +300,7 @@ int test_project_load() {
     assert(x32->Connect("192.168.178.43") == 0);
     sleep(1);
 
-    project->SetProjectLocation("/home/onkel/test-autoX32");
-    project->Load(project->GetProjectLocation());
+    project->Load("/home/onkel/test-autoX32");
 
     x32->WriteAll();
 
@@ -488,7 +486,7 @@ int test_project() {
     
     IOTrackStore *trackstore = project->NewTrack(x32->GetCachedMessage("/ch/09/mix/fader"));
     
-    project->Save();
+    project->Save(TEST_PROJECT_FILE);
     project->Close();
     project->Load(TEST_PROJECT_FILE);
     project->Close();

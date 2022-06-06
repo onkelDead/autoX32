@@ -128,7 +128,6 @@ public:
 
     void OpenProject(std::string location);
     std::string GetProjectLocation();
-    void SetProjectLocation(std::string);
     bool SaveProject();
     bool SelectProjectLocation(bool);
     bool Shutdown();

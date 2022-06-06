@@ -156,8 +156,8 @@ void OMainWnd::on_menu_project_open() {
         }
         m_project.Close();
         m_trackslayout.RemoveAllTackViews();
-        OpenProject(m_project.GetProjectLocation());
-        m_project.AddRecentProject(m_project.GetProjectLocation());
+        OpenProject(m_daw.GetLocation());
+        m_project.AddRecentProject(m_daw.GetLocation());
         // TODO: reimplement
         // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
         UpdateMenuRecent();
@@ -173,7 +173,7 @@ void OMainWnd::on_menu_recent(std::string location) {
     m_trackslayout.RemoveAllTackViews();
 
     OpenProject(location);
-    m_project.AddRecentProject(m_project.GetProjectLocation());
+    m_project.AddRecentProject(location);
     // TODO: reimplement
     // settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
@@ -182,11 +182,11 @@ void OMainWnd::on_menu_recent(std::string location) {
 }
 
 void OMainWnd::on_menu_project_save() {
-    if (m_project.GetProjectLocation().length() == 0) {
+    if (m_daw.GetLocation().length() == 0) {
         on_menu_project_new();
     }
-    m_project.Save();
-    m_project.AddRecentProject(m_project.GetProjectLocation());
+    m_project.Save(m_daw.GetLocation());
+    m_project.AddRecentProject(m_daw.GetLocation());
     // TODO: remimplement
     //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
@@ -196,12 +196,12 @@ void OMainWnd::on_menu_project_save_as() {
     if (!SelectProjectLocation(true)) {
         return;
     }
-    m_project.Save();
-    m_project.AddRecentProject(m_project.GetProjectLocation());
+    m_project.Save(m_daw.GetLocation());
+    m_project.AddRecentProject(m_daw.GetLocation());
     // TODO: reimplement
     //settings->set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
     UpdateMenuRecent();
-    set_title("autoX32 - [" + m_project.GetProjectLocation() + "]");
+    set_title("autoX32 - [" + m_daw.GetLocation() + "]");
 }
 
 void OMainWnd::on_menu_project_close() {
@@ -298,8 +298,8 @@ void OMainWnd::on_button_play_clicked() {
 
     if (!m_button_play->get_active()) {
         m_project.SetPlaying(false);
-        if (m_project.GetProjectLocation() != "" && m_project.GetDirty())
-            m_project.Save();
+        if (m_daw.GetLocation() != "" && m_project.GetDirty())
+            m_project.Save(m_daw.GetLocation());
         m_trackslayout.StopRecord();
         if (!m_lock_play)
             //m_daw.Stop();

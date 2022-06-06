@@ -31,42 +31,11 @@ static void on_jack_event(void *obj) {
     //    wnd->OnMixerEvent();
 }
 
-void check_ardour_recent(void* user_Data) {
-    FILE* file_recent;
-    char path[256];
-    char name[256];
-
-    OMainWnd* mainWnd = (OMainWnd*) user_Data;
-
-    file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
-    if (file_recent != NULL) {
-        fscanf(file_recent, "%s", name);
-        fscanf(file_recent, "%s", path);
-        fclose(file_recent);
-        strncat(path, "/autoX32", 32);
-        if (strncmp(path, mainWnd->GetProjectLocation().data(), strlen(path))) {
-            mainWnd->CloseProject();
-
-            if (access(path, F_OK)) {
-                printf("project don't exists\n");
-                if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP) != 0) {
-                    perror("mkdir() error");
-                    return;
-                }
-                mainWnd->NewProject(path);
-            }
-            mainWnd->OpenProject(path);
-        }
-    }
-}
-
 void OMainWnd::OnTimer(void* user_data)  {
     if (user_data == &m_jackTimer) {
         on_jack_event(this);
         return;
     }
-    
-    check_ardour_recent(this);  
 }
 
 OMainWnd::OMainWnd() : Gtk::Window() {
@@ -112,9 +81,11 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     m_lock_daw_time = false;
     m_lock_daw_time_event = false;
 
+    m_daw.StartSessionMonitor();
 }
 
 OMainWnd::~OMainWnd() {
+    m_daw.StopSessionMonitor();
     if (m_x32)
         delete (OX32*) m_x32;
     if (m_timer) {
@@ -145,11 +116,11 @@ bool OMainWnd::SaveProject() {
     int result = dialog.run();
 
     if (result == Gtk::RESPONSE_YES) {
-        if (m_project.GetProjectLocation().length() == 0) {
+        if (m_daw.GetLocation().length() == 0) {
             if (SelectProjectLocation(true)) {
                 NewProject();
-                m_project.Save();
-                m_project.AddRecentProject(m_project.GetProjectLocation());
+                m_project.Save(m_daw.GetLocation());
+                m_project.AddRecentProject(m_daw.GetLocation());
                 //TODO: reimplement
                 m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
                 UpdateMenuRecent();
@@ -158,8 +129,8 @@ bool OMainWnd::SaveProject() {
                 return false;
             }
         } else {
-            m_project.Save();
-            m_project.AddRecentProject(m_project.GetProjectLocation());
+            m_project.Save(m_daw.GetLocation());
+            m_project.AddRecentProject(m_daw.GetLocation());
             //TODO: reimplement
             m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
             UpdateMenuRecent();
@@ -243,13 +214,10 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 }
 
 void OMainWnd::NewProject(std::string path) {
-    m_project.SetProjectLocation(path);
-    m_project.New();
 }
 
 void OMainWnd::NewProject() {
 
-    m_project.New();
 }
 
 void OMainWnd::OpenProject(std::string location) {
@@ -280,14 +248,6 @@ void OMainWnd::OpenProject(std::string location) {
     //m_x32->WriteAll();
 }
 
-std::string OMainWnd::GetProjectLocation() {
-    return m_project.GetProjectLocation();
-}
-
-void OMainWnd::SetProjectLocation(std::string location) {
-    m_project.SetProjectLocation(location);
-}
-
 void OMainWnd::CloseProject() {
     m_trackslayout.RemoveAllTackViews();
 
@@ -302,7 +262,7 @@ bool OMainWnd::SelectProjectLocation(bool n) {
     m_FileChooserDialog.add_button("_Select", Gtk::RESPONSE_OK);
 
     if (m_FileChooserDialog.run() == Gtk::RESPONSE_OK) {
-        m_project.SetProjectLocation(m_FileChooserDialog.get_filename());
+        m_daw.SetLocation(m_FileChooserDialog.get_filename());
         return true;
     }
     return false;

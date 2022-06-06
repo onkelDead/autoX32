@@ -33,16 +33,15 @@
 class OProject : public IOProject{
 public:
     OProject();
-    OProject(std::string location);
     virtual ~OProject();
 
-    void New();
-    void Save();
-    void Load(std::string location);
+    void Save(std::string location);
+    int Load(std::string location);
     void Close();
     
-    std::string GetProjectLocation();
-    void SetProjectLocation(std::string);
+    void UpdatePos(int current, bool seek);
+    bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
+    void StopRecord();
     
     bool GetDirty();
     void SetDirty();
@@ -77,10 +76,6 @@ private:
 
     bool m_dirty = false;
     
-    std::string m_location;
-    std::string m_projectFile;
-    
-    
     daw_range m_daw_range = { 0, -1, false};
     daw_time m_daw_time = {0, 1, 1., 0, -1};
     
@@ -93,7 +88,7 @@ private:
     void SaveRange(xmlTextWriterPtr writer);
     void SaveZoom(xmlTextWriterPtr writer);
     void SaveCommands(xmlTextWriterPtr writer);
-    void SaveTracks(xmlTextWriterPtr writer);
+    void SaveTracks(xmlTextWriterPtr writer, std::string location);
     
     int GetInteger(xmlNodePtr node, const char* name);
 };

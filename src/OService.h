@@ -63,18 +63,6 @@ public:
         m_jackqueue.push(jack_event);
     }
     
-    void SetMixer(IOMixer* mixer) {
-        m_mixer = mixer;
-    }
-
-    void SetDaw(ODAW* daw) {
-        m_daw = daw;
-    }
-
-    void SetBackend(IOBackend* backend) {
-        m_backend = backend;
-    }
-    
     OConfig *GetConfig() {
         return &m_config;
     }
@@ -94,12 +82,11 @@ private:
     IOBackend* m_backend = nullptr;
     OTimer m_jackTimer;
     OTimer m_dawTimer;
-    IOProject* m_project;
+    IOProject* m_project = nullptr;
 
     std::atomic<bool> m_active = false;
     
     std::string m_session;
-    bool m_dirty = false;
     bool m_teach_mode = false;
     bool m_teach_active = false;
     bool m_playing = false;
@@ -108,19 +95,6 @@ private:
     
     daw_range m_daw_range = { 0, -1, false};
     daw_time m_daw_time = {0, 1, 1., 0, -1};    
-    
-    std::map<std::string, IOTrackStore*> m_tracks;    
-    
-    
-    int GetInteger(xmlNodePtr node, const char* name);
-
-    void SaveRange(xmlTextWriterPtr writer);
-    void SaveZoom(xmlTextWriterPtr writer);
-    void SaveCommands(xmlTextWriterPtr writer);
-    void SaveTracks(xmlTextWriterPtr writer);
-     
-    void UpdatePos(int current, bool seek);
-    bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
     
     OQueue<IOscMessage*> my_messagequeue;
     OQueue<DAW_PATH> my_dawqueue;

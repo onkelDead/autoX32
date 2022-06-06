@@ -28,21 +28,11 @@ OProject::OProject() {
 
 }
 
-OProject::OProject(std::string location) {
-
-    std::string name = basename(location.data());
-
-    m_location = location;
-    m_projectFile = location;
-    m_projectFile.append("/").append(name.append(".xml").data());
-}
-
 OProject::~OProject() {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete (OTrackStore*)it->second;
     }
 }
-
 
 void OProject::SetMixer(IOMixer* mixer) {
     m_mixer = mixer;
@@ -66,23 +56,8 @@ bool OProject::GetPlaying() {
     return m_playing;
 }
 
-std::string OProject::GetProjectLocation() {
-    return m_location;
-}
-
-void OProject::SetProjectLocation(std::string new_location) {
-    m_location = new_location;
-}
-
 void OProject::LockPlayhead(bool val) {
     m_lock_playhead = val;
-}
-
-void OProject::New() {
-    std::string name = basename(m_location.data());
-
-    m_projectFile = m_location;
-    m_projectFile.append("/").append(name.append(".xml").data());
 }
 
 int OProject::GetInteger(xmlNodePtr node, const char* name) {
@@ -92,22 +67,20 @@ int OProject::GetInteger(xmlNodePtr node, const char* name) {
     return result;
 }
 
-void OProject::Load(std::string location) {
-    SetProjectLocation(location);
-    std::string name = basename(m_location.data());
+int OProject::Load(std::string location) {
+    std::string name = basename(location.data());
 
-    m_projectFile = m_location;
-    m_projectFile.append("/").append(name.append(".xml").data());
+    std::string projectFile = location;
+    projectFile.append("/").append(name.append(".xml").data());
 
     xmlDocPtr doc;
     xmlXPathContextPtr context;
     xmlXPathObjectPtr result;
     xmlNodeSetPtr nodeset;
 
-    doc = xmlParseFile(m_projectFile.data());
+    doc = xmlParseFile(projectFile.data());
     if (doc == nullptr) {
-        m_mixer->ReadAll();
-        return;
+        return 1;
     }
     context = xmlXPathNewContext(doc);
     result = xmlXPathEvalExpression(BAD_CAST "//project/range", context);
@@ -198,7 +171,7 @@ void OProject::Load(std::string location) {
                     ts->GetLayout()->m_index = c++;
                 ts->GetLayout()->m_visible = visible ? atoi(visible) : true;
                         
-                ts->LoadData(m_projectFile.c_str());
+                ts->LoadData(projectFile.c_str());
                 if (visible)
                     xmlFree(visible);
                 xmlFree(path);
@@ -212,27 +185,28 @@ void OProject::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
+    return 0;
 }
 
-void OProject::Save() {
-    std::string name = basename(m_location.data());
+void OProject::Save(std::string location) {
+    std::string name = basename(location.data());
 
-    m_projectFile = m_location;
-    m_projectFile.append("/").append(name.append(".xml").data());
+    std::string projectFile = location;
+    projectFile.append("/").append(name.append(".xml").data());
 
     xmlTextWriterPtr writer;
 
-    if (!std::filesystem::exists(m_location)) {
-        std::filesystem::create_directory(m_location);
+    if (!std::filesystem::exists(location)) {
+        std::filesystem::create_directory(location);
     }
     
-    writer = xmlNewTextWriterFilename(m_projectFile.data(), 0);
+    writer = xmlNewTextWriterFilename(projectFile.data(), 0);
     xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
     xmlTextWriterStartElement(writer, BAD_CAST "project");
     SaveRange(writer);
     SaveZoom(writer);
     SaveCommands(writer);
-    SaveTracks(writer);
+    SaveTracks(writer, location);
     xmlTextWriterEndElement(writer);
     xmlTextWriterEndDocument(writer);
     xmlFreeTextWriter(writer);
@@ -247,8 +221,6 @@ void OProject::Close() {
 //        delete (OscMessage*)it->second;
 //    }
     m_tracks.clear();
-    m_location = "";
-    m_projectFile = "";
     m_daw_range.m_dirty = false;
 }
 
@@ -298,7 +270,7 @@ void OProject::SaveCommands(xmlTextWriterPtr writer) {
     m_mixer->Save(writer);
 }
 
-void OProject::SaveTracks(xmlTextWriterPtr writer) {
+void OProject::SaveTracks(xmlTextWriterPtr writer, std::string location) {
     char cv[16];
     int index = 0;
     
@@ -317,7 +289,7 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
 
         xmlTextWriterEndElement(writer);
         if (ts->IsDirty()) {
-            ts->SaveData(m_projectFile.data());
+            ts->SaveData(location.data());
             printf("Project::Save: track %s saved\n", it->first.data());
         }
     }
@@ -365,6 +337,13 @@ void OProject::SetPlaying(bool val) {
     }
 }
 
+void OProject::StopRecord() {
+        for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+            IOTrackStore* ts = it->second;
+            ts->SetRecording(false);
+        }        
+}
+
 IOTrackStore* OProject::GetTrack(std::string path) {
     auto e = m_tracks.find(path);
     if (e != m_tracks.end())
@@ -374,4 +353,38 @@ IOTrackStore* OProject::GetTrack(std::string path) {
 
 std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
+}
+
+void OProject::UpdatePos(int current, bool seek) {
+    bool ret_code = false;
+
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        IOTrackStore* ts = it->second;
+
+        PlayTrackEntry(ts, ts->UpdatePos(current, seek));
+        
+        // update controller fader
+//        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetMessage()->GetPath());
+//        if (ret_code && view && view->GetSelected()) {
+//            m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
+//        }
+    }    
+}
+
+bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
+    if (entry == nullptr || trackstore == nullptr)
+        return false;
+    IOscMessage* cmd = trackstore->GetMessage();
+    switch (cmd->GetTypes()[0]) {
+        case 'f':
+            m_mixer->SendFloat(cmd->GetPath(), entry->val.f);
+            break;
+        case 'i':
+            m_mixer->SendInt(cmd->GetPath(), entry->val.i);
+            break;
+        case 's':
+            m_mixer->SendString(cmd->GetPath(), &entry->val.s);
+            break;            
+    }
+    return true;    
 }
