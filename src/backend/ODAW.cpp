@@ -14,8 +14,11 @@
  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "IOMainWnd.h"
+#include <string.h>
+#include <iostream>
+
 #include "ODAW.h"
+
 
 void daw_err_handler(int num, const char *msg, const char *where) {
     fprintf(stderr, "ARDOUR_ERROR %d: %s at %s\n", num, msg, where);
@@ -61,7 +64,7 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
     lo_message_add_int32(msg, FEEDBACK_MASTER + FEEDBACK_TRANSPORT_POSITION_SAMPLES + FEEDBACK_REPLY);
     lo_message_add_int32(msg, 1);
 
-    gint ret = lo_send_message(m_client, "/set_surface", msg);
+    int ret = lo_send_message(m_client, "/set_surface", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
     }
@@ -85,11 +88,27 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
     ShortMessage("/refresh");
     ShortMessage("/strip/list");
     ShortMessage("/transport_sample");    
-
+    
     return 0;
 }
 
+void ODAW::StartSessionMonitor() {
+    std::cout << "Session Monitor started." << std::endl;
+    m_checksession.setInterval(5000);
+    m_checksession.setFunc(this);
+    m_checksession.start();    
+}
+
+void ODAW::StopSessionMonitor() {
+    m_checksession.stop();
+    std::cout << "Session Monitor ended." << std::endl;
+}
+
 int ODAW::Disconnect() {
+    if (m_checksession.isRunning()) {
+        StopSessionMonitor();
+    }
+    
     if (m_client) {
         lo_address_free(m_client);
         m_client = nullptr;
@@ -121,7 +140,7 @@ void ODAW::SetRange(int start, int end, bool enable) {
     lo_message_add_int32(msg, (uint32_t) sample_start);
     lo_message_add_int32(msg, (uint32_t) sample_end);
     std::cout << "ODAW::SetRange() " << sample_start << " : "<< sample_end << std::endl;
-    gint ret = lo_send_message(m_client, "/loop_location", msg);
+    int ret = lo_send_message(m_client, "/loop_location", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
     }
@@ -187,15 +206,62 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
     }
 }
 
-gint ODAW::GetMaxMillis() {
+int ODAW::GetMaxMillis() {
     return m_maxmillis;
 }
 
-gint ODAW::GetSample() {
+int ODAW::GetSample() {
     return m_sample;
 }
 
-gint ODAW::GetBitRate() {
+int ODAW::GetBitRate() {
     return m_bitrate;
 }
+
+void ODAW::OnTimer(void*) {
+    if (CheckArdourRecent()) {
+            m_parent->notify_daw(DAW_PATH::session);
+    }
+}
+
+bool ODAW::CheckArdourRecent() {
+    FILE* file_recent;
+    char path[256];
+    char name[256];
+
+    file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
+    if (file_recent != NULL) {
+        fscanf(file_recent, "%s", name);-
+        fscanf(file_recent, "%s", path);
+        fclose(file_recent);
+        strncat(path, "/autoX32", 32);
+        if (strncmp(path, m_location.data(), strlen(path))) {
+            m_location = path;
+            m_projectFile = m_location;
+            m_projectFile.append("/").append(name).append(".xml");                
+            return true;
+//            Save();
+//            Close();
+//
+//            if (access(path, F_OK)) {
+//                printf("project don't exists\n");
+//                if (std::filesystem::create_directory(path) == false) {
+//                    perror("mkdir() error");
+//                    return false;
+//                }
+//                m_location = path;
+//                m_projectFile = m_location;
+//                m_projectFile.append("/").append(name).append(".xml");                
+//            }
+//            else {
+//                Load(path);
+//                m_mixer->WriteAll();
+//
+//                return true;
+//            }
+        }
+    }
+    return false;
+}
+
 

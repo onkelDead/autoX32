@@ -24,16 +24,11 @@
 #include <map>
 #include <vector>
 
-#include <gtkmm.h>
-#include <gdkmm/rgba.h>
-
-//#include "OscCmd.h"
 #include "IOTrackStore.h"
 #include "IOProject.h"
 #include "OTimer.h"
 
 #include "IOMixer.h"
-#include "IOTracksLayout.h"
 
 class OProject : public IOProject{
 public:
@@ -45,7 +40,6 @@ public:
     void Save();
     void Load(std::string location);
     void Close();
-    bool OpenFromArdurRecent();
     
     std::string GetProjectLocation();
     void SetProjectLocation(std::string);
@@ -79,8 +73,6 @@ public:
 
     bool m_playing = false;
     
-    void SetTracksLayout(IOTracksLayout*);
-
 private:
 
     bool m_dirty = false;
@@ -96,8 +88,6 @@ private:
 
     IOMixer* m_mixer = nullptr;
     
-    IOTracksLayout *m_layout = nullptr;
-
     std::map<std::string, IOTrackStore*> m_tracks;
 
     void SaveRange(xmlTextWriterPtr writer);
@@ -105,7 +95,7 @@ private:
     void SaveCommands(xmlTextWriterPtr writer);
     void SaveTracks(xmlTextWriterPtr writer);
     
-    gint GetInteger(xmlNodePtr node, const char* name);
+    int GetInteger(xmlNodePtr node, const char* name);
 };
 
 #endif /* SRC_OPROJECT_H_ */

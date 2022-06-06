@@ -74,7 +74,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     set_name("OMainWnd");
     ui = Gtk::Builder::create_from_string(main_inline_glade);
     set_icon(Gdk::Pixbuf::create_from_inline(sizeof (autoX32_inline), autoX32_inline, false));
-    m_project.SetTracksLayout(&m_trackslayout);
 
     ApplyWindowSettings();
 
@@ -278,7 +277,7 @@ void OMainWnd::OpenProject(std::string location) {
     m_trackslayout.show_all();
     UpdateDawTime(false);
     on_btn_zoom_loop_clicked();
-    m_x32->WriteAll();
+    //m_x32->WriteAll();
 }
 
 std::string OMainWnd::GetProjectLocation() {

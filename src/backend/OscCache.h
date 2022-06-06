@@ -50,6 +50,7 @@ public:
     IOscMessage* AddCacheMessage(const char*, const char*);
     void ReleaseCacheMessage(std::string);
     
+    bool NewMessage(IOscMessage* msg);
     bool ProcessMessage(IOscMessage*);
 
     bool GetCachedValue(std::string path, float*);
@@ -76,7 +77,8 @@ private:
     
     std::map<std::string, IOscMessage*> m_cache;
     IOCacheCallbackHandler* m_callback_handler;
-    
+    mutable std::mutex m_mutex;
+
 };
 
 #endif /* OSCCACHE_H */

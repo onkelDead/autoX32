@@ -19,7 +19,6 @@
 OService *service;
 
 static void signal_handler(int sig) {
-    service->Save();
     delete service;
     exit(0);
 }
@@ -33,6 +32,12 @@ int main_service(int argc, char** argv) {
     
     service = new OService();
     
+    if (service->InitDaw()) {
+        std::cerr << "Failed to initialize DAW" << std::endl;
+        delete service;
+        return EXIT_FAILURE;
+    }
+
     if (service->InitMixer()) {
         std::cerr << "Failed to initialize mixer" << std::endl;
         delete service;
@@ -44,13 +49,7 @@ int main_service(int argc, char** argv) {
         delete service;
         return EXIT_FAILURE;
     }
-
-    if (service->InitDaw()) {
-        std::cerr << "Failed to initialize DAW" << std::endl;
-        delete service;
-        return EXIT_FAILURE;
-    }
-    
+   
     service->StartProcessing();
     
     service->Save();

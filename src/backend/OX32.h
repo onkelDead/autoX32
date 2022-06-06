@@ -53,6 +53,8 @@ public:
     int NewMessageCallback(IOscMessage*);
     int UpdateMessageCallback(IOscMessage*);
     
+    void PauseCallbackHandler(bool);
+    
     IOscMessage* AddCacheMessage(const char*, const char*);
     IOscMessage* AddCacheMessage(const char*, const char*, const char*);
 
@@ -119,6 +121,7 @@ private:
     MessageCallback m_msg_callback = nullptr;
     
     IOMessageHandler* m_MessageHandler = nullptr;
+    bool m_pause_handler = true;
     
     void* m_userPtr;
 

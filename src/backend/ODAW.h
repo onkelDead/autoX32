@@ -26,6 +26,7 @@
 #include <sys/fcntl.h>
 
 #include "IODawHandler.h"
+#include "OTimer.h"
 
 #include <thread>
 #include <mutex>
@@ -39,13 +40,18 @@
 #define XBSMAX 512
 #define XBRMAX 512
 
-class ODAW {
+class ODAW : public IOTimerEvent {
 public:
     ODAW();
     virtual ~ODAW();
 
     int Connect(const char* host, const char* port, const char* replyport, IODawHandler*);
     int Disconnect();
+    
+    void OnTimer(void*);
+    void StartSessionMonitor();
+    void StopSessionMonitor();
+    bool CheckArdourRecent();
 
     int GetMaxMillis();
     int GetBitRate();
@@ -65,6 +71,22 @@ public:
 
     void ProcessCmd(const char*, lo_message);
     
+    std::string GetLocation() const {
+        return m_location;
+    }
+
+    std::string GetProjectFile() const {
+        return m_projectFile;
+    }
+
+    void SetLocation(std::string location) {
+        m_location = location;
+    }
+
+    void SetProjectFile(std::string projectFile) {
+        m_projectFile = projectFile;
+    }
+
 private:
     int m_keep_on = 1;
 
@@ -73,6 +95,8 @@ private:
     int m_maxmillis = 0;
 
     std::string m_session_name;
+    std::string m_location;
+    std::string m_projectFile;
     
     bool m_wait_for_samples = false;
     
@@ -81,6 +105,8 @@ private:
 
     IODawHandler* m_parent = nullptr;
     std::string timecode;
+    
+    OTimer m_checksession;
 };
 
 #endif /* SRC_ODAW_H_ */

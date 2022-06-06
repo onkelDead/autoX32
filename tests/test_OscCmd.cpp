@@ -476,7 +476,9 @@ int test_project() {
     std::cout << "test_OscCmd: Test Project started." << std::endl;
     
     TestMessageHandler *handler = new TestMessageHandler();    
-    IOProject* project = new OProject(TEST_PROJECT_FILE);
+    IOProject* project = new OProject();
+    project->Load(TEST_PROJECT_FILE);
+    
     IOMixer* x32 = new OX32();
     
     test_equal(x32->Connect("192.168.178.43"), 0, "Connect X32");

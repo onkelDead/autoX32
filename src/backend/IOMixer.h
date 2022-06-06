@@ -35,6 +35,7 @@ public:
     virtual int IsConnected() = 0;
 
     virtual void SetMessageHandler(IOMessageHandler* MessageHandler) = 0;
+    virtual void PauseCallbackHandler(bool) = 0;
     
     virtual IOscMessage* AddCacheMessage(const char*, const char*) = 0;
     virtual IOscMessage* AddCacheMessage(const char*, const char*, const char*) = 0;

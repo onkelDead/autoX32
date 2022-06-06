@@ -43,9 +43,6 @@ OProject::~OProject() {
     }
 }
 
-void OProject::SetTracksLayout(IOTracksLayout *layout) {
-    m_layout = layout;
-}
 
 void OProject::SetMixer(IOMixer* mixer) {
     m_mixer = mixer;
@@ -88,9 +85,9 @@ void OProject::New() {
     m_projectFile.append("/").append(name.append(".xml").data());
 }
 
-gint OProject::GetInteger(xmlNodePtr node, const char* name) {
+int OProject::GetInteger(xmlNodePtr node, const char* name) {
     xmlChar *keyword = xmlGetProp(node, BAD_CAST name);
-    gint result = atoi((const char *) keyword);
+    int result = atoi((const char *) keyword);
     xmlFree(keyword);
     return result;
 }
@@ -174,7 +171,7 @@ void OProject::Load(std::string location) {
 
     result = xmlXPathEvalExpression(BAD_CAST "//project/track", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
-        gint c = 0;
+        int c = 0;
         nodeset = result->nodesetval;
         xmlNodePtr node = *nodeset->nodeTab;
         while(node) {
@@ -215,34 +212,6 @@ void OProject::Load(std::string location) {
 
     xmlXPathFreeContext(context);
     xmlFreeDoc(doc);
-}
-
-bool OProject::OpenFromArdurRecent() {
-    FILE* file_recent;
-    char path[256];
-    bool ret_val = false;
-
-    file_recent = fopen("/home/onkel/.config/ardour5/recent", "r");
-    if (file_recent != NULL) {
-        fclose(file_recent);
-
-        strncat(path, "/autoX32", 32);
-        printf("%s\n", path);
-        if (access(path, F_OK)) {
-            printf("project don't exists\n");
-            m_location = path;
-            if (mkdir(path, S_IRWXU | S_IRGRP | S_IXGRP) != 0) {
-                perror("mkdir() error");
-                return ret_val;
-            }
-            New();
-            Save();
-        } else {
-            Load(path);
-            ret_val = true;
-        }
-    }
-    return ret_val;
 }
 
 void OProject::Save() {
@@ -334,7 +303,6 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
     int index = 0;
     
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-        gint layout_index = m_layout != nullptr ? m_layout->GetTrackIndex(it->first) : index++;
         IOTrackStore* ts = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "track");
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "path", "%s", it->first.data());
@@ -342,7 +310,7 @@ void OProject::SaveTracks(xmlTextWriterPtr writer) {
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "expand", "%s", cv);
         sprintf(cv, "%d", ts->GetLayout()->m_height);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "height", "%s", cv);
-        sprintf(cv, "%d", layout_index);
+        sprintf(cv, "%d", index++);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "layout_index", "%s", cv);
         sprintf(cv, "%d", ts->GetLayout()->m_visible);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "visible", "%s", cv);

@@ -65,6 +65,7 @@ enum JACK_EVENT {
 enum DAW_PATH {
     unknown,
     samples,
+    session, 
     reply
 };
 

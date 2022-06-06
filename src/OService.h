@@ -33,15 +33,14 @@
 #include "OQueue.h"
 #include "OTimer.h"
 
-class OService : public IOProject, public IODawHandler, public IOJackHandler, public IOTimerEvent, public IOMessageHandler {
+class OService : public IODawHandler, public IOTimerEvent, public IOJackHandler, public IOMessageHandler {
 public:
     OService();
     OService(const OService& orig);
     virtual ~OService();
     
-    bool CheckArdourRecent();
     void Save();
-    void Load(std::string location);
+    int Load(std::string location);
     void Close();
 
     IOTrackStore* NewTrack(IOscMessage*);    
@@ -71,10 +70,7 @@ public:
     void SetDaw(ODAW* daw) {
         m_daw = daw;
     }
-    
-    void SetLocation(std::string location) {
-        m_location = location;
-    }
+
     void SetBackend(IOBackend* backend) {
         m_backend = backend;
     }
@@ -98,12 +94,11 @@ private:
     IOBackend* m_backend = nullptr;
     OTimer m_jackTimer;
     OTimer m_dawTimer;
+    IOProject* m_project;
 
     std::atomic<bool> m_active = false;
     
     std::string m_session;
-    std::string m_location;
-    std::string m_projectFile;
     bool m_dirty = false;
     bool m_teach_mode = false;
     bool m_teach_active = false;

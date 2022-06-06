@@ -27,7 +27,7 @@ public:
     virtual void notify_overview() = 0;
     virtual void remove_track(std::string path) = 0;
     virtual void SelectTrack(std::string, bool) = 0;
-    virtual gint GetPosMillis() = 0;
+    virtual int GetPosMillis() = 0;
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;
     virtual void TrackViewHide(std::string) = 0;

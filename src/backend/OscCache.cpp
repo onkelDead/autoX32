@@ -89,18 +89,21 @@ const char* dyn_func[] = {
     "/dyn/hold",
     "/dyn/release",
     "/dyn/pos",
-    "/dyn/keysrc",
     "/dyn/mix",
-    "/dyn/auto",
     "/dyn/filter/on",
     "/dyn/filter/type",
     "/dyn/filter/f",
+    "/dyn/auto",
+    "/dyn/keysrc",
 };
 func1_t dyn_funcs = {
     dyn_func,
     18
 };
-
+func1_t dyn_mtx_funcs = {
+    dyn_func,
+    17
+};
 const char* gate_func[] = {
     "/gate/on",
     "/gate/mode",
@@ -169,6 +172,12 @@ func1_t base_funcs = {
     base_func,
     8
 };
+
+func1_t base_mtx_funcs = {
+    base_func,
+    5
+};
+
 func1_t base_short_funcs = {
     base_func,
     3
@@ -217,9 +226,9 @@ func1_t* auxin_func[] = {
     &mix_funcs
 };
 func1_t* matrix_func[] = {
-    &base_funcs,
+    &base_mtx_funcs,
     &eq_funcs,
-    &dyn_funcs,
+    &dyn_mtx_funcs,
     &insert_funcs,
 };
 
@@ -237,7 +246,7 @@ func1_t* dca_func[] = {
 func1_t* main_st_func[] = {
     &base_short_funcs,
     &eq_funcs,
-    &dyn_funcs
+    &dyn_mtx_funcs
 };
 
 funcs_t ch_funcs = {
@@ -338,10 +347,7 @@ OscCache::~OscCache() {
 }
 
 
-bool OscCache::ProcessMessage(IOscMessage* msg) {
-    
-    // Message not known in cache
-    if (!m_cache.contains(msg->GetPath())) {
+bool OscCache::NewMessage(IOscMessage* msg) {
 #ifdef CACHE_MEASURE_ELPASE        
         using std::chrono::high_resolution_clock;
         using std::chrono::duration_cast;
@@ -349,7 +355,7 @@ bool OscCache::ProcessMessage(IOscMessage* msg) {
         using std::chrono::microseconds;        
         auto t1 = high_resolution_clock::now();
 #endif        
-        IOscMessage* new_msg = new OscMessage(msg->GetPath().c_str(), msg->GetTypes());
+        IOscMessage* new_msg = AddCacheMessage(msg->GetPath().c_str(), msg->GetTypes());
         
         new_msg->SetVal(msg->GetVal(0));
         m_cache[msg->GetPath()] = new_msg;
@@ -360,11 +366,13 @@ bool OscCache::ProcessMessage(IOscMessage* msg) {
         std::cout << "elapse: " << ms_double.count() << "µs\n";
 #endif
         return false;
-    }
-    else {
-        m_callback_handler->UpdateMessageCallback(msg);
-        return true;
-    }
+   
+}
+
+bool OscCache::ProcessMessage(IOscMessage* msg) {
+    
+    m_callback_handler->UpdateMessageCallback(msg);
+    return true;
 }
 
 bool OscCache::GetCachedValue(std::string path, float* result) {
@@ -401,10 +409,12 @@ bool OscCache::GetCachedValue(std::string path, std::string* result) {
 }
 
 IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types) {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return m_cache[path] = new OscMessage(path, types);
 }
 
 void OscCache::ReleaseCacheMessage(std::string path) {
+    std::lock_guard<std::mutex> lock(m_mutex);
     IOscMessage* msg = m_cache[path];
     if (msg) {
         msg->SetTrackstore(nullptr);
@@ -452,7 +462,9 @@ void OscCache::ReadAllFromMixer(IOMixer* x32) {
                         std::cerr << "OscCache::ReadAllFromMixer failed." << std::endl;
                         return;
                     }
-                    usleep(500);
+                    while (x32->GetCachedMessage(cmd) == nullptr) {
+                        usleep(100);
+                    }
                 }
             }
         }

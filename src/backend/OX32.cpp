@@ -158,6 +158,11 @@ void OX32::do_work(IOMixer *caller) {
 }
 
 
+void OX32::PauseCallbackHandler(bool val) {
+    m_pause_handler = val;
+}
+
+
 void OX32::SetMsg_callback(MessageCallback msg_callback, void* userPtr) {
     m_msg_callback = msg_callback;
     m_userPtr = userPtr;
@@ -272,12 +277,14 @@ void OX32::FrameCallback(char* entry, size_t len) {
         i++;
     }
     
-    m_cache.ProcessMessage(&cmd);
+    m_cache.NewMessage(&cmd);
     
     lo_message_free(msg);    
 }
 
 int OX32::NewMessageCallback(IOscMessage* msg) {
+    if (m_pause_handler) return 0;
+    
     if (m_MessageHandler != nullptr) {
         m_MessageHandler->NewMessageCallback(msg);
     }
@@ -288,6 +295,8 @@ int OX32::NewMessageCallback(IOscMessage* msg) {
 }
 
 int OX32::UpdateMessageCallback(IOscMessage* val) {
+    if (m_pause_handler) return 0;
+    
     if (m_MessageHandler != nullptr) {
         m_MessageHandler->UpdateMessageCallback(val);
     }

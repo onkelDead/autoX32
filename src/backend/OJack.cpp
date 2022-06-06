@@ -215,6 +215,10 @@ int OJack::Connect(IOJackHandler* wnd) {
         return 1;
     }
 
+    jack_set_client_registration_callback(m_jack_client, on_register_client, this);
+    jack_set_port_registration_callback(m_jack_client, on_register_port, this);
+    jack_set_port_connect_callback(m_jack_client, on_port_connect, this);
+
     jack_set_process_callback(m_jack_client, process, this);
 
     jack_on_shutdown(m_jack_client, jack_shutdown, 0);
@@ -226,28 +230,25 @@ int OJack::Connect(IOJackHandler* wnd) {
     ctl_out_port = jack_port_register(m_jack_client, ONKEL_C_OUT_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
 
-    jack_set_client_registration_callback(m_jack_client, on_register_client, this);
-    jack_set_port_registration_callback(m_jack_client, on_register_port, this);
-    jack_set_port_connect_callback(m_jack_client, on_port_connect, this);
 
     if (jack_activate(m_jack_client)) {
-        fprintf(stderr, "cannot activate client");
+        std::cerr << "cannot activate client: errorcode " << errcode << std::endl;
         return 1;
     }
 
-    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0)
-        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_IN_PORT_NAME << "failed with error code " << errcode << std::endl;
+    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0) 
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_IN_PORT_NAME << " failed with error code " << errcode << std::endl;
     if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0)
-        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << "failed with error code " << errcode << std::endl;
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << " failed with error code " << errcode << std::endl;
 
-    ControllerShowStop();
-    ControllerShowTeachOff();
-    ControllerShowTeachMode(false);
-    ControllerShowWheelMode();
-    ControllerShowCycle();
-    ControllerShowMarker();
-    ControllerShowSelect(0);
-    ControllerShowScrub();
+//    ControllerShowStop();
+//    ControllerShowTeachOff();
+//    ControllerShowTeachMode(false);
+//    ControllerShowWheelMode();
+//    ControllerShowCycle();
+//    ControllerShowMarker();
+//    ControllerShowSelect(0);
+//    ControllerShowScrub();
 
     return 0;
 }
@@ -275,8 +276,8 @@ void OJack::ReconnectPorts() {
 
     if (m_reconnect_mmc_in) {
         m_reconnect_mmc_in = false;
-        jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in");
-        Notify(MMC_RESET);
+        if (!jack_connect(m_jack_client, "autoX32:Ardour MMC out", "ardour:MMC in"))
+            Notify(MMC_RESET);
     }
 
     if (m_reconnect_ctl_in) {

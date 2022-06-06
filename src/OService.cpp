@@ -56,6 +56,8 @@ OService::~OService() {
 }
 
 int OService::InitMixer() {
+    std::cout << "Initialize Mixer..." << std::endl;
+
     if (m_mixer->Connect(m_config.get_string(SETTINGS_MIXER_HOST))) {
         std::cerr << "autoX32_service ERROR: unable to connect to mixer at address " << m_config.get_string(SETTINGS_MIXER_HOST) << std::endl;
         delete m_mixer;
@@ -64,46 +66,48 @@ int OService::InitMixer() {
     }
     m_mixer->SetMessageHandler(this);
     
-    if (!CheckArdourRecent())
-        m_mixer->ReadAll();
+    std::cout << "Mixer initialized" << std::endl;
     return 0;
 }
 
 int OService::InitDaw() {
+    std::cout << "Initialize DAW..." << std::endl;
     if (m_daw->Connect(m_config.get_string(SETTINGS_DAW_HOST), m_config.get_string(SETTINGS_DAW_PORT), m_config.get_string(SETTINGS_DAW__REPLAY_PORT), this)) {
         std::cerr << "autoX32_service ERROR: unable to connect to mixer at address " << m_config.get_string(SETTINGS_MIXER_HOST) << std::endl;
         delete m_daw;
         return 1;
     }    
+    
+    
+    
+    std::cout << "DAW initialized." << std::endl;
     return 0;
 }
 
 int OService::InitBackend() {
+    std::cout << "Initialize Backend..." << std::endl;
+
     if (m_backend->Connect(this)) {
-        std::cerr << "autoX32_service ERROR: unable to initialize kack client" << std::endl;
+        std::cerr << "autoX32_service ERROR: unable to initialize jack client" << std::endl;
         delete m_backend;
+        m_backend = 0;
         return 1;
     }
 
+    std::cout << "Backend initialized" << std::endl;
     return 0;
 }
 
-void OService::Load(std::string location) {
-    SetLocation(location);
-    std::string name = basename(m_location.data());
-
-    m_projectFile = m_location;
-    m_projectFile.append("/").append(name.append(".xml").data());
-
+int OService::Load(std::string location) {
     xmlDocPtr doc;
     xmlXPathContextPtr context;
     xmlXPathObjectPtr result;
     xmlNodeSetPtr nodeset;
 
-    doc = xmlParseFile(m_projectFile.data());
+    doc = xmlParseFile(m_daw->GetProjectFile().data());
     if (doc == nullptr) {
         m_mixer->ReadAll();
-        return;
+        return 1;
     }
     context = xmlXPathNewContext(doc);
     result = xmlXPathEvalExpression(BAD_CAST "//project/range", context);
@@ -195,7 +199,7 @@ void OService::Load(std::string location) {
                     ts->GetLayout()->m_index = c++;
                 ts->GetLayout()->m_visible = visible ? atoi(visible) : true;
                         
-                ts->LoadData(m_projectFile.c_str());
+                ts->LoadData(m_daw->GetProjectFile().c_str());
                 if (visible)
                     xmlFree(visible);
                 xmlFree(path);
@@ -213,25 +217,18 @@ void OService::Load(std::string location) {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
         GetTrackConfig(ts);
-    }    
+    }  
+    return 0;
 }
 
 void OService::Save() {
-    if (m_location == "") 
-        return;
-    
-    std::string name = basename(m_location.data());
-
-    m_projectFile = m_location;
-    m_projectFile.append("/").append(name.append(".xml").data());
-
     xmlTextWriterPtr writer;
 
-    if (!std::filesystem::exists(m_location)) {
-        std::filesystem::create_directory(m_location);
+    if (!std::filesystem::exists(m_daw->GetLocation())) {
+        std::filesystem::create_directory(m_daw->GetLocation());
     }
     
-    writer = xmlNewTextWriterFilename(m_projectFile.data(), 0);
+    writer = xmlNewTextWriterFilename(m_daw->GetProjectFile().data(), 0);
     xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
     xmlTextWriterStartElement(writer, BAD_CAST "project");
     SaveRange(writer);
@@ -248,12 +245,9 @@ void OService::Close() {
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         delete (OTrackStore*)it->second;
     }
-//    for (std::map<std::string, IOscMessage*>::iterator it = m_known_mixer_commands.begin(); it != m_known_mixer_commands.end(); ++it) {
-//        delete (OscMessage*)it->second;
-//    }
     m_tracks.clear();
-    m_location = "";
-    m_projectFile = "";
+    m_daw->SetLocation("");
+    m_daw->SetProjectFile("");
     m_daw_range.m_dirty = false;
 }
 
@@ -304,7 +298,7 @@ void OService::SaveTracks(xmlTextWriterPtr writer) {
 
         xmlTextWriterEndElement(writer);
         if (ts->IsDirty()) {
-            ts->SaveData(m_projectFile.data());
+            ts->SaveData(m_daw->GetProjectFile().data());
             printf("Project::Save: track %s saved\n", it->first.data());
         }
     }
@@ -331,6 +325,19 @@ void OService::OnDawEvent() {
                     m_backend->SetFrame(m_daw->GetSample() / 400);
                     UpdatePos(m_backend->GetMillis(), true);
                 }
+                break;
+            case DAW_PATH::session:
+                m_mixer->PauseCallbackHandler(true);
+                if (!Load(m_daw->GetLocation())) {
+                    std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
+                    m_mixer->WriteAll();
+                }
+                else {
+                    std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
+                    m_mixer->ReadAll();
+                    Save();
+                }
+                m_mixer->PauseCallbackHandler(false);
                 break;
             default:
                 break;
@@ -373,19 +380,19 @@ bool OService::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
 }
 
 void OService::StartProcessing() {
-    m_dawTimer.setInterval(5000);
-    m_dawTimer.SetUserData(&m_dawTimer);
-    m_dawTimer.setFunc(this);
-    m_dawTimer.start();
-    
-    m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);
-
+    m_daw->StartSessionMonitor();
     m_active = true;
 
     m_backend->ControllerShowActive(true);
+    
+    std::cout << "Procession started." << std::endl;
     while(m_active) {
         sleep(1);
     }
+    std::cout << "Procession ended." << std::endl;
+    
+    m_daw->StopSessionMonitor();
+    
     UnselectTrack();
     
     m_backend->ControllerShowActive(false);
@@ -401,8 +408,6 @@ void OService::OnTimer(void* user_data)  {
         OnMessageEvent();
         return;
     }
-    
-    CheckArdourRecent();
 }
 
 void OService::OnJackEvent() {
@@ -645,42 +650,6 @@ void OService::SetRecord(bool val) {
     else {
         m_backend->ControllerShowTeachOn();
     }
-}
-
-bool OService::CheckArdourRecent() {
-    FILE* file_recent;
-    char path[256];
-    char name[256];
-
-    file_recent = fopen("/home/onkel/.config/ardour6/recent", "r");
-    if (file_recent != NULL) {
-        fscanf(file_recent, "%s", name);-
-        fscanf(file_recent, "%s", path);
-        fclose(file_recent);
-        strncat(path, "/autoX32", 32);
-        if (strncmp(path, m_location.data(), strlen(path))) {
-            Save();
-            Close();
-
-            if (access(path, F_OK)) {
-                printf("project don't exists\n");
-                if (std::filesystem::create_directory(path) == false) {
-                    perror("mkdir() error");
-                    return false;
-                }
-                m_location = path;
-                m_projectFile = m_location;
-                m_projectFile.append("/").append(name).append(".xml");                
-            }
-            else {
-                Load(path);
-                m_mixer->WriteAll();
-
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 void OService::SelectNextTrack() {
