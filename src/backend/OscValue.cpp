@@ -11,6 +11,7 @@
  * Created on March 18, 2022, 5:46 PM
  */
 
+#include <string.h>
 #include "OscValue.h"
 
 OscValue::OscValue(char t) {

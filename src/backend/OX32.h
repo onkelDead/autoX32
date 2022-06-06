@@ -95,6 +95,10 @@ public:
         m_cache.WriteAllToMixer(this);
     }
     
+    void DumpCache() {
+        m_cache.Dump();
+    }
+    
 private:
 
     void do_work(IOMixer*);

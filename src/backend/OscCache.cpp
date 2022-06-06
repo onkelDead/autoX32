@@ -10,7 +10,7 @@
  * 
  * Created on March 19, 2022, 8:31 AM
  */
-        
+
 #ifdef CACHE_MEASURE_ELPASE        
 #include <chrono>
 #endif
@@ -117,7 +117,7 @@ const char* gate_func[] = {
     "/gate/filter/type",
     "/gate/filter/f",
 };
-func1_t gate_funcs {
+func1_t gate_funcs{
     gate_func,
     11
 };
@@ -215,9 +215,9 @@ func1_t* ch_func[] = {
 
 func1_t* bus_func[] = {
     &base_funcs,
-    &eq_funcs,    
+    &eq_funcs,
     &dyn_funcs,
-    &grp_funcs,    
+    &grp_funcs,
     &insert_funcs
 };
 func1_t* auxin_func[] = {
@@ -324,14 +324,13 @@ object_t obj[] = {
         "/main/st",
         main_st_funcs,
         0
-    }
+    }, 
 };
 
-objects_t objs {
+objects_t objs{
     obj,
     7
 };
-
 
 OscCache::OscCache() {
 }
@@ -341,36 +340,35 @@ OscCache::OscCache(const OscCache& orig) {
 
 OscCache::~OscCache() {
     for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
-        delete (OscMessage*)it->second;
+        delete (OscMessage*) it->second;
     }
     m_cache.clear();
 }
 
-
 bool OscCache::NewMessage(IOscMessage* msg) {
 #ifdef CACHE_MEASURE_ELPASE        
-        using std::chrono::high_resolution_clock;
-        using std::chrono::duration_cast;
-        using std::chrono::duration;
-        using std::chrono::microseconds;        
-        auto t1 = high_resolution_clock::now();
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::microseconds;
+    auto t1 = high_resolution_clock::now();
 #endif        
-        IOscMessage* new_msg = AddCacheMessage(msg->GetPath().c_str(), msg->GetTypes());
-        
-        new_msg->SetVal(msg->GetVal(0));
-        m_cache[msg->GetPath()] = new_msg;
-        m_callback_handler->NewMessageCallback(new_msg);
+    IOscMessage* new_msg = AddCacheMessage(msg->GetPath().c_str(), msg->GetTypes());
+
+    new_msg->SetVal(msg->GetVal(0));
+    m_cache[msg->GetPath()] = new_msg;
+    m_callback_handler->NewMessageCallback(new_msg);
 #ifdef CACHE_MEASURE_ELPASE        
-        auto t2 = high_resolution_clock::now();
-        duration<double, std::micro> ms_double = t2 - t1;
-        std::cout << "elapse: " << ms_double.count() << "µs\n";
+    auto t2 = high_resolution_clock::now();
+    duration<double, std::micro> ms_double = t2 - t1;
+    std::cout << "elapse: " << ms_double.count() << "µs\n";
 #endif
-        return false;
-   
+    return false;
+
 }
 
 bool OscCache::ProcessMessage(IOscMessage* msg) {
-    
+
     m_callback_handler->UpdateMessageCallback(msg);
     return true;
 }
@@ -378,8 +376,7 @@ bool OscCache::ProcessMessage(IOscMessage* msg) {
 bool OscCache::GetCachedValue(std::string path, float* result) {
     if (!m_cache.contains(path)) {
         return false;
-    }
-    else {
+    } else {
         IOscMessage* m = m_cache[path];
         *result = m->GetVal(0)->GetFloat();
         return true;
@@ -389,8 +386,7 @@ bool OscCache::GetCachedValue(std::string path, float* result) {
 bool OscCache::GetCachedValue(std::string path, int* result) {
     if (!m_cache.contains(path)) {
         return false;
-    }
-    else {
+    } else {
         IOscMessage* m = m_cache[path];
         *result = m->GetVal(0)->GetInteger();
         return true;
@@ -400,8 +396,7 @@ bool OscCache::GetCachedValue(std::string path, int* result) {
 bool OscCache::GetCachedValue(std::string path, std::string* result) {
     if (!m_cache.contains(path)) {
         return false;
-    }
-    else {
+    } else {
         IOscMessage* m = m_cache[path];
         *result = m->GetVal(0)->GetString();
         return true;
@@ -429,6 +424,7 @@ IOscMessage* OscCache::GetCachedMsg(const char* path) {
 
 void OscCache::Save(xmlTextWriterPtr writer) {
     char val[32];
+    setlocale( LC_ALL, "" ); 
     for (std::map<std::string, IOscMessage*>::iterator it = m_cache.begin(); it != m_cache.end(); ++it) {
         IOscMessage* msg = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "cmd");
@@ -437,16 +433,17 @@ void OscCache::Save(xmlTextWriterPtr writer) {
         msg->GetVal(0)->ToString(msg->GetTypes()[0], val);
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "value", "%s", val);
         xmlTextWriterEndElement(writer);
-    }    
+    }
+    
 }
 
 void OscCache::ReadAllFromMixer(IOMixer* x32) {
     for (int o = 0; o < objs.count; o++) {
-        for (int i = 0; i < objs.objs[o].count; i++ ) {
+        for (int i = 0; i < objs.objs[o].count; i++) {
             for (int j = 0; j < objs.objs[o].funcs.count; j++) {
                 for (int k = 0; k < objs.objs[o].funcs.funcs[j]->count; k++) {
                     char cmd[64];
-                    switch(objs.objs[o].num_idx_digits) {
+                    switch (objs.objs[o].num_idx_digits) {
                         case 0:
                             sprintf(cmd, "%s%s", objs.objs[o].name, objs.objs[o].funcs.funcs[j]->func1[k]);
                             break;
@@ -468,14 +465,14 @@ void OscCache::ReadAllFromMixer(IOMixer* x32) {
                 }
             }
         }
-    }    
+    }
     std::cout << "Cache loaded with " << m_cache.size() << " elements." << std::endl;
 }
 
 void OscCache::WriteAllToMixer(IOMixer* x32) {
     for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
         IOscMessage* msg = it->second;
-        switch(msg->GetTypes()[0]) {
+        switch (msg->GetTypes()[0]) {
             case 's':
                 x32->SendString(msg->GetPath(), msg->GetVal(0)->GetString());
                 break;
@@ -484,6 +481,26 @@ void OscCache::WriteAllToMixer(IOMixer* x32) {
                 break;
             case 'f':
                 x32->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+                break;
+        }
+        usleep(200);
+    }
+}
+
+void OscCache::Dump() {
+    for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
+        IOscMessage* msg = it->second;
+        std::cout << "Send " << msg->GetPath() << " : " << msg->GetTypes()[0] << " : ";
+        
+        switch (msg->GetTypes()[0]) {
+            case 's':
+                std::cout << msg->GetVal(0)->GetString() << std::endl;
+                break;
+            case 'i':
+                std::cout << msg->GetVal(0)->GetInteger() << std::endl;
+                break;
+            case 'f':
+                std::cout << msg->GetVal(0)->GetFloat() << std::endl;
                 break;
         }
         usleep(500);

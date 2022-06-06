@@ -49,7 +49,7 @@ int main_service(int argc, char** argv) {
         delete service;
         return EXIT_FAILURE;
     }
-   
+
     service->StartProcessing();
     
     

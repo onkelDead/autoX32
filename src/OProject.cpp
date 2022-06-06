@@ -102,7 +102,7 @@ int OProject::Load(std::string location) {
     }
     xmlXPathFreeObject(result);
 
-
+    setlocale( LC_ALL, "" ); 
     result = xmlXPathEvalExpression(BAD_CAST "//project/cmd", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
@@ -118,21 +118,12 @@ int OProject::Load(std::string location) {
                 char* path = strdup((char*) xmlPath);
                 char* types = strdup((char*) xmlTypes);
                 char* val = strdup((char*) xmlValue);
-//                m_known_mixer_commands[path] = m_mixer->AddCacheMessage(path, types);
                 xmlFree(xmlPath);
                 xmlFree(xmlTypes);
                 xmlFree(xmlValue);
                 char* name = (char*) xmlGetProp(node, BAD_CAST "name");
                 m_mixer->AddCacheMessage(path, types, val);
-                //m_known_mixer_commands[path]->SetName(name);
                 xmlFree(name);
-//                Gdk::RGBA color;
-//                color.set_rgba_u(0, 0, 0, 32768);
-//                color.set_red_u(GetInteger(node, "red"));
-//                color.set_green_u(GetInteger(node, "green"));
-//                color.set_blue_u(GetInteger(node, "blue"));
-//                color.set_alpha_u(GetInteger(node, "alpha"));
-                //m_known_mixer_commands[path]->SetColor(color);
                 free(path);
                 free(types);
                 free(val);

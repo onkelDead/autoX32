@@ -69,6 +69,7 @@ public:
     
     void ReadAllFromMixer(IOMixer*);
     void WriteAllToMixer(IOMixer*);
+    void Dump();    
     
     // Implementation ISerializer
     void Save(xmlTextWriterPtr);

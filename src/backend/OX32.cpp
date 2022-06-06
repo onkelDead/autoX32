@@ -322,25 +322,22 @@ IOscMessage* OX32::AddCacheMessage(const char* path, const char* types) {
 }
 
 IOscMessage* OX32::AddCacheMessage(const char* path, const char* types, const char* value) {
+    
     IOscMessage* msg = m_cache.GetCachedMsg(path);
     if (msg == nullptr) {
         msg = m_cache.AddCacheMessage(path, types);
     }
-    OscValue* val = new OscValue(msg->GetTypes()[0]);
     switch(msg->GetTypes()[0]) {
         case 's':
-            val->SetString(value);
-            
+            msg->GetVal(0)->SetString(value);
             break;
         case 'i':
-            val->SetInteger(atoi(value));
+            msg->GetVal(0)->SetInteger(atoi(value));
             break;
         case 'f':
-            val->SetFloat(atof(value));
+            msg->GetVal(0)->SetFloat(std::stof(value));
             break;
     }
-    msg->SetVal(val);
-    delete val;
     return msg;
 }
 

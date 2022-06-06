@@ -46,7 +46,7 @@ public:
     virtual void ReadAll() = 0;
     virtual void WriteAll() = 0;
     virtual size_t GetCacheSize() = 0;
-    
+    virtual void DumpCache() = 0;   
     
     virtual void SendFloat(std::string, float) = 0;
     virtual void SendInt(std::string, int ) = 0;

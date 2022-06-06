@@ -29,6 +29,7 @@ public:
     virtual std::string GetConfigRequestColor() = 0;
     virtual void SetTrackstore(IOTrackStore* Trackstore) = 0;
     virtual IOTrackStore* GetTrackstore() const = 0;
+    virtual void Print() = 0;
 };
 
 
