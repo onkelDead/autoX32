@@ -81,18 +81,12 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     m_lock_daw_time = false;
     m_lock_daw_time_event = false;
 
-    m_daw.StartSessionMonitor();
 }
 
 OMainWnd::~OMainWnd() {
     m_daw.StopSessionMonitor();
     if (m_x32)
         delete (OX32*) m_x32;
-    if (m_timer) {
-        m_timer->stop();
-        while (m_timer->isRunning());
-        delete m_timer;
-    }
     if (m_timeview)
         delete m_timeview;
     delete m_bbox;
@@ -123,7 +117,6 @@ bool OMainWnd::SaveProject() {
                 m_project.AddRecentProject(m_daw.GetLocation());
                 //TODO: reimplement
                 m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
-                UpdateMenuRecent();
                 return true;
             } else {
                 return false;
@@ -133,7 +126,6 @@ bool OMainWnd::SaveProject() {
             m_project.AddRecentProject(m_daw.GetLocation());
             //TODO: reimplement
             m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
-            UpdateMenuRecent();
             return true;
         }
     }
@@ -202,11 +194,7 @@ bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replypor
 
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_timer = new OTimer();
-        m_timer->setInterval(5000);
-        m_timer->setFunc(this);
-        m_timer->SetUserData(&m_timer);
-        m_timer->start();
+        m_daw.StartSessionMonitor();
         return true;
     }
     m_lbl_ardour->set_label("Ardour: disconnected");

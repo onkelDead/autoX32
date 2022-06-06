@@ -38,12 +38,6 @@ public:
     OService();
     OService(const OService& orig);
     virtual ~OService();
-    
-    void Save();
-    int Load(std::string location);
-    void Close();
-
-    IOTrackStore* NewTrack(IOscMessage*);    
 
     void OnDawEvent();
     void OnTimer(void*);

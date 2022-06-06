@@ -39,6 +39,21 @@ void OMainWnd::OnDawEvent() {
                 UpdatePlayhead(true);
 
                 break;
+            case DAW_PATH::session:
+                m_x32->PauseCallbackHandler(true);
+                if (!m_project.Load(m_daw.GetLocation())) {
+                    std::cout << "OService: Load session " << m_daw.GetProjectFile() << std::endl;
+                    m_x32->WriteAll();
+                }
+                else {
+                    std::cout << "OService: no session " << m_daw.GetProjectFile() <<  ", -> created." << std::endl;
+                    m_x32->ReadAll();
+                    m_project.Save(m_daw.GetLocation());
+                }
+                m_x32->PauseCallbackHandler(false);
+                set_title("autoX32 - [" + m_daw.GetLocation() + "]");
+                break;
+                
             default:
                 break;
         }

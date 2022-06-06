@@ -63,12 +63,6 @@ public:
     void on_menu_file_connection();
     void on_menu_file_exit();
     void on_menu_file_about();
-    void on_menu_project_new();
-    void on_menu_project_open();
-    void on_menu_project_save();
-    void on_menu_project_save_as();
-    void on_menu_project_close();
-    void on_menu_recent(std::string);
 
     void on_menu_prefs();
     void on_menu_layout();
@@ -150,8 +144,6 @@ public:
 
     /// application settings
     OConfig* GetConfig();
-
-    OTimer *m_timer = nullptr;
 
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
@@ -262,7 +254,6 @@ private:
 
     void create_view();
     void create_menu();
-    void UpdateMenuRecent();
 
     void create_about_dlg();
 

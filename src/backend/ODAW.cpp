@@ -94,7 +94,7 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
 
 void ODAW::StartSessionMonitor() {
     std::cout << "Session Monitor started." << std::endl;
-    m_checksession.setInterval(5000);
+    m_checksession.setInterval(1000);
     m_checksession.setFunc(this);
     m_checksession.start();    
 }
@@ -236,9 +236,10 @@ bool ODAW::CheckArdourRecent() {
         fclose(file_recent);
         strncat(path, "/autoX32", 32);
         if (strncmp(path, m_location.data(), strlen(path))) {
+            std::string fname = basename(path);
             m_location = path;
             m_projectFile = m_location;
-            m_projectFile.append("/").append(name).append(".xml");                
+            m_projectFile.append("/").append(fname).append(".xml");                
             return true;
 //            Save();
 //            Close();

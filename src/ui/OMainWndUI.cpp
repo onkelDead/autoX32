@@ -49,24 +49,6 @@ void OMainWnd::create_about_dlg() {
 
 }
 
-void OMainWnd::UpdateMenuRecent(){
-    while (m_recents->get_children().size() > 0) {
-        Gtk::MenuItem* recent = (Gtk::MenuItem*)m_recents->get_children().at(0);
-        m_recents->remove(*recent);
-        delete recent;
-    }
-    for (std::vector<std::string>::iterator it = m_project.m_recent_projects.begin(); it != m_project.m_recent_projects.end(); ++it) {
-        Gtk::MenuItem* m_recent = new Gtk::MenuItem();
-        m_recent->set_label(*it);
-        m_recents->add(*m_recent);
-        m_recent->signal_activate().connect(sigc::bind<>(sigc::mem_fun(*this, &OMainWnd::on_menu_recent), *it));
-    }
-    if (m_project.m_recent_projects.size() > 0) {
-        m_recents->set_sensitive(true);
-    }
-    m_recents->show_all();
-}
-
 void OMainWnd::create_menu() {
 
     m_about = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_help_about"));
@@ -77,21 +59,6 @@ void OMainWnd::create_menu() {
 
     m_connection = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("connect_m"));
     m_connection->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_file_connection));
-
-    m_project_new = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_new"));
-    m_project_new->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_new));
-
-    m_project_open = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_open"));
-    m_project_open->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_open));
-
-    m_project_save = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_save"));
-    m_project_save->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_save));
-
-    m_project_save_as = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_save_as"));
-    m_project_save_as->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_save_as));
-
-    m_project_close = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_project_close"));
-    m_project_close->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_project_close));
 
     m_prefs = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_prefs"));
     m_prefs->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_prefs));
@@ -111,9 +78,6 @@ void OMainWnd::create_menu() {
     m_view_fit = Glib::RefPtr<Gtk::MenuItem>::cast_dynamic(ui->get_object("menu_view_fit"));
     m_view_fit->signal_activate().connect(sigc::mem_fun(this, &OMainWnd::on_menu_fit));      
     
-    m_recents = Glib::RefPtr<Gtk::Menu>::cast_dynamic(ui->get_object("menu-recent"));
-
-    UpdateMenuRecent();
 }
 
 void OMainWnd::create_view() {

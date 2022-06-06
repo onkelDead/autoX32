@@ -106,22 +106,6 @@ int OService::InitBackend() {
     return 0;
 }
 
-int OService::Load(std::string location) {
-    return m_project->Load(m_daw->GetLocation());
-}
-
-void OService::Save() {
-    m_project->Save(m_daw->GetLocation());
-}
-
-void OService::Close() {
-    m_project->Close();
-}
-
-IOTrackStore* OService::NewTrack(IOscMessage* msg) {
-    return m_project->NewTrack(msg);
-}
-
 void OService::OnDawEvent() {
     while (!my_dawqueue.empty()) {
         DAW_PATH c;
@@ -140,14 +124,14 @@ void OService::OnDawEvent() {
                 break;
             case DAW_PATH::session:
                 m_mixer->PauseCallbackHandler(true);
-                if (!Load(m_daw->GetLocation())) {
+                if (!m_project->Load(m_daw->GetLocation())) {
                     std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
                     m_mixer->WriteAll();
                 }
                 else {
                     std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
                     m_mixer->ReadAll();
-                    Save();
+                    m_project->Save(m_daw->GetLocation());
                 }
                 m_mixer->PauseCallbackHandler(false);
                 break;
@@ -177,6 +161,9 @@ void OService::StartProcessing() {
     
     m_jackTimer.stop();
     m_dawTimer.stop();
+    
+    m_project->Save(m_daw->GetLocation());
+
 }
 
 void OService::OnTimer(void* user_data)  {
@@ -197,7 +184,7 @@ void OService::OnJackEvent() {
                 m_active = false;
                 break;
             case CTL_SAVE:
-                Save();
+                m_project->Save(m_daw->GetLocation());
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
@@ -401,7 +388,7 @@ void OService::OnMessageEvent() {
         else {
             if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview 
                 std::cout << "OService::OnMessageEvent new track " << msg->GetPath() << std::endl;
-                IOTrackStore *trackstore = NewTrack(msg);
+                IOTrackStore *trackstore = m_project->NewTrack(msg);
                 msg->SetTrackstore(trackstore);    
                 trackstore->SetPlaying(m_playing);
                 trackstore->SetRecording(m_playing);

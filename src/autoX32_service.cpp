@@ -52,7 +52,6 @@ int main_service(int argc, char** argv) {
    
     service->StartProcessing();
     
-    service->Save();
     
     delete service;
     
