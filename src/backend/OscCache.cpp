@@ -18,6 +18,8 @@
 #include <unistd.h>
 #include <thread>
 #include <mutex>
+#include <filesystem>
+#include <string.h>
 #include "OscMessage.h"
 #include "OscCache.h"
 
@@ -284,6 +286,12 @@ funcs_t main_st_funcs = {
 
 object_t obj[] = {
     {
+        1,
+        "/main/st",
+        main_st_funcs,
+        0
+    }, 
+    {
         32,
         "/ch",
         ch_funcs,
@@ -319,12 +327,6 @@ object_t obj[] = {
         dca_funcs,
         1
     },
-    {
-        1,
-        "/main/st",
-        main_st_funcs,
-        0
-    }, 
 };
 
 objects_t objs{
@@ -408,6 +410,26 @@ IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types) {
     return m_cache[path] = new OscMessage(path, types);
 }
 
+IOscMessage* OscCache::AddCacheMessage(const char* path, const char* types, const char* value) {
+    
+    IOscMessage* msg = GetCachedMsg(path);
+    if (msg == nullptr) {
+        msg = AddCacheMessage(path, types);
+    }
+    switch(msg->GetTypes()[0]) {
+        case 's':
+            msg->GetVal(0)->SetString(value);
+            break;
+        case 'i':
+            msg->GetVal(0)->SetInteger(atoi(value));
+            break;
+        case 'f':
+            msg->GetVal(0)->SetFloat(std::stof(value));
+            break;
+    }
+    return msg;
+}
+
 void OscCache::ReleaseCacheMessage(std::string path) {
     std::lock_guard<std::mutex> lock(m_mutex);
     IOscMessage* msg = m_cache[path];
@@ -422,9 +444,24 @@ IOscMessage* OscCache::GetCachedMsg(const char* path) {
     return nullptr;
 }
 
-void OscCache::Save(xmlTextWriterPtr writer) {
+void OscCache::Save(std::string location) {
     char val[32];
-    setlocale( LC_ALL, "" ); 
+    std::string name = basename(location.data());
+
+    std::string projectFile = location;
+    projectFile.append("/").append("X32cache.xml");
+
+
+    xmlTextWriterPtr writer;
+
+    if (!std::filesystem::exists(location)) {
+        std::filesystem::create_directory(location);
+    }
+    
+    writer = xmlNewTextWriterFilename(projectFile.data(), 0);    
+    
+    xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
+    xmlTextWriterStartElement(writer, BAD_CAST "cache");    
     for (std::map<std::string, IOscMessage*>::iterator it = m_cache.begin(); it != m_cache.end(); ++it) {
         IOscMessage* msg = it->second;
         xmlTextWriterStartElement(writer, BAD_CAST "cmd");
@@ -434,7 +471,60 @@ void OscCache::Save(xmlTextWriterPtr writer) {
         xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "value", "%s", val);
         xmlTextWriterEndElement(writer);
     }
+    xmlTextWriterEndElement(writer);
+    xmlTextWriterEndDocument(writer);      
+    xmlFreeTextWriter(writer);        
+}
+
+void OscCache::Load(std::string location) {
+    std::string name = basename(location.data());
+
+    std::string projectFile = location;
+    projectFile.append("/").append("X32cache.xml");
+
+    xmlDocPtr doc;
+    xmlXPathContextPtr context;
+    xmlXPathObjectPtr result;
+    xmlNodeSetPtr nodeset;    
+
+    doc = xmlParseFile(projectFile.data());
+    if (doc == nullptr) {
+        return;
+    }
+    context = xmlXPathNewContext(doc);
     
+    result = xmlXPathEvalExpression(BAD_CAST "//cache/cmd", context);
+    if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+        nodeset = result->nodesetval;
+        xmlNodePtr node = *nodeset->nodeTab;
+        while(node) {
+            if (node->type == XML_ELEMENT_NODE) {
+                if (strcmp((const char*)node->name, "cmd") != 0)
+                    break;
+                xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
+                xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
+                xmlChar *xmlValue = xmlGetProp(node, BAD_CAST "value");
+
+                char* path = strdup((char*) xmlPath);
+                char* types = strdup((char*) xmlTypes);
+                char* val = strdup((char*) xmlValue);
+                xmlFree(xmlPath);
+                xmlFree(xmlTypes);
+                xmlFree(xmlValue);
+                char* name = (char*) xmlGetProp(node, BAD_CAST "name");
+                AddCacheMessage(path, types, val);
+                xmlFree(name);
+                free(path);
+                free(types);
+                free(val);
+            }
+            node = node->next; 
+        }
+    }
+    xmlXPathFreeObject(result);    
+    xmlXPathFreeContext(context);
+    xmlFreeDoc(doc);
+   
 }
 
 void OscCache::ReadAllFromMixer(IOMixer* x32) {

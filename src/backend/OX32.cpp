@@ -349,6 +349,10 @@ IOscMessage* OX32::GetCachedMessage(std::string path) {
     return m_cache.GetCachedMsg(path.c_str());
 }
 
-void OX32::Save(xmlTextWriterPtr writer) {
-    m_cache.Save(writer);
+void OX32::Save(std::string location) {
+    m_cache.Save(location);
+}
+
+void OX32::Load(std::string location) {
+    m_cache.Load(location);
 }

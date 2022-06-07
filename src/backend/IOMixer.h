@@ -42,7 +42,8 @@ public:
     virtual void ReleaseCacheMessage(std::string) = 0;
     virtual IOscMessage* GetCachedMessage(std::string   ) = 0;
     
-    virtual void Save(xmlTextWriterPtr) = 0;
+    virtual void Save(std::string location) = 0;
+    virtual void Load(std::string location) = 0;
     virtual void ReadAll() = 0;
     virtual void WriteAll() = 0;
     virtual size_t GetCacheSize() = 0;

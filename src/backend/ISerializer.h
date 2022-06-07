@@ -22,7 +22,8 @@
 class ISerializer {
 public:
     virtual ~ISerializer(){}
-    virtual void Save(xmlTextWriterPtr) = 0;
+    virtual void Save(std::string location) = 0;
+    virtual void Load(std::string location) = 0;
     
 };
 

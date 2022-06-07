@@ -60,7 +60,8 @@ public:
 
     void ReleaseCacheMessage(std::string);
     IOscMessage* GetCachedMessage(std::string);
-    void Save(xmlTextWriterPtr);
+    void Save(std::string location);
+    void Load(std::string location);
     
     virtual void SendFloat(std::string path, float val);
     virtual void SendInt(std::string path, int val);

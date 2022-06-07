@@ -98,8 +98,10 @@ private:
 
     void SaveRange(xmlTextWriterPtr writer);
     void SaveZoom(xmlTextWriterPtr writer);
-    void SaveCommands(xmlTextWriterPtr writer);
+    void SaveCache(std::string location);
     void SaveTracks(xmlTextWriterPtr writer, std::string location);
+    
+    void LoadCache(std::string location);
     
     int GetInteger(xmlNodePtr node, const char* name);
 };

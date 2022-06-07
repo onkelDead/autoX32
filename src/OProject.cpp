@@ -70,6 +70,8 @@ int OProject::GetInteger(xmlNodePtr node, const char* name) {
 int OProject::Load(std::string location) {
     std::string name = basename(location.data());
 
+    setlocale( LC_ALL, "" ); 
+    
     std::string projectFile = location;
     projectFile.append("/").append(name.append(".xml").data());
 
@@ -78,6 +80,8 @@ int OProject::Load(std::string location) {
     xmlXPathObjectPtr result;
     xmlNodeSetPtr nodeset;
 
+    LoadCache(location);
+    
     doc = xmlParseFile(projectFile.data());
     if (doc == nullptr) {
         return 1;
@@ -99,37 +103,6 @@ int OProject::Load(std::string location) {
         xmlNodePtr node = nodeset->nodeTab[0];
         m_daw_time.m_viewstart = GetInteger(node, "start");
         m_daw_time.m_viewend = GetInteger(node, "end");
-    }
-    xmlXPathFreeObject(result);
-
-    setlocale( LC_ALL, "" ); 
-    result = xmlXPathEvalExpression(BAD_CAST "//project/cmd", context);
-    if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
-        nodeset = result->nodesetval;
-        xmlNodePtr node = *nodeset->nodeTab;
-        while(node) {
-            if (node->type == XML_ELEMENT_NODE) {
-                if (strcmp((const char*)node->name, "cmd") != 0)
-                    break;
-                xmlChar *xmlPath = xmlGetProp(node, BAD_CAST "path");
-                xmlChar *xmlTypes = xmlGetProp(node, BAD_CAST "types");
-                xmlChar *xmlValue = xmlGetProp(node, BAD_CAST "value");
-
-                char* path = strdup((char*) xmlPath);
-                char* types = strdup((char*) xmlTypes);
-                char* val = strdup((char*) xmlValue);
-                xmlFree(xmlPath);
-                xmlFree(xmlTypes);
-                xmlFree(xmlValue);
-                char* name = (char*) xmlGetProp(node, BAD_CAST "name");
-                m_mixer->AddCacheMessage(path, types, val);
-                xmlFree(name);
-                free(path);
-                free(types);
-                free(val);
-            }
-            node = node->next; 
-        }
     }
     xmlXPathFreeObject(result);
 
@@ -179,11 +152,17 @@ int OProject::Load(std::string location) {
     return 0;
 }
 
+void OProject::LoadCache(std::string location) {
+    m_mixer->Load(location);
+}
+
 void OProject::Save(std::string location) {
     std::string name = basename(location.data());
 
     std::string projectFile = location;
     projectFile.append("/").append(name.append(".xml").data());
+
+    setlocale( LC_ALL, "" ); 
 
     xmlTextWriterPtr writer;
 
@@ -196,7 +175,7 @@ void OProject::Save(std::string location) {
     xmlTextWriterStartElement(writer, BAD_CAST "project");
     SaveRange(writer);
     SaveZoom(writer);
-    SaveCommands(writer);
+    SaveCache(location);
     SaveTracks(writer, location);
     xmlTextWriterEndElement(writer);
     xmlTextWriterEndDocument(writer);
@@ -257,8 +236,8 @@ void OProject::SaveZoom(xmlTextWriterPtr writer) {
     printf("Project::Save: zoom saved\n");
 }
 
-void OProject::SaveCommands(xmlTextWriterPtr writer) {
-    m_mixer->Save(writer);
+void OProject::SaveCache(std::string location) {
+    m_mixer->Save(location);
 }
 
 void OProject::SaveTracks(xmlTextWriterPtr writer, std::string location) {

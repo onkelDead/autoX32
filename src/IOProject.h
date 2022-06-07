@@ -26,7 +26,9 @@ public:
     virtual ~IOProject(){}
     virtual void SetMixer(IOMixer*) = 0;
     virtual void Save(std::string location) = 0;
+    virtual void SaveCache(std::string location) = 0;    
     virtual int Load(std::string location) = 0;
+    virtual void LoadCache(std::string location) = 0;
     virtual void Close() = 0;
     virtual std::map<std::string, IOTrackStore*> GetTracks() = 0;
     virtual IOTrackStore* NewTrack(IOscMessage*) = 0;

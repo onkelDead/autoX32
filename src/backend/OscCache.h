@@ -48,6 +48,7 @@ public:
     virtual ~OscCache();
     
     IOscMessage* AddCacheMessage(const char*, const char*);
+    IOscMessage* AddCacheMessage(const char*, const char*, const char*);
     void ReleaseCacheMessage(std::string);
     
     bool NewMessage(IOscMessage* msg);
@@ -72,7 +73,8 @@ public:
     void Dump();    
     
     // Implementation ISerializer
-    void Save(xmlTextWriterPtr);
+    void Save(std::string location);
+    void Load(std::string location);
     
 private:
     
