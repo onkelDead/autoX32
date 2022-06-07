@@ -89,10 +89,6 @@ private:
     bool m_playing = false;
     bool m_record = false;
 
-    
-    daw_range m_daw_range = { 0, -1, false};
-    daw_time m_daw_time = {0, 1, 1., 0, -1};    
-    
     OQueue<IOscMessage*> my_messagequeue;
     OQueue<DAW_PATH> my_dawqueue;
     OQueue<JACK_EVENT> m_jackqueue;

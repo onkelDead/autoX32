@@ -241,14 +241,15 @@ int OJack::Connect(IOJackHandler* wnd) {
     if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0)
         std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << " failed with error code " << errcode << std::endl;
 
-//    ControllerShowStop();
-//    ControllerShowTeachOff();
-//    ControllerShowTeachMode(false);
-//    ControllerShowWheelMode();
-//    ControllerShowCycle();
-//    ControllerShowMarker();
-//    ControllerShowSelect(0);
-//    ControllerShowScrub();
+    ControllerShowStop();
+    ControllerShowTeachOff();
+    ControllerShowTeachMode(false);
+    ControllerShowWheelMode();
+    ControllerShowCycle();
+    ControllerShowMarker();
+    ControllerShowSelect(0);
+    ControllerShowScrub();
+    ControllerShowLCDName("", 0);
 
     return 0;
 }

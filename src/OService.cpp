@@ -112,7 +112,7 @@ void OService::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
-                m_daw_range.m_loopend = m_daw->GetMaxMillis();
+                m_project->GetTimeRange()->m_loopend = m_daw->GetMaxMillis();
                 m_session = m_daw->GetSessionName();
                 std::cout << "OService::OnDawEvent session name " << m_session << std::endl;
                 break;
@@ -134,6 +134,7 @@ void OService::OnDawEvent() {
                         ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
                         ts->SetColor_index(m_mixer->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
                     }
+                    m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
                 }
                 else {
                     std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
@@ -274,10 +275,10 @@ void OService::OnJackEvent() {
                 //                m_daw.ShortMessage("/loop_toggle");
                 //                break;
             case CTL_HOME:
-                m_backend->Locate(m_daw_range.m_loopstart);
+                m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
                 break;
             case CTL_END:
-                m_backend->Locate(m_daw_range.m_loopend);
+                m_backend->Locate(m_project->GetTimeRange()->m_loopend);
                 break;
             case CTL_NEXT_TRACK:
                 SelectNextTrack();
@@ -319,16 +320,16 @@ void OService::OnJackEvent() {
                 m_backend->ControllerShowMarker();
                 break;
             case CTL_LOOP_START:
-                m_daw_range.m_loopstart = m_backend->GetMillis();
-                m_daw_range.m_dirty = true;    
-                m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);          
-                std::cout << "SetRange start " << m_daw_range.m_loopstart << std::endl;
+                m_project->GetTimeRange()->m_loopstart = m_backend->GetMillis();
+                m_project->GetTimeRange()->m_dirty = true;    
+                m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);          
+                std::cout << "SetRange start " << m_project->GetTimeRange()->m_loopstart << std::endl;
                 break;
             case CTL_LOOP_END:
-                m_daw_range.m_loopend = m_backend->GetMillis();
-                m_daw_range.m_dirty = true;    
-                m_daw->SetRange(m_daw_range.m_loopstart, m_daw_range.m_loopend);                
-                std::cout << "SetRange end " << m_daw_range.m_loopend << std::endl;
+                m_project->GetTimeRange()->m_loopend = m_backend->GetMillis();
+                m_project->GetTimeRange()->m_dirty = true;    
+                m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);                
+                std::cout << "SetRange end " << m_project->GetTimeRange()->m_loopend << std::endl;
                 break;
                 
             case CTL_LOOP:

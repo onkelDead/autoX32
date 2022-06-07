@@ -40,6 +40,7 @@ public:
     virtual IOTrackStore* SelectTrack(std::string path) = 0;
     virtual std::string GetNextTrackPath() = 0;
     virtual std::string GetPrevTrackPath() = 0;
+    virtual daw_range* GetTimeRange() = 0;
 };
 
 #endif /* IPROJECT_H */

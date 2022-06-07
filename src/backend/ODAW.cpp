@@ -100,8 +100,10 @@ void ODAW::StartSessionMonitor() {
 }
 
 void ODAW::StopSessionMonitor() {
-    m_checksession.stop();
-    std::cout << "Session Monitor ended." << std::endl;
+    if (m_checksession.isRunning()) {
+        m_checksession.stop();
+        std::cout << "Session Monitor ended." << std::endl;
+    }
 }
 
 int ODAW::Disconnect() {
@@ -131,7 +133,7 @@ void ODAW::ShortMessage(const char *cmd) {
 }
 
 void ODAW::SetRange(int start, int end, bool enable) {
-        std::cout << "ODAW::SetRange() " << start << " : "<< end << std::endl;
+    std::cout << "ODAW::SetRange() " << start << " : "<< end << std::endl;
 
     long sample_start = ((long) start ) / 12 * m_bitrate;
     long sample_end = ((long) end ) / 12 * m_bitrate;

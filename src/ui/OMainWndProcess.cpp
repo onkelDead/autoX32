@@ -42,7 +42,7 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::session:
                 m_x32->PauseCallbackHandler(true);
                 if (!OpenProject(m_daw.GetLocation())) {
-                    std::cout << "OService: Load session " << m_daw.GetProjectFile() << std::endl;
+                    std::cout << "OMainWnd: Load session " << m_daw.GetProjectFile() << std::endl;
                     m_x32->WriteAll();
                 }
                 else {

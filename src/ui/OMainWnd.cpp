@@ -235,6 +235,7 @@ int OMainWnd::OpenProject(std::string location) {
     
     m_trackslayout.show_all();
     UpdateDawTime(false);
+    m_daw.SetRange(m_project.GetTimeRange()->m_loopstart, m_project.GetTimeRange()->m_loopend);
     on_btn_zoom_loop_clicked();
     //m_x32->WriteAll();
     return 0;
