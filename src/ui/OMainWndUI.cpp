@@ -131,7 +131,7 @@ void OMainWnd::create_view() {
 
     Gtk::Box *box;
     ui->get_widget<Gtk::Box>("box-overview", box);
-    m_overview = new OOverView(this, m_project.GetDawTime());
+    m_overview = new OOverView(this, m_project->GetDawTime());
 
     box->add(*m_overview);
 

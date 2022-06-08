@@ -194,23 +194,6 @@ void OProject::Close() {
     m_daw_range.m_dirty = false;
 }
 
-void OProject::AddRecentProject(std::string location) {
-    bool exit = false;
-    for (std::vector<std::string>::iterator it = m_recent_projects.begin(); it != m_recent_projects.end(); ++it) {
-        if (exit)
-            break;
-        if (*it == location) {
-            exit = true;
-            m_recent_projects.erase(it);
-        }
-    }
-
-    m_recent_projects.insert(m_recent_projects.begin(), location);
-    if (m_recent_projects.size() > 4) {
-        m_recent_projects.erase(m_recent_projects.end());
-    }
-}
-
 daw_range* OProject::GetTimeRange() {
     return &m_daw_range;
 }

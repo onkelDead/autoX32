@@ -202,7 +202,7 @@ void OMainWnd::on_btn_loop_start_clicked() {
 void OMainWnd::on_btn_loop_end_clicked() {
 
     m_timeview->SetLoopEnd();
-    m_daw.SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd(), m_project.GetPlaying());
+    m_daw.SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd(), m_project->GetPlaying());
 }
 
 void OMainWnd::on_btn_zoom_loop_clicked() {
@@ -219,9 +219,9 @@ void OMainWnd::on_button_play_clicked() {
     m_last_playhead_update = 0;
 
     if (!m_button_play->get_active()) {
-        m_project.SetPlaying(false);
-        if (m_daw.GetLocation() != "" && m_project.GetDirty())
-            m_project.Save(m_daw.GetLocation());
+        m_project->SetPlaying(false);
+        if (m_daw.GetLocation() != "" && m_project->GetDirty())
+            m_project->Save(m_daw.GetLocation());
         m_trackslayout.StopRecord();
         if (!m_lock_play)
             //m_daw.Stop();
@@ -230,7 +230,7 @@ void OMainWnd::on_button_play_clicked() {
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
     } else {
-        m_project.SetPlaying(true);
+        m_project->SetPlaying(true);
         if (!m_lock_play)
             //m_daw.Play();
             m_backend->Play();
@@ -240,12 +240,12 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_home_clicked() {
-    m_backend->Locate(m_project.GetLoopStart());
+    m_backend->Locate(m_project->GetLoopStart());
     UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_end_clicked() {
-    m_backend->Locate(m_project.GetLoopEnd());
+    m_backend->Locate(m_project->GetLoopEnd());
     UpdatePlayhead(true);
 }
 
@@ -284,7 +284,7 @@ void OMainWnd::UpdateDawTime(bool redraw) {
 }
 
 void OMainWnd::UpdatePlayhead(bool doCalc) {
-    bool up = m_playhead->calc_new_pos(m_project.GetDawTime(), GetPosMillis());
+    bool up = m_playhead->calc_new_pos(m_project->GetDawTime(), GetPosMillis());
     
     if (up) {
         m_playhead->set_x_pos(0);
@@ -295,15 +295,15 @@ void OMainWnd::UpdatePlayhead(bool doCalc) {
 
 void OMainWnd::TrackViewUp(std::string path) {
     m_trackslayout.TrackUp(path);
-    m_project.SetDirty();
+    m_project->SetDirty();
 }
 
 void OMainWnd::TrackViewDown(std::string path) {
     m_trackslayout.TrackDown(path);
-    m_project.SetDirty();
+    m_project->SetDirty();
 }
 
 void OMainWnd::TrackViewHide(std::string path) {
     m_trackslayout.TrackHide(path, false);
-    m_project.SetDirty();
+    m_project->SetDirty();
 }

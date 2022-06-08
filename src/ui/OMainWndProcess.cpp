@@ -27,8 +27,8 @@ void OMainWnd::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
-                m_project.SetMaxMillis(m_daw.GetMaxMillis());
-                m_project.SetBitRate(m_daw.GetBitRate());
+                m_project->SetMaxMillis(m_daw.GetMaxMillis());
+                m_project->SetBitRate(m_daw.GetBitRate());
                 UpdateDawTime(false);
                 m_timeview->SetZoomLoop();
                 break;
@@ -48,7 +48,7 @@ void OMainWnd::OnDawEvent() {
                 else {
                     std::cout << "OService: no session " << m_daw.GetProjectFile() <<  ", -> created." << std::endl;
                     m_x32->ReadAll();
-                    m_project.Save(m_daw.GetLocation());
+                    m_project->Save(m_daw.GetLocation());
                 }
                 m_x32->PauseCallbackHandler(false);
                 set_title("autoX32 - [" + m_daw.GetLocation() + "]");
@@ -98,12 +98,12 @@ void OMainWnd::OnOperation() {
             {
                 IOscMessage* msg = (IOscMessage*) op->context;
 
-                IOTrackStore *trackstore = m_project.NewTrack(msg);
+                IOTrackStore *trackstore = m_project->NewTrack(msg);
                 msg->SetTrackstore(trackstore);
-                trackstore->SetPlaying(m_project.m_playing);
+                trackstore->SetPlaying(m_project->GetPlaying());
 
                 if (!m_trackslayout.GetTrackview(msg->GetPath())) {
-                    OTrackView *trackview = new OTrackView(this, m_project.GetDawTime());
+                    OTrackView *trackview = new OTrackView(this, m_project->GetDawTime());
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
@@ -159,10 +159,10 @@ void OMainWnd::OnOperation() {
                 break;
 
             case E_OPERATION::next_track:
-                SelectTrack(m_project.GetNextTrackPath(), true);
+                SelectTrack(m_project->GetNextTrackPath(), true);
                 break;
             case E_OPERATION::prev_track:
-                SelectTrack(m_project.GetPrevTrackPath(), true);
+                SelectTrack(m_project->GetPrevTrackPath(), true);
                 break;
             case E_OPERATION::unselect:
                 UnselectTrack();
@@ -172,7 +172,7 @@ void OMainWnd::OnOperation() {
                 break;
             case E_OPERATION::toggle_rec:
             {
-                IOTrackStore *sts = m_project.GetTrackSelected();
+                IOTrackStore *sts = m_project->GetTrackSelected();
                 if (sts) {
                     sts->SetRecording(!sts->IsRecording());
                     m_backend->ControllerShowRec(sts->IsRecording());
@@ -181,7 +181,7 @@ void OMainWnd::OnOperation() {
                 break;  
             case E_OPERATION::toggle_recview:
             {
-                IOTrackStore *sts = m_project.GetTrackSelected();
+                IOTrackStore *sts = m_project->GetTrackSelected();
                 
                 if (sts != nullptr && ((OTrackView*)op->context) == m_trackslayout.GetTrackview(sts->GetPath()))
                     m_backend->ControllerShowRec(sts->IsRecording());   
@@ -203,8 +203,8 @@ void OMainWnd::OnOperation() {
                 if (m_btn_teach->get_active()) {
                     m_btn_teach->set_active(false);
                 }
-                if (m_project.GetTrackSelected() != nullptr && m_project.GetTrackSelected()->IsRecording()) {
-                    m_project.GetTrackSelected()->SetRecording(false);
+                if (m_project->GetTrackSelected() != nullptr && m_project->GetTrackSelected()->IsRecording()) {
+                    m_project->GetTrackSelected()->SetRecording(false);
                 }
                 break;
             default:

@@ -33,15 +33,26 @@ public:
     virtual std::map<std::string, IOTrackStore*> GetTracks() = 0;
     virtual IOTrackStore *GetTrack(std::string) = 0;
     virtual IOTrackStore* NewTrack(IOscMessage*) = 0;
+    virtual void RemoveTrack(std::string path) = 0;
+
     virtual void UpdatePos(int current, bool seek) = 0;
     virtual bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) = 0;
     virtual void StopRecord() = 0;
+    virtual bool GetPlaying() = 0;
+    virtual void SetPlaying(bool val) = 0;
+    virtual bool GetDirty() = 0;
+    virtual void SetDirty() = 0;
     virtual IOTrackStore* GetTrackSelected() = 0;
     virtual void UnselectTrack() = 0;
     virtual IOTrackStore* SelectTrack(std::string path) = 0;
     virtual std::string GetNextTrackPath() = 0;
     virtual std::string GetPrevTrackPath() = 0;
     virtual daw_range* GetTimeRange() = 0;
+    virtual int GetLoopStart() = 0;
+    virtual int GetLoopEnd() = 0;
+    virtual daw_time* GetDawTime() = 0;
+    virtual void SetMaxMillis(int max_millis) = 0;
+    virtual void SetBitRate(int) = 0;
 };
 
 #endif /* IPROJECT_H */

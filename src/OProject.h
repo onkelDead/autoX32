@@ -47,6 +47,7 @@ public:
     void SetDirty();
 
     bool GetPlaying();
+    void SetPlaying(bool val);
     daw_range* GetTimeRange();
     int GetLoopStart();
     int GetLoopEnd();
@@ -54,9 +55,6 @@ public:
     void SetMaxMillis(int max_millis);
     void SetBitRate(int);
     void LockPlayhead(bool);
-    
-    void SetPlaying(bool val);
-
     
     IOTrackStore *GetTrack(std::string);
     std::map<std::string, IOTrackStore*> GetTracks();
@@ -76,15 +74,14 @@ public:
     IOTrackStore* NewTrack(IOscMessage*);    
     void RemoveTrack(std::string path);
     
-    void AddRecentProject(std::string);
     
     std::vector<std::string> m_recent_projects;
 
-    bool m_playing = false;
     
 private:
 
     bool m_dirty = false;
+    bool m_playing = false;
     
     daw_range m_daw_range = { 0, -1, false};
     daw_time m_daw_time = {0, 1, 1., 0, -1};

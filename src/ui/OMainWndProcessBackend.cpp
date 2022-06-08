@@ -54,8 +54,8 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_FADER:
-                if (m_project.GetTrackSelected()) {
-                    IOTrackStore* store = m_project.GetTrackSelected();
+                if (m_project->GetTrackSelected()) {
+                    IOTrackStore* store = m_project->GetTrackSelected();
                     IOscMessage* msg = store->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);

@@ -46,10 +46,13 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     ApplyWindowSettings();
 
+    m_project = new OProject();
+
     create_view();
     create_menu();
-    m_timeview->SetRange(m_project.GetTimeRange());
-    m_timeview->SetDawTime(m_project.GetDawTime());
+    
+    m_timeview->SetRange(m_project->GetTimeRange());
+    m_timeview->SetDawTime(m_project->GetDawTime());
 
     this->add_events(Gdk::KEY_PRESS_MASK);
     this->add_events(Gdk::KEY_RELEASE_MASK);
@@ -87,6 +90,7 @@ OMainWnd::~OMainWnd() {
     m_daw.StopSessionMonitor();
     if (m_x32)
         delete (OX32*) m_x32;
+    delete m_project;
     if (m_timeview)
         delete m_timeview;
     delete m_bbox;
@@ -113,19 +117,13 @@ bool OMainWnd::SaveProject() {
         if (m_daw.GetLocation().length() == 0) {
             if (SelectProjectLocation(true)) {
                 NewProject();
-                m_project.Save(m_daw.GetLocation());
-                m_project.AddRecentProject(m_daw.GetLocation());
-                //TODO: reimplement
-                m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+                m_project->Save(m_daw.GetLocation());
                 return true;
             } else {
                 return false;
             }
         } else {
-            m_project.Save(m_daw.GetLocation());
-            m_project.AddRecentProject(m_daw.GetLocation());
-            //TODO: reimplement
-            m_config.set_string_array(SETTINGS_RECENT_PROJECTS, m_project.m_recent_projects);
+            m_project->Save(m_daw.GetLocation());
             return true;
         }
     }
@@ -134,7 +132,7 @@ bool OMainWnd::SaveProject() {
 
 bool OMainWnd::Shutdown() {
     bool ret_code = false;
-    if (m_project.GetDirty()) {
+    if (m_project->GetDirty()) {
         if (!SaveProject())
             return ret_code;
     }
@@ -179,11 +177,11 @@ bool OMainWnd::ConnectMixer(std::string host) {
         m_x32->Disconnect();
     }
     if (!m_x32->Connect(host)) {
-        m_project.SetMixer(m_x32);
+        m_project->SetMixer(m_x32);
         m_lbl_x32->set_label("X32: connected");
         return true;
     }
-    m_project.SetMixer(NULL);
+    m_project->SetMixer(NULL);
     m_lbl_x32->set_label("X32: disconnected");
     return false;
 }
@@ -209,17 +207,17 @@ void OMainWnd::NewProject() {
 
 int OMainWnd::OpenProject(std::string location) {
 
-    if (m_project.Load(location))
+    if (m_project->Load(location))
         return 1;
     set_title("autoX32 - [" + location + "]");
-    std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
+    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
 
     for (size_t i = 0; i < tracks.size(); i++) {
         for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
             IOTrackStore* ts = it->second;
             if (ts->GetLayout()->m_index == i) {
                 ts->GetMessage()->SetTrackstore(ts);
-                OTrackView* trackview = new OTrackView(this, m_project.GetDawTime());
+                OTrackView* trackview = new OTrackView(this, m_project->GetDawTime());
                 trackview->SetTrackStore(ts);
                 ts->SetView(trackview);
                 m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
@@ -235,7 +233,7 @@ int OMainWnd::OpenProject(std::string location) {
     
     m_trackslayout.show_all();
     UpdateDawTime(false);
-    m_daw.SetRange(m_project.GetTimeRange()->m_loopstart, m_project.GetTimeRange()->m_loopend);
+    m_daw.SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
     on_btn_zoom_loop_clicked();
     //m_x32->WriteAll();
     return 0;
@@ -244,7 +242,7 @@ int OMainWnd::OpenProject(std::string location) {
 void OMainWnd::CloseProject() {
     m_trackslayout.RemoveAllTackViews();
 
-    m_project.Close();
+    m_project->Close();
 }
 
 bool OMainWnd::SelectProjectLocation(bool n) {
@@ -264,18 +262,18 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 void OMainWnd::remove_track(std::string path) {
     printf("remove %s\n", path.data());
     m_trackslayout.RemoveTrackView(path);
-    m_project.RemoveTrack(path);
+    m_project->RemoveTrack(path);
     m_x32->ReleaseCacheMessage(path);
-    //    m_project.RemoveCommand(view->GetTrackStore()->GetMessage());
+    //    m_project->RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
     UnselectTrack();
-    IOTrackStore* sts = m_project.GetTrackSelected();
+    IOTrackStore* sts = m_project->GetTrackSelected();
     if (selected) {
         if (!sts) {
-            m_project.SelectTrack(path);
-            sts = sts = m_project.GetTrackSelected();
+            m_project->SelectTrack(path);
+            sts = sts = m_project->GetTrackSelected();
         }
         m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
         m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
@@ -295,12 +293,12 @@ void OMainWnd::SelectTrack(std::string path, bool selected) {
 }
 
 void OMainWnd::UnselectTrack() {
-    IOTrackStore* sts = m_project.GetTrackSelected();
+    IOTrackStore* sts = m_project->GetTrackSelected();
     
     if (!sts) return;
     
     std::string path = sts->GetPath();
-    m_project.UnselectTrack();
+    m_project->UnselectTrack();
     OTrackView* tv = m_trackslayout.GetTrackview(path);
     if (tv) {
         m_backend->ControllerShowLCDName("", 0);
@@ -314,7 +312,7 @@ void OMainWnd::EditTrack(std::string path) {
     builder->get_widget_derived("track-dlg", pDialog);
     pDialog->SetPath(path);
 
-    IOTrackStore* ts = m_project.GetTrack(path);
+    IOTrackStore* ts = m_project->GetTrack(path);
 
     IOscMessage* nameMsg = m_x32->GetCachedMessage(ts->GetConfigRequestName());
     pDialog->SetName(nameMsg->GetVal(0)->GetString());
@@ -387,7 +385,7 @@ gint OMainWnd::GetPosMillis() {
 void OMainWnd::UpdatePos(gint current, bool seek) {
     bool ret_code = false;
 
-    std::map<std::string, IOTrackStore*> tracks = m_project.GetTracks();
+    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
     for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
 

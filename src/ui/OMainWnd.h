@@ -244,7 +244,7 @@ private:
     OQueue<operation_t*> m_queue_operation;
 
     /// objects
-    OProject m_project;
+    IOProject *m_project;
     IOMixer* m_x32 = nullptr;
     ODAW m_daw;
     IOBackend* m_backend = nullptr;
