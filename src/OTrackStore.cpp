@@ -60,8 +60,9 @@ track_entry* OTrackStore::NewEntry(int timepos) {
 }
 
 int OTrackStore::ProcessMsg(IOscMessage* msg, int timepos) {
-    if (msg == GetMessage() && m_record) {
-        AddEntry(timepos);
+    if (msg == GetMessage()) {
+        if (m_record)
+            AddEntry(timepos);
         return 1;
     }
     if (msg->GetPath() == m_config_name_path) {

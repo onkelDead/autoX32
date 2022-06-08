@@ -42,7 +42,7 @@ public:
     void OnDawEvent();
     void OnTimer(void*);
     void OnJackEvent();
-    void OnMessageEvent();
+    void OnMixerEvent();
     
     int NewMessageCallback(IOscMessage*);
     int UpdateMessageCallback(IOscMessage*);
@@ -99,7 +99,6 @@ private:
     void SelectNextTrack();
     void SelectPrevTrack();
     void ToggleTrackRecord(); 
-    int m_selected_track_idx = -1;
 };
 
 #endif /* OSERVICE_H */

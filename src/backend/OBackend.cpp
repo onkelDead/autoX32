@@ -197,7 +197,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         time_f8 = std::chrono::steady_clock::now();
                     }
                     if (!data[2]) {
-                        if (time_f8 + std::chrono::milliseconds(3000) < std::chrono::steady_clock::now())
+                        if (time_f8 + std::chrono::milliseconds(1000) < std::chrono::steady_clock::now())
                             backend->Notify(CTL_SHUTDOWN);
                         else
                             backend->Notify(CTL_SAVE);

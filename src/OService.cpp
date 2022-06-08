@@ -178,7 +178,7 @@ void OService::OnTimer(void* user_data)  {
     if (user_data == &m_jackTimer) {
         OnJackEvent();
         OnDawEvent();
-        OnMessageEvent();
+        OnMixerEvent();
         return;
     }
 }
@@ -354,19 +354,15 @@ int OService::UpdateMessageCallback(IOscMessage* msg) {
 }
 
 void OService::ProcessSelectMessage(int idx) {
-//    char path[32];
-//    
-//    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
-//
-//    if (m_tracks.find() == m_tracks.end())
-//        return;
-//    IOTrackView* st = m_tracks.at(path);
-//    if (st)
-//        SelectTrack(st->GetPath(), false);
+    char path[32];
+    
+    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
+
+    SelectTrack(path, true);
     return;
 }
 
-void OService::OnMessageEvent() {
+void OService::OnMixerEvent() {
 
     while (!my_messagequeue.empty()) {
         IOscMessage *msg;
@@ -375,12 +371,8 @@ void OService::OnMessageEvent() {
         IOTrackStore* ts = msg->GetTrackstore();
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
-            int upd = 0;
-//            IOTrackView * view = m_trackslayout.GetTrackview(ts->GetPath());
-            
-            if ((upd = ts->ProcessMsg(msg, m_backend->GetMillis()))) {
-//                PublishUiEvent(E_OPERATION::draw_trackview, view);
-            }
+            int upd = ts->ProcessMsg(msg, m_backend->GetMillis());
+        
             if (ts == m_project->GetTrackSelected()) {
                 switch(upd) {
                     case 1:
@@ -453,20 +445,18 @@ void OService::ToggleTrackRecord() {
 
 void OService::SelectTrack(std::string path, bool selected) {
     UnselectTrack();
-    IOTrackStore* sts = m_project->GetTrackSelected();
     if (selected) {
-        if (!sts) {
-            m_project->SelectTrack(path);
-            sts = sts = m_project->GetTrackSelected();
-        }
-        m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
-        m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
-        m_backend->ControllerShowSelect(true);
-        m_backend->ControllerShowRec(sts->IsRecording());
-        if (path.starts_with("/ch")) {
-            char idx[4] = {0, };
-            memcpy(idx, path.data()+4, 2);
-            m_mixer->SendInt("/-stat/selidx", atoi (idx)-1);
+        IOTrackStore* sts = m_project->SelectTrack(path);
+        if (sts) {
+            m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
+            m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
+            m_backend->ControllerShowSelect(true);
+            m_backend->ControllerShowRec(sts->IsRecording());
+            if (path.starts_with("/ch")) {
+                char idx[4] = {0, };
+                memcpy(idx, path.data()+4, 2);
+                m_mixer->SendInt("/-stat/selidx", atoi (idx)-1);
+            }
         }
     } else {
         
