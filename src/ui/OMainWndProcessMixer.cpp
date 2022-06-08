@@ -75,5 +75,10 @@ void OMainWnd::ProcessSelectMessage(int idx) {
 //    if (tv) {
 //        SelectTrack(path, true);
 //    }
+    char path[32];
+    
+    sprintf(path, "/ch/%02d/mix/fader", idx + 1);
+
+    SelectTrack(path, true);    
     return;
 }

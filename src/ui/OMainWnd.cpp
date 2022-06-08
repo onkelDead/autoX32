@@ -269,20 +269,18 @@ void OMainWnd::remove_track(std::string path) {
 
 void OMainWnd::SelectTrack(std::string path, bool selected) {
     UnselectTrack();
-    IOTrackStore* sts = m_project->GetTrackSelected();
     if (selected) {
-        if (!sts) {
-            m_project->SelectTrack(path);
-            sts = sts = m_project->GetTrackSelected();
-        }
-        m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
-        m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
-        m_backend->ControllerShowSelect(true);
-        m_backend->ControllerShowRec(sts->IsRecording());
-        if (path.starts_with("/ch")) {
-            char idx[4] = {0, };
-            memcpy(idx, path.data()+4, 2);
-            m_x32->SendInt("/-stat/selidx", atoi (idx)-1);
+        IOTrackStore* sts = m_project->SelectTrack(path);
+        if (sts) {
+            m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
+            m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
+            m_backend->ControllerShowSelect(true);
+            m_backend->ControllerShowRec(sts->IsRecording());
+            if (path.starts_with("/ch")) {
+                char idx[4] = {0, };
+                memcpy(idx, path.data()+4, 2);
+                m_mixer->SendInt("/-stat/selidx", atoi (idx)-1);
+            }
         }
     } else {
         
