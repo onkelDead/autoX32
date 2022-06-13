@@ -44,8 +44,8 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::stop, NULL);
                 break;
             case MMC_RESET:
-                m_daw.ShortMessage("/refresh");
-                m_daw.ShortMessage("/strip/list");
+                m_daw->ShortMessage("/refresh");
+                m_daw->ShortMessage("/strip/list");
                 break;
             case CTL_TEACH_ON:
                 PublishUiEvent(E_OPERATION::touch_on, NULL);
@@ -60,7 +60,7 @@ void OMainWnd::OnJackEvent() {
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);
                     m_MessageDispatcher.emit();                    
-                    m_x32->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+                    m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                 }
 
@@ -83,10 +83,10 @@ void OMainWnd::OnJackEvent() {
                 //                break;
                 //            case CTL_LOOP_CLEAR:
                 //                m_backend->SetLoopState(false);
-                //                m_daw.ClearRange();
+                //                m_daw->ClearRange();
                 //                break;
                 //            case CTL_TOGGLE_LOOP:
-                //                m_daw.ShortMessage("/loop_toggle");
+                //                m_daw->ShortMessage("/loop_toggle");
                 //                break;
             case CTL_HOME:
                 PublishUiEvent(E_OPERATION::home, NULL);
@@ -135,7 +135,7 @@ void OMainWnd::OnJackEvent() {
                 break;
             case CTL_LOOP:
                 m_backend->ControllerShowCycle();
-                m_daw.ShortMessage("/loop_toggle");
+                m_daw->ShortMessage("/loop_toggle");
                 break;
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;

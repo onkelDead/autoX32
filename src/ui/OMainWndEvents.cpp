@@ -196,13 +196,13 @@ void OMainWnd::on_btn_teach_clicked() {
 void OMainWnd::on_btn_loop_start_clicked() {
 
     m_timeview->SetLoopStart();
-    m_daw.SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd());
+    m_daw->SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd());
 }
 
 void OMainWnd::on_btn_loop_end_clicked() {
 
     m_timeview->SetLoopEnd();
-    m_daw.SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd(), m_project->GetPlaying());
+    m_daw->SetRange(m_timeview->GetLoopStart(), m_timeview->GetLoopEnd(), m_project->GetPlaying());
 }
 
 void OMainWnd::on_btn_zoom_loop_clicked() {
@@ -220,11 +220,11 @@ void OMainWnd::on_button_play_clicked() {
 
     if (!m_button_play->get_active()) {
         m_project->SetPlaying(false);
-        if (m_daw.GetLocation() != "" && m_project->GetDirty())
-            m_project->Save(m_daw.GetLocation());
+        if (m_daw->GetLocation() != "" && m_project->GetDirty())
+            m_project->Save(m_daw->GetLocation());
         m_trackslayout.StopRecord();
         if (!m_lock_play)
-            //m_daw.Stop();
+            //m_daw->Stop();
             m_backend->Stop();
         if (!m_shot_refresh && m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->thaw_updates();
@@ -232,7 +232,7 @@ void OMainWnd::on_button_play_clicked() {
     } else {
         m_project->SetPlaying(true);
         if (!m_lock_play)
-            //m_daw.Play();
+            //m_daw->Play();
             m_backend->Play();
         if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->freeze_updates();

@@ -46,8 +46,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     ApplyWindowSettings();
 
-    m_project = new OProject();
-
     create_view();
     create_menu();
     
@@ -58,11 +56,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     this->add_events(Gdk::KEY_RELEASE_MASK);
 
     create_about_dlg();
-
-    m_jackTimer.setInterval(10);
-    m_jackTimer.SetUserData(&m_jackTimer);
-    m_jackTimer.setFunc(this);
-    m_jackTimer.start();
 
     //m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
 
@@ -77,8 +70,7 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     show_all_children(true);
     queue_draw();
-    m_x32 = new OX32();
-    m_x32->SetMessageHandler(this);
+    m_mixer->SetMessageHandler(this);
 
     m_lock_play = false;
     m_lock_daw_time = false;
@@ -87,10 +79,8 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 }
 
 OMainWnd::~OMainWnd() {
-    m_daw.StopSessionMonitor();
-    if (m_x32)
-        delete (OX32*) m_x32;
-    delete m_project;
+    m_daw->StopSessionMonitor();
+
     if (m_timeview)
         delete m_timeview;
     delete m_bbox;
@@ -114,16 +104,16 @@ bool OMainWnd::SaveProject() {
     int result = dialog.run();
 
     if (result == Gtk::RESPONSE_YES) {
-        if (m_daw.GetLocation().length() == 0) {
+        if (m_daw->GetLocation().length() == 0) {
             if (SelectProjectLocation(true)) {
                 NewProject();
-                m_project->Save(m_daw.GetLocation());
+                m_project->Save(m_daw->GetLocation());
                 return true;
             } else {
                 return false;
             }
         } else {
-            m_project->Save(m_daw.GetLocation());
+            m_project->Save(m_daw->GetLocation());
             return true;
         }
     }
@@ -137,8 +127,8 @@ bool OMainWnd::Shutdown() {
             return ret_code;
     }
 
-    m_x32->Disconnect();
-    m_daw.Disconnect();
+    m_mixer->Disconnect();
+    m_daw->Disconnect();
 
     int width, height;
     get_size(width, height);
@@ -173,11 +163,11 @@ void OMainWnd::AutoConnect() {
 }
 
 bool OMainWnd::ConnectMixer(std::string host) {
-    if (m_x32->IsConnected()) {
-        m_x32->Disconnect();
+    if (m_mixer->IsConnected()) {
+        m_mixer->Disconnect();
     }
-    if (!m_x32->Connect(host)) {
-        m_project->SetMixer(m_x32);
+    if (!m_mixer->Connect(host)) {
+        m_project->SetMixer(m_mixer);
         m_lbl_x32->set_label("X32: connected");
         return true;
     }
@@ -187,11 +177,11 @@ bool OMainWnd::ConnectMixer(std::string host) {
 }
 
 bool OMainWnd::ConnectDaw(std::string ip, std::string port, std::string replyport) {
-    if (!m_daw.Connect(ip.data(), port.data(), replyport.data(), this)) {
+    if (!m_daw->Connect(ip.data(), port.data(), replyport.data(), this)) {
 
         m_button_play->set_sensitive(true);
         m_lbl_ardour->set_label("Ardour: connected");
-        m_daw.StartSessionMonitor();
+        m_daw->StartSessionMonitor();
         return true;
     }
     m_lbl_ardour->set_label("Ardour: disconnected");
@@ -224,8 +214,8 @@ int OMainWnd::OpenProject(std::string location) {
                 track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
                 ts->SetPlayhead(e);
                 PlayTrackEntry(ts, e);
-                ts->SetName(m_x32->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
-                ts->SetColor_index(m_x32->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
+                ts->SetColor_index(m_mixer->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
                 m_trackslayout.GetTrackview(ts->GetPath())->SetTrackName(ts->GetName());
             }
         }
@@ -233,7 +223,7 @@ int OMainWnd::OpenProject(std::string location) {
     
     m_trackslayout.show_all();
     UpdateDawTime(false);
-    m_daw.SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
+    m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
     on_btn_zoom_loop_clicked();
     //m_x32->WriteAll();
     return 0;
@@ -253,7 +243,7 @@ bool OMainWnd::SelectProjectLocation(bool n) {
     m_FileChooserDialog.add_button("_Select", Gtk::RESPONSE_OK);
 
     if (m_FileChooserDialog.run() == Gtk::RESPONSE_OK) {
-        m_daw.SetLocation(m_FileChooserDialog.get_filename());
+        m_daw->SetLocation(m_FileChooserDialog.get_filename());
         return true;
     }
     return false;
@@ -263,7 +253,7 @@ void OMainWnd::remove_track(std::string path) {
     printf("remove %s\n", path.data());
     m_trackslayout.RemoveTrackView(path);
     m_project->RemoveTrack(path);
-    m_x32->ReleaseCacheMessage(path);
+    m_mixer->ReleaseCacheMessage(path);
     //    m_project->RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
@@ -312,7 +302,7 @@ void OMainWnd::EditTrack(std::string path) {
 
     IOTrackStore* ts = m_project->GetTrack(path);
 
-    IOscMessage* nameMsg = m_x32->GetCachedMessage(ts->GetConfigRequestName());
+    IOscMessage* nameMsg = m_mixer->GetCachedMessage(ts->GetConfigRequestName());
     pDialog->SetName(nameMsg->GetVal(0)->GetString());
 
     //    IOscMessage* colorMsg = m_x32->GetCachedMessage(ts->GetConfigRequestColor());
@@ -322,7 +312,7 @@ void OMainWnd::EditTrack(std::string path) {
 
     pDialog->run();
     if (pDialog->GetResult()) {
-        m_x32->SendString(nameMsg->GetPath(), pDialog->GetName());
+        m_mixer->SendString(nameMsg->GetPath(), pDialog->GetName());
         m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
         //        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
         //        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
@@ -403,13 +393,13 @@ bool OMainWnd::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
     IOscMessage* cmd = trackstore->GetMessage();
     switch (cmd->GetTypes()[0]) {
         case 'f':
-            m_x32->SendFloat(cmd->GetPath(), entry->val.f);
+            m_mixer->SendFloat(cmd->GetPath(), entry->val.f);
             break;
         case 'i':
-            m_x32->SendInt(cmd->GetPath(), entry->val.i);
+            m_mixer->SendInt(cmd->GetPath(), entry->val.i);
             break;
         case 's':
-            m_x32->SendString(cmd->GetPath(), &entry->val.s);
+            m_mixer->SendString(cmd->GetPath(), &entry->val.s);
             break;            
     }
     return true;    

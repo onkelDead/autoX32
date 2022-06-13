@@ -24,43 +24,13 @@
 #include "OTrackStore.h"
 
 OService::OService() {
-    m_project = new OProject();
-    m_mixer = new OX32();
-    m_daw = new ODAW();
-    m_backend = new OJack(&m_config);
-    m_project->SetMixer(m_mixer);
     
-    m_jackTimer.setInterval(10);
-    m_jackTimer.SetUserData(&m_jackTimer);
-    m_jackTimer.setFunc(this);
-    m_jackTimer.start();    
 }
 
 OService::OService(const OService& orig) {
 }
 
 OService::~OService() {
-    if (m_mixer) {
-        m_mixer->Disconnect();
-        delete m_mixer;
-        m_mixer = nullptr;
-    }
-    if (m_daw) {
-        m_daw->Disconnect();
-        delete m_daw;
-        m_daw = nullptr;
-    }
-    if (m_backend) {
-        m_jackTimer.stop();
-        m_backend->Disconnect();
-        delete m_backend;
-        m_backend = nullptr;
-    }
-    if (m_project) {
-        m_project->Close();
-        delete m_project;
-        m_project = nullptr;
-    }
 }
 
 int OService::InitMixer() {

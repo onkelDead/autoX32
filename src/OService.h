@@ -24,6 +24,7 @@
 #include <map>
 #include <vector>
 
+#include "OEngine.h"
 #include "IOProject.h"
 #include "IODawHandler.h"
 #include "IOJackHandler.h"
@@ -33,7 +34,7 @@
 #include "OQueue.h"
 #include "OTimer.h"
 
-class OService : public IODawHandler, public IOTimerEvent, public IOJackHandler, public IOMessageHandler {
+class OService : public OEngine, public IODawHandler, public IOJackHandler, public IOMessageHandler {
 public:
     OService();
     OService(const OService& orig);
@@ -72,14 +73,8 @@ public:
     
 private:
     
-    OConfig m_config;
     
-    IOMixer* m_mixer = nullptr;
-    ODAW* m_daw = nullptr;
-    IOBackend* m_backend = nullptr;
-    OTimer m_jackTimer;
     OTimer m_dawTimer;
-    IOProject* m_project = nullptr;
 
     std::atomic<bool> m_active = false;
     
@@ -91,7 +86,6 @@ private:
 
     OQueue<IOscMessage*> my_messagequeue;
     OQueue<DAW_PATH> my_dawqueue;
-    OQueue<JACK_EVENT> m_jackqueue;
     
     void SetRecord(bool val);
     

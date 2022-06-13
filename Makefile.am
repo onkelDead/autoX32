@@ -27,6 +27,7 @@ autoX32_SOURCES = \
     src/OTrackStore.cpp \
     src/OProject.cpp \
     src/OService.cpp \
+    src/OEngine.cpp \
     src/backend/OscMessage.cpp \
     src/backend/OscValue.cpp \
     src/backend/OscCache.cpp \
@@ -67,6 +68,7 @@ noinst_HEADERS = \
     src/OTrackStore.h \
     src/backend/ODAW.h \
     src/OProject.h \
+    src/OEngine.h \
     src/dlg/OTrackDlg.h \
     src/dlg/OConnectDlg.h \
     src/dlg/ODlgPrefs.h \

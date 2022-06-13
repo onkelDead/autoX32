@@ -27,31 +27,31 @@ void OMainWnd::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
-                m_project->SetMaxMillis(m_daw.GetMaxMillis());
-                m_project->SetBitRate(m_daw.GetBitRate());
+                m_project->SetMaxMillis(m_daw->GetMaxMillis());
+                m_project->SetBitRate(m_daw->GetBitRate());
                 UpdateDawTime(false);
                 m_timeview->SetZoomLoop();
                 break;
             case DAW_PATH::samples:
-                m_backend->SetFrame(m_daw.GetSample() / 400);
+                m_backend->SetFrame(m_daw->GetSample() / 400);
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 UpdatePos(m_backend->GetMillis(), true);
                 UpdatePlayhead(true);
 
                 break;
             case DAW_PATH::session:
-                m_x32->PauseCallbackHandler(true);
-                if (!OpenProject(m_daw.GetLocation())) {
-                    std::cout << "OMainWnd: Load session " << m_daw.GetProjectFile() << std::endl;
-                    m_x32->WriteAll();
+                m_mixer->PauseCallbackHandler(true);
+                if (!OpenProject(m_daw->GetLocation())) {
+                    std::cout << "OMainWnd: Load session " << m_daw->GetProjectFile() << std::endl;
+                    m_mixer->WriteAll();
                 }
                 else {
-                    std::cout << "OService: no session " << m_daw.GetProjectFile() <<  ", -> created." << std::endl;
-                    m_x32->ReadAll();
-                    m_project->Save(m_daw.GetLocation());
+                    std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
+                    m_mixer->ReadAll();
+                    m_project->Save(m_daw->GetLocation());
                 }
-                m_x32->PauseCallbackHandler(false);
-                set_title("autoX32 - [" + m_daw.GetLocation() + "]");
+                m_mixer->PauseCallbackHandler(false);
+                set_title("autoX32 - [" + m_daw->GetLocation() + "]");
                 break;
                 
             default:
@@ -81,11 +81,11 @@ void OMainWnd::GetTrackConfig(IOTrackStore* trackstore){
     std::string conf_name = trackstore->GetConfigRequestName();
     
         
-    m_x32->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
-    m_x32->Send(conf_name);
+    m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);
     conf_name = trackstore->GetConfigRequestColor();
-    m_x32->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
-    m_x32->Send(conf_name);
+    m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);
 }
 
 void OMainWnd::OnOperation() {
@@ -107,8 +107,8 @@ void OMainWnd::OnOperation() {
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
                     trackview->SetRecord(true);
-                    trackstore->SetName(m_x32->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
-                    trackstore->SetColor_index(m_x32->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                    trackstore->SetName(m_mixer->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
+                    trackstore->SetColor_index(m_mixer->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
                     trackview->SetTrackName(trackstore->GetName());
                     trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);

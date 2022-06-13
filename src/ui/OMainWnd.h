@@ -21,6 +21,7 @@
 #include <giomm/settingsschemasource.h>
 #include <gtkmm/widget.h>
 
+#include "OEngine.h"
 
 #include "IOMainWnd.h"
 #include "IOMessageHandler.h"
@@ -47,7 +48,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OMainWnd : public Gtk::Window, IOMainWnd, IOMessageHandler, IOTimerEvent, IODawHandler, IOJackHandler {
+class OMainWnd : public Gtk::Window, public OEngine, IOMainWnd, IOMessageHandler, IODawHandler, IOJackHandler {
 public:
     OMainWnd();
     virtual ~OMainWnd();
@@ -150,7 +151,6 @@ protected:
 
 private:
 
-    OConfig m_config;
     //Glib::RefPtr<Gio::Settings> settings;
 
     Glib::RefPtr<Gtk::ActionGroup> m_refActionGroup;
@@ -232,10 +232,7 @@ private:
     Glib::Dispatcher m_DawDispatcher;
     OQueue<DAW_PATH> my_dawqueue;
     Glib::Dispatcher m_JackDispatcher;
-    OQueue<JACK_EVENT> m_jackqueue;
     
-    OTimer m_jackTimer;
-
     Glib::Dispatcher m_MessageDispatcher;
     OQueue<IOscMessage*> my_messagequeue;
 
@@ -244,9 +241,6 @@ private:
     OQueue<operation_t*> m_queue_operation;
 
     /// objects
-    IOProject *m_project;
-    IOMixer* m_x32 = nullptr;
-    ODAW m_daw;
     IOBackend* m_backend = nullptr;
 
     int m_last_playhead_update = 0;
