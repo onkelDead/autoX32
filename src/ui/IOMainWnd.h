@@ -26,7 +26,7 @@ public:
     virtual ~IOMainWnd(){}
     virtual void notify_overview() = 0;
     virtual void remove_track(std::string path) = 0;
-    virtual void SelectTrack(std::string, bool) = 0;
+    virtual void SelectTrackUI(std::string, bool) = 0;
     virtual int GetPosMillis() = 0;
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;

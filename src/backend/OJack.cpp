@@ -229,17 +229,19 @@ int OJack::Connect(IOJackHandler* wnd) {
     ctl_in_port = jack_port_register(m_jack_client, ONKEL_C_IN_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_out_port = jack_port_register(m_jack_client, ONKEL_C_OUT_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
-
-
     if (jack_activate(m_jack_client)) {
         std::cerr << "cannot activate client: errorcode " << errcode << std::endl;
         return 1;
     }
 
-    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0) 
+    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0) {
         std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_IN_PORT_NAME << " failed with error code " << errcode << std::endl;
-    if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0)
+//        return 1;
+    }
+    if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0) {
         std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << " failed with error code " << errcode << std::endl;
+//        return 1;
+    }
 
     ControllerShowStop();
     ControllerShowTeachOff();

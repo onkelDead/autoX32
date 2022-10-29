@@ -67,9 +67,7 @@ public:
     int InitBackend();
     
     void StartProcessing();
-    
-    void SelectTrack(std::string, bool);
-    void UnselectTrack();    
+   
     
 private:
     

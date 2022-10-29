@@ -47,6 +47,7 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
     if (m_server == nullptr) {
         m_server = lo_server_thread_new(replyport, daw_err_handler);
         if (m_server == NULL) {
+            std::cerr << "Ardour::Connect failed" << std::endl;
             return 1;
         }
         lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
@@ -133,7 +134,6 @@ void ODAW::ShortMessage(const char *cmd) {
 }
 
 void ODAW::SetRange(int start, int end, bool enable) {
-    std::cout << "ODAW::SetRange() " << start << " : "<< end << std::endl;
 
     long sample_start = ((long) start ) / 12 * m_bitrate;
     long sample_end = ((long) end ) / 12 * m_bitrate;
@@ -141,7 +141,6 @@ void ODAW::SetRange(int start, int end, bool enable) {
     lo_message msg = lo_message_new();
     lo_message_add_int32(msg, (uint32_t) sample_start);
     lo_message_add_int32(msg, (uint32_t) sample_end);
-    std::cout << "ODAW::SetRange() " << sample_start << " : "<< sample_end << std::endl;
     int ret = lo_send_message(m_client, "/loop_location", msg);
     if (ret == -1) {
         fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));

@@ -47,6 +47,7 @@ public:
     int Connect(std::string);
     int Disconnect();
 
+    int Start();
 
     int IsConnected();
 

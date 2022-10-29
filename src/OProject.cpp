@@ -1,5 +1,5 @@
 /*
-  Copyright 2020 Detlef Urban <onkel@paraair.de>
+  Copyright 2020 Detlef Ursn <onkel@paraair.de>
 
   Permission to use, copy, modify, and/or distribute this software for any
   purpose with or without fee is hereby granted, provided that the above
@@ -316,12 +316,6 @@ void OProject::UpdatePos(int current, bool seek) {
         IOTrackStore* ts = it->second;
 
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
-        
-        // update controller fader
-//        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetPath());
-//        if (ret_code && view && view->GetSelected()) {
-//            m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
-//        }
     }    
 }
 

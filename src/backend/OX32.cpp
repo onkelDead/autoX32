@@ -30,6 +30,15 @@ OX32::~OX32() {
     m_timer.stop();
 }
 
+int OX32::Start() {
+
+    m_timer.SetUserData(NULL);
+    m_timer.setFunc(this);
+    m_timer.setInterval(1000);
+    m_timer.start();   
+    return 0;
+}
+
 int OX32::Connect(std::string host) {
     int p_status; // poll status
 
@@ -96,10 +105,6 @@ int OX32::Connect(std::string host) {
     }
     m_IsConnected = 1;
 
-    m_timer.SetUserData(NULL);
-    m_timer.setFunc(this);
-    m_timer.setInterval(1000);
-    m_timer.start();
 
     m_WorkerThread = new std::thread([this] {
         do_work(this);

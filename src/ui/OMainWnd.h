@@ -132,9 +132,8 @@ public:
     void UpdatePlayhead(bool doCalc);
     bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
     
-    void SelectTrack(std::string, bool);
+    void SelectTrackUI(std::string, bool);
     void EditTrack(std::string);
-    void UnselectTrack();
     void ToggleSolo();
     void TrackViewUp(std::string path);    
     void TrackViewDown(std::string path);

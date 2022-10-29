@@ -343,14 +343,7 @@ int process_mtc_event(uint8_t* data, IOBackend* backend) {
 
     if (data[0] == 0xf1) {
         backend->QuarterFrame(data[1]);
-//        if (backend->GetMidiMtc()->m_edge_sec == 1) {
-//            backend->Notify(MTC_QUARTER_FRAME_SEC);
-//        }
-//        if (backend->GetMidiMtc()->m_edge_sec == 2) {
-//            backend->Notify(MTC_QUARTER_FRAME_SEC1);
-//            backend->GetMidiMtc()->m_edge_sec = 0;
-//        } else
-            backend->Notify(MTC_QUARTER_FRAME);
+        backend->Notify(MTC_QUARTER_FRAME);
     } else if (data[0] == 0xf0) {
         backend->GetMidiMtc()->FullFrame(data);
         backend->Notify(MTC_COMPLETE);

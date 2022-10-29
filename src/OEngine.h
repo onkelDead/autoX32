@@ -14,12 +14,13 @@
 #ifndef OENGINE_H
 #define OENGINE_H
 
+#include "IOEngine.h"
 #include "IOProject.h"
 #include "ODAW.h"
 #include "IOMixer.h"
 #include "IOBackend.h"
 
-class OEngine : public IOTimerEvent{
+class OEngine : public IOEngine, public IOTimerEvent{
 public:
     OEngine();
     OEngine(const OEngine& orig);
@@ -36,6 +37,8 @@ protected:
     OTimer m_jackTimer;
     OQueue<JACK_EVENT> m_jackqueue;
     
+    void SelectTrack(std::string, bool);
+    void UnselectTrack();     
 private:
 };
 

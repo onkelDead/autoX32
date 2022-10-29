@@ -34,6 +34,8 @@ public:
     virtual int Disconnect() = 0;
     virtual int IsConnected() = 0;
 
+    virtual int Start() = 0;
+    
     virtual void SetMessageHandler(IOMessageHandler* MessageHandler) = 0;
     virtual void PauseCallbackHandler(bool) = 0;
     

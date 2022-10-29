@@ -55,9 +55,6 @@ int OService::InitDaw() {
         delete m_daw;
         return 1;
     }    
-    
-    
-    
     std::cout << "DAW initialized." << std::endl;
     return 0;
 }
@@ -94,8 +91,8 @@ void OService::OnDawEvent() {
                 break;
             case DAW_PATH::session:
                 m_mixer->PauseCallbackHandler(true);
+                std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
                 if (!m_project->Load(m_daw->GetLocation())) {
-                    std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
                     m_mixer->WriteAll();
                     std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
                     for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
@@ -120,14 +117,22 @@ void OService::OnDawEvent() {
 }
 
 void OService::StartProcessing() {
+    m_mixer->Start();
+    
+    m_jackTimer.setInterval(10);
+    m_jackTimer.SetUserData(&m_jackTimer);
+    m_jackTimer.setFunc(this);
+    m_jackTimer.start();    
+    
     m_daw->StartSessionMonitor();
     m_active = true;
 
+    m_backend->ControlerShowMtcComplete(0);
     m_backend->ControllerShowActive(true);
     
     std::cout << "Processing started." << std::endl;
     while(m_active) {
-        sleep(1);
+        usleep(10000);
     }
     std::cout << "Processing ended." << std::endl;
     
@@ -136,6 +141,9 @@ void OService::StartProcessing() {
     UnselectTrack();
     
     m_backend->ControllerShowActive(false);
+    m_backend->ControllerShowRec(false);
+    m_backend->ControllerShowTeachMode(false);
+    m_backend->ControllerShowTeachOff();
     
     m_jackTimer.stop();
     m_dawTimer.stop();
@@ -171,6 +179,9 @@ void OService::OnJackEvent() {
                 } else {
                     m_project->UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
+                    if (m_project->GetTrackSelected() != nullptr) {
+                        m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
+                    }
                 }
                 break;
             case CTL_PLAY:
@@ -411,38 +422,4 @@ void OService::ToggleTrackRecord() {
     bool isRec = m_project->GetTrackSelected()->IsRecording();
     m_project->GetTrackSelected()->SetRecording(!isRec);
     m_backend->ControllerShowRec(!isRec);
-}
-
-void OService::SelectTrack(std::string path, bool selected) {
-    UnselectTrack();
-    if (selected) {
-        IOTrackStore* sts = m_project->SelectTrack(path);
-        if (sts) {
-            m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
-            m_backend->ControllerShowLCDName(sts->GetName(), sts->GetColor_index());
-            m_backend->ControllerShowSelect(true);
-            m_backend->ControllerShowRec(sts->IsRecording());
-            if (path.starts_with("/ch")) {
-                char idx[4] = {0, };
-                memcpy(idx, path.data()+4, 2);
-                m_mixer->SendInt("/-stat/selidx", atoi (idx)-1);
-            }
-        }
-    } else {
-        
-        m_backend->ControllerShowLCDName("", 0);
-        m_backend->ControllerShowSelect(false);
-        m_backend->ControllerShowRec(false);
-    }
-}
-
-void OService::UnselectTrack() {
-    IOTrackStore* sts = m_project->GetTrackSelected();
-    
-    if (!sts) return;
-    
-    std::string path = sts->GetPath();
-    m_project->UnselectTrack();
-    m_backend->ControllerShowLCDName("", 0);
-    m_backend->ControllerShowSelect(false);
 }
