@@ -25,15 +25,9 @@
 #include "res/autoX32.h"
 #include "res/trackdlg.h"
 
-static void on_jack_event(void *obj) {
-    OMainWnd* wnd = (OMainWnd*) obj;
-    wnd->OnJackEvent();
-    //    wnd->OnMixerEvent();
-}
-
 void OMainWnd::OnTimer(void* user_data)  {
     if (user_data == &m_jackTimer) {
-        on_jack_event(this);
+        OnJackEvent();
         return;
     }
 }
@@ -92,6 +86,13 @@ void OMainWnd::on_activate() {
         exit(1);
     }
     AutoConnect();
+    
+    m_mixer->Start();
+        
+    m_jackTimer.setInterval(10);
+    m_jackTimer.SetUserData(&m_jackTimer);
+    m_jackTimer.setFunc(this);
+    m_jackTimer.start();  
 }
 
 OConfig* OMainWnd::GetConfig() {
@@ -127,6 +128,12 @@ bool OMainWnd::Shutdown() {
             return ret_code;
     }
 
+    m_backend->ControllerShowActive(false);
+    m_backend->ControllerShowRec(false);
+    m_backend->ControllerShowTeachMode(false);
+    m_backend->ControllerShowTeachOff();
+    m_backend->ControllerShowLevel(0.0);
+    
     m_mixer->Disconnect();
     m_daw->Disconnect();
 
@@ -322,7 +329,7 @@ bool OMainWnd::SetupBackend() {
             m_backend = new OAlsa();
             break;
         case 1:
-            m_backend = new OJack(GetConfig());
+            //m_backend = new OJack(GetConfig());
             break;
         default:
             return 0;

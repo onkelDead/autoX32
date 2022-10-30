@@ -87,4 +87,5 @@ void OEngine::UnselectTrack() {
     m_project->UnselectTrack();
     m_backend->ControllerShowLCDName("", 0);
     m_backend->ControllerShowSelect(false);
+    m_backend->ControllerShowRec(false);
 }

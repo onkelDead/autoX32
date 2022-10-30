@@ -309,14 +309,18 @@ std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
 
-void OProject::UpdatePos(int current, bool seek) {
-    bool ret_code = false;
+IOTrackStore* OProject::UpdatePos(int current, bool seek) {
+    IOTrackStore*  sel_ts = nullptr;
 
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
 
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
+        if (ts == m_selectedTrack) {
+            sel_ts = ts;
+        }
     }    
+    return sel_ts;
 }
 
 bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {

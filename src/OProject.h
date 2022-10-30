@@ -39,7 +39,7 @@ public:
     int Load(std::string location);
     void Close();
     
-    void UpdatePos(int current, bool seek);
+    IOTrackStore* UpdatePos(int current, bool seek);
     bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
     void StopRecord();
     

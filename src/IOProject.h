@@ -35,7 +35,7 @@ public:
     virtual IOTrackStore* NewTrack(IOscMessage*) = 0;
     virtual void RemoveTrack(std::string path) = 0;
 
-    virtual void UpdatePos(int current, bool seek) = 0;
+    virtual IOTrackStore* UpdatePos(int current, bool seek) = 0;
     virtual bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) = 0;
     virtual void StopRecord() = 0;
     virtual bool GetPlaying() = 0;

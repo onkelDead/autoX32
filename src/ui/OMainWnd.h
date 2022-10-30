@@ -240,7 +240,7 @@ private:
     OQueue<operation_t*> m_queue_operation;
 
     /// objects
-    IOBackend* m_backend = nullptr;
+    //IOBackend* m_backend = nullptr;
 
     int m_last_playhead_update = 0;
     int m_last_pos_update = 0;

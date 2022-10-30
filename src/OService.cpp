@@ -87,6 +87,7 @@ void OService::OnDawEvent() {
                 if (m_backend) {
                     m_backend->SetFrame(m_daw->GetSample() / 400);
                     m_project->UpdatePos(m_backend->GetMillis(), true);
+                    m_backend->ControlerShowMtcComplete(0);
                 }
                 break;
             case DAW_PATH::session:
@@ -144,6 +145,7 @@ void OService::StartProcessing() {
     m_backend->ControllerShowRec(false);
     m_backend->ControllerShowTeachMode(false);
     m_backend->ControllerShowTeachOff();
+    m_backend->ControllerShowLevel(0.0);
     
     m_jackTimer.stop();
     m_dawTimer.stop();
@@ -174,15 +176,18 @@ void OService::OnJackEvent() {
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
+            {
+                IOTrackStore* sel_ts = nullptr;
                 if (event != MTC_COMPLETE) {
-                    m_project->UpdatePos(m_backend->GetMillis(), false);
+                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), false);
                 } else {
-                    m_project->UpdatePos(m_backend->GetMillis(), true);
+                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
-                    if (m_project->GetTrackSelected() != nullptr) {
-                        m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
-                    }
                 }
+                if (sel_ts != nullptr) {
+                    m_backend->ControllerShowLevel(sel_ts->GetPlayhead()->val.f);
+                }
+            }
                 break;
             case CTL_PLAY:
             case MMC_PLAY:

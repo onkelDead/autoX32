@@ -107,7 +107,7 @@ static int process(jack_nframes_t nframes, void *arg) {
         doShuffle = false;
     }
 
-    while (!jack->ctl_out.empty()) {
+    if (!jack->ctl_out.empty()) {
         ctl_command* c;
         jack->ctl_out.front_pop(&c);
         unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, c->len);

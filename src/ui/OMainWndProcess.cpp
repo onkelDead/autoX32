@@ -37,7 +37,7 @@ void OMainWnd::OnDawEvent() {
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
                 UpdatePos(m_backend->GetMillis(), true);
                 UpdatePlayhead(true);
-
+                m_backend->ControlerShowMtcComplete(0);
                 break;
             case DAW_PATH::session:
                 m_mixer->PauseCallbackHandler(true);
