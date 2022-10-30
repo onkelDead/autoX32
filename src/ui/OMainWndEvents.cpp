@@ -223,17 +223,13 @@ void OMainWnd::on_button_play_clicked() {
         if (m_daw->GetLocation() != "" && m_project->GetDirty())
             m_project->Save(m_daw->GetLocation());
         m_trackslayout.StopRecord();
-        if (!m_lock_play)
-            //m_daw->Stop();
-            m_backend->Stop();
+        m_backend->Stop();
         if (!m_shot_refresh && m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->thaw_updates();
         m_shot_refresh = 0;
     } else {
         m_project->SetPlaying(true);
-        if (!m_lock_play)
-            //m_daw->Play();
-            m_backend->Play();
+        m_backend->Play();
         if (m_config.get_boolean(SETTING_SMOOTH_SCREEN))
             this->get_window()->freeze_updates();
     }

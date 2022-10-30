@@ -27,14 +27,20 @@ void OMainWnd::OnJackEvent() {
         switch (event) {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
+            {
+                IOTrackStore* sel_ts = nullptr;
                 if (event != MTC_COMPLETE) {
-                    UpdatePos(m_backend->GetMillis(), false);
+                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), false);
                 } else {
-                    UpdatePos(m_backend->GetMillis(), true);
+                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
+                if (sel_ts != nullptr) {
+                    m_backend->ControllerShowLevel(sel_ts->GetPlayhead()->val.f);
+                }
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
-                break;
+            }      
+               break;
             case CTL_PLAY:
             case MMC_PLAY:
                 PublishUiEvent(E_OPERATION::play, NULL);

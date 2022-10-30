@@ -176,6 +176,7 @@ void OMainWnd::OnOperation() {
                 if (sts) {
                     sts->SetRecording(!sts->IsRecording());
                     m_backend->ControllerShowRec(sts->IsRecording());
+                    m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(sts->IsRecording());
                 }
             }
                 break;  

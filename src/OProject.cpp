@@ -316,6 +316,7 @@ IOTrackStore* OProject::UpdatePos(int current, bool seek) {
         IOTrackStore* ts = it->second;
 
         PlayTrackEntry(ts, ts->UpdatePos(current, seek));
+        
         if (ts == m_selectedTrack) {
             sel_ts = ts;
         }
