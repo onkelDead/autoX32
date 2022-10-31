@@ -94,7 +94,7 @@ public:
     void OnMessageEvent();
     void OnMixerEvent();
     void OnOverViewEvent();
-    void OnOperation();
+    void OnUIOperation();
     void GetTrackConfig(IOTrackStore* trackstore);
     void OnTimer(void*);
     

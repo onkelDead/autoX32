@@ -60,7 +60,7 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
-    m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOperation));
+    m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnUIOperation));
 
     show_all_children(true);
     queue_draw();

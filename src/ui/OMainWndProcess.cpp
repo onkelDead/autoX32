@@ -88,7 +88,7 @@ void OMainWnd::GetTrackConfig(IOTrackStore* trackstore){
     m_mixer->Send(conf_name);
 }
 
-void OMainWnd::OnOperation() {
+void OMainWnd::OnUIOperation() {
     operation_t *op;
     m_queue_operation.front_pop(&op);
     if (op) {
