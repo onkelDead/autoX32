@@ -116,8 +116,6 @@ public:
 
     gint GetPosMillis();
     
-    void UpdatePos(gint current, bool jump);
-
     void NewProject();    
     void NewProject(std::string);
 

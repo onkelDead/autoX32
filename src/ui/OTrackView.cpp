@@ -99,9 +99,8 @@ OTrackView::~OTrackView() {
 }
 
 void OTrackView::on_button_x32_rec_clicked() {
-    m_btn_x32_rec->show_all();
     m_trackdraw->SetRecord(m_btn_x32_rec->get_active());
-    m_parent->PublishUiEvent(E_OPERATION::toggle_recview, this);
+    m_parent->PublishUiEvent(E_OPERATION::toggle_recview, m_trackdraw->GetTrackStore());
 }
 
 void OTrackView::SetTrackStore(IOTrackStore *trackstore) {
@@ -113,11 +112,6 @@ void OTrackView::SetTrackStore(IOTrackStore *trackstore) {
 IOTrackStore* OTrackView::GetTrackStore() {
     return m_trackdraw->GetTrackStore();
 }
-
-//IOscMessage* OTrackView::GetMessage() {
-//
-//    return m_trackdraw->GetMessage();
-//}
 
 void OTrackView::SetTrackName(std::string name) {
     m_label->set_text(name);
@@ -135,10 +129,6 @@ void OTrackView::SetTrackColor(int c) {
 
 void OTrackView::SetRecord(bool val) {
     m_btn_x32_rec->set_active(val);
-}
-
-bool OTrackView::GetRecord() {
-    return m_btn_x32_rec->get_active();
 }
 
 bool OTrackView::on_button_press_event(GdkEventButton *event) {

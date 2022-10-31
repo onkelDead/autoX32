@@ -344,23 +344,6 @@ gint OMainWnd::GetPosMillis() {
     return m_backend->GetMillis();
 }
 
-void OMainWnd::UpdatePos(gint current, bool seek) {
-    bool ret_code = false;
-
-    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
-    for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-        IOTrackStore* ts = it->second;
-
-        PlayTrackEntry(ts, ts->UpdatePos(current, seek));
-        
-        // update controller fader
-        IOTrackView* view = m_trackslayout.GetTrackview(ts->GetPath());
-        if (ret_code && view && view->GetSelected()) {
-            m_backend->ControllerShowLevel(ts->GetPlayhead()->val.f);
-        }
-    }
-}
-
 bool OMainWnd::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
     if (entry == nullptr || trackstore == nullptr)
         return false;

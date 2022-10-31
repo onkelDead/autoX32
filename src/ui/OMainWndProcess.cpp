@@ -35,7 +35,7 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::samples:
                 m_backend->SetFrame(m_daw->GetSample() / 400);
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
-                UpdatePos(m_backend->GetMillis(), true);
+                m_project->UpdatePos(m_backend->GetMillis(), true);
                 UpdatePlayhead(true);
                 m_backend->ControlerShowMtcComplete(0);
                 break;
@@ -174,18 +174,19 @@ void OMainWnd::OnOperation() {
             {
                 IOTrackStore *sts = m_project->GetTrackSelected();
                 if (sts) {
-                    sts->SetRecording(!sts->IsRecording());
-                    m_backend->ControllerShowRec(sts->IsRecording());
-                    m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(sts->IsRecording());
+                    if (sts->SetRecording(!sts->IsRecording())) {
+                        m_backend->ControllerShowRec(sts->IsRecording());
+                        m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(sts->IsRecording());
+                    }
                 }
             }
                 break;  
             case E_OPERATION::toggle_recview:
             {
-                IOTrackStore *sts = m_project->GetTrackSelected();
-                
-                if (sts != nullptr && ((OTrackView*)op->context) == m_trackslayout.GetTrackview(sts->GetPath()))
-                    m_backend->ControllerShowRec(sts->IsRecording());   
+                IOTrackStore *sts = (IOTrackStore*)op->context;
+                if (m_project->GetTrackSelected() == sts) {
+                    m_backend->ControllerShowRec(sts->IsRecording());
+                }
             }
                 break;
             case E_OPERATION::jump_forward:

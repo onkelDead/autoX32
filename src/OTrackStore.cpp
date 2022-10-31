@@ -318,3 +318,18 @@ void OTrackStore::EvalFileName() {
     free(s);
     sprintf(m_file_name, "%s.dat", x);
 }
+
+bool OTrackStore::SetRecording(bool val) {
+    
+    bool ret_val = false;
+    if (val != m_record) {
+        m_record = val;
+        ret_val = true;
+    }
+    std::cout << "SetRecord " << GetPath() << " to " << val << std::endl;
+    return ret_val;
+}
+
+bool OTrackStore::ToggleRecord() {
+    return SetRecording(!m_record);
+}

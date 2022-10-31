@@ -192,11 +192,13 @@ void OService::OnJackEvent() {
             case CTL_PLAY:
             case MMC_PLAY:
                 m_backend->Play();
+                m_project->SetPlaying(true);
                 m_playing = true;
                 break;
             case CTL_STOP:
             case MMC_STOP:
                 m_backend->Stop();
+                m_project->SetPlaying(false);
                 m_playing = false;
                 break;
             case MMC_RESET:
@@ -377,7 +379,7 @@ void OService::OnMixerEvent() {
                 IOTrackStore *trackstore = m_project->NewTrack(msg);
                 msg->SetTrackstore(trackstore);    
                 trackstore->SetPlaying(m_playing);
-                trackstore->SetRecording(m_playing);
+                trackstore->SetRecording(m_record);
                 std::string conf_name = trackstore->GetConfigRequestName();
                 m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
                 m_mixer->Send(conf_name);

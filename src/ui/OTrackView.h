@@ -44,7 +44,6 @@ public:
     void on_button_x32_rec_clicked();
     
     void SetRecord(bool);
-    bool GetRecord();
     
     void SetSelected(bool);
     bool GetSelected() { return m_trackdraw->GetSelected(); }

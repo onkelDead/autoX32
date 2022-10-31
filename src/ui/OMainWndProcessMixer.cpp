@@ -22,7 +22,6 @@ void OMainWnd::OnMessageEvent() {
             
             if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
-                //PublishUiEvent(E_OPERATION::draw_trackview, view);
             }
             switch(upd) {
                 case 2:

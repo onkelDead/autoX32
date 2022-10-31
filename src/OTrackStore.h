@@ -58,9 +58,8 @@ public:
         return m_record;
     }
 
-    inline void SetRecording(bool val) {
-        m_record = val;
-    }
+    inline bool SetRecording(bool val);
+    inline bool ToggleRecord();
 
     inline bool IsDirty() {
         return m_dirty;
