@@ -292,10 +292,10 @@ void OProject::SetPlaying(bool val) {
 }
 
 void OProject::StopRecord() {
-        for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
-            IOTrackStore* ts = it->second;
-            ts->SetRecording(false);
-        }        
+    for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
+        IOTrackStore* ts = it->second;
+        ts->SetRecording(false);
+    }        
 }
 
 IOTrackStore* OProject::GetTrack(std::string path) {

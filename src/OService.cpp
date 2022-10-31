@@ -197,8 +197,20 @@ void OService::OnJackEvent() {
                 break;
             case CTL_STOP:
             case MMC_STOP:
+            {
                 m_backend->Stop();
                 m_project->SetPlaying(false);
+                std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
+                for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+                    IOTrackStore* ts = it->second;
+                    if (ts->IsRecording()) {
+                            ts->SetRecording(false);
+                            if (m_project->GetTrackSelected() == ts) {
+                                m_backend->ControllerShowRec(false);
+                            }
+                        }
+                    }
+            }
                 m_playing = false;
                 break;
             case MMC_RESET:
@@ -240,7 +252,13 @@ void OService::OnJackEvent() {
 
                 break;
             case CTL_TOUCH_RELEASE:
-                //PublishUiEvent(E_OPERATION::touch_release, NULL);
+            {
+                IOTrackStore* sts = m_project->GetTrackSelected();
+                if (sts != nullptr && sts->IsRecording()) {
+                    sts->SetRecording(false);
+                    m_backend->ControllerShowRec(false);
+                }
+            }
                 break;
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;

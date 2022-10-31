@@ -68,7 +68,8 @@ void OTracksLayout::redraw() {
 
 void OTracksLayout::StopRecord() {
     for (OTrackView* list : m_tracklist) { 
-        list->SetRecord(false);
+        if (list->GetTrackStore()->IsRecording())
+            list->SetRecord(false);
     }
 }
 

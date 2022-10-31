@@ -135,6 +135,7 @@ void OMainWnd::OnOperation() {
             case E_OPERATION::stop:
                 m_button_play->set_active(false);
                 m_backend->ControllerShowStop();
+                m_trackslayout.StopRecord();
                 break;
             case E_OPERATION::touch_on:
                 if (m_teach_mode) {
@@ -202,12 +203,17 @@ void OMainWnd::OnOperation() {
                     m_backend->Locate(m_backend->GetMillis() - 120);
                 break;
             case E_OPERATION::touch_release:
+            {
                 if (m_btn_teach->get_active()) {
                     m_btn_teach->set_active(false);
                 }
-                if (m_project->GetTrackSelected() != nullptr && m_project->GetTrackSelected()->IsRecording()) {
-                    m_project->GetTrackSelected()->SetRecording(false);
+                IOTrackStore* sts = m_project->GetTrackSelected();
+                if (sts != nullptr && sts->IsRecording()) {
+                    sts->SetRecording(false);
+                    m_backend->ControllerShowRec(false);
+                    m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(false);
                 }
+            }
                 break;
             default:
                 break;
