@@ -16,6 +16,7 @@
 
 #include <string.h>
 #include <filesystem>
+#include <regex>
 
 #include "OService.h"
 #include "OX32.h"
@@ -392,18 +393,21 @@ void OService::OnMixerEvent() {
             }
         }
         else {
-            if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview 
-                std::cout << "OService::OnMessageEvent new track " << msg->GetPath() << std::endl;
-                IOTrackStore *trackstore = m_project->NewTrack(msg);
-                msg->SetTrackstore(trackstore);    
-                trackstore->SetPlaying(m_playing);
-                trackstore->SetRecording(m_record);
-                std::string conf_name = trackstore->GetConfigRequestName();
-                m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
-                m_mixer->Send(conf_name);
-                conf_name = trackstore->GetConfigRequestColor();
-                m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
-                m_mixer->Send(conf_name);                
+            if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview v
+                if (std::regex_match (msg->GetPath(), std::regex("/ch/.*/mix/(fader|pan|on)") )) {
+                    std::cout << "OService::OnMessageEvent new track " << msg->GetPath() << std::endl;
+                    IOTrackStore *trackstore = m_project->NewTrack(msg);
+                    msg->SetTrackstore(trackstore);    
+                    trackstore->SetPlaying(m_playing);
+                    trackstore->SetRecording(m_record);
+                    std::string conf_name = trackstore->GetConfigRequestName();
+                    m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
+                    m_mixer->Send(conf_name);
+                    conf_name = trackstore->GetConfigRequestColor();
+                    m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
+                    m_mixer->Send(conf_name);     
+                    SelectTrack(msg->GetPath(), true);
+                }
             }
         }
     }

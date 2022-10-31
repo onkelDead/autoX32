@@ -258,10 +258,10 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 
 void OMainWnd::remove_track(std::string path) {
     printf("remove %s\n", path.data());
+    UnselectTrack();
     m_trackslayout.RemoveTrackView(path);
     m_project->RemoveTrack(path);
     m_mixer->ReleaseCacheMessage(path);
-    //    m_project->RemoveCommand(view->GetTrackStore()->GetMessage());
 }
 
 void OMainWnd::SelectTrackUI(std::string path, bool val) {

@@ -75,6 +75,7 @@ void OEngine::SelectTrack(std::string path, bool selected) {
         m_backend->ControllerShowLCDName("", 0);
         m_backend->ControllerShowSelect(false);
         m_backend->ControllerShowRec(false);
+        m_backend->ControllerShowLevel(0.0);
     }
 }
 
@@ -88,4 +89,5 @@ void OEngine::UnselectTrack() {
     m_backend->ControllerShowLCDName("", 0);
     m_backend->ControllerShowSelect(false);
     m_backend->ControllerShowRec(false);
+    m_backend->ControllerShowLevel(0.0);
 }

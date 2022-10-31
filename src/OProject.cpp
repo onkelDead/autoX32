@@ -256,8 +256,11 @@ IOTrackStore* OProject::NewTrack(IOscMessage* msg) {
 }
 
 void OProject::RemoveTrack(std::string path) {
+    if (m_tracks[path] == m_selectedTrack)
+        m_selectedTrack = nullptr;
     delete m_tracks[path];
     m_tracks.erase(path);
+    
 }
 
 int OProject::GetLoopStart() {

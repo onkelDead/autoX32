@@ -6,7 +6,7 @@
 
 
 #include "OMainWnd.h"
-
+#include <regex>
 
 void OMainWnd::OnMessageEvent() {
 
@@ -42,7 +42,8 @@ void OMainWnd::OnMessageEvent() {
         }
         else {
             if (m_btn_teach->get_active()) { // I'm configured for teach-in, so create new track and trackview 
-                PublishUiEvent(E_OPERATION::new_channel, msg);
+                if (std::regex_match (msg->GetPath(), std::regex("/ch/.*/mix/(fader|pan|on)") ))
+                    PublishUiEvent(E_OPERATION::new_channel, msg);
             }
         }
     }
