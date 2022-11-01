@@ -17,7 +17,6 @@
 
 void OMainWnd::notify_jack(JACK_EVENT jack_event) {
     m_jackqueue.push(jack_event);
-    //m_JackDispatcher.emit();
 }
 
 void OMainWnd::OnJackEvent() {
