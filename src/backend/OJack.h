@@ -76,7 +76,6 @@ public:
 
     jack_client_t *m_jack_client = nullptr;
 
-    int m_millis = 0;
     std::string m_timecode;
 
     void Notify(JACK_EVENT event);

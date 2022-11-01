@@ -52,7 +52,7 @@ public:
     int GetLoopStart();
     int GetLoopEnd();
     daw_time* GetDawTime();
-    void SetMaxFrames(int max_millis);
+    void SetMaxFrames(int max_frames);
     void SetBitRate(int);
     void LockPlayhead(bool);
     

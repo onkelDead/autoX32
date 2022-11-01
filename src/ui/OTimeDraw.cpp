@@ -112,20 +112,20 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr,
     layout->show_in_cairo_context(cr);
 }
 
-void OTimeDraw::GetFrameString(int millis, char* t) {
-    int mm = millis % 120;
-    int sec = (millis / 120) % 60;
-    int min = (millis / 7200) % 60;
-    int hour = (millis / 432000);
+void OTimeDraw::GetFrameString(int frame, char* t) {
+    int mm = frame % 120;
+    int sec = (frame / 120) % 60;
+    int min = (frame / 7200) % 60;
+    int hour = (frame / 432000);
     sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, mm);
 }
 
-void OTimeDraw::SetMaxFrames(gint max_millis) {
-    m_daw_time->m_maxframes = max_millis;
+void OTimeDraw::SetMaxFrames(gint max_frames) {
+    m_daw_time->m_maxframes = max_frames;
     if (m_range->m_loopend == -1) {
-        m_range->m_loopend = max_millis;
+        m_range->m_loopend = max_frames;
     }
-    m_daw_time->m_viewend = max_millis;
+    m_daw_time->m_viewend = max_frames;
 }
 
 bool OTimeDraw::on_button_press_event(GdkEventButton *event) {

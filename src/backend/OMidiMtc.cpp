@@ -25,7 +25,7 @@ void OMidiMtc::FullFrame(uint8_t *frame_data) {
 
 int OMidiMtc::QuarterFrame(uint8_t data) {
     int ret = 0;
-    lock_millis = true;
+    lock_frame = true;
     subframe++;
     if (subframe == 4) {
         subframe = 0;
@@ -53,13 +53,13 @@ int OMidiMtc::QuarterFrame(uint8_t data) {
         ret = 8;
     }
 
-    lock_millis = false;
+    lock_frame = false;
     return ret;
 }
 
 int OMidiMtc::GetFrame() {
     int ret;
-    while (lock_millis);
+    while (lock_frame);
     ret = diggit[3] * 432000 
             + diggit[2] * 7200 
             + diggit[1] * 120 

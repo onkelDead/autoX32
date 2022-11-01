@@ -270,7 +270,7 @@ void OMainWnd::UpdatePlayhead(bool doCalc) {
     
     if (up) {
         m_playhead->set_x_pos(0);
-        m_overview->SetPos(GetPosFrame());
+        m_overview->SetFrame(GetPosFrame());
     }
     m_timeview->SetTimeCode(m_backend->GetTimeCode());                
 }

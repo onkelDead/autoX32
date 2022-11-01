@@ -150,11 +150,11 @@ void OAlsa::Stop() {
     ControllerShowStop();
 }
 
-void OAlsa::Locate(int millis) {
-    int mm = (millis / 4) % 30;
-    int sec = (millis / 120) % 60;
-    int min = (millis / 7200) % 60;
-    int hour = (millis / 432000);
+void OAlsa::Locate(int frame) {
+    int mm = (frame / 4) % 30;
+    int sec = (frame / 120) % 60;
+    int min = (frame / 7200) % 60;
+    int hour = (frame / 432000);
     locate[7] = hour;
     locate[8] = min;
     locate[9] = sec;

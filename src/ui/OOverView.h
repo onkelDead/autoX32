@@ -35,7 +35,7 @@ public:
     OOverView(IOMainWnd*, daw_time*);
     virtual ~OOverView();
     
-    void SetPos(gint);
+    void SetFrame(gint);
 
 protected:
     //Overrides:

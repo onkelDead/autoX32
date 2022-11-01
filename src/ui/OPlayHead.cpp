@@ -98,8 +98,8 @@ bool OPlayHead::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     return true;
 }
 
-bool OPlayHead::calc_new_pos(daw_time* dt, int millis) {
-    gint pos = (millis - dt->m_viewstart) * dt->scale;    
+bool OPlayHead::calc_new_pos(daw_time* dt, int frame) {
+    gint pos = (frame - dt->m_viewstart) * dt->scale;    
     if (pos == m_last_pos)
         return false;
     m_last_pos = pos;

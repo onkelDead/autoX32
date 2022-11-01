@@ -44,12 +44,12 @@ public:
 protected:
 
 	//Overrides:
-	virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
+	virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr);
 	virtual void draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rectangle_width, int rectangle_height, std::string text);
 
-	virtual bool on_motion_notify_event(GdkEventMotion *motion_event) override;
-	virtual bool on_button_press_event(GdkEventButton *event) override;
-	virtual bool on_button_release_event(GdkEventButton *event) override;
+	virtual bool on_motion_notify_event(GdkEventMotion *motion_event);
+	virtual bool on_button_press_event(GdkEventButton *event);
+	virtual bool on_button_release_event(GdkEventButton *event);
 
 private:
 

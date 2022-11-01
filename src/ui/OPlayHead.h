@@ -30,7 +30,7 @@ public:
     bool get_initialized() { return m_initialized; }
     void set_initialized(bool val) { m_initialized = val; }
     
-    bool calc_new_pos(daw_time* dt, int millis);
+    bool calc_new_pos(daw_time* dt, int frame);
     void set_x_pos(int pos);
     
 protected:

@@ -98,7 +98,7 @@ public:
 
     void EditTrack(std::string) {};
     
-    int GetPosMillis() {
+    int GetPosFrame() {
         return 0;
     }
 
@@ -423,11 +423,11 @@ int test_daw() {
     
     std::cout << "session: " << daw->GetSessionName() << std::endl;
     std::cout << "bitrate: " << daw->GetBitRate() << std::endl;
-    std::cout << "maxmillis: " << daw->GetMaxFrames() << std::endl;
+    std::cout << "maxframes: " << daw->GetMaxFrames() << std::endl;
     std::cout << "samples: " << daw->GetSample() << std::endl;
     
     test_not_equal(daw->GetBitRate(), 0, "GetBitRate");
-    test_not_equal(daw->GetMaxFrames(), 0, "GetMaxMillis");
+    test_not_equal(daw->GetMaxFrames(), 0, "GetMaxFrames");
     test_not_equal(daw->GetSample(), 0, "GetSample");
     
     test_equal(daw->Disconnect(), 0, "Disconnect DAW");
@@ -451,14 +451,14 @@ int test_backend() {
     sleep(1);
     backend->Locate(20000);
     sleep(1);
-    test_equal(backend->GetFrame(), 20000, "GetMillis() "); 
+    test_equal(backend->GetFrame(), 20000, "GetFrame() "); 
     test_equal(backend->GetTimeCode(), "00:02:46:20", "GetTimeCode");
     
     backend->Play();
     sleep(1);
     backend->Stop();
     sleep(1);
-    test_greater(backend->GetFrame(), 20000, "GetMillis() "); 
+    test_greater(backend->GetFrame(), 20000, "GetFrame() "); 
     
     backend->Disconnect();
     

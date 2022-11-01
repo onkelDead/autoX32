@@ -56,8 +56,6 @@ private:
     int m_run_time_milli_sec = 0;
     int m_secdivide = 0;
     
-    int m_posmillis = 0;
-
     int m_timerequest = 0;
     int m_stepcount = 0;
     
