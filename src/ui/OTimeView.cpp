@@ -60,7 +60,6 @@ void OTimeView::SetDawTime(daw_time *dt) {
 
 void OTimeView::SetTimeCode(std::string code) {
     m_timecode->set_text(code);
-//    m_timecode->queue_draw();
 }
 
 void OTimeView::UpdateDawTime(bool redraw) {
@@ -71,9 +70,6 @@ void OTimeView::UpdateDawTime(bool redraw) {
 
     m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
     m_viewend->set_text(t);
-
-    //	if (redraw)
-    //		m_timedraw->queue_draw();
 }
 
 void OTimeView::EnableZoom(bool val) {

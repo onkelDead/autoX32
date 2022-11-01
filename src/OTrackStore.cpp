@@ -278,14 +278,6 @@ void OTrackStore::InternalSetCmdValue(track_entry* entry) {
         }
         return;
     }
-    //    switch (m_typechar) {
-    //        case 'f':
-    //            entry->val.f = m_cmd->GetLastFloat();
-    //            break;
-    //        case 'i':
-    //            entry->val.i = m_cmd->GetLastInt();
-    //            break;
-    //    }    
 }
 
 void OTrackStore::InternalRemoveEntry(track_entry *entry) {

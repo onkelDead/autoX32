@@ -95,10 +95,6 @@ bool OMainWnd::on_key_press_event(GdkEventKey *key_event) {
 }
 
 bool OMainWnd::on_key_release_event(GdkEventKey *key_event) {
-    if (key_event->keyval == GDK_KEY_space) {
-        //        m_button_play->set_active(!m_button_play->get_active());
-        //        return true;
-    }
 
     if (key_event->keyval == GDK_KEY_Home) {
         on_button_home_clicked();
@@ -151,7 +147,6 @@ void OMainWnd::on_menu_prefs() {
         m_config.set_boolean(SETTINGS_SHOW_PATH_ON_TRACK, pDialog->GetShowTrackPath());
         m_config.set_boolean(SETTING_SMOOTH_SCREEN, pDialog->GetSmoothScreen());
     }
-    //queue_draw();
 }
 
 void OMainWnd::on_menu_layout() {

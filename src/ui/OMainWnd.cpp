@@ -18,10 +18,8 @@
 #include <gtkmm.h>
 
 #include <giomm/simpleactiongroup.h>
+
 #include "OMainWnd.h"
-
-//#include "OscCmd.h"
-
 #include "res/autoX32.h"
 #include "res/trackdlg.h"
 
@@ -49,11 +47,8 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     create_about_dlg();
 
-    //m_JackDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnJackEvent));
-
     m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
-    //m_MixerDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMixerEvent));
     m_MessageDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMessageEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
@@ -227,7 +222,6 @@ int OMainWnd::OpenProject(std::string location) {
     UpdateDawTime(false);
     m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
     on_btn_zoom_loop_clicked();
-    //m_x32->WriteAll();
     return 0;
 }
 
@@ -274,33 +268,17 @@ void OMainWnd::EditTrack(std::string path) {
     IOscMessage* nameMsg = m_mixer->GetCachedMessage(ts->GetConfigRequestName());
     pDialog->SetName(nameMsg->GetVal(0)->GetString());
 
-    //    IOscMessage* colorMsg = m_x32->GetCachedMessage(ts->GetConfigRequestColor());
-    //    pDialog->SetColor(colorMsg->GetVal(0)->GetInteger());
-
     pDialog->SetCountEntries(ts->GetCountEntries());
 
     pDialog->run();
     if (pDialog->GetResult()) {
         m_mixer->SendString(nameMsg->GetPath(), pDialog->GetName());
         m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
-        //        m_trackdraw->GetCmd()->SetName(pDialog->GetName());
-        //        m_trackdraw->GetCmd()->SetColor(pDialog->GetColor());
-        //        UpdateConfig();
     }
 }
 
 void OMainWnd::ToggleSolo() {
-//    OTrackView* tv = m_trackslayout.GetTrackSelected();
-//    if (tv) {
-        //        int idx = tv->item->GetMessage()->GetChIndex();
-        //        if (idx >= 0) {
-        //            char path[32];
-        //            sprintf(path, "/-stat/solosw/%d", idx);
-        //            m_x32->Send(path);
-        ////            sprintf(path, "/~stat/solo");
-        ////            m_x32->SendInt(path, 1);            
-        //        }
-//    }
+
 }
 
 bool OMainWnd::SetupBackend() {

@@ -108,7 +108,6 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr,
     layout->get_pixel_size(text_width, text_height);
 
     cr->set_source_rgb(.8, .8, .8);
-    //cr->move_to((rectangle_width - text_width) / 2, rectangle_height);
 
     layout->show_in_cairo_context(cr);
 }

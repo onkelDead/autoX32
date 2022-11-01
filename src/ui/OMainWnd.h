@@ -148,8 +148,6 @@ protected:
 
 private:
 
-    //Glib::RefPtr<Gio::Settings> settings;
-
     Glib::RefPtr<Gtk::ActionGroup> m_refActionGroup;
 
     Glib::RefPtr<Gtk::Builder> ui;
@@ -236,9 +234,6 @@ private:
     Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;
     OQueue<operation_t*> m_queue_operation;
-
-    /// objects
-    //IOBackend* m_backend = nullptr;
 
     int m_last_playhead_update = 0;
     int m_last_pos_update = 0;

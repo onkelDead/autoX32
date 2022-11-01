@@ -18,9 +18,6 @@
 #include <gtkmm.h>
 #include "OMainWnd.h"
 
-//#include "OscCmd.h"
-
-
 void OMainWnd::OnDawEvent() {
     while (!my_dawqueue.empty()) {
         DAW_PATH c;

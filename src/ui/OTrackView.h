@@ -20,8 +20,6 @@
 #include <gtkmm.h>
 #include <gtkmm/widget.h>
 
-//#include "OscCmd.h"
-
 #include "OTimeDraw.h"
 #include "OTrackSizer.h"
 #include "OTrackDraw.h"
@@ -33,8 +31,6 @@ class OTrackView : public Gtk::Box, public IOTrackView {
 public:
     OTrackView(IOMainWnd*, daw_time*);
     virtual ~OTrackView();
-
-//    IOscMessage* GetMessage();
 
     void SetTrackStore(IOTrackStore*);
     IOTrackStore* GetTrackStore();

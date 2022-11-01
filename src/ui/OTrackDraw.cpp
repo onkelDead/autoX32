@@ -80,8 +80,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     
     GetColorByIndex(cr, m_trackstore->GetColor_index());
     
-//    cr->set_source_rgb(1, 1, 1);
-
     while (it->next && it->next->time < m_daw_time->m_viewstart) {
         it = it->next;
     }

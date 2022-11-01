@@ -233,16 +233,6 @@ void OService::OnJackEvent() {
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());                    
                 }
-//                if (m_trackslayout.GetSelectedTrackView()) {
-//                    IOTrackStore* store = m_trackslayout.GetSelectedTrackView()->GetTrackStore();
-//                    IOscMessage* msg = store->GetMessage();
-//                    msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
-//                    my_messagequeue.push(msg);
-//                    m_MessageDispatcher.emit();                    
-//                    m_x32->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
-//                    m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
-//                }
-
                 break;
             case CTL_TOUCH_RELEASE:
             {
@@ -257,22 +247,6 @@ void OService::OnJackEvent() {
                 m_teach_mode = !m_teach_mode;
                 m_backend->ControllerShowTeachMode(m_teach_mode);
                 break;
-                //            case CTL_LOOP_SET:
-                //                if (!m_backend->GetLoopState()) {
-                //                    on_btn_loop_start_clicked();
-                //                    m_backend->LoopStart();
-                //                } else {
-                //                    on_btn_loop_end_clicked();
-                //                    m_backend->LoopEnd();
-                //                }
-                //                break;
-                //            case CTL_LOOP_CLEAR:
-                //                m_backend->SetLoopState(false);
-                //                m_daw.ClearRange();
-                //                break;
-                //            case CTL_TOGGLE_LOOP:
-                //                m_daw.ShortMessage("/loop_toggle");
-                //                break;
             case CTL_HOME:
                 m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
                 break;
@@ -287,9 +261,6 @@ void OService::OnJackEvent() {
                 break;
             case CTL_UNSELECT:
                 UnselectTrack();
-                break;
-            case CTL_TOGGLE_SOLO:
-//                PublishUiEvent(E_OPERATION::toggle_solo, NULL);
                 break;
             case CTL_TOGGLE_REC:
                 ToggleTrackRecord();

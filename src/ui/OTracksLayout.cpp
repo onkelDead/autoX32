@@ -35,7 +35,6 @@ void OTracksLayout::AddTrack(OTrackView *view, bool show) {
     append_entry(view);
     if (show) {
         add(*view);
-        //view->show();
     }
 }
 
@@ -244,11 +243,6 @@ void OTracksLayout::swap_tracks(OTrackView* t1, OTrackView* t2) {
     t1 = t2;
     t2 = tmp;
 }
-//
-//OTrackView* OTracksLayout::new_entry() {
-//    OTrackView* entry = new trackview_entry;
-//    return entry;
-//}
 
 void OTracksLayout::append_entry(OTrackView* entry) {
     m_tracklist.push_back(entry);

@@ -12,8 +12,6 @@
  */
 
 #include "OMainWnd.h"
-//#include "OscCmd.h"
-
 
 void OMainWnd::notify_jack(JACK_EVENT jack_event) {
     m_jackqueue.push(jack_event);
@@ -77,22 +75,6 @@ void OMainWnd::OnJackEvent() {
                 m_teach_mode = !m_teach_mode;
                 m_backend->ControllerShowTeachMode(m_teach_mode);
                 break;
-                //            case CTL_LOOP_SET:
-                //                if (!m_backend->GetLoopState()) {
-                //                    on_btn_loop_start_clicked();
-                //                    m_backend->LoopStart();
-                //                } else {
-                //                    on_btn_loop_end_clicked();
-                //                    m_backend->LoopEnd();
-                //                }
-                //                break;
-                //            case CTL_LOOP_CLEAR:
-                //                m_backend->SetLoopState(false);
-                //                m_daw->ClearRange();
-                //                break;
-                //            case CTL_TOGGLE_LOOP:
-                //                m_daw->ShortMessage("/loop_toggle");
-                //                break;
             case CTL_HOME:
                 PublishUiEvent(E_OPERATION::home, NULL);
                 break;
