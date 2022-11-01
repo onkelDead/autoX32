@@ -123,8 +123,8 @@ void OX32::OnTimer(void*) {
 
 int OX32::Disconnect() {
 
-    m_timer.stop();
     if (m_IsConnected) {
+        m_timer.stop();
         m_IsConnected = 0;
         m_WorkerThread->join();
         delete m_WorkerThread;

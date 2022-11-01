@@ -71,8 +71,8 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 }
 
 OMainWnd::~OMainWnd() {
-    StopEngine();
     m_daw->StopSessionMonitor();
+    StopEngine();
     if (m_timeview)
         delete m_timeview;
     delete m_bbox;
