@@ -28,37 +28,27 @@
 
 #define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
-
-extern ctl_command s_stop_on;
-
-extern ctl_command s_stop_off;
-
-extern ctl_command s_play_on;
-
-extern ctl_command s_play_off;
-extern ctl_command s_record;
-extern ctl_command s_tech_on;
-extern ctl_command s_teach_off;
-extern ctl_command s_f1_on;
-extern ctl_command s_f1_off;
-extern ctl_command s_f8_on;
-extern ctl_command s_f8_off;
-extern ctl_command s_scrub_on;
-extern ctl_command s_scrub_off;
-extern ctl_command s_wheel_mode_on;
-extern ctl_command s_wheel_mode_off;
-extern ctl_command s_select_on;
-extern ctl_command s_select_off;
-extern ctl_command s_level;
-extern ctl_command s_lcd_1;
-extern ctl_command s_lcd_2;
-extern ctl_command s_mtc_full[8];
-extern ctl_command s_mtc_quarter;
-extern ctl_command s_7seg;
-extern ctl_command s_custom;
-extern ctl_command s_marker;
-extern ctl_command s_cycle;
-extern uint8_t Nibble2Seven[10];
+// Used X-Touch buttons
+#define CTL_BUTTON_SELECT       0x03
+#define CTL_BUTTON_REC          0x06
+#define CTL_BUTTON_F1           0x07
+#define CTL_BUTTON_F2           0x08
+#define CTL_BUTTON_F3           0x09
+#define CTL_BUTTON_F4           0x0a
+#define CTL_BUTTON_F5           0x0b
+#define CTL_BUTTON_F6           0x0c
+#define CTL_BUTTON_MARKER       0x0d
+#define CTL_BUTTON_CYCLE        0x0f
+#define CTL_BUTTON_START        0x14
+#define CTL_BUTTON_END          0x15
+#define CTL_BUTTON_STOP         0x16
+#define CTL_BUTTON_PLAY         0x17
+#define CTL_BUTTON_TEACH        0x18
+#define CTL_CURSOR_UP           0x1e
+#define CTL_BUTTON_SCRUB        0x20
+#define CTL_CURSOR_DOWN         0x22
+#define CTL_FADER_TOUCH         0x46
+#define CTL_WHEEL_LEFT_RIGHT    0x58
 
 class IOBackend {
 public:

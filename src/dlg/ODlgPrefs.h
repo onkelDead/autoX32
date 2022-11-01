@@ -34,6 +34,9 @@ public:
     void SetSmoothScreen(bool);
     bool GetSmoothScreen();
     
+    void SetTrackFilter(std::string);
+    std::string GetTrackFilter();
+    
     bool m_result;
 
 protected:
@@ -46,6 +49,7 @@ private:
     
     Gtk::CheckButton* m_chk_showtrackpath;
     Gtk::CheckButton* m_chk_smooth_screen;
+    Gtk::Entry* m_track_filter;
 };
 
 #endif /* ODLGPREFS_H */

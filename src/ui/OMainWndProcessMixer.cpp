@@ -42,7 +42,7 @@ void OMainWnd::OnMessageEvent() {
         }
         else {
             if (m_btn_teach->get_active()) { // I'm configured for teach-in, so create new track and trackview 
-                if (std::regex_match (msg->GetPath(), std::regex("/ch/.*/mix/(fader|pan|on)") ))
+                if (std::regex_match (msg->GetPath(), std::regex(m_config.get_string(SETTINGS_TRACK_FILTER)) ))
                     PublishUiEvent(E_OPERATION::new_channel, msg);
             }
         }

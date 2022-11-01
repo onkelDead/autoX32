@@ -357,7 +357,7 @@ void OService::OnMixerEvent() {
         }
         else {
             if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview v
-                if (std::regex_match (msg->GetPath(), std::regex("/ch/.*/mix/(fader|pan|on)") )) {
+                if (std::regex_match (msg->GetPath(), std::regex(m_config.get_string(SETTINGS_TRACK_FILTER)) )) {
                     std::cout << "OService::OnMessageEvent new track " << msg->GetPath() << std::endl;
                     IOTrackStore *trackstore = m_project->NewTrack(msg);
                     msg->SetTrackstore(trackstore);    

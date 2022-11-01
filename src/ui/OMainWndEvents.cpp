@@ -141,11 +141,13 @@ void OMainWnd::on_menu_prefs() {
     // fill dialog with data
     pDialog->SetShowTrackPath(m_config.get_boolean(SETTINGS_SHOW_PATH_ON_TRACK));
     pDialog->SetSmoothScreen(m_config.get_boolean(SETTING_SMOOTH_SCREEN));
+    pDialog->SetTrackFilter(m_config.get_string(SETTINGS_TRACK_FILTER));
 
     pDialog->run();
     if (pDialog->m_result) {
         m_config.set_boolean(SETTINGS_SHOW_PATH_ON_TRACK, pDialog->GetShowTrackPath());
         m_config.set_boolean(SETTING_SMOOTH_SCREEN, pDialog->GetSmoothScreen());
+        m_config.set_string(SETTINGS_TRACK_FILTER, pDialog->GetTrackFilter().c_str());
     }
 }
 

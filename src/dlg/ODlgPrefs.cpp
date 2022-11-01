@@ -51,6 +51,7 @@ ODlgPrefs::ODlgPrefs(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& 
     
     builder->get_widget< Gtk::CheckButton >("chk-show-track-path", m_chk_showtrackpath);
     builder->get_widget< Gtk::CheckButton >("chk-smooth-screen", m_chk_smooth_screen);
+    builder->get_widget< Gtk::Entry >("txt-track-filter", m_track_filter);
     
 }
 
@@ -82,4 +83,12 @@ void ODlgPrefs::SetSmoothScreen(bool val) {
 
 bool ODlgPrefs::GetSmoothScreen() {
     return m_chk_smooth_screen->get_active();
+}
+
+void ODlgPrefs::SetTrackFilter(std::string val) {
+    m_track_filter->set_text(val);
+}
+
+std::string ODlgPrefs::GetTrackFilter() {
+    return m_track_filter->get_text();
 }

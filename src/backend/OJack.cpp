@@ -42,6 +42,136 @@ static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0,
 static bool doShuffle = false;
 static jack_midi_data_t shuffle[] = {0xF0, 0x7F, 0x7e, 0x06, 0x47, 0x03, 0b00000000, 0x00, 0x00, 0xF7};
 
+#define SevenSeg_0 0b00111111
+#define SevenSeg_1 0b00000110
+#define SevenSeg_2 0b01011011
+#define SevenSeg_3 0b01001111
+#define SevenSeg_4 0b01100110
+#define SevenSeg_5 0b01101101
+#define SevenSeg_6 0b01111101
+#define SevenSeg_7 0b00000111
+#define SevenSeg_8 0b01111111
+#define SevenSeg_9 0b01100111
+
+static ctl_command s_stop = {
+    3,
+    { 0xB0, CTL_BUTTON_STOP, 0x41}
+};
+
+static ctl_command s_play = {
+    3,
+    { 0xB0, CTL_BUTTON_PLAY, 0x41}
+};
+
+static ctl_command s_record = {
+    3,
+    { 0xB0, CTL_BUTTON_REC, 0x41}
+};
+
+static ctl_command s_teach_on = {
+    3,
+    { 0xB0, CTL_BUTTON_TEACH, 0x41}
+};
+static ctl_command s_teach_off = {
+    3,
+    { 0xB0, CTL_BUTTON_TEACH, 0x00}
+};
+static ctl_command s_f1_on = {
+    3,
+    { 0xB0, CTL_BUTTON_F1, 0x41}
+};
+static ctl_command s_f1_off = {
+    3,
+    { 0xB0, CTL_BUTTON_F1, 0x00}
+};
+static ctl_command s_f6_on = {
+    3,
+    { 0xB0, CTL_BUTTON_F6, 0x40}
+};
+static ctl_command s_f6_off = {
+    3,
+    { 0xB0, CTL_BUTTON_F6, 0x00}
+};
+static ctl_command s_scrub_on = {
+    3,
+    { 0x90, 0x65, 0x7f}
+};
+static ctl_command s_scrub_off = {
+    3,
+    { 0x90, 0x65, 0x00}
+};
+static ctl_command s_wheel_mode_on = {
+    3,
+    { 0xB0, CTL_BUTTON_SCRUB, 0x40}
+};
+static ctl_command s_wheel_mode_off = {
+    3,
+    { 0xB0, CTL_BUTTON_SCRUB, 0x00}
+};
+
+static ctl_command s_select_on = {
+    3,
+    { 0xB0, CTL_BUTTON_SELECT, 0x41}
+};
+static ctl_command s_select_off = {
+    3,
+    { 0xB0, CTL_BUTTON_SELECT, 0x00}
+};
+
+static ctl_command s_level = {
+    3, 
+    { 0xB0, 0, 0}
+};
+
+static ctl_command s_lcd_1 = {
+    23,
+    {0, }
+};
+
+static ctl_command s_lcd_2 = {
+    15,
+    {0, }
+};
+
+static ctl_command s_mtc_full[8] = {
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+    { 3, {0, } },
+};
+
+static ctl_command s_mtc_quarter = {
+    3, {0, }
+};
+
+static ctl_command s_marker = {
+    3, {0xb0, CTL_BUTTON_MARKER, 0x00 }
+};
+static ctl_command s_cycle = {
+    3, {0xb0, CTL_BUTTON_CYCLE, 0x00 }
+};
+
+
+uint8_t Nibble2Seven[] = { SevenSeg_0, SevenSeg_1, SevenSeg_2, SevenSeg_3, SevenSeg_4, SevenSeg_5, SevenSeg_6, SevenSeg_7, SevenSeg_8, SevenSeg_9};
+
+static ctl_command s_7seg = {
+    21, {0xf0, 0x00, 0x20, 0x32, 0x41, 0x37, 
+            0x00, 0x00,         // Assignment
+            0x00, 0x00, 0x00,   // Hours
+            0x00, 0x00,         // Minutes
+            0x00, 0x00,         // Seconds
+            0x00, 0x00, 0x00,   // Frames
+            0x00, 0x00,         // Dots
+            0xf7 },
+};
+
+static ctl_command s_custom = {
+    3, {0, }
+};
 
 
 static int process(jack_nframes_t nframes, void *arg) {
@@ -355,17 +485,21 @@ uint8_t* OJack::GetTimeDiggits() {
 }
 
 void OJack::ControllerShowPlay() {
-    ctl_out.push(&s_stop_off);
-    ctl_out.push(&s_play_on);
+    s_stop.buf[2] = 0x00;
+    s_play.buf[2] = 0x41;
+    ctl_out.push(&s_stop);
+    ctl_out.push(&s_play);
 }
 
 void OJack::ControllerShowStop() {
-    ctl_out.push(&s_stop_on);
-    ctl_out.push(&s_play_off);
+    s_stop.buf[2] = 0x41;
+    s_play.buf[2] = 0x00;
+    ctl_out.push(&s_stop);
+    ctl_out.push(&s_play);
 }
 
 void OJack::ControllerShowTeachOn() {
-    ctl_out.push(&s_tech_on);
+    ctl_out.push(&s_teach_on);
 }
 
 void OJack::ControllerShowTeachOff() {
@@ -399,9 +533,9 @@ void OJack::ControllerShowSelect(bool val) {
 
 void OJack::ControllerShowActive(bool val) {
     if (val)
-        ctl_out.push(&s_f8_on);
+        ctl_out.push(&s_f6_on);
     else
-        ctl_out.push(&s_f8_off);
+        ctl_out.push(&s_f6_off);
 }
 
 void OJack::ControllerShowRec(bool val) {

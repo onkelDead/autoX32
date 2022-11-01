@@ -39,6 +39,8 @@
 #define SETTINGS_RECENT_PROJECTS        "recent-projects"    
 #define SETTINGS_MIDI_BACKEND           "midi-backend"  
 
+#define SETTINGS_TRACK_FILTER           "track-filter"
+
 #define CONF_FORMATTER "%s/.config/autoX32/autoX32.conf"
 
 class OConfig {
