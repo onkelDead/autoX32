@@ -65,10 +65,10 @@ void OTimeView::SetTimeCode(std::string code) {
 void OTimeView::UpdateDawTime(bool redraw) {
     char t[32];
 
-    m_timedraw->GetMillisString(m_daw_time->m_viewstart, t);
+    m_timedraw->GetFrameString(m_daw_time->m_viewstart, t);
     m_viewstart->set_text(t);
 
-    m_timedraw->GetMillisString(m_daw_time->m_viewend, t);
+    m_timedraw->GetFrameString(m_daw_time->m_viewend, t);
     m_viewend->set_text(t);
 }
 
@@ -112,6 +112,6 @@ void OTimeView::on_timedraw_zoom_changed() {
     signal_zoom_changed.emit();
 }
 
-int OTimeView::GetClickMillis() {
-    return m_timedraw->GetClickMillis();
+int OTimeView::GetClickFrame() {
+    return m_timedraw->GetClickFrame();
 }

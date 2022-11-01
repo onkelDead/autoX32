@@ -41,7 +41,7 @@ public:
     void SetLoopEnd();
     int GetLoopEnd();
     void SetTimeCode(std::string);
-    int GetClickMillis();
+    int GetClickFrame();
     void ScaleView();
         
 

@@ -51,7 +51,7 @@ public:
     virtual int GetLoopStart() = 0;
     virtual int GetLoopEnd() = 0;
     virtual daw_time* GetDawTime() = 0;
-    virtual void SetMaxMillis(int max_millis) = 0;
+    virtual void SetMaxFrames(int max_millis) = 0;
     virtual void SetBitRate(int) = 0;
 };
 

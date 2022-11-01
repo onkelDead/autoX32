@@ -40,8 +40,7 @@ public:
     void ControllerShowPlay();
     void ControllerShowStop();
     void ControllerShowRec(bool);
-    void ControllerShowTeachOn();
-    void ControllerShowTeachOff();
+    void ControllerShowTeach(bool val);
     void ControllerShowSelect(bool val);        
     void ControllerShowTeachMode(bool);
     void ControllerShowLCDName(std::string, int color);
@@ -63,7 +62,7 @@ public:
 
     OMidiMtc* GetMidiMtc() { return &m_midi_mtc; }
     
-    int GetMillis();
+    int GetFrame();
     void SetFrame(int);
     void QuarterFrame(uint8_t);
     

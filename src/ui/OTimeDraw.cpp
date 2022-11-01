@@ -48,7 +48,7 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     int q = height / 4;
     m_view_width = allocation.get_width();
 
-    int m_current_time = m_mainWnd->GetPosMillis();
+    int m_current_time = m_mainWnd->GetPosFrame();
 
     gint pos = (m_current_time - m_daw_time->m_viewstart) * m_daw_time->scale;
 
@@ -83,7 +83,7 @@ bool OTimeDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
         cr->stroke();
 
         cr->move_to(firstscale, 0);
-        GetMillisString(m_daw_time->m_viewstart + (firstscale / m_daw_time->scale), t);
+        GetFrameString(m_daw_time->m_viewstart + (firstscale / m_daw_time->scale), t);
         draw_text(cr, 120, 30, t);
     }
 
@@ -112,7 +112,7 @@ void OTimeDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr,
     layout->show_in_cairo_context(cr);
 }
 
-void OTimeDraw::GetMillisString(int millis, char* t) {
+void OTimeDraw::GetFrameString(int millis, char* t) {
     int mm = millis % 120;
     int sec = (millis / 120) % 60;
     int min = (millis / 7200) % 60;
@@ -120,8 +120,8 @@ void OTimeDraw::GetMillisString(int millis, char* t) {
     sprintf(t, "%02d:%02d:%02d:%02d", hour, min, sec, mm);
 }
 
-void OTimeDraw::SetMaxMillis(gint max_millis) {
-    m_daw_time->m_maxmillis = max_millis;
+void OTimeDraw::SetMaxFrames(gint max_millis) {
+    m_daw_time->m_maxframes = max_millis;
     if (m_range->m_loopend == -1) {
         m_range->m_loopend = max_millis;
     }
@@ -134,19 +134,19 @@ bool OTimeDraw::on_button_press_event(GdkEventButton *event) {
         menu_popup.popup(3, event->time);
         return true;
     }
-    m_click_millis = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
+    m_click_frame = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
     signal_pos_changed.emit();
     return true;
 }
 
 void OTimeDraw::on_menu_popup_start() {
-    m_range->m_loopstart = m_mainWnd->GetPosMillis();
+    m_range->m_loopstart = m_mainWnd->GetPosFrame();
     m_range->m_dirty = true;
     queue_draw();
 }
 
 void OTimeDraw::on_menu_popup_end() {
-    m_range->m_loopend = m_mainWnd->GetPosMillis();
+    m_range->m_loopend = m_mainWnd->GetPosFrame();
     m_range->m_dirty = true;
     queue_draw();
 }
@@ -156,7 +156,7 @@ void OTimeDraw::EnableZoom(bool val) {
 }
 
 void OTimeDraw::SetLoopStart() {
-    m_range->m_loopstart = m_mainWnd->GetPosMillis();
+    m_range->m_loopstart = m_mainWnd->GetPosFrame();
     m_range->m_dirty = true;
     queue_draw();
 }
@@ -166,7 +166,7 @@ int OTimeDraw::GetLoopStart() {
 }
 
 void OTimeDraw::SetLoopEnd() {
-    m_range->m_loopend = m_mainWnd->GetPosMillis();
+    m_range->m_loopend = m_mainWnd->GetPosFrame();
     m_range->m_dirty = true;
     queue_draw();
 }
@@ -200,6 +200,6 @@ void OTimeDraw::SetSignalPosChange(IOTimeView *t) {
             sigc::mem_fun(*t, &IOTimeView::on_timedraw_pos_changed));
 }
 
-int OTimeDraw::GetClickMillis() {
-    return m_click_millis;
+int OTimeDraw::GetClickFrame() {
+    return m_click_frame;
 }

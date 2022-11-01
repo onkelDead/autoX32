@@ -188,7 +188,7 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
             m_bitrate = argv[1]->i / 10;
         }
         if (argc > 2) {
-            m_maxmillis = (int) argv[2]->i / (m_bitrate / 12);
+            m_maxframes = (int) argv[2]->i / (m_bitrate / 12);
         }
         m_wait_for_samples = true;
         c = DAW_PATH::reply;
@@ -207,8 +207,8 @@ void ODAW::ProcessCmd(const char *entry, lo_message msg) {
     }
 }
 
-int ODAW::GetMaxMillis() {
-    return m_maxmillis;
+int ODAW::GetMaxFrames() {
+    return m_maxframes;
 }
 
 int ODAW::GetSample() {

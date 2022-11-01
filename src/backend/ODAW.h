@@ -53,7 +53,7 @@ public:
     void StopSessionMonitor();
     bool CheckArdourRecent();
 
-    int GetMaxMillis();
+    int GetMaxFrames();
     int GetBitRate();
 
     void ShortMessage(const char* cmd);
@@ -92,7 +92,7 @@ private:
 
     int m_sample = 0;
     int m_bitrate = 48000;
-    int m_maxmillis = 0;
+    int m_maxframes = 0;
 
     std::string m_session_name;
     std::string m_location;

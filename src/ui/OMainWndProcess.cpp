@@ -24,7 +24,7 @@ void OMainWnd::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
-                m_project->SetMaxMillis(m_daw->GetMaxMillis());
+                m_project->SetMaxFrames(m_daw->GetMaxFrames());
                 m_project->SetBitRate(m_daw->GetBitRate());
                 UpdateDawTime(false);
                 m_timeview->SetZoomLoop();
@@ -32,7 +32,7 @@ void OMainWnd::OnDawEvent() {
             case DAW_PATH::samples:
                 m_backend->SetFrame(m_daw->GetSample() / 400);
                 m_timeview->SetTimeCode(m_backend->GetTimeCode());
-                m_project->UpdatePos(m_backend->GetMillis(), true);
+                m_project->UpdatePos(m_backend->GetFrame(), true);
                 UpdatePlayhead(true);
                 m_backend->ControlerShowMtcComplete(0);
                 break;
@@ -193,13 +193,13 @@ void OMainWnd::OnUIOperation() {
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
                 else
-                    m_backend->Locate(m_backend->GetMillis() + 120);
+                    m_backend->Locate(m_backend->GetFrame() + 120);
                 break;
             case E_OPERATION::jump_backward:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(true);
                 else
-                    m_backend->Locate(m_backend->GetMillis() - 120);
+                    m_backend->Locate(m_backend->GetFrame() - 120);
                 break;
             case E_OPERATION::touch_release:
             {

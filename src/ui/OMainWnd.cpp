@@ -121,7 +121,7 @@ bool OMainWnd::Shutdown() {
     m_backend->ControllerShowActive(false);
     m_backend->ControllerShowRec(false);
     m_backend->ControllerShowTeachMode(false);
-    m_backend->ControllerShowTeachOff();
+    m_backend->ControllerShowTeach(false);
     m_backend->ControllerShowLevel(0.0);
     
     m_mixer->Disconnect();
@@ -208,7 +208,7 @@ int OMainWnd::OpenProject(std::string location) {
                 trackview->SetTrackStore(ts);
                 ts->SetView(trackview);
                 m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
-                track_entry* e = ts->GetEntryAtPosition(GetPosMillis(), true);
+                track_entry* e = ts->GetEntryAtPosition(GetPosFrame(), true);
                 ts->SetPlayhead(e);
                 PlayTrackEntry(ts, e);
                 ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
@@ -313,8 +313,8 @@ bool OMainWnd::SetupBackend() {
     return 1;
 }
 
-gint OMainWnd::GetPosMillis() {
-    return m_backend->GetMillis();
+gint OMainWnd::GetPosFrame() {
+    return m_backend->GetFrame();
 }
 
 bool OMainWnd::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {

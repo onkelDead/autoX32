@@ -114,7 +114,7 @@ public:
 
     bool SetupBackend();
 
-    gint GetPosMillis();
+    gint GetPosFrame();
     
     void NewProject();    
     void NewProject(std::string);

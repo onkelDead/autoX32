@@ -27,9 +27,9 @@ void OMainWnd::OnJackEvent() {
             {
                 IOTrackStore* sel_ts = nullptr;
                 if (event != MTC_COMPLETE) {
-                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), false);
+                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), false);
                 } else {
-                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), true);
+                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
                 if (sel_ts != nullptr) {

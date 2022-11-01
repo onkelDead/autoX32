@@ -95,7 +95,7 @@ typedef struct ui_event_type {
 } operation_t;
 
 typedef struct daw_time_type {
-    int m_maxmillis;
+    int m_maxframes;
     int m_bitrate;
     float scale;
     int m_viewstart;

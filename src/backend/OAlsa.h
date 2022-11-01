@@ -32,7 +32,7 @@ public:
         return &m_midi_mtc;
     }
     std::string GetTimeCode();
-    int GetMillis();
+    int GetFrame();
 
     void Notify(JACK_EVENT event);
 
@@ -48,8 +48,7 @@ public:
     void ControllerShowPlay();
     void ControllerShowStop();
     void ControllerShowRec(bool) {};
-    void ControllerShowTeachOn();
-    void ControllerShowTeachOff();
+    void ControllerShowTeach(bool val);
     void ControllerShowTeachMode(bool);
     void ControllerShowSelect(bool);
     void ControllerShowLCDName(std::string, int);

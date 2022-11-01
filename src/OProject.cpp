@@ -275,13 +275,13 @@ void OProject::SetBitRate(int rate) {
     m_daw_time.m_bitrate = rate;
 }
 
-void OProject::SetMaxMillis(int max_millis) {
+void OProject::SetMaxFrames(int max_frames) {
 
-    m_daw_time.m_maxmillis = max_millis;
+    m_daw_time.m_maxframes = max_frames;
     if (m_daw_range.m_loopend == -1) {
-        m_daw_range.m_loopend = max_millis;
+        m_daw_range.m_loopend = max_frames;
     }
-    m_daw_time.m_viewend = max_millis;
+    m_daw_time.m_viewend = max_frames;
 
 }
 

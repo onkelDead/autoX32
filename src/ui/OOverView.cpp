@@ -118,8 +118,8 @@ bool OOverView::on_draw(const Cairo::RefPtr<Cairo::Context>& cr) {
     int height = allocation.get_height();
     m_width = allocation.get_width();
 
-    m_left = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_maxmillis) * m_width;
-    m_right = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_maxmillis) * m_width;
+    m_left = ((float) m_daw_time->m_viewstart / (float) m_daw_time->m_maxframes) * m_width;
+    m_right = ((float) m_daw_time->m_viewend / (float) m_daw_time->m_maxframes) * m_width;
 
     cr->set_source_rgb(.3, .3, .3);
     cr->rectangle(m_left, 0, m_right - m_left, 80);
@@ -227,8 +227,8 @@ void OOverView::UpdateCursor() {
 }
 
 void OOverView::UpdateDawTime() {
-    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxmillis;
-    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxmillis;
+    m_daw_time->m_viewstart = ((float) m_left / (float) m_width) * m_daw_time->m_maxframes;
+    m_daw_time->m_viewend = ((float) m_right / (float) m_width) * m_daw_time->m_maxframes;
     m_daw_time->scale = (gfloat) (m_width - 160) / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
     m_parent->notify_overview();
 }
@@ -274,7 +274,7 @@ bool OOverView::on_scroll_event(GdkEventScroll* scroll_event) {
 
 void OOverView::SetPos(gint millis) {
 
-    m_pos = ((float)millis / (float) m_daw_time->m_maxmillis) * m_width;
+    m_pos = ((float)millis / (float) m_daw_time->m_maxframes) * m_width;
     if (m_last_pos != m_pos) {
         m_last_pos = m_pos;
         queue_draw();

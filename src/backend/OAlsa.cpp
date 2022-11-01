@@ -110,8 +110,8 @@ std::string OAlsa::GetTimeCode() {
     return m_midi_mtc.GetTimeCode();
 }
 
-int OAlsa::GetMillis() {
-    return m_midi_mtc.GetMillis();
+int OAlsa::GetFrame() {
+    return m_midi_mtc.GetFrame();
 }
 
 void OAlsa::Play() {
@@ -205,21 +205,12 @@ void OAlsa::ControllerShowStop() {
 //    ctl_out.push(c);
 }
 
-void OAlsa::ControllerShowTeachOn() {
+void OAlsa::ControllerShowTeach(bool val) {
 //    ctl_command* c = new ctl_command;
 //    c->len = 3;
 //    c->buf[0] = 0xb9;
 //    c->buf[1] = 2;
 //    c->buf[2] = 4;    
-//    ctl_out.push(c);
-}
-
-void OAlsa::ControllerShowTeachOff() {
-//    ctl_command* c = new ctl_command;
-//    c->len = 3;
-//    c->buf[0] = 0x8b;
-//    c->buf[1] = 1;
-//    c->buf[2] = 0;    
 //    ctl_out.push(c);
 }
 

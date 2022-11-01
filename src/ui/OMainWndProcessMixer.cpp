@@ -20,7 +20,7 @@ void OMainWnd::OnMessageEvent() {
             int upd = 0;
             IOTrackView * view = m_trackslayout.GetTrackview(ts->GetPath());
             
-            if ((upd = ts->ProcessMsg(msg, GetPosMillis()))) {
+            if ((upd = ts->ProcessMsg(msg, GetPosFrame()))) {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
             }
             switch(upd) {

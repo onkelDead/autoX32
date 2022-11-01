@@ -32,7 +32,7 @@ public:
     OTimeDraw(IOMainWnd*);
     virtual ~OTimeDraw();
 
-    void SetMaxMillis(gint);
+    void SetMaxFrames(gint);
 
     void EnableZoom(bool val);
 
@@ -45,8 +45,8 @@ public:
     void SetSignalZoomChange(IOTimeView *t);
     void SetSignalPosChange(IOTimeView *t);
 
-    int GetClickMillis();
-    void GetMillisString(int, char*);
+    int GetClickFrame();
+    void GetFrameString(int, char*);
     
     void SetDawTime(daw_time*);
     void SetRange(daw_range*);
@@ -56,14 +56,13 @@ protected:
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
     virtual void draw_text(const Cairo::RefPtr<Cairo::Context>& cr,
             int rectangle_width, int rectangle_height, char* text);
-    virtual bool on_button_press_event(GdkEventButton* event) override;
-
+    virtual bool on_button_press_event(GdkEventButton* event);
 
 private:
 
     bool m_zoom = false;
     int m_view_width = 0;
-    int m_click_millis = 0;
+    int m_click_frame = 0;
     
     IOMainWnd* m_mainWnd = nullptr;
     daw_time* m_daw_time = nullptr;

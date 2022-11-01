@@ -68,52 +68,32 @@ static ctl_command s_record = {
     { 0xB0, CTL_BUTTON_REC, 0x41}
 };
 
-static ctl_command s_teach_on = {
+static ctl_command s_teach = {
     3,
-    { 0xB0, CTL_BUTTON_TEACH, 0x41}
+    { 0xB0, CTL_BUTTON_TEACH, 0x0}
 };
-static ctl_command s_teach_off = {
-    3,
-    { 0xB0, CTL_BUTTON_TEACH, 0x00}
-};
-static ctl_command s_f1_on = {
-    3,
-    { 0xB0, CTL_BUTTON_F1, 0x41}
-};
-static ctl_command s_f1_off = {
+
+static ctl_command s_f1 = {
     3,
     { 0xB0, CTL_BUTTON_F1, 0x00}
 };
-static ctl_command s_f6_on = {
+
+static ctl_command s_f6 = {
     3,
-    { 0xB0, CTL_BUTTON_F6, 0x40}
+    { 0xB0, CTL_BUTTON_F6, 0x0}
 };
-static ctl_command s_f6_off = {
-    3,
-    { 0xB0, CTL_BUTTON_F6, 0x00}
-};
-static ctl_command s_scrub_on = {
+
+static ctl_command s_scrub = {
     3,
     { 0x90, 0x65, 0x7f}
 };
-static ctl_command s_scrub_off = {
-    3,
-    { 0x90, 0x65, 0x00}
-};
-static ctl_command s_wheel_mode_on = {
-    3,
-    { 0xB0, CTL_BUTTON_SCRUB, 0x40}
-};
-static ctl_command s_wheel_mode_off = {
+
+static ctl_command s_wheel_mode = {
     3,
     { 0xB0, CTL_BUTTON_SCRUB, 0x00}
 };
 
-static ctl_command s_select_on = {
-    3,
-    { 0xB0, CTL_BUTTON_SELECT, 0x41}
-};
-static ctl_command s_select_off = {
+static ctl_command s_select = {
     3,
     { 0xB0, CTL_BUTTON_SELECT, 0x00}
 };
@@ -286,9 +266,7 @@ void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg)
         if (strcmp(port_name_a, ONKEL_C_OUT_PORT_NAME) == 0) {
             jack->m_config->set_string("controller_out_port", port_name_b);
         }
-
     }
-
 
     if (connect)
         printf("Connect ");
@@ -372,7 +350,7 @@ int OJack::Connect(IOJackHandler* wnd) {
     }
 
     ControllerShowStop();
-    ControllerShowTeachOff();
+    ControllerShowTeach(false);
     ControllerShowTeachMode(false);
     ControllerShowWheelMode();
     ControllerShowCycle();
@@ -426,11 +404,11 @@ void OJack::Stop() {
     ControllerShowStop();
 }
 
-void OJack::Locate(int millis) {
-    int mm = (millis / 4) % 30;
-    int sec = (millis / 120) % 60;
-    int min = (millis / 7200) % 60;
-    int hour = (millis / 432000);
+void OJack::Locate(int frame) {
+    int mm = (frame / 4) % 30;
+    int sec = (frame / 120) % 60;
+    int min = (frame / 7200) % 60;
+    int hour = (frame / 432000);
     locate[7] = hour;
     locate[8] = min;
     locate[9] = sec;
@@ -459,8 +437,8 @@ void OJack::Shuffle(bool s) {
 
 }
 
-int OJack::GetMillis() {
-    return m_midi_mtc.GetMillis();
+int OJack::GetFrame() {
+    return m_midi_mtc.GetFrame();
 }
 
 void OJack::SetFrame(int frame) {
@@ -498,12 +476,9 @@ void OJack::ControllerShowStop() {
     ctl_out.push(&s_play);
 }
 
-void OJack::ControllerShowTeachOn() {
-    ctl_out.push(&s_teach_on);
-}
-
-void OJack::ControllerShowTeachOff() {
-    ctl_out.push(&s_teach_off);
+void OJack::ControllerShowTeach(bool val) {
+    s_teach.buf[2] = val ? 0x41 : 0x00;
+    ctl_out.push(&s_teach);
 }
 
 void OJack::ControllerShowMarker() {
@@ -517,25 +492,20 @@ void OJack::ControllerShowCycle() {
 }
 
 void OJack::ControllerShowTeachMode(bool val) {
-    if (val)
-        ctl_out.push(&s_f1_on);
-    else
-        ctl_out.push(&s_f1_off);
+    s_f1.buf[2] = val ? 0x41 : 0;
+    ctl_out.push(&s_f1);
 }
 
 void OJack::ControllerShowSelect(bool val) {
-    if (val)
-        ctl_out.push(&s_select_on);
-    else
-        ctl_out.push(&s_select_off);
+    s_select.buf[2] = val ? 0x41 : 0;
+    ctl_out.push(&s_select);
 }
 
 
 void OJack::ControllerShowActive(bool val) {
-    if (val)
-        ctl_out.push(&s_f6_on);
-    else
-        ctl_out.push(&s_f6_off);
+    
+    s_f6.buf[2] = val ? 0x40 : 0;
+    ctl_out.push(&s_f6);
 }
 
 void OJack::ControllerShowRec(bool val) {
@@ -555,14 +525,7 @@ void OJack::ControllerShowLCDName(std::string name, int color) {
     c->len = sizeof (syext);
     memcpy(c->buf, syext, 23);
 
-//    ctl_command* c1 = &s_lcd_2;
-//    if (strlen(s) > 7)
-//        memcpy(syext1 + 7, s + 7, MIN(7, strlen(s) - 7));
-//    c1->len = sizeof (syext1);
-//    memcpy(c1->buf, syext1, sizeof (syext));
-
     ctl_out.push(c);
-//    ctl_out.push(c1);
     free(s);
 
 }
@@ -602,22 +565,16 @@ void OJack::ControlerShowMtcQuarter(uint8_t q) {
     c0->len = 2;
     c0->buf[0] = 0xd0;
     c0->buf[1] = q;
-   // ctl_out.push(c0);
 }
 
 void OJack::ControllerShowScrub() {
-    if (m_scrub) 
-        ctl_out.push(&s_scrub_on);
-    else
-        ctl_out.push(&s_scrub_off);
+    s_scrub.buf[2] = m_scrub ? 0x41 : 0;
+    ctl_out.push(&s_scrub);
 }
 
 void OJack::ControllerShowWheelMode() {
-    if (m_wheel_mode)
-        ctl_out.push(&s_wheel_mode_on);
-    else
-        ctl_out.push(&s_wheel_mode_off);
-        
+    s_wheel_mode.buf[2] = m_wheel_mode ? 0x41 : 0;
+    ctl_out.push(&s_wheel_mode);
 }
 
 void OJack::ControllerCustom(uint8_t com, uint8_t a, uint8_t b) {
@@ -632,14 +589,10 @@ void OJack::ControllerCustom(uint8_t com, uint8_t a, uint8_t b) {
 
 void OJack::LoopStart() {
     m_loop_state = true;
-    //    ctl_out.push(CTL_COMMAND(0xba, 1, 4));
-    //    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
 }
 
 void OJack::LoopEnd() {
     m_loop_state = false;
-    //    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    //    ctl_out.push(CTL_COMMAND(0xba, 0, 4));
 }
 
 bool OJack::GetLoopState() {
@@ -647,8 +600,6 @@ bool OJack::GetLoopState() {
 }
 
 void OJack::SetLoopState(bool state) {
-    //    ctl_out.push(CTL_COMMAND(0xba, 1, 0));
-    //    ctl_out.push(CTL_COMMAND(0xba, 0, 0));
     m_loop_state = state;
 }
 

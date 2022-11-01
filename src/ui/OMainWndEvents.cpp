@@ -179,13 +179,10 @@ void OMainWnd::on_btn_teach_clicked() {
 
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
-    if (m_btn_teach->get_active()) {
-        m_backend->ControllerShowTeachOn();
-    } else {
-        m_backend->ControllerShowTeachOff();
+    if (!m_btn_teach->get_active()) {
         m_trackslayout.StopTeach();
-
     }
+    m_backend->ControllerShowTeach(m_btn_teach->get_active());
 
 
 }
@@ -240,7 +237,7 @@ void OMainWnd::on_button_test_clicked() {
 
 void OMainWnd::on_timeline_pos_changed() {
     m_lock_daw_time_event = true;
-    m_backend->Locate(m_timeview->GetClickMillis());
+    m_backend->Locate(m_timeview->GetClickFrame());
 }
 
 void OMainWnd::on_timeline_zoom_changed() {
@@ -269,11 +266,11 @@ void OMainWnd::UpdateDawTime(bool redraw) {
 }
 
 void OMainWnd::UpdatePlayhead(bool doCalc) {
-    bool up = m_playhead->calc_new_pos(m_project->GetDawTime(), GetPosMillis());
+    bool up = m_playhead->calc_new_pos(m_project->GetDawTime(), GetPosFrame());
     
     if (up) {
         m_playhead->set_x_pos(0);
-        m_overview->SetPos(GetPosMillis());
+        m_overview->SetPos(GetPosFrame());
     }
     m_timeview->SetTimeCode(m_backend->GetTimeCode());                
 }

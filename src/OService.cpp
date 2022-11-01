@@ -80,14 +80,14 @@ void OService::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
-                m_project->GetTimeRange()->m_loopend = m_daw->GetMaxMillis();
+                m_project->GetTimeRange()->m_loopend = m_daw->GetMaxFrames();
                 m_session = m_daw->GetSessionName();
                 std::cout << "OService::OnDawEvent session name " << m_session << std::endl;
                 break;
             case DAW_PATH::samples:
                 if (m_backend) {
                     m_backend->SetFrame(m_daw->GetSample() / 400);
-                    m_project->UpdatePos(m_backend->GetMillis(), true);
+                    m_project->UpdatePos(m_backend->GetFrame(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
                 break;
@@ -142,7 +142,7 @@ void OService::StartProcessing() {
     m_backend->ControllerShowActive(false);
     m_backend->ControllerShowRec(false);
     m_backend->ControllerShowTeachMode(false);
-    m_backend->ControllerShowTeachOff();
+    m_backend->ControllerShowTeach(false);
     m_backend->ControllerShowLevel(0.0);
     
     StopEngine();
@@ -172,9 +172,9 @@ void OService::OnJackEvent() {
             {
                 IOTrackStore* sel_ts = nullptr;
                 if (event != MTC_COMPLETE) {
-                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), false);
+                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), false);
                 } else {
-                    sel_ts = m_project->UpdatePos(m_backend->GetMillis(), true);
+                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
                 if (sel_ts != nullptr) {
@@ -275,13 +275,13 @@ void OService::OnJackEvent() {
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
                 else
-                    m_backend->Locate(m_backend->GetMillis() + 120);
+                    m_backend->Locate(m_backend->GetFrame() + 120);
                 break;
             case CTL_JUMP_BACKWARD:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(true);
                 else
-                    m_backend->Locate(m_backend->GetMillis() - 120);
+                    m_backend->Locate(m_backend->GetFrame() - 120);
                 break;
             case CTL_WHEEL_MODE:
                 m_backend->ControllerShowWheelMode();
@@ -290,13 +290,13 @@ void OService::OnJackEvent() {
                 m_backend->ControllerShowMarker();
                 break;
             case CTL_LOOP_START:
-                m_project->GetTimeRange()->m_loopstart = m_backend->GetMillis();
+                m_project->GetTimeRange()->m_loopstart = m_backend->GetFrame();
                 m_project->GetTimeRange()->m_dirty = true;    
                 m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);          
                 std::cout << "SetRange start " << m_project->GetTimeRange()->m_loopstart << std::endl;
                 break;
             case CTL_LOOP_END:
-                m_project->GetTimeRange()->m_loopend = m_backend->GetMillis();
+                m_project->GetTimeRange()->m_loopend = m_backend->GetFrame();
                 m_project->GetTimeRange()->m_dirty = true;    
                 m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);                
                 std::cout << "SetRange end " << m_project->GetTimeRange()->m_loopend << std::endl;
@@ -341,7 +341,7 @@ void OService::OnMixerEvent() {
         IOTrackStore* ts = msg->GetTrackstore();
         if (ts) {
             IOTrackStore* ts = msg->GetTrackstore();
-            int upd = ts->ProcessMsg(msg, m_backend->GetMillis());
+            int upd = ts->ProcessMsg(msg, m_backend->GetFrame());
         
             if (ts == m_project->GetTrackSelected()) {
                 switch(upd) {
@@ -380,11 +380,8 @@ void OService::SetRecord(bool val) {
     m_record = val;
     if (!m_record) {
         m_project->StopRecord();
-        m_backend->ControllerShowTeachOff();
     }
-    else {
-        m_backend->ControllerShowTeachOn();
-    }
+    m_backend->ControllerShowTeach(m_record);
 }
 
 void OService::SelectNextTrack() {

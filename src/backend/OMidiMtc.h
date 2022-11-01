@@ -24,7 +24,7 @@ public:
     void FullFrame(uint8_t* frame_data);
     int QuarterFrame(uint8_t data);
     void SetFrame(int);
-    int GetMillis();
+    int GetFrame();
     std::string GetTimeCode();
     bool m_edge_sec = false;
     uint8_t diggit[4] = {0, 0, 0, 0};

@@ -60,14 +60,13 @@ public:
     
     virtual OMidiMtc* GetMidiMtc() = 0; 
     virtual std::string GetTimeCode() = 0;
-    virtual int GetMillis() = 0;
+    virtual int GetFrame() = 0;
 
     virtual void Notify(JACK_EVENT event) = 0;
 
     virtual void ControllerShowPlay() = 0;
     virtual void ControllerShowStop() = 0;
-    virtual void ControllerShowTeachOn() = 0;
-    virtual void ControllerShowTeachOff() = 0;   
+    virtual void ControllerShowTeach(bool val) = 0;
     virtual void ControllerShowTeachMode(bool) = 0;
     virtual void ControllerShowSelect(bool) = 0;
     virtual void ControllerShowRec(bool) = 0;

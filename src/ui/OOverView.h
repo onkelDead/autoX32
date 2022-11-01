@@ -49,7 +49,7 @@ protected:
     virtual void on_unmap() override;
     virtual void on_realize() override;
     virtual void on_unrealize() override;
-    virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
+    virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
     virtual bool on_motion_notify_event(GdkEventMotion* motion_event) override;
     virtual bool on_button_press_event(GdkEventButton* event) override;
     virtual bool on_button_release_event(GdkEventButton* event) override;

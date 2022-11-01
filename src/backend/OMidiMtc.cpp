@@ -57,7 +57,7 @@ int OMidiMtc::QuarterFrame(uint8_t data) {
     return ret;
 }
 
-int OMidiMtc::GetMillis() {
+int OMidiMtc::GetFrame() {
     int ret;
     while (lock_millis);
     ret = diggit[3] * 432000 
