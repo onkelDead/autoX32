@@ -34,12 +34,15 @@ protected:
     IOMixer* m_mixer = nullptr;
     IOBackend* m_backend = nullptr;
 
-    OTimer m_jackTimer;
     OQueue<JACK_EVENT> m_jackqueue;
+    
+    void StartEngine(IOTimerEvent*);
+    void StopEngine();
     
     void SelectTrack(std::string, bool);
     void UnselectTrack();     
 private:
+    OTimer m_jackTimer;
 };
 
 #endif /* OENGINE_H */

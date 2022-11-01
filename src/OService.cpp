@@ -121,10 +121,7 @@ void OService::OnDawEvent() {
 void OService::StartProcessing() {
     m_mixer->Start();
     
-    m_jackTimer.setInterval(20);
-    m_jackTimer.SetUserData(&m_jackTimer);
-    m_jackTimer.setFunc(this);
-    m_jackTimer.start();    
+    StartEngine(this);
     
     m_daw->StartSessionMonitor();
     m_active = true;
@@ -148,18 +145,15 @@ void OService::StartProcessing() {
     m_backend->ControllerShowTeachOff();
     m_backend->ControllerShowLevel(0.0);
     
-    m_jackTimer.stop();
+    StopEngine();
     m_project->Save(m_daw->GetLocation());
 }
 
 void OService::OnTimer(void* user_data)  {
-    if (user_data == &m_jackTimer) {
-        m_backend->ReconnectPorts();
-        OnJackEvent();
-        OnDawEvent();
-        OnMixerEvent();
-        return;
-    }
+    m_backend->ReconnectPorts();
+    OnJackEvent();
+    OnDawEvent();
+    OnMixerEvent();
 }
 
 void OService::OnJackEvent() {

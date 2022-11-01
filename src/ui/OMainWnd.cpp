@@ -26,11 +26,8 @@
 #include "res/trackdlg.h"
 
 void OMainWnd::OnTimer(void* user_data)  {
-    if (user_data == &m_jackTimer) {
-        m_backend->ReconnectPorts();
-        OnJackEvent();
-        return;
-    }
+    m_backend->ReconnectPorts();
+    OnJackEvent();
 }
 
 OMainWnd::OMainWnd() : Gtk::Window() {
@@ -74,8 +71,8 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 }
 
 OMainWnd::~OMainWnd() {
+    StopEngine();
     m_daw->StopSessionMonitor();
-
     if (m_timeview)
         delete m_timeview;
     delete m_bbox;
@@ -90,10 +87,7 @@ void OMainWnd::on_activate() {
     
     m_mixer->Start();
         
-    m_jackTimer.setInterval(20);
-    m_jackTimer.SetUserData(&m_jackTimer);
-    m_jackTimer.setFunc(this);
-    m_jackTimer.start();  
+    StartEngine(this);
 }
 
 OConfig* OMainWnd::GetConfig() {

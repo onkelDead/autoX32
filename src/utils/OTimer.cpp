@@ -29,10 +29,15 @@ OTimer::OTimer(IOTimerEvent* task_function, const long &interval, IOTimerEvent *
 }
 
 OTimer::~OTimer() {
-    stop();
+    if (m_running) 
+        stop();
 }
 
 void OTimer::start() {
+    if (m_running == true) {
+        std::cout << "Timer already running, do nothing." << std::endl;
+        return;
+    }
     m_running = true;
 
     gettimeofday(&m_starttime, NULL);
@@ -57,6 +62,9 @@ void OTimer::stop() {
         while (!m_stopped);
         m_thread->join();
         delete m_thread;
+    }
+    else {
+        std::cout << "Timer not running, do nothing." << std::endl;
     }
 }
 

@@ -33,7 +33,9 @@ OEngine::OEngine(const OEngine& orig) {
 
 OEngine::~OEngine() {
     if (m_backend) {
-        m_jackTimer.stop();
+        if (m_jackTimer.isRunning()) {
+            StopEngine();
+        }
         m_backend->Disconnect();
         delete m_backend;
         m_backend = nullptr;
@@ -53,6 +55,18 @@ OEngine::~OEngine() {
         delete m_project;
         m_project = nullptr;
     }
+}
+
+
+void OEngine::StartEngine(IOTimerEvent* handler) {
+    m_jackTimer.setInterval(20);
+    m_jackTimer.SetUserData(&m_jackTimer);
+    m_jackTimer.setFunc(handler);
+    m_jackTimer.start();    
+}
+
+void OEngine::StopEngine() {
+    m_jackTimer.stop();    
 }
 
 void OEngine::SelectTrack(std::string path, bool selected) {

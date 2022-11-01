@@ -27,7 +27,6 @@ OX32::OX32() {
 OX32::~OX32() {
     if (IsConnected())
         Disconnect();
-    m_timer.stop();
 }
 
 int OX32::Start() {
