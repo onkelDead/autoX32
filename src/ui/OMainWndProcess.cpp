@@ -159,13 +159,15 @@ void OMainWnd::OnUIOperation() {
                 break;
 
             case E_OPERATION::next_track:
-                SelectTrack(m_project->GetNextTrackPath(), true);
+                
+                SelectTrackUI(m_project->GetNextTrackPath(), true);
                 break;
             case E_OPERATION::prev_track:
-                SelectTrack(m_project->GetPrevTrackPath(), true);
+                SelectTrackUI(m_project->GetPrevTrackPath(), true);
                 break;
             case E_OPERATION::unselect:
-                UnselectTrack();
+                if (m_project->GetTrackSelected())
+                    SelectTrackUI(m_project->GetTrackSelected()->GetPath(), false);
                 break;
             case E_OPERATION::toggle_solo:
                 ToggleSolo();

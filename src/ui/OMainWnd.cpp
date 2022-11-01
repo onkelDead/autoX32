@@ -254,7 +254,11 @@ void OMainWnd::remove_track(std::string path) {
 }
 
 void OMainWnd::SelectTrackUI(std::string path, bool val) {
+    IOTrackStore* sts = m_project->GetTrackSelected();
+    if (sts)
+        m_trackslayout.GetTrackview(sts->GetPath())->SetSelected(false);
     SelectTrack(path, val);
+    m_trackslayout.GetTrackview(path)->SetSelected(val);
 }
 
 void OMainWnd::EditTrack(std::string path) {

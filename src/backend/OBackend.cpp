@@ -134,23 +134,23 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
             return 1;
         }
 
-//        if (data[0] == 0x80) {
-//            switch (data[1]) {
-//                case 0x65:
-//                    backend->Notify(CTL_SCRUB_OFF);
-//                    break;
-//                case 0x6e:
-//                    backend->m_fader_touched = false;
-//                    backend->Notify(CTL_TOUCH_RELEASE);
-//                    break;
-//                case 0x5f:
-//                    backend->Notify(CTL_TEACH_OFF);
-//                    break;
-//                default:
-//                    printf("uncaught 0x80 %02x\n", data[1]);
-//                    break;                    
-//            }
-//        }
+        if (data[0] == 0x80) {
+            switch (data[1]) {
+                case 0x65:
+                    backend->Notify(CTL_SCRUB_OFF);
+                    break;
+                case 0x6e:
+                    backend->m_fader_touched = false;
+                    backend->Notify(CTL_TOUCH_RELEASE);
+                    break;
+                case 0x5f:
+                    backend->Notify(CTL_TEACH_OFF);
+                    break;
+                default:
+                    printf("uncaught 0x80 %02x\n", data[1]);
+                    break;                    
+            }
+        }
         if (data[0] == 0x90) {
             if (data[1] == 0x6e) {
                 backend->m_fader_touched = true;

@@ -258,4 +258,5 @@ void OTrackView::SetSelected(bool val) {
         set_name("OTrackView_selected");
     else
         set_name("OTrackView");
+    queue_draw();
 }
