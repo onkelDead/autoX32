@@ -66,6 +66,7 @@ void OEngine::StartEngine(IOTimerEvent* handler) {
 }
 
 void OEngine::StopEngine() {
+    while (!m_jackqueue.empty());
     m_jackTimer.stop();    
 }
 

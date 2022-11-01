@@ -503,7 +503,6 @@ void OJack::ControllerShowSelect(bool val) {
 
 
 void OJack::ControllerShowActive(bool val) {
-    
     s_f6.buf[2] = val ? 0x40 : 0;
     ctl_out.push(&s_f6);
 }
@@ -515,7 +514,7 @@ void OJack::ControllerShowRec(bool val) {
 }
 
 void OJack::ControllerShowLCDName(std::string name, int color) {
-    char* s = strdup(name.c_str());
+    const char* s = name.c_str();
 
     uint8_t syext[] = {0xF0, 0x00, 0x20, 0x32, 0x41, 0x4C, 0x00, 0x04, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0xF7};
 
@@ -526,8 +525,6 @@ void OJack::ControllerShowLCDName(std::string name, int color) {
     memcpy(c->buf, syext, 23);
 
     ctl_out.push(c);
-    free(s);
-
 }
 
 void OJack::ControllerShowLevel(float f) {
