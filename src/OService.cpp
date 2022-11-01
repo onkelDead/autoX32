@@ -149,10 +149,7 @@ void OService::StartProcessing() {
     m_backend->ControllerShowLevel(0.0);
     
     m_jackTimer.stop();
-    m_dawTimer.stop();
-    
     m_project->Save(m_daw->GetLocation());
-
 }
 
 void OService::OnTimer(void* user_data)  {

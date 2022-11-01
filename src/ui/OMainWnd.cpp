@@ -27,6 +27,7 @@
 
 void OMainWnd::OnTimer(void* user_data)  {
     if (user_data == &m_jackTimer) {
+        m_backend->ReconnectPorts();
         OnJackEvent();
         return;
     }
@@ -89,7 +90,7 @@ void OMainWnd::on_activate() {
     
     m_mixer->Start();
         
-    m_jackTimer.setInterval(10);
+    m_jackTimer.setInterval(20);
     m_jackTimer.SetUserData(&m_jackTimer);
     m_jackTimer.setFunc(this);
     m_jackTimer.start();  

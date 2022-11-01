@@ -72,8 +72,6 @@ public:
 private:
     
     
-    OTimer m_dawTimer;
-
     std::atomic<bool> m_active = false;
     
     std::string m_session;
