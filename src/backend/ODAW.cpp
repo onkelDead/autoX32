@@ -242,25 +242,6 @@ bool ODAW::CheckArdourRecent() {
             m_projectFile = m_location;
             m_projectFile.append("/").append(fname).append(".xml");                
             return true;
-//            Save();
-//            Close();
-//
-//            if (access(path, F_OK)) {
-//                printf("project don't exists\n");
-//                if (std::filesystem::create_directory(path) == false) {
-//                    perror("mkdir() error");
-//                    return false;
-//                }
-//                m_location = path;
-//                m_projectFile = m_location;
-//                m_projectFile.append("/").append(name).append(".xml");                
-//            }
-//            else {
-//                Load(path);
-//                m_mixer->WriteAll();
-//
-//                return true;
-//            }
         }
     }
     return false;

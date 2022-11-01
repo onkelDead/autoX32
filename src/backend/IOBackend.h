@@ -65,6 +65,9 @@ public:
     virtual ~IOBackend(){}
     virtual int Connect(IOJackHandler* wnd) = 0;
     virtual void Disconnect() = 0;
+    
+    virtual void ReconnectPorts() = 0;
+    
     virtual OMidiMtc* GetMidiMtc() = 0; 
     virtual std::string GetTimeCode() = 0;
     virtual int GetMillis() = 0;

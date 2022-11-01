@@ -26,6 +26,8 @@ public:
     int Connect(IOJackHandler* wnd);
     void Disconnect() {};
 
+    void ReconnectPorts() {};
+    
     OMidiMtc* GetMidiMtc() {
         return &m_midi_mtc;
     }

@@ -32,12 +32,7 @@ int main_service(int argc, char** argv) {
     
     service = new OService();
     
-    
-    if (service->InitBackend()) {
-        std::cerr << "Failed to initialize Backend" << std::endl;
-        delete service;
-        return EXIT_FAILURE;
-    }
+
 
     if (service->InitDaw()) {
         std::cerr << "Failed to initialize DAW" << std::endl;
@@ -52,6 +47,11 @@ int main_service(int argc, char** argv) {
     }
     
     
+    if (service->InitBackend()) {
+        std::cerr << "Failed to initialize Backend" << std::endl;
+        delete service;
+        return EXIT_FAILURE;
+    }    
 
 
     service->StartProcessing();

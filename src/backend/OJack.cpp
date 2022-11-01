@@ -48,8 +48,6 @@ static int process(jack_nframes_t nframes, void *arg) {
 
     OJack* jack = (OJack*) arg;
 
-    jack->ReconnectPorts();
-
     unsigned int i;
     void *port_buf = jack_port_get_buffer(mmc_in_port, nframes);
     jack_midi_event_t in_event;

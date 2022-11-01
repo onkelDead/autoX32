@@ -121,7 +121,7 @@ void OService::OnDawEvent() {
 void OService::StartProcessing() {
     m_mixer->Start();
     
-    m_jackTimer.setInterval(10);
+    m_jackTimer.setInterval(20);
     m_jackTimer.SetUserData(&m_jackTimer);
     m_jackTimer.setFunc(this);
     m_jackTimer.start();    
@@ -157,6 +157,7 @@ void OService::StartProcessing() {
 
 void OService::OnTimer(void* user_data)  {
     if (user_data == &m_jackTimer) {
+        m_backend->ReconnectPorts();
         OnJackEvent();
         OnDawEvent();
         OnMixerEvent();
