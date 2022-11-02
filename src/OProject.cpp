@@ -286,12 +286,14 @@ void OProject::SetMaxFrames(int max_frames) {
 }
 
 void OProject::SetPlaying(bool val) {
-
     m_playing = val;
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
         ts->SetPlaying(val);
-    }
+        if (ts->IsRecording() && !val) {
+            ts->SetRecording(false);
+        }
+    }        
 }
 
 void OProject::StopRecord() {
@@ -312,19 +314,14 @@ std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
 
-IOTrackStore* OProject::UpdatePos(int current, bool seek) {
-    IOTrackStore*  sel_ts = nullptr;
-
+bool OProject::UpdatePos(int current, bool seek) {
+    bool ret = false;
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
 
-        PlayTrackEntry(ts, ts->UpdatePos(current, seek));
-        
-        if (ts == m_selectedTrack) {
-            sel_ts = ts;
-        }
-    }    
-    return sel_ts;
+        ret |= PlayTrackEntry(ts, ts->UpdatePos(current, seek)) && ts == m_selectedTrack;
+    }   
+    return ret;
 }
 
 bool OProject::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {

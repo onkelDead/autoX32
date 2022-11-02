@@ -157,6 +157,7 @@ void OService::OnTimer(void* user_data)  {
 }
 
 void OService::OnJackEvent() {
+    IOTrackStore* sts = m_project->GetTrackSelected();
     while (!m_jackqueue.empty()) {
         JACK_EVENT event;
         m_jackqueue.front_pop(&event);
@@ -170,41 +171,42 @@ void OService::OnJackEvent() {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
             {
-                IOTrackStore* sel_ts = nullptr;
+                bool sc = false;
                 if (event != MTC_COMPLETE) {
-                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), false);
+                    sc = m_project->UpdatePos(m_backend->GetFrame(), false);
                 } else {
-                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), true);
+                    sc = m_project->UpdatePos(m_backend->GetFrame(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                if (sel_ts != nullptr) {
-                    m_backend->ControllerShowLevel(sel_ts->GetPlayhead()->val.f);
+                if (sc) {
+                    m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
                 }
             }
                 break;
-            case CTL_PLAY:
             case MMC_PLAY:
                 m_backend->Play();
                 m_project->SetPlaying(true);
                 m_playing = true;
                 break;
+            case CTL_PLAY:
+                if (m_playing) {
+                    m_backend->Stop();
+                    m_project->SetPlaying(false);                    
+                    m_playing = false;
+                    if (sts) m_backend->ControllerShowRec(false);
+                }
+                else {
+                    m_backend->Play();
+                    m_project->SetPlaying(true);
+                    m_playing = true;                    
+                }
+                break;
             case CTL_STOP:
             case MMC_STOP:
-            {
                 m_backend->Stop();
                 m_project->SetPlaying(false);
-                std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
-                for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-                    IOTrackStore* ts = it->second;
-                    if (ts->IsRecording()) {
-                            ts->SetRecording(false);
-                            if (m_project->GetTrackSelected() == ts) {
-                                m_backend->ControllerShowRec(false);
-                            }
-                        }
-                    }
-            }
                 m_playing = false;
+                if (sts) m_backend->ControllerShowRec(false);
                 break;
             case MMC_RESET:
                 m_daw->ShortMessage("/refresh");
@@ -226,8 +228,6 @@ void OService::OnJackEvent() {
                 
                 break;
             case CTL_FADER:
-            {
-                IOTrackStore* sts = m_project->GetTrackSelected();
                 if (sts != nullptr) {
                     if (m_teach_active && !sts->GetRecording()) {
                         sts->SetRecording(true);
@@ -238,16 +238,12 @@ void OService::OnJackEvent() {
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());                    
                 }
-            }
                 break;
             case CTL_TOUCH_RELEASE:
-            {
-                IOTrackStore* sts = m_project->GetTrackSelected();
                 if (sts != nullptr && sts->IsRecording()) {
                     sts->SetRecording(false);
                     m_backend->ControllerShowRec(false);
                 }
-            }
                 break;
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;
@@ -269,14 +265,13 @@ void OService::OnJackEvent() {
                 UnselectTrack();
                 break;
             case CTL_DROP_TRACK:
-                if (m_project->GetTrackSelected() != nullptr) {
+                if (sts) {
                     m_backend->m_drop_mode = !m_backend->m_drop_mode;
                     m_backend->ControllerShowDrop(m_backend->m_drop_mode);
                 }
                 break;
             case CTL_KNOB:
                 if (m_backend->m_drop_mode) {
-                    IOTrackStore* sts = m_project->GetTrackSelected();
                     if (sts != nullptr) {
                         UnselectTrack();
                         m_project->RemoveTrack(sts->GetPath());

@@ -18,6 +18,7 @@ void OMainWnd::notify_jack(JACK_EVENT jack_event) {
 }
 
 void OMainWnd::OnJackEvent() {
+    IOTrackStore* sts = m_project->GetTrackSelected();
     while (!m_jackqueue.empty()) {
         JACK_EVENT event;
         m_jackqueue.front_pop(&event);
@@ -25,19 +26,19 @@ void OMainWnd::OnJackEvent() {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
             {
-                IOTrackStore* sel_ts = nullptr;
+                bool sc = false;
                 if (event != MTC_COMPLETE) {
-                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), false);
+                    sc = m_project->UpdatePos(m_backend->GetFrame(), false);
                 } else {
-                    sel_ts = m_project->UpdatePos(m_backend->GetFrame(), true);
+                    sc = m_project->UpdatePos(m_backend->GetFrame(), true);
                     m_backend->ControlerShowMtcComplete(0);
                 }
-                if (sel_ts != nullptr) {
-                    m_backend->ControllerShowLevel(sel_ts->GetPlayhead()->val.f);
+                if (sc) {
+                    m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
                 }
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
-            }      
-               break;
+            }     
+                break;
             case MMC_PLAY:
                 PublishUiEvent(E_OPERATION::play, NULL);
                 break;
@@ -64,20 +65,17 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_FADER:
-            {
-                IOTrackStore* store = m_project->GetTrackSelected();
-                if (store) {
-                    if (m_btn_teach->get_active() && !store->GetRecording()) {
-                        store->SetRecording(true);
+                if (sts) {
+                    if (m_btn_teach->get_active() && !sts->GetRecording()) {
+                        sts->SetRecording(true);
                     }                    
-                    IOscMessage* msg = store->GetMessage();
+                    IOscMessage* msg = sts->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);
                     m_MessageDispatcher.emit();                    
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                 }
-            }
                 break;
             case CTL_TOUCH_RELEASE:
                 PublishUiEvent(E_OPERATION::touch_release, NULL);
@@ -136,13 +134,12 @@ void OMainWnd::OnJackEvent() {
                 m_daw->ShortMessage("/loop_toggle");
                 break;
             case CTL_DROP_TRACK:
-                if (m_project->GetTrackSelected()) {
+                if (sts) {
                     PublishUiEvent(E_OPERATION::drop_track, NULL);
                 }
                 break;
             case CTL_KNOB:
                 if (m_backend->m_drop_mode) {
-                    IOTrackStore* sts = m_project->GetTrackSelected();
                     if (sts != nullptr) {
                         UnselectTrack();
                         remove_track(sts->GetPath());
