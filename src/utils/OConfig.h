@@ -28,7 +28,9 @@
 #define SETTINGS_DAW_AUTOCONNECT        "daw-autoconnect"
 #define SETTINGS_MIXER_HOST             "mixer-host"
 #define SETTINGS_MIXER_AUTOCONNECT      "mixer-autoconnect"
-    
+
+#define SETTINGS_LOAD_CACHE             "load-session-cache"
+
 #define SETTINGS_WINDOW_WIDTH           "window-width"    
 #define SETTINGS_WINDOW_HEIGHT          "window-height"    
 #define SETTINGS_WINDOW_TOP             "window-top"    

@@ -38,6 +38,7 @@ ODlgProlog::ODlgProlog(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>
     refStyleContext->add_provider_for_screen(Gdk::Screen::get_default(), m_refCssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
     builder->get_widget< Gtk::ComboBoxText >("combo-backend", m_combo_backend);
+    builder->get_widget< Gtk::CheckButton >("chk-load-cache", m_chk_load_cache);
 
     builder->get_widget< Gtk::Button >("btn-quit", m_btn_quit);
     m_btn_quit->signal_clicked().connect(sigc::mem_fun(*this, &ODlgProlog::on_btn_quit));

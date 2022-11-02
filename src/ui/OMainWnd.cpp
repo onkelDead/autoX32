@@ -293,6 +293,7 @@ bool OMainWnd::SetupBackend() {
     pDialog->set_icon(get_icon());
 
     pDialog->SetMidiBackend(GetConfig()->get_int(SETTINGS_MIDI_BACKEND));
+    pDialog->SetLoadCache(GetConfig()->get_boolean(SETTINGS_LOAD_CACHE));
 
     pDialog->run();
     if (!pDialog->GetResult()) {
@@ -300,7 +301,8 @@ bool OMainWnd::SetupBackend() {
     }
 
     GetConfig()->set_int(SETTINGS_MIDI_BACKEND, pDialog->GetMidiBackend());
-
+    GetConfig()->set_boolean(SETTINGS_LOAD_CACHE, pDialog->GetLoadCache());
+    
     switch (pDialog->GetMidiBackend()) {
         case 0:
             m_backend = new OAlsa();

@@ -40,7 +40,10 @@ void OMainWnd::OnDawEvent() {
                 m_mixer->PauseCallbackHandler(true);
                 if (!OpenProject(m_daw->GetLocation())) {
                     std::cout << "OMainWnd: Load session " << m_daw->GetProjectFile() << std::endl;
-                    m_mixer->WriteAll();
+                    if (m_config.get_boolean(SETTINGS_LOAD_CACHE))
+                        m_mixer->WriteAll();
+                    else
+                        m_mixer->ReadAll();
                 }
                 else {
                     std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
