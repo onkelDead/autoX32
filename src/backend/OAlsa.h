@@ -46,9 +46,8 @@ public:
     void QuarterFrame(uint8_t);
 
     void ControllerReset() {}
-    void ControllerShowPlay();
+    void ControllerShowPlay(bool val);
     void ControllerShowDrop(bool val) {}
-    void ControllerShowStop();
     void ControllerShowRec(bool) {};
     void ControllerShowTeach(bool val);
     void ControllerShowTeachMode(bool);

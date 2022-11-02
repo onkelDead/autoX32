@@ -38,9 +38,16 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
             }      
                break;
-            case CTL_PLAY:
             case MMC_PLAY:
                 PublishUiEvent(E_OPERATION::play, NULL);
+                break;
+            case CTL_PLAY:
+                if (m_project->GetPlaying()) {
+                    PublishUiEvent(E_OPERATION::stop, NULL);
+                }
+                else {
+                    PublishUiEvent(E_OPERATION::play, NULL);
+                }
                 break;
             case CTL_STOP:
             case MMC_STOP:

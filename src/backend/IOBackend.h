@@ -68,8 +68,7 @@ public:
 
     virtual void ControllerReset() = 0;
     
-    virtual void ControllerShowPlay() = 0;
-    virtual void ControllerShowStop() = 0;
+    virtual void ControllerShowPlay(bool val) = 0;
     virtual void ControllerShowDrop(bool val) = 0;
     virtual void ControllerShowTeach(bool val) = 0;
     virtual void ControllerShowTeachMode(bool) = 0;

@@ -358,7 +358,7 @@ int OJack::Connect(IOJackHandler* wnd) {
 }
 
 void OJack::ControllerReset() {
-    ControllerShowStop();
+    ControllerShowPlay(false);
     ControllerShowTeach(false);
     ControllerShowTeachMode(false);
     ControllerShowWheelMode();
@@ -383,7 +383,7 @@ void OJack::Disconnect() {
 
 void OJack::Play() {
     mmc_out.push(0x03);
-    ControllerShowPlay();
+    ControllerShowPlay(true);
 }
 
 void OJack::ReconnectPorts() {
@@ -415,7 +415,7 @@ void OJack::ReconnectPorts() {
 
 void OJack::Stop() {
     mmc_out.push(0x01);
-    ControllerShowStop();
+    ControllerShowPlay(false);
 }
 
 void OJack::Locate(int frame) {
@@ -476,16 +476,9 @@ uint8_t* OJack::GetTimeDiggits() {
     return m_midi_mtc.diggit;
 }
 
-void OJack::ControllerShowPlay() {
-    s_stop.buf[2] = 0x00;
-    s_play.buf[2] = 0x41;
-    ctl_out.push(&s_stop);
-    ctl_out.push(&s_play);
-}
-
-void OJack::ControllerShowStop() {
-    s_stop.buf[2] = 0x41;
-    s_play.buf[2] = 0x00;
+void OJack::ControllerShowPlay(bool val) {
+    s_stop.buf[2] = val ? 0x00 : 0x41;
+    s_play.buf[2] = val ? 0x41 : 0x00;
     ctl_out.push(&s_stop);
     ctl_out.push(&s_play);
 }

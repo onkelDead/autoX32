@@ -40,8 +40,7 @@ public:
     
     void ControllerReset();
     
-    void ControllerShowPlay();
-    void ControllerShowStop();
+    void ControllerShowPlay(bool val);
     void ControllerShowDrop(bool val);
     void ControllerShowRec(bool);
     void ControllerShowTeach(bool val);

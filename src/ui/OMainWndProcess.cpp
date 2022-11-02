@@ -132,11 +132,11 @@ void OMainWnd::OnUIOperation() {
                 break;
             case E_OPERATION::play:
                 m_button_play->set_active(true);
-                m_backend->ControllerShowPlay();
+                m_backend->ControllerShowPlay(true);
                 break;
             case E_OPERATION::stop:
                 m_button_play->set_active(false);
-                m_backend->ControllerShowStop();
+                m_backend->ControllerShowPlay(false);
                 m_trackslayout.StopRecord();
                 break;
             case E_OPERATION::touch_on:
