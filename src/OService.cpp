@@ -130,7 +130,7 @@ void OService::StartProcessing() {
     m_daw->StartSessionMonitor();
     m_active = true;
 
-    m_backend->ControlerShowMtcComplete(0);
+    m_backend->ControllerReset();
     m_backend->ControllerShowActive(true);
     
     std::cout << "Processing started." << std::endl;
@@ -143,11 +143,7 @@ void OService::StartProcessing() {
     
     UnselectTrack();
     
-    m_backend->ControllerShowActive(false);
-    m_backend->ControllerShowRec(false);
-    m_backend->ControllerShowTeachMode(false);
-    m_backend->ControllerShowTeach(false);
-    m_backend->ControllerShowLevel(0.0);
+    m_backend->ControllerReset();
     
     StopEngine();
     m_project->Save(m_daw->GetLocation());
@@ -265,6 +261,21 @@ void OService::OnJackEvent() {
                 break;
             case CTL_UNSELECT:
                 UnselectTrack();
+                break;
+            case CTL_DROP_TRACK:
+                if (m_project->GetTrackSelected() != nullptr) {
+                    m_backend->m_drop_mode = !m_backend->m_drop_mode;
+                    m_backend->ControllerShowDrop(m_backend->m_drop_mode);
+                }
+                break;
+            case CTL_KNOB:
+                if (m_backend->m_drop_mode) {
+                    IOTrackStore* sts = m_project->GetTrackSelected();
+                    if (sts != nullptr) {
+                        UnselectTrack();
+                        m_project->RemoveTrack(sts->GetPath());
+                    }
+                }
                 break;
             case CTL_TOGGLE_REC:
                 ToggleTrackRecord();

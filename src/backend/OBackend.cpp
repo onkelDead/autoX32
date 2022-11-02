@@ -127,8 +127,18 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                             backend->Notify(CTL_NEXT_TRACK);
                     }                    
                     break;
+                case CTL_BUTTON_DROP:
+                    if (data[2] == 0x7f) {
+                        backend->Notify(CTL_DROP_TRACK);
+                    }
+                    break;
+                case CTL_BUTTON_KNOB:
+                    if (data[2] == 0x7f) {
+                        backend->Notify(CTL_KNOB);
+                    }
+                    break;
                 default:
-                    printf("uncaught 0xb0 %02x\n", data[1]);
+                    printf("uncaught 0xb0 0x%02x\n", data[1]);
                     break;
             }
             return 1;

@@ -105,4 +105,8 @@ void OEngine::UnselectTrack() {
     m_backend->ControllerShowSelect(false);
     m_backend->ControllerShowRec(false);
     m_backend->ControllerShowLevel(0.0);
+    if (m_backend->m_drop_mode) {
+        m_backend->ControllerShowDrop(false);
+        m_backend->m_drop_mode = false;
+    }
 }

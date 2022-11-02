@@ -219,6 +219,12 @@ void OMainWnd::OnUIOperation() {
                 }
             }
                 break;
+            case E_OPERATION::drop_track:
+                if (m_project->GetTrackSelected() != nullptr) {
+                    m_backend->m_drop_mode = !m_backend->m_drop_mode;
+                    m_backend->ControllerShowDrop(m_backend->m_drop_mode);
+                }
+                break;
             default:
                 break;
         }

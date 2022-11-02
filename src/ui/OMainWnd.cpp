@@ -118,11 +118,7 @@ bool OMainWnd::Shutdown() {
             return ret_code;
     }
 
-    m_backend->ControllerShowActive(false);
-    m_backend->ControllerShowRec(false);
-    m_backend->ControllerShowTeachMode(false);
-    m_backend->ControllerShowTeach(false);
-    m_backend->ControllerShowLevel(0.0);
+    m_backend->ControllerReset();
     
     m_mixer->Disconnect();
     m_daw->Disconnect();

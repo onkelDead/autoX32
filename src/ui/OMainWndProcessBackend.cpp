@@ -124,6 +124,20 @@ void OMainWnd::OnJackEvent() {
                 m_backend->ControllerShowCycle();
                 m_daw->ShortMessage("/loop_toggle");
                 break;
+            case CTL_DROP_TRACK:
+                if (m_project->GetTrackSelected()) {
+                    PublishUiEvent(E_OPERATION::drop_track, NULL);
+                }
+                break;
+            case CTL_KNOB:
+                if (m_backend->m_drop_mode) {
+                    IOTrackStore* sts = m_project->GetTrackSelected();
+                    if (sts != nullptr) {
+                        UnselectTrack();
+                        remove_track(sts->GetPath());
+                    }
+                }
+                break;
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;
                 break;

@@ -29,6 +29,7 @@
 #define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
 // Used X-Touch buttons
+#define CTL_BUTTON_KNOB         0x00
 #define CTL_BUTTON_SELECT       0x03
 #define CTL_BUTTON_REC          0x06
 #define CTL_BUTTON_F1           0x07
@@ -39,6 +40,7 @@
 #define CTL_BUTTON_F6           0x0c
 #define CTL_BUTTON_MARKER       0x0d
 #define CTL_BUTTON_CYCLE        0x0f
+#define CTL_BUTTON_DROP         0x10
 #define CTL_BUTTON_START        0x14
 #define CTL_BUTTON_END          0x15
 #define CTL_BUTTON_STOP         0x16
@@ -64,8 +66,11 @@ public:
 
     virtual void Notify(JACK_EVENT event) = 0;
 
+    virtual void ControllerReset() = 0;
+    
     virtual void ControllerShowPlay() = 0;
     virtual void ControllerShowStop() = 0;
+    virtual void ControllerShowDrop(bool val) = 0;
     virtual void ControllerShowTeach(bool val) = 0;
     virtual void ControllerShowTeachMode(bool) = 0;
     virtual void ControllerShowSelect(bool) = 0;
@@ -110,6 +115,7 @@ public:
     bool m_scrub = false;
     int m_shuffle_speed = 0;
     bool m_wheel_mode = false;
+    bool m_drop_mode = false;
     
     bool m_marker = false;
     bool m_cycle = false;

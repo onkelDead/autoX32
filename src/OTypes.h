@@ -46,6 +46,8 @@ enum JACK_EVENT {
     CTL_FADER,
     CTL_PREV_TRACK,
     CTL_NEXT_TRACK,
+    CTL_DROP_TRACK,
+    CTL_KNOB,
     CTL_SCRUB_ON,
     CTL_SCRUB_OFF,
     CTL_JUMP_BACKWARD,
@@ -87,6 +89,7 @@ enum E_OPERATION {
     toggle_recview,
     jump_forward,
     jump_backward,
+    drop_track
 };
 
 typedef struct ui_event_type {

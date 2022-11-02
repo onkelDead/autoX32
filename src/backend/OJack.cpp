@@ -53,6 +53,11 @@ static jack_midi_data_t shuffle[] = {0xF0, 0x7F, 0x7e, 0x06, 0x47, 0x03, 0b00000
 #define SevenSeg_8 0b01111111
 #define SevenSeg_9 0b01100111
 
+static ctl_command s_drop = {
+    3,
+    { 0xB0, CTL_BUTTON_DROP, 0x00}
+};
+
 static ctl_command s_stop = {
     3,
     { 0xB0, CTL_BUTTON_STOP, 0x41}
@@ -349,6 +354,10 @@ int OJack::Connect(IOJackHandler* wnd) {
 //        return 1;
     }
 
+    return 0;
+}
+
+void OJack::ControllerReset() {
     ControllerShowStop();
     ControllerShowTeach(false);
     ControllerShowTeachMode(false);
@@ -358,8 +367,13 @@ int OJack::Connect(IOJackHandler* wnd) {
     ControllerShowSelect(0);
     ControllerShowScrub();
     ControllerShowLCDName("", 0);
-
-    return 0;
+    ControllerShowDrop(false);
+    ControllerShowLevel(0.0);
+    ControllerShowActive(false);
+    
+    while (!ctl_out.empty()) {
+        usleep(20);
+    }
 }
 
 void OJack::Disconnect() {
@@ -474,6 +488,11 @@ void OJack::ControllerShowStop() {
     s_play.buf[2] = 0x00;
     ctl_out.push(&s_stop);
     ctl_out.push(&s_play);
+}
+
+void OJack::ControllerShowDrop(bool val) {
+    s_drop.buf[2] = val ? 0x40 : 0x00;
+    ctl_out.push(&s_drop);
 }
 
 void OJack::ControllerShowTeach(bool val) {
