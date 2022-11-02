@@ -34,7 +34,7 @@ void OMainWnd::OnJackEvent() {
                     m_backend->ControlerShowMtcComplete(0);
                 }
                 if (sc) {
-                    m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
+                    m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
                 }
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
             }     
