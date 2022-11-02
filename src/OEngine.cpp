@@ -59,7 +59,7 @@ OEngine::~OEngine() {
 
 
 void OEngine::StartEngine(IOTimerEvent* handler) {
-    m_jackTimer.setInterval(20);
+    m_jackTimer.setInterval(5);
     m_jackTimer.SetUserData(&m_jackTimer);
     m_jackTimer.setFunc(handler);
     m_jackTimer.start();    

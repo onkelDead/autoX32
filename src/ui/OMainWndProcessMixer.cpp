@@ -16,9 +16,12 @@ void OMainWnd::OnMessageEvent() {
 
         IOTrackStore* ts = msg->GetTrackstore();
         if (ts) {
-            IOTrackStore* ts = msg->GetTrackstore();
-            int upd = 0;
             IOTrackView * view = m_trackslayout.GetTrackview(ts->GetPath());
+            if (m_btn_teach->get_active() && !ts->GetRecording()) {
+                ts->SetRecording(true);
+                view->SetRecord(true);
+            }            
+            int upd = 0;
             
             if ((upd = ts->ProcessMsg(msg, GetPosFrame()))) {
                 PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));

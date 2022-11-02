@@ -226,13 +226,19 @@ void OService::OnJackEvent() {
                 
                 break;
             case CTL_FADER:
-                if (m_project->GetTrackSelected() != nullptr) {
-                    IOscMessage* msg = m_project->GetTrackSelected()->GetMessage();
+            {
+                IOTrackStore* sts = m_project->GetTrackSelected();
+                if (sts != nullptr) {
+                    if (m_teach_active && !sts->GetRecording()) {
+                        sts->SetRecording(true);
+                    }
+                    IOscMessage* msg = sts->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());                    
                 }
+            }
                 break;
             case CTL_TOUCH_RELEASE:
             {
@@ -355,7 +361,11 @@ void OService::OnMixerEvent() {
 
         IOTrackStore* ts = msg->GetTrackstore();
         if (ts) {
-            IOTrackStore* ts = msg->GetTrackstore();
+            
+            if (m_teach_active) {
+                ts->SetRecording(true);
+            }
+            
             int upd = ts->ProcessMsg(msg, m_backend->GetFrame());
         
             if (ts == m_project->GetTrackSelected()) {

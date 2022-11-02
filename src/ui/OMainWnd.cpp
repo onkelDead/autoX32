@@ -80,6 +80,8 @@ void OMainWnd::on_activate() {
     }
     AutoConnect();
     
+    m_backend->ControllerReset();
+    
     m_mixer->Start();
         
     StartEngine(this);

@@ -41,6 +41,7 @@ public:
     virtual void SetPlaying(bool val) = 0;
     virtual bool IsRecording() = 0;
     virtual bool SetRecording(bool val) = 0;
+    virtual bool GetRecording() = 0;
     virtual bool ToggleRecord() = 0;
     virtual bool IsDirty() = 0;
     virtual void SetDirty(bool val) = 0;

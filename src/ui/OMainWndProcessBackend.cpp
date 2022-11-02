@@ -57,8 +57,12 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_FADER:
-                if (m_project->GetTrackSelected()) {
-                    IOTrackStore* store = m_project->GetTrackSelected();
+            {
+                IOTrackStore* store = m_project->GetTrackSelected();
+                if (store) {
+                    if (m_btn_teach->get_active() && !store->GetRecording()) {
+                        store->SetRecording(true);
+                    }                    
                     IOscMessage* msg = store->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
                     my_messagequeue.push(msg);
@@ -66,7 +70,7 @@ void OMainWnd::OnJackEvent() {
                     m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                 }
-
+            }
                 break;
             case CTL_TOUCH_RELEASE:
                 PublishUiEvent(E_OPERATION::touch_release, NULL);

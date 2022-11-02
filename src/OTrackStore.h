@@ -59,6 +59,7 @@ public:
     }
 
     inline bool SetRecording(bool val);
+    inline bool GetRecording();
     inline bool ToggleRecord();
 
     inline bool IsDirty() {
