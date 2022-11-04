@@ -170,44 +170,35 @@ void OService::OnJackEvent() {
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-                Locate(event != MTC_COMPLETE);
+                EngineLocate(event != MTC_COMPLETE);
                 break;
             case MMC_PLAY:
-                Play();
+                EnginePlay();
                 break;
             case CTL_PLAY:
                 if (m_playing) {
-                    Stop();
+                    EngineStop();
                 }
                 else {
-                    Play();
+                    EnginePlay();
                 }
                 break;
             case CTL_STOP:
             case MMC_STOP:
-                Stop();
+                EngineStop();
                 break;
             case MMC_RESET:
                 m_daw->ShortMessage("/refresh");
                 m_daw->ShortMessage("/strip/list");
                 break;
             case CTL_TEACH_PRESS:
-                Teach(true);
+                EngineTeach(true);
                 break;
             case CTL_TEACH_RELEASE:
-                Teach(false);
+                EngineTeach(false);
                 break;
             case CTL_FADER:
-                if (sts != nullptr) {
-                    if (m_teach_active && !sts->GetRecording()) {
-                        sts->SetRecording(true);
-                    }
-                    IOscMessage* msg = sts->GetMessage();
-                    msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
-                    my_messagequeue.push(msg);
-                    m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
-                    m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());                    
-                }
+                EngineFader();
                 break;
             case CTL_TOUCH_RELEASE:
                 if (sts != nullptr && sts->IsRecording()) {
@@ -216,39 +207,31 @@ void OService::OnJackEvent() {
                 }
                 break;
             case CTL_TEACH_MODE:
-                TeachMode();
+                EngineTeachMode();
                 break;
             case CTL_HOME:
-                Home();
+                EngineHome();
                 break;
             case CTL_END:
-                End();
+                EngineEnd();
                 break;
             case CTL_NEXT_TRACK:
-                SelectNextTrack();
+                EngineSelectNextTrack();
                 break;
             case CTL_PREV_TRACK:
-                SelectPrevTrack();
+                EngineSelectPrevTrack();
                 break;
             case CTL_UNSELECT:
                 UnselectTrack();
                 break;
             case CTL_DROP_TRACK:
-                if (sts) {
-                    m_backend->m_drop_mode = !m_backend->m_drop_mode;
-                    m_backend->ControllerShowDrop(m_backend->m_drop_mode);
-                }
+                EngineDropMode();
                 break;
             case CTL_KNOB:
-                if (m_backend->m_drop_mode) {
-                    if (sts != nullptr) {
-                        UnselectTrack();
-                        m_project->RemoveTrack(sts->GetPath());
-                    }
-                }
+                EngineDropTrack();
                 break;
             case CTL_TOGGLE_REC:
-                ToggleTrackRecord();
+                EngineToggleTrackRecord();
                 break;
             case CTL_SCRUB_ON:
                 m_backend->m_scrub = !m_backend->m_scrub;
@@ -257,23 +240,16 @@ void OService::OnJackEvent() {
             case CTL_SCRUB_OFF:
                 break;
             case CTL_STEP_MODE:
-                m_backend->m_step_mode = !m_backend->m_step_mode;
-                m_backend->ControllerShowStepMode(m_backend->m_step_mode);
+                EngineStepMode();
                 break;
-            case CTL_JUMP_FORWARD:
-                if (m_backend->m_scrub)
-                    m_backend->Shuffle(false);
-                else
-                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
+            case CTL_WHEEL_LEFT:
+                EngineWheelLeft();
                 break;
-            case CTL_JUMP_BACKWARD:
-                if (m_backend->m_scrub)
-                    m_backend->Shuffle(true);
-                else
-                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
+            case CTL_WHEEL_RIGHT:
+                EngineWheelRight();
                 break;
             case CTL_WHEEL_MODE:
-                m_backend->ControllerShowWheelMode();
+                EngineWheelMode();
                 break;
             case CTL_MARKER:
                 m_backend->ControllerShowMarker();

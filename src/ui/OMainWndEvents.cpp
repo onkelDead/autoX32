@@ -185,9 +185,9 @@ void OMainWnd::on_btn_teach_clicked() {
     }
     if (!m_sensitive) return;
     if (m_teach_mode) {
-        TeachMode();
+        EngineTeachMode();
     }
-    Teach(m_btn_teach->get_active());
+    EngineTeach(m_btn_teach->get_active());
 }
 
 void OMainWnd::on_btn_loop_start_clicked() {
@@ -227,12 +227,12 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_home_clicked() {
-    Home();
+    EngineHome();
     UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_end_clicked() {
-    End();
+    EngineEnd();
     UpdatePlayhead(true);
 }
 

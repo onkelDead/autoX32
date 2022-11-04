@@ -111,7 +111,7 @@ void OEngine::UnselectTrack() {
     }
 }
 
-void OEngine::Locate(bool complete) {
+void OEngine::EngineLocate(bool complete) {
     bool sc = false;
     if (complete) {
         sc = m_project->UpdatePos(m_backend->GetFrame(), false);
@@ -124,20 +124,20 @@ void OEngine::Locate(bool complete) {
     }    
 }
 
-void OEngine::Play() {
+void OEngine::EnginePlay() {
     m_playing = true;
     m_backend->Play();
     m_project->SetPlaying(m_playing);
 }
 
-void OEngine::Stop() {
+void OEngine::EngineStop() {
     m_playing = false;
     m_backend->Stop();
     m_project->SetPlaying(m_playing);   
     if (m_project->GetTrackSelected()) m_backend->ControllerShowRec(false);
 }
 
-void OEngine::Teach(bool pressed) {
+void OEngine::EngineTeach(bool pressed) {
     if (pressed) {
         if (m_teach_mode) {
             m_teach_active = !m_teach_active;
@@ -156,7 +156,7 @@ void OEngine::Teach(bool pressed) {
     m_backend->ControllerShowTeach(m_teach_active);
 }
 
-void OEngine::TeachMode() {
+void OEngine::EngineTeachMode() {
     m_teach_mode = !m_teach_mode;
     m_backend->ControllerShowTeachMode(m_teach_mode);
     if (!m_teach_mode) {
@@ -166,29 +166,93 @@ void OEngine::TeachMode() {
     }    
 }
 
-void OEngine::Home() {
+void OEngine::EngineHome() {
     m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
 }
 
-void OEngine::End() {
+void OEngine::EngineEnd() {
     m_backend->Locate(m_project->GetTimeRange()->m_loopend);
 }
 
 
-void OEngine::SelectNextTrack() {
+void OEngine::EngineSelectNextTrack() {
     SelectTrack(m_project->GetNextTrackPath(), true);
 }
 
-void OEngine::SelectPrevTrack() {
+void OEngine::EngineSelectPrevTrack() {
     SelectTrack(m_project->GetPrevTrackPath(), true);
 }
 
 
-void OEngine::ToggleTrackRecord() {
+void OEngine::EngineToggleTrackRecord() {
     if (m_project->GetTrackSelected() == nullptr)
         return;
     
     bool isRec = m_project->GetTrackSelected()->IsRecording();
     m_project->GetTrackSelected()->SetRecording(!isRec);
     m_backend->ControllerShowRec(!isRec);
+}
+
+void OEngine::EngineFader() {
+    IOTrackStore* sts = m_project->GetTrackSelected();
+    if (sts) {
+        if (m_teach_active && !sts->GetRecording()) {
+            sts->SetRecording(true);
+        }                    
+        IOscMessage* msg = sts->GetMessage();
+        msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
+        if (sts->GetRecording()) {
+            m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+            sts->ProcessMsg(msg, m_backend->GetFrame());
+        }
+        m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
+    }
+}
+
+void OEngine::EngineDropMode() {
+    if (m_project->GetTrackSelected()) {
+        m_backend->m_drop_mode = !m_backend->m_drop_mode;
+        m_backend->ControllerShowDrop(m_backend->m_drop_mode);
+    }    
+}
+
+bool OEngine::EngineDropTrack() {
+    bool ret = false;
+    if (m_backend->m_drop_mode) {
+        IOTrackStore* sts = m_project->GetTrackSelected();
+        if (sts != nullptr) {
+            UnselectTrack();
+            m_project->RemoveTrack(sts->GetPath());
+            ret = true;
+        }
+    }
+    return ret;
+}
+
+void OEngine::EngineWheelLeft() {
+    if (!m_wheel_mode) {
+        m_backend->Locate(m_backend->GetFrame() - (m_step_mode ? 1800 : 120));
+    }
+    else {
+        EngineSelectPrevTrack();
+    }
+}
+
+void OEngine::EngineWheelRight() {
+    if (!m_wheel_mode) {
+        m_backend->Locate(m_backend->GetFrame() + (m_step_mode ? 1800 : 120));
+    }
+    else {
+        EngineSelectNextTrack();
+    }
+}
+
+void OEngine::EngineStepMode() {
+    m_step_mode = !m_step_mode;
+    m_backend->ControllerShowStepMode(m_step_mode);
+}
+
+void OEngine::EngineWheelMode() {
+    m_wheel_mode = !m_wheel_mode;
+    m_backend->ControllerShowWheelMode(m_wheel_mode);
 }

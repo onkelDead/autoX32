@@ -84,7 +84,7 @@ public:
     
     virtual void ControllerShowScrub() = 0;
     
-    virtual void ControllerShowWheelMode() = 0;
+    virtual void ControllerShowWheelMode(bool) = 0;
     virtual void ControllerShowActive(bool) = 0;
     virtual void ControllerCustom(uint8_t, uint8_t, uint8_t) = 0;
     
@@ -113,9 +113,7 @@ public:
     bool m_fader_touched = false;
     bool m_scrub = false;
     int m_shuffle_speed = 0;
-    bool m_wheel_mode = false;
     bool m_drop_mode = false;
-    bool m_step_mode = false;
     
     bool m_marker = false;
     bool m_cycle = false;

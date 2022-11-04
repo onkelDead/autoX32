@@ -197,18 +197,18 @@ void OMainWnd::OnUIOperation() {
                 }
             }
                 break;
-            case E_OPERATION::jump_forward:
-                if (m_backend->m_scrub)
-                    m_backend->Shuffle(false);
-                else
-                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
-                break;
-            case E_OPERATION::jump_backward:
-                if (m_backend->m_scrub)
-                    m_backend->Shuffle(true);
-                else
-                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
-                break;
+//            case E_OPERATION::jump_forward:
+//                if (m_backend->m_scrub)
+//                    m_backend->Shuffle(false);
+//                else
+//                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
+//                break;
+//            case E_OPERATION::jump_backward:
+//                if (m_backend->m_scrub)
+//                    m_backend->Shuffle(true);
+//                else
+//                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
+//                break;
             case E_OPERATION::touch_release:
             {
                 if (m_btn_teach->get_active()) {
@@ -220,12 +220,9 @@ void OMainWnd::OnUIOperation() {
                 }
             }
                 break;
-            case E_OPERATION::drop_track:
-                if (m_project->GetTrackSelected() != nullptr) {
-                    m_backend->m_drop_mode = !m_backend->m_drop_mode;
-                    m_backend->ControllerShowDrop(m_backend->m_drop_mode);
-                }
-                break;
+//            case E_OPERATION::drop_track:
+//                remove_track()
+//                break;
             default:
                 break;
         }

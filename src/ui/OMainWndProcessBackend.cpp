@@ -26,27 +26,27 @@ void OMainWnd::OnJackEvent() {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
             {
-                Locate(event != MTC_COMPLETE);
+                EngineLocate(event != MTC_COMPLETE);
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
             }     
                 break;
             case MMC_PLAY:
-                Play();
+                EnginePlay();
                 PublishUiEvent(E_OPERATION::play, NULL);
                 break;
             case CTL_PLAY:
                 if (m_playing) {
-                    Stop();
+                    EngineStop();
                     PublishUiEvent(E_OPERATION::stop, NULL);
                 }
                 else {
-                    Play();
+                    EnginePlay();
                     PublishUiEvent(E_OPERATION::play, NULL);
                 }
                 break;
             case CTL_STOP:
             case MMC_STOP:
-                Stop();
+                EngineStop();
                 PublishUiEvent(E_OPERATION::stop, NULL);
                 break;
             case MMC_RESET:
@@ -54,28 +54,15 @@ void OMainWnd::OnJackEvent() {
                 m_daw->ShortMessage("/strip/list");
                 break;
             case CTL_TEACH_PRESS:
-                Teach(true);
+                EngineTeach(true);
                 PublishUiEvent(E_OPERATION::teach, NULL);
                 break;
             case CTL_TEACH_RELEASE:
-                Teach(false);
+                EngineTeach(false);
                 PublishUiEvent(E_OPERATION::teach, NULL);
                 break;
             case CTL_FADER:
-                if (sts) {
-                    if (m_teach_active && !sts->GetRecording()) {
-                        sts->SetRecording(true);
-                    }                    
-                    IOscMessage* msg = sts->GetMessage();
-                    msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
-//                    my_messagequeue.push(msg);
-//                    m_MessageDispatcher.emit();                    
-                    if (sts->GetRecording()) {
-                        m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
-                        sts->ProcessMsg(msg, GetPosFrame());
-                    }
-                    m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
-                }
+                EngineFader();
                 break;
             case CTL_TOUCH_RELEASE:
                 if (sts != nullptr && sts->IsRecording()) {
@@ -85,25 +72,24 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::touch_release, NULL);
                 break;
             case CTL_TEACH_MODE:
-                TeachMode();
+                EngineTeachMode();
                 PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_STEP_MODE:
-                m_backend->m_step_mode = !m_backend->m_step_mode;
-                m_backend->ControllerShowStepMode(m_backend->m_step_mode);
+                EngineStepMode();
                 break;               
             case CTL_HOME:
-                Home();
+                EngineHome();
                 break;
             case CTL_END:
-                End();
+                EngineEnd();
                 break;
             case CTL_NEXT_TRACK:
-                SelectNextTrack();
+                EngineSelectNextTrack();
                 PublishUiEvent(next_track, NULL);
                 break;
             case CTL_PREV_TRACK:
-                SelectPrevTrack();                
+                EngineSelectPrevTrack();                
                 PublishUiEvent(next_track, NULL);
                 break;
             case CTL_UNSELECT:
@@ -111,7 +97,7 @@ void OMainWnd::OnJackEvent() {
                 PublishUiEvent(E_OPERATION::unselect, NULL);
                 break;
             case CTL_TOGGLE_REC:
-                ToggleTrackRecord();
+                EngineToggleTrackRecord();
                 PublishUiEvent(E_OPERATION::toggle_rec, NULL);
                 break;
             case CTL_SCRUB_ON:
@@ -120,14 +106,16 @@ void OMainWnd::OnJackEvent() {
                 break;
             case CTL_SCRUB_OFF:
                 break;
-            case CTL_JUMP_FORWARD:
-                PublishUiEvent(E_OPERATION::jump_forward, NULL);
+            case CTL_WHEEL_LEFT:
+                EngineWheelLeft();
+                if (m_wheel_mode) PublishUiEvent(next_track, NULL);
                 break;
-            case CTL_JUMP_BACKWARD:
-                PublishUiEvent(E_OPERATION::jump_backward, NULL);
+            case CTL_WHEEL_RIGHT:
+                EngineWheelRight();
+                if (m_wheel_mode) PublishUiEvent(next_track, NULL);
                 break;
             case CTL_WHEEL_MODE:
-                m_backend->ControllerShowWheelMode();
+                EngineWheelMode();
                 break;
             case CTL_MARKER:
                 m_backend->ControllerShowMarker();
@@ -142,19 +130,15 @@ void OMainWnd::OnJackEvent() {
                 m_backend->ControllerShowCycle();
                 m_daw->ShortMessage("/loop_toggle");
                 break;
-            case CTL_DROP_TRACK:
-                if (sts) {
-                    PublishUiEvent(E_OPERATION::drop_track, NULL);
-                }
-                break;
-            case CTL_KNOB:
-                if (m_backend->m_drop_mode) {
-                    if (sts != nullptr) {
-                        UnselectTrack();
-                        remove_track(sts->GetPath());
-                    }
-                }
-                break;
+//            case CTL_DROP_TRACK:
+//                EngineDropMode();
+//                break;
+//            case CTL_KNOB:
+//                if (m_backend->m_drop_mode) {
+//                if (EngineDropTrack()) {
+//                    PublishUiEvent(E_OPERATION::drop_track, NULL);
+//                }
+//                break;
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;
                 break;

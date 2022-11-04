@@ -82,7 +82,6 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     break;
                 case CTL_BUTTON_SCRUB:
                     if (data[2]) {
-                        backend->m_wheel_mode = !backend->m_wheel_mode;
                         backend->Notify(CTL_WHEEL_MODE);
                     }
                     break;
@@ -120,16 +119,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     break;  
                 case CTL_WHEEL_LEFT_RIGHT:
                     if (data[2] == 0x01) {
-                        if (!backend->m_wheel_mode)
-                            backend->Notify(CTL_JUMP_BACKWARD);
-                        else
-                            backend->Notify(CTL_PREV_TRACK);
+                        backend->Notify(CTL_WHEEL_LEFT);
                     }
                     if (data[2] == 0x41) {
-                        if (!backend->m_wheel_mode)
-                            backend->Notify(CTL_JUMP_FORWARD);
-                        else
-                            backend->Notify(CTL_NEXT_TRACK);
+                        backend->Notify(CTL_WHEEL_RIGHT);
                     }                    
                     break;
                 case CTL_BUTTON_DROP:

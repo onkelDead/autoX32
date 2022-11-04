@@ -43,22 +43,34 @@ protected:
     void UnselectTrack(); 
     
     
-    void Locate(bool complete);
-    void Play();
-    void Stop();
-    void Home();
-    void End();
-    void Teach(bool);
-    void TeachMode();
-    void ToggleTrackRecord();
+    void EngineLocate(bool complete);
+    void EnginePlay();
+    void EngineStop();
+    void EngineHome();
+    void EngineEnd();
+    void EngineTeach(bool);
+    void EngineTeachMode();
+    void EngineToggleTrackRecord();
+    
+    void EngineFader();
 
-    void SelectNextTrack();
-    void SelectPrevTrack();    
+    void EngineSelectNextTrack();
+    void EngineSelectPrevTrack();    
+    
+    void EngineDropMode();
+    bool EngineDropTrack();
+    
+    void EngineStepMode();
+    void EngineWheelLeft();
+    void EngineWheelRight();
+    void EngineWheelMode();
     
 protected:
     bool m_playing = false;
     bool m_teach_mode = false;
     bool m_teach_active = false;
+    bool m_step_mode = false;
+    bool m_wheel_mode = false;
     
     
 private:

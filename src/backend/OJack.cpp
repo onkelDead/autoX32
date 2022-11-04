@@ -366,7 +366,7 @@ void OJack::ControllerReset() {
     ControllerShowPlay(false);
     ControllerShowTeach(false);
     ControllerShowTeachMode(false);
-    ControllerShowWheelMode();
+    ControllerShowWheelMode(false);
     ControllerShowCycle();
     ControllerShowMarker();
     ControllerShowSelect(0);
@@ -586,13 +586,13 @@ void OJack::ControllerShowScrub() {
     ctl_out.push(&s_scrub);
 }
 
-void OJack::ControllerShowWheelMode() {
-    s_wheel_mode.buf[2] = m_wheel_mode ? 0x41 : 0;
+void OJack::ControllerShowWheelMode(bool val) {
+    s_wheel_mode.buf[2] = val ? 0x41 : 0;
     ctl_out.push(&s_wheel_mode);
 }
 
 void OJack::ControllerShowStepMode(bool val) {
-    s_f2.buf[2] = m_step_mode ? 0x41 : 0x00;
+    s_f2.buf[2] = val ? 0x41 : 0x00;
     ctl_out.push(&s_f2);
 }
 
