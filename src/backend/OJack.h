@@ -48,6 +48,7 @@ public:
     void ControllerShowTeachMode(bool);
     void ControllerShowLCDName(std::string, int color);
     void ControllerShowLevel(float);
+    void ControllerShowStepMode(bool val);
     
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);

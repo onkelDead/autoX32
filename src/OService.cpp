@@ -248,6 +248,10 @@ void OService::OnJackEvent() {
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;
                 m_backend->ControllerShowTeachMode(m_teach_mode);
+                if (!m_teach_mode) {
+                    m_teach_active = false;
+                    SetRecord(m_teach_active);
+                }                
                 break;
             case CTL_HOME:
                 m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
@@ -287,17 +291,21 @@ void OService::OnJackEvent() {
                 break;
             case CTL_SCRUB_OFF:
                 break;
+            case CTL_STEP_MODE:
+                m_backend->m_step_mode = !m_backend->m_step_mode;
+                m_backend->ControllerShowStepMode(m_backend->m_step_mode);
+                break;
             case CTL_JUMP_FORWARD:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
                 else
-                    m_backend->Locate(m_backend->GetFrame() + 120);
+                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
                 break;
             case CTL_JUMP_BACKWARD:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(true);
                 else
-                    m_backend->Locate(m_backend->GetFrame() - 120);
+                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
                 break;
             case CTL_WHEEL_MODE:
                 m_backend->ControllerShowWheelMode();

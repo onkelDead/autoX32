@@ -74,7 +74,7 @@ public:
     virtual void ControllerShowTeachMode(bool) = 0;
     virtual void ControllerShowSelect(bool) = 0;
     virtual void ControllerShowRec(bool) = 0;
-     
+    virtual void ControllerShowStepMode(bool val) = 0;
     
     virtual void ControllerShowLCDName(std::string name, int color) = 0;
     virtual void ControllerShowLevel(float) = 0;
@@ -115,6 +115,7 @@ public:
     int m_shuffle_speed = 0;
     bool m_wheel_mode = false;
     bool m_drop_mode = false;
+    bool m_step_mode = false;
     
     bool m_marker = false;
     bool m_cycle = false;

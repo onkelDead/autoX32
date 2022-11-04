@@ -83,7 +83,14 @@ void OMainWnd::OnJackEvent() {
             case CTL_TEACH_MODE:
                 m_teach_mode = !m_teach_mode;
                 m_backend->ControllerShowTeachMode(m_teach_mode);
+                if (!m_teach_mode) {
+                    PublishUiEvent(E_OPERATION::touch_off, NULL);
+                }
                 break;
+            case CTL_STEP_MODE:
+                m_backend->m_step_mode = !m_backend->m_step_mode;
+                m_backend->ControllerShowStepMode(m_backend->m_step_mode);
+                break;               
             case CTL_HOME:
                 PublishUiEvent(E_OPERATION::home, NULL);
                 break;

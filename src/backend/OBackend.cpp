@@ -46,6 +46,11 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                         backend->Notify(CTL_TEACH_MODE);
                     }
                     break;
+                case CTL_BUTTON_F2:
+                    if (data[2]) {
+                        backend->Notify(CTL_STEP_MODE);
+                    }
+                    break;
                 case CTL_FADER_TOUCH:
                     if (backend->m_fader_touched) {
                         backend->m_fader_val = data[2];

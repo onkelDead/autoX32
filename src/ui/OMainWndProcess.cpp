@@ -198,13 +198,13 @@ void OMainWnd::OnUIOperation() {
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(false);
                 else
-                    m_backend->Locate(m_backend->GetFrame() + 120);
+                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
                 break;
             case E_OPERATION::jump_backward:
                 if (m_backend->m_scrub)
                     m_backend->Shuffle(true);
                 else
-                    m_backend->Locate(m_backend->GetFrame() - 120);
+                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
                 break;
             case E_OPERATION::touch_release:
             {

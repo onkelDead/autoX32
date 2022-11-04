@@ -61,7 +61,8 @@ public:
     void ControllerCustom(uint8_t c, uint8_t a, uint8_t b) {}
     void ControllerShowMarker() {}
     void ControllerShowCycle() {}
-    void ControllerShowActive(bool) {};
+    void ControllerShowActive(bool) {}
+    void ControllerShowStepMode(bool val) {}
     void LoopStart();
     void LoopEnd();
     bool GetLoopState();

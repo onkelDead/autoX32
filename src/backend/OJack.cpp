@@ -83,6 +83,11 @@ static ctl_command s_f1 = {
     { 0xB0, CTL_BUTTON_F1, 0x00}
 };
 
+static ctl_command s_f2 = {
+    3,
+    { 0xB0, CTL_BUTTON_F2, 0x00}
+};
+
 static ctl_command s_f6 = {
     3,
     { 0xB0, CTL_BUTTON_F6, 0x0}
@@ -584,6 +589,11 @@ void OJack::ControllerShowScrub() {
 void OJack::ControllerShowWheelMode() {
     s_wheel_mode.buf[2] = m_wheel_mode ? 0x41 : 0;
     ctl_out.push(&s_wheel_mode);
+}
+
+void OJack::ControllerShowStepMode(bool val) {
+    s_f2.buf[2] = m_step_mode ? 0x41 : 0x00;
+    ctl_out.push(&s_f2);
 }
 
 void OJack::ControllerCustom(uint8_t com, uint8_t a, uint8_t b) {

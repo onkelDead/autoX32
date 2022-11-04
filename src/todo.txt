@@ -1,6 +1,8 @@
 
-F1 -> touch off
-rec not off after touche stop
-F2 -> step width
+(solved) F1 -> touch off 
+(solved) F2 -> step width == 15sec.
+
+(not reprod.)rec not off after touch stop
+
 F3 -> no rec off on fader relase
 Ardour session change, track persist
