@@ -367,8 +367,8 @@ void OJack::ControllerReset() {
     ControllerShowTeach(false);
     ControllerShowTeachMode(false);
     ControllerShowWheelMode(false);
-    ControllerShowCycle();
-    ControllerShowMarker();
+    ControllerShowCycle(false);
+    ControllerShowMarker(false);
     ControllerShowSelect(0);
     ControllerShowScrub();
     ControllerShowLCDName("", 0);
@@ -498,13 +498,13 @@ void OJack::ControllerShowTeach(bool val) {
     ctl_out.push(&s_teach);
 }
 
-void OJack::ControllerShowMarker() {
-    s_marker.buf[2] = m_marker ? 0x40 : 0x00;
+void OJack::ControllerShowMarker(bool val) {
+    s_marker.buf[2] = val ? 0x41 : 0x00;
     ctl_out.push(&s_marker);
 }
 
-void OJack::ControllerShowCycle() {
-    s_cycle.buf[2] = m_cycle ? 0x7f : 0x00;
+void OJack::ControllerShowCycle(bool val) {
+    s_cycle.buf[2] = val ? 0x7f : 0x00;
     ctl_out.push(&s_cycle);
 }
 

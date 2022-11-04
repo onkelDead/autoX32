@@ -59,8 +59,8 @@ public:
     void ControllerShowScrub();
     void ControllerShowWheelMode(bool) {}
     void ControllerCustom(uint8_t c, uint8_t a, uint8_t b) {}
-    void ControllerShowMarker() {}
-    void ControllerShowCycle() {}
+    void ControllerShowMarker(bool) {}
+    void ControllerShowCycle(bool) {}
     void ControllerShowActive(bool) {}
     void ControllerShowStepMode(bool val) {}
     void LoopStart();

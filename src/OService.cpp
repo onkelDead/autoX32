@@ -251,25 +251,19 @@ void OService::OnJackEvent() {
             case CTL_WHEEL_MODE:
                 EngineWheelMode();
                 break;
-            case CTL_MARKER:
-                m_backend->ControllerShowMarker();
+            case CTL_MARKER_PRESS:
+//                m_backend->ControllerShowMarker();
                 break;
             case CTL_LOOP_START:
-                m_project->GetTimeRange()->m_loopstart = m_backend->GetFrame();
-                m_project->GetTimeRange()->m_dirty = true;    
-                m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);          
                 std::cout << "SetRange start " << m_project->GetTimeRange()->m_loopstart << std::endl;
                 break;
             case CTL_LOOP_END:
-                m_project->GetTimeRange()->m_loopend = m_backend->GetFrame();
-                m_project->GetTimeRange()->m_dirty = true;    
-                m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);                
+          
                 std::cout << "SetRange end " << m_project->GetTimeRange()->m_loopend << std::endl;
                 break;
                 
             case CTL_LOOP:
-                m_backend->ControllerShowCycle();
-                m_daw->ShortMessage("/loop_toggle");
+                EngineCycle();
                 break;
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;

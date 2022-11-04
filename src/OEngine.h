@@ -46,11 +46,14 @@ protected:
     void EngineLocate(bool complete);
     void EnginePlay();
     void EngineStop();
+    void EngineCycle();
     void EngineHome();
     void EngineEnd();
     void EngineTeach(bool);
     void EngineTeachMode();
     void EngineToggleTrackRecord();
+    
+    void EngineMarker(bool);
     
     void EngineFader();
 
@@ -71,7 +74,8 @@ protected:
     bool m_teach_active = false;
     bool m_step_mode = false;
     bool m_wheel_mode = false;
-    
+    bool m_cycle = false;
+    bool m_marker = false;
     
 private:
     OTimer m_jackTimer;

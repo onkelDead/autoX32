@@ -69,8 +69,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     }
                     break;
                 case CTL_BUTTON_MARKER:  //Marker
-                    backend->m_marker = data[2] != 0;
-                    backend->Notify(CTL_MARKER);
+                    if (data[2]) 
+                        backend->Notify(CTL_MARKER_PRESS);
+                    else
+                        backend->Notify(CTL_MARKER_RELEASE);
                     break;
                 case CTL_CURSOR_UP:
                     if (data[2])
@@ -87,23 +89,16 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     break;
                 case CTL_BUTTON_START:
                     if (data[2]) {
-                        if (!backend->m_marker)
-                            backend->Notify(CTL_HOME);
-                        else
-                            backend->Notify(CTL_LOOP_START);
+                        backend->Notify(CTL_HOME);
                     }
                     break;
                 case CTL_BUTTON_END:
                     if (data[2]) {
-                        if (!backend->m_marker)
-                            backend->Notify(CTL_END);
-                        else
-                            backend->Notify(CTL_LOOP_END);
+                        backend->Notify(CTL_END);
                     }
                     break;
                 case CTL_BUTTON_CYCLE:
                     if (data[2]) {
-                        backend->m_cycle = !backend->m_cycle;
                         backend->Notify(CTL_LOOP);
                     }
                     break;

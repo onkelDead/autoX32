@@ -88,8 +88,8 @@ public:
     virtual void ControllerShowActive(bool) = 0;
     virtual void ControllerCustom(uint8_t, uint8_t, uint8_t) = 0;
     
-    virtual void ControllerShowMarker() = 0;
-    virtual void ControllerShowCycle() = 0;
+    virtual void ControllerShowMarker(bool) = 0;
+    virtual void ControllerShowCycle(bool) = 0;
     
     virtual void Play() = 0;
     virtual void Stop() = 0;
@@ -115,8 +115,6 @@ public:
     int m_shuffle_speed = 0;
     bool m_drop_mode = false;
     
-    bool m_marker = false;
-    bool m_cycle = false;
     
 protected: 
 

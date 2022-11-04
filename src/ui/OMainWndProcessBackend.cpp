@@ -100,12 +100,6 @@ void OMainWnd::OnJackEvent() {
                 EngineToggleTrackRecord();
                 PublishUiEvent(E_OPERATION::toggle_rec, NULL);
                 break;
-            case CTL_SCRUB_ON:
-                m_backend->m_scrub = !m_backend->m_scrub;
-                m_backend->ControllerShowScrub();
-                break;
-            case CTL_SCRUB_OFF:
-                break;
             case CTL_WHEEL_LEFT:
                 EngineWheelLeft();
                 if (m_wheel_mode) PublishUiEvent(next_track, NULL);
@@ -117,8 +111,11 @@ void OMainWnd::OnJackEvent() {
             case CTL_WHEEL_MODE:
                 EngineWheelMode();
                 break;
-            case CTL_MARKER:
-                m_backend->ControllerShowMarker();
+            case CTL_MARKER_PRESS:
+                EngineMarker(true);
+                break;
+            case CTL_MARKER_RELEASE:
+                EngineMarker(false);
                 break;
             case CTL_LOOP_START:
                 on_btn_loop_start_clicked();
@@ -127,18 +124,8 @@ void OMainWnd::OnJackEvent() {
                 on_btn_loop_end_clicked();
                 break;
             case CTL_LOOP:
-                m_backend->ControllerShowCycle();
-                m_daw->ShortMessage("/loop_toggle");
+                EngineCycle();
                 break;
-//            case CTL_DROP_TRACK:
-//                EngineDropMode();
-//                break;
-//            case CTL_KNOB:
-//                if (m_backend->m_drop_mode) {
-//                if (EngineDropTrack()) {
-//                    PublishUiEvent(E_OPERATION::drop_track, NULL);
-//                }
-//                break;
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;
                 break;

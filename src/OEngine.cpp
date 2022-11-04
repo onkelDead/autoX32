@@ -135,6 +135,10 @@ void OEngine::EngineStop() {
     m_backend->Stop();
     m_project->SetPlaying(m_playing);   
     if (m_project->GetTrackSelected()) m_backend->ControllerShowRec(false);
+    if (m_cycle) {
+        m_cycle = false;
+        m_backend->ControllerShowCycle(false);
+    }
 }
 
 void OEngine::EngineTeach(bool pressed) {
@@ -167,13 +171,28 @@ void OEngine::EngineTeachMode() {
 }
 
 void OEngine::EngineHome() {
-    m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
+    if (!m_marker)
+        m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
+    else {
+        m_project->GetTimeRange()->m_loopstart = m_backend->GetFrame();
+        m_project->GetTimeRange()->m_dirty = true;    
+        m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);          
+        m_marker = false;
+        m_backend->ControllerShowMarker(false);
+    }
 }
 
 void OEngine::EngineEnd() {
-    m_backend->Locate(m_project->GetTimeRange()->m_loopend);
+    if (!m_marker)
+        m_backend->Locate(m_project->GetTimeRange()->m_loopend);
+    else {
+        m_project->GetTimeRange()->m_loopend = m_backend->GetFrame();
+        m_project->GetTimeRange()->m_dirty = true;    
+        m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);              
+        m_marker = false;
+        m_backend->ControllerShowMarker(false);
+    }
 }
-
 
 void OEngine::EngineSelectNextTrack() {
     SelectTrack(m_project->GetNextTrackPath(), true);
@@ -182,7 +201,6 @@ void OEngine::EngineSelectNextTrack() {
 void OEngine::EngineSelectPrevTrack() {
     SelectTrack(m_project->GetPrevTrackPath(), true);
 }
-
 
 void OEngine::EngineToggleTrackRecord() {
     if (m_project->GetTrackSelected() == nullptr)
@@ -255,4 +273,20 @@ void OEngine::EngineStepMode() {
 void OEngine::EngineWheelMode() {
     m_wheel_mode = !m_wheel_mode;
     m_backend->ControllerShowWheelMode(m_wheel_mode);
+}
+
+void OEngine::EngineCycle() {
+    m_cycle = !m_cycle;
+    m_backend->ControllerShowCycle(m_cycle);
+    m_daw->ShortMessage("/loop_toggle");
+}
+
+void OEngine::EngineMarker(bool val) {
+    if (m_marker && val) {
+        m_marker = false;
+    }
+    else if (!m_marker && val) {
+        m_marker = true;
+    }
+    m_backend->ControllerShowMarker(m_marker);
 }
