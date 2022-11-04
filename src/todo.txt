@@ -1,0 +1,6 @@
+
+F1 -> touch off
+rec not off after touche stop
+F2 -> step width
+F3 -> no rec off on fader relase
+Ardour session change, track persist
