@@ -26,90 +26,92 @@ void OMainWnd::OnJackEvent() {
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
             {
-                bool sc = false;
-                if (event != MTC_COMPLETE) {
-                    sc = m_project->UpdatePos(m_backend->GetFrame(), false);
-                } else {
-                    sc = m_project->UpdatePos(m_backend->GetFrame(), true);
-                    m_backend->ControlerShowMtcComplete(0);
-                }
-                if (sc) {
-                    m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
-                }
+                Locate(event != MTC_COMPLETE);
                 PublishUiEvent(E_OPERATION::new_pos, NULL);
             }     
                 break;
             case MMC_PLAY:
+                Play();
                 PublishUiEvent(E_OPERATION::play, NULL);
                 break;
             case CTL_PLAY:
-                if (m_project->GetPlaying()) {
+                if (m_playing) {
+                    Stop();
                     PublishUiEvent(E_OPERATION::stop, NULL);
                 }
                 else {
+                    Play();
                     PublishUiEvent(E_OPERATION::play, NULL);
                 }
                 break;
             case CTL_STOP:
             case MMC_STOP:
+                Stop();
                 PublishUiEvent(E_OPERATION::stop, NULL);
                 break;
             case MMC_RESET:
                 m_daw->ShortMessage("/refresh");
                 m_daw->ShortMessage("/strip/list");
                 break;
-            case CTL_TEACH_ON:
-                PublishUiEvent(E_OPERATION::touch_on, NULL);
+            case CTL_TEACH_PRESS:
+                Teach(true);
+                PublishUiEvent(E_OPERATION::teach, NULL);
                 break;
-            case CTL_TEACH_OFF:
-                PublishUiEvent(E_OPERATION::touch_off, NULL);
+            case CTL_TEACH_RELEASE:
+                Teach(false);
+                PublishUiEvent(E_OPERATION::teach, NULL);
                 break;
             case CTL_FADER:
                 if (sts) {
-                    if (m_btn_teach->get_active() && !sts->GetRecording()) {
+                    if (m_teach_active && !sts->GetRecording()) {
                         sts->SetRecording(true);
                     }                    
                     IOscMessage* msg = sts->GetMessage();
                     msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
-                    my_messagequeue.push(msg);
-                    m_MessageDispatcher.emit();                    
-                    m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+//                    my_messagequeue.push(msg);
+//                    m_MessageDispatcher.emit();                    
+                    if (sts->GetRecording()) {
+                        m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
+                        sts->ProcessMsg(msg, GetPosFrame());
+                    }
                     m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                 }
                 break;
             case CTL_TOUCH_RELEASE:
+                if (sts != nullptr && sts->IsRecording()) {
+                    sts->SetRecording(false);
+                    m_backend->ControllerShowRec(false);
+                }
                 PublishUiEvent(E_OPERATION::touch_release, NULL);
                 break;
             case CTL_TEACH_MODE:
-                m_teach_mode = !m_teach_mode;
-                m_backend->ControllerShowTeachMode(m_teach_mode);
-                if (!m_teach_mode) {
-                    PublishUiEvent(E_OPERATION::touch_off, NULL);
-                }
+                TeachMode();
+                PublishUiEvent(E_OPERATION::touch_off, NULL);
                 break;
             case CTL_STEP_MODE:
                 m_backend->m_step_mode = !m_backend->m_step_mode;
                 m_backend->ControllerShowStepMode(m_backend->m_step_mode);
                 break;               
             case CTL_HOME:
-                PublishUiEvent(E_OPERATION::home, NULL);
+                Home();
                 break;
             case CTL_END:
-                PublishUiEvent(E_OPERATION::end, NULL);
+                End();
                 break;
             case CTL_NEXT_TRACK:
+                SelectNextTrack();
                 PublishUiEvent(next_track, NULL);
                 break;
             case CTL_PREV_TRACK:
-                PublishUiEvent(prev_track, NULL);
+                SelectPrevTrack();                
+                PublishUiEvent(next_track, NULL);
                 break;
             case CTL_UNSELECT:
+                UnselectTrack();
                 PublishUiEvent(E_OPERATION::unselect, NULL);
                 break;
-            case CTL_TOGGLE_SOLO:
-                PublishUiEvent(E_OPERATION::toggle_solo, NULL);
-                break;
             case CTL_TOGGLE_REC:
+                ToggleTrackRecord();
                 PublishUiEvent(E_OPERATION::toggle_rec, NULL);
                 break;
             case CTL_SCRUB_ON:

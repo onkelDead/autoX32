@@ -106,15 +106,17 @@ void OMainWnd::OnUIOperation() {
                     OTrackView *trackview = new OTrackView(this, m_project->GetDawTime());
                     trackview->SetPath(msg->GetPath());
                     trackview->SetTrackStore(trackstore);
-                    trackview->SetRecord(true);
                     trackstore->SetName(m_mixer->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
                     trackstore->SetColor_index(m_mixer->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
                     trackview->SetTrackName(trackstore->GetName());
                     trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                     m_trackslayout.show_all();
+                    m_trackslayout.UnselectTrack();
+                    m_trackslayout.SelectTrack(msg->GetPath());
                     SelectTrack(msg->GetPath(), true);
-                    trackview->SetSelected(true);
+                    trackview->SetRecord(true);
+                    trackstore->SetRecording(true);
                 }
                 // TODO: get hidden tracks for all relevant parameters.
                 
@@ -131,23 +133,28 @@ void OMainWnd::OnUIOperation() {
                 UpdatePlayhead(false);
                 break;
             case E_OPERATION::play:
+                m_sensitive = false;
                 m_button_play->set_active(true);
-                m_backend->ControllerShowPlay(true);
+                m_sensitive = true;
                 break;
             case E_OPERATION::stop:
+                m_sensitive = false;
                 m_button_play->set_active(false);
-                m_backend->ControllerShowPlay(false);
+                m_sensitive = true;
                 m_trackslayout.StopRecord();
                 break;
-            case E_OPERATION::touch_on:
-                if (m_teach_mode) {
-                    if (m_btn_teach->get_active())
-                        m_btn_teach->set_active(false);
-                    else
-                        m_btn_teach->set_active(true);
-                } else {
-                    m_btn_teach->set_active(true);
-                }
+            case E_OPERATION::teach:
+                m_sensitive = false;
+                m_btn_teach->set_active(m_teach_active);
+//                if (m_teach_mode) {
+//                    if (m_btn_teach->get_active())
+//                        m_btn_teach->set_active(false);
+//                    else
+//                        m_btn_teach->set_active(true);
+//                } else {
+//                    m_btn_teach->set_active(true);
+//                }
+                m_sensitive = true;
                 break;
             case E_OPERATION::touch_off:
                 if (!m_teach_mode) {
@@ -163,27 +170,23 @@ void OMainWnd::OnUIOperation() {
 
             case E_OPERATION::next_track:
                 
-                SelectTrackUI(m_project->GetNextTrackPath(), true);
+                SelectTrackUI();
                 break;
             case E_OPERATION::prev_track:
-                SelectTrackUI(m_project->GetPrevTrackPath(), true);
+                SelectTrackUI();
                 break;
             case E_OPERATION::unselect:
-                if (m_project->GetTrackSelected())
-                    SelectTrackUI(m_project->GetTrackSelected()->GetPath(), false);
-                break;
-            case E_OPERATION::toggle_solo:
-                ToggleSolo();
+                m_trackslayout.UnselectTrack();
+                SelectTrackUI();
                 break;
             case E_OPERATION::toggle_rec:
             {
+                m_sensitive = false;
                 IOTrackStore *sts = m_project->GetTrackSelected();
                 if (sts) {
-                    if (sts->SetRecording(!sts->IsRecording())) {
-                        m_backend->ControllerShowRec(sts->IsRecording());
-                        m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(sts->IsRecording());
-                    }
+                    m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(sts->IsRecording());
                 }
+                m_sensitive = true;
             }
                 break;  
             case E_OPERATION::toggle_recview:
@@ -212,9 +215,7 @@ void OMainWnd::OnUIOperation() {
                     m_btn_teach->set_active(false);
                 }
                 IOTrackStore* sts = m_project->GetTrackSelected();
-                if (sts != nullptr && sts->IsRecording()) {
-                    sts->SetRecording(false);
-                    m_backend->ControllerShowRec(false);
+                if (sts) {
                     m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(false);
                 }
             }

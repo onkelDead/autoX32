@@ -37,9 +37,9 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
 
                 case CTL_BUTTON_TEACH: // Toggle teach
                     if (data[2] == 0x7f)
-                        backend->Notify(CTL_TEACH_ON);
+                        backend->Notify(CTL_TEACH_PRESS);
                     else 
-                        backend->Notify(CTL_TEACH_OFF);
+                        backend->Notify(CTL_TEACH_RELEASE);
                     break;
                 case CTL_BUTTON_F1:
                     if (data[2]) {
@@ -159,7 +159,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     backend->Notify(CTL_TOUCH_RELEASE);
                     break;
                 case 0x5f:
-                    backend->Notify(CTL_TEACH_OFF);
+                    backend->Notify(CTL_TEACH_RELEASE);
                     break;
                 default:
                     printf("uncaught 0x80 %02x\n", data[1]);

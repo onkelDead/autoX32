@@ -100,7 +100,8 @@ OTrackView::~OTrackView() {
 
 void OTrackView::on_button_x32_rec_clicked() {
     m_trackdraw->SetRecord(m_btn_x32_rec->get_active());
-    m_parent->PublishUiEvent(E_OPERATION::toggle_recview, m_trackdraw->GetTrackStore());
+    if (m_parent->GetSensitive())
+        m_parent->PublishUiEvent(E_OPERATION::toggle_recview, m_trackdraw->GetTrackStore());
 }
 
 void OTrackView::SetTrackStore(IOTrackStore *trackstore) {

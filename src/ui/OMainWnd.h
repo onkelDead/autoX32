@@ -130,9 +130,10 @@ public:
     void UpdatePlayhead(bool doCalc);
     bool PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry);
     
-    void SelectTrackUI(std::string, bool);
+    void SelectTrackUI();
+    void SelectTrackDraw(std::string path);
+    
     void EditTrack(std::string);
-    void ToggleSolo();
     void TrackViewUp(std::string path);    
     void TrackViewDown(std::string path);
     void TrackViewHide(std::string path);
@@ -142,6 +143,8 @@ public:
 
     /// application settings
     OConfig* GetConfig();
+    
+    bool GetSensitive() { return m_sensitive; }
 
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
@@ -219,8 +222,6 @@ private:
     /// prevent loop back daw-event when position changed from here
     bool m_lock_daw_time_event;
 
-    bool m_teach_mode = false;
-    
     /// dialogs
     Gtk::AboutDialog m_Dialog;
 
@@ -245,6 +246,8 @@ private:
 
     void on_about_dialog_response(int response_id);
 	void PublishUiEvent(operation_t *);
+        
+    bool m_sensitive = true;
 };
 
 

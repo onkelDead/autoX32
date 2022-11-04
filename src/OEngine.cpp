@@ -110,3 +110,85 @@ void OEngine::UnselectTrack() {
         m_backend->m_drop_mode = false;
     }
 }
+
+void OEngine::Locate(bool complete) {
+    bool sc = false;
+    if (complete) {
+        sc = m_project->UpdatePos(m_backend->GetFrame(), false);
+    } else {
+        sc = m_project->UpdatePos(m_backend->GetFrame(), true);
+        m_backend->ControlerShowMtcComplete(0);
+    }
+    if (sc) {
+        m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
+    }    
+}
+
+void OEngine::Play() {
+    m_playing = true;
+    m_backend->Play();
+    m_project->SetPlaying(m_playing);
+}
+
+void OEngine::Stop() {
+    m_playing = false;
+    m_backend->Stop();
+    m_project->SetPlaying(m_playing);   
+    if (m_project->GetTrackSelected()) m_backend->ControllerShowRec(false);
+}
+
+void OEngine::Teach(bool pressed) {
+    if (pressed) {
+        if (m_teach_mode) {
+            m_teach_active = !m_teach_active;
+        } else {
+            m_teach_active = true;
+        }
+    }
+    else {
+        if (!m_teach_mode) {
+            m_teach_active = false;
+        }
+    }
+    if (!m_teach_active) {
+        m_project->StopRecord();
+    }
+    m_backend->ControllerShowTeach(m_teach_active);
+}
+
+void OEngine::TeachMode() {
+    m_teach_mode = !m_teach_mode;
+    m_backend->ControllerShowTeachMode(m_teach_mode);
+    if (!m_teach_mode) {
+        m_teach_active = false;
+        m_project->StopRecord();
+        m_backend->ControllerShowTeach(m_teach_mode);
+    }    
+}
+
+void OEngine::Home() {
+    m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
+}
+
+void OEngine::End() {
+    m_backend->Locate(m_project->GetTimeRange()->m_loopend);
+}
+
+
+void OEngine::SelectNextTrack() {
+    SelectTrack(m_project->GetNextTrackPath(), true);
+}
+
+void OEngine::SelectPrevTrack() {
+    SelectTrack(m_project->GetPrevTrackPath(), true);
+}
+
+
+void OEngine::ToggleTrackRecord() {
+    if (m_project->GetTrackSelected() == nullptr)
+        return;
+    
+    bool isRec = m_project->GetTrackSelected()->IsRecording();
+    m_project->GetTrackSelected()->SetRecording(!isRec);
+    m_backend->ControllerShowRec(!isRec);
+}

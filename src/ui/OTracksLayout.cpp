@@ -257,3 +257,15 @@ gint OTracksLayout::get_count_visible() {
     return c;
 }
 
+void OTracksLayout::UnselectTrack() {
+    if (m_selected_track) {
+        GetTrackview(m_selected_track->GetPath())->SetSelected(false);
+        m_selected_track = nullptr;
+        
+    }
+}
+
+void OTracksLayout::SelectTrack(std::string path) {
+    m_selected_track = GetTrackview(path)->GetTrackStore();
+    GetTrackview(m_selected_track->GetPath())->SetSelected(true);
+}

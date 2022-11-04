@@ -55,6 +55,9 @@ public:
     std::string GetNextTrackPath();
     void SelectPrevTrack();
     
+    void SelectTrack(std::string path);
+    void UnselectTrack();
+    
     void EditLayout();
     void on_hide_toggle(IOTrackView* view, Gtk::CheckButton* check);
     void on_expand_toggle(IOTrackView* view, Gtk::CheckButton* check);
@@ -73,6 +76,7 @@ private:
     std::vector<OTrackView*> m_tracklist;
     Gtk::Grid m_grig;
     Gtk::Box m_bbox;
+    IOTrackStore* m_selected_track;
 };
 
 

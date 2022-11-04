@@ -179,9 +179,7 @@ bool OTrackDraw::on_button_release_event(GdkEventButton *event) {
             m_daw_time->scale = (gfloat) m_width / (gfloat) (m_daw_time->m_viewend - m_daw_time->m_viewstart);
             m_parent->notify_overview();
         } else {
-            SetSelected(!m_selected);
-            m_parent->SelectTrackUI(m_trackstore->GetPath(), m_selected);
-            queue_draw();
+            m_parent->SelectTrackDraw(m_trackstore->GetPath());
         }
     }
     m_refGdkWindow.get()->set_cursor(m_default_cursor);

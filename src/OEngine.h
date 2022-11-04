@@ -40,9 +40,30 @@ protected:
     void StopEngine();
     
     void SelectTrack(std::string, bool);
-    void UnselectTrack();     
+    void UnselectTrack(); 
+    
+    
+    void Locate(bool complete);
+    void Play();
+    void Stop();
+    void Home();
+    void End();
+    void Teach(bool);
+    void TeachMode();
+    void ToggleTrackRecord();
+
+    void SelectNextTrack();
+    void SelectPrevTrack();    
+    
+protected:
+    bool m_playing = false;
+    bool m_teach_mode = false;
+    bool m_teach_active = false;
+    
+    
 private:
     OTimer m_jackTimer;
+    
 };
 
 #endif /* OENGINE_H */

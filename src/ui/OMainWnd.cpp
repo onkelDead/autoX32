@@ -246,17 +246,17 @@ bool OMainWnd::SelectProjectLocation(bool n) {
 void OMainWnd::remove_track(std::string path) {
     printf("remove %s\n", path.data());
     UnselectTrack();
+    m_trackslayout.UnselectTrack();
     m_trackslayout.RemoveTrackView(path);
     m_project->RemoveTrack(path);
     m_mixer->ReleaseCacheMessage(path);
 }
 
-void OMainWnd::SelectTrackUI(std::string path, bool val) {
+void OMainWnd::SelectTrackUI() {
+    m_trackslayout.UnselectTrack();
     IOTrackStore* sts = m_project->GetTrackSelected();
     if (sts)
-        m_trackslayout.GetTrackview(sts->GetPath())->SetSelected(false);
-    SelectTrack(path, val);
-    m_trackslayout.GetTrackview(path)->SetSelected(val);
+        m_trackslayout.SelectTrack(sts->GetPath());
 }
 
 void OMainWnd::EditTrack(std::string path) {
@@ -277,10 +277,6 @@ void OMainWnd::EditTrack(std::string path) {
         m_mixer->SendString(nameMsg->GetPath(), pDialog->GetName());
         m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
     }
-}
-
-void OMainWnd::ToggleSolo() {
-
 }
 
 bool OMainWnd::SetupBackend() {

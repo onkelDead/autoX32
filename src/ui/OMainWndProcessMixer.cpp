@@ -69,6 +69,7 @@ void OMainWnd::ProcessSelectMessage(int idx) {
     
     sprintf(path, "/ch/%02d/mix/fader", idx + 1);
 
-    SelectTrack(path, true);    
+    m_project->SelectTrack(path);
+    SelectTrackUI();
     return;
 }

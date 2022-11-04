@@ -179,12 +179,15 @@ void OMainWnd::on_btn_teach_clicked() {
 
     m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
+    
     if (!m_btn_teach->get_active()) {
         m_trackslayout.StopTeach();
     }
-    m_backend->ControllerShowTeach(m_btn_teach->get_active());
-
-
+    if (!m_sensitive) return;
+    if (m_teach_mode) {
+        TeachMode();
+    }
+    Teach(m_btn_teach->get_active());
 }
 
 void OMainWnd::on_btn_loop_start_clicked() {
@@ -206,12 +209,14 @@ void OMainWnd::on_btn_zoom_loop_clicked() {
 }
 
 void OMainWnd::on_button_play_clicked() {
-
+    
     m_button_play->set_icon_widget(m_button_play->get_active() ? m_img_play_on : m_img_play_off);
     m_button_play->show_all();
 
     m_last_playhead_update = 0;
 
+    if (!m_sensitive) return;
+    
     if (!m_button_play->get_active()) {
         m_project->SetPlaying(false);
         m_backend->Stop();
@@ -222,12 +227,12 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_home_clicked() {
-    m_backend->Locate(m_project->GetLoopStart());
+    Home();
     UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_end_clicked() {
-    m_backend->Locate(m_project->GetLoopEnd());
+    End();
     UpdatePlayhead(true);
 }
 
@@ -288,4 +293,9 @@ void OMainWnd::TrackViewDown(std::string path) {
 void OMainWnd::TrackViewHide(std::string path) {
     m_trackslayout.TrackHide(path, false);
     m_project->SetDirty();
+}
+
+void OMainWnd::SelectTrackDraw(std::string path) {
+    SelectTrack(path, true);
+    SelectTrackUI();
 }

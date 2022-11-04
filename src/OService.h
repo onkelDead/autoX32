@@ -75,20 +75,12 @@ private:
     std::atomic<bool> m_active = false;
     
     std::string m_session;
-    bool m_teach_mode = false;
-    bool m_teach_active = false;
-    bool m_playing = false;
     bool m_record = false;
 
     OQueue<IOscMessage*> my_messagequeue;
     OQueue<DAW_PATH> my_dawqueue;
     
-    void SetRecord(bool val);
-    
     void GetTrackConfig(IOTrackStore* trackstore);
-    void SelectNextTrack();
-    void SelectPrevTrack();
-    void ToggleTrackRecord(); 
 };
 
 #endif /* OSERVICE_H */

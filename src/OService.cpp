@@ -170,62 +170,32 @@ void OService::OnJackEvent() {
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-            {
-                bool sc = false;
-                if (event != MTC_COMPLETE) {
-                    sc = m_project->UpdatePos(m_backend->GetFrame(), false);
-                } else {
-                    sc = m_project->UpdatePos(m_backend->GetFrame(), true);
-                    m_backend->ControlerShowMtcComplete(0);
-                }
-                if (sc) {
-                    m_backend->ControllerShowLevel(sts->GetPlayhead()->val.f);
-                }
-            }
+                Locate(event != MTC_COMPLETE);
                 break;
             case MMC_PLAY:
-                m_backend->Play();
-                m_project->SetPlaying(true);
-                m_playing = true;
+                Play();
                 break;
             case CTL_PLAY:
                 if (m_playing) {
-                    m_backend->Stop();
-                    m_project->SetPlaying(false);                    
-                    m_playing = false;
-                    if (sts) m_backend->ControllerShowRec(false);
+                    Stop();
                 }
                 else {
-                    m_backend->Play();
-                    m_project->SetPlaying(true);
-                    m_playing = true;                    
+                    Play();
                 }
                 break;
             case CTL_STOP:
             case MMC_STOP:
-                m_backend->Stop();
-                m_project->SetPlaying(false);
-                m_playing = false;
-                if (sts) m_backend->ControllerShowRec(false);
+                Stop();
                 break;
             case MMC_RESET:
                 m_daw->ShortMessage("/refresh");
                 m_daw->ShortMessage("/strip/list");
                 break;
-            case CTL_TEACH_ON:
-                if (m_teach_mode) {
-                    m_teach_active = !m_teach_active;
-                } else {
-                    m_teach_active = true;
-                }
-                SetRecord(m_teach_active);
+            case CTL_TEACH_PRESS:
+                Teach(true);
                 break;
-            case CTL_TEACH_OFF:
-                if (!m_teach_mode) {
-                    m_teach_active = false;
-                    SetRecord(m_teach_active);
-                }
-                
+            case CTL_TEACH_RELEASE:
+                Teach(false);
                 break;
             case CTL_FADER:
                 if (sts != nullptr) {
@@ -246,18 +216,13 @@ void OService::OnJackEvent() {
                 }
                 break;
             case CTL_TEACH_MODE:
-                m_teach_mode = !m_teach_mode;
-                m_backend->ControllerShowTeachMode(m_teach_mode);
-                if (!m_teach_mode) {
-                    m_teach_active = false;
-                    SetRecord(m_teach_active);
-                }                
+                TeachMode();
                 break;
             case CTL_HOME:
-                m_backend->Locate(m_project->GetTimeRange()->m_loopstart);
+                Home();
                 break;
             case CTL_END:
-                m_backend->Locate(m_project->GetTimeRange()->m_loopend);
+                End();
                 break;
             case CTL_NEXT_TRACK:
                 SelectNextTrack();
@@ -404,23 +369,6 @@ void OService::OnMixerEvent() {
     }
 }
 
-void OService::SetRecord(bool val) {
-    m_record = val;
-    if (!m_record) {
-        m_project->StopRecord();
-    }
-    m_backend->ControllerShowTeach(m_record);
-}
-
-void OService::SelectNextTrack() {
-    SelectTrack(m_project->GetNextTrackPath(), true);
-}
-
-void OService::SelectPrevTrack() {
-    SelectTrack(m_project->GetPrevTrackPath(), true);
-}
-
-
 void OService::GetTrackConfig(IOTrackStore* trackstore){
     std::string conf_name = trackstore->GetConfigRequestName();
     
@@ -432,11 +380,3 @@ void OService::GetTrackConfig(IOTrackStore* trackstore){
     m_mixer->Send(conf_name);
 }
 
-void OService::ToggleTrackRecord() {
-    if (m_project->GetTrackSelected() == nullptr)
-        return;
-    
-    bool isRec = m_project->GetTrackSelected()->IsRecording();
-    m_project->GetTrackSelected()->SetRecording(!isRec);
-    m_backend->ControllerShowRec(!isRec);
-}

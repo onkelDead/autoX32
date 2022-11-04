@@ -26,15 +26,16 @@ public:
     virtual ~IOMainWnd(){}
     virtual void notify_overview() = 0;
     virtual void remove_track(std::string path) = 0;
-    virtual void SelectTrackUI(std::string, bool) = 0;
+    virtual void SelectTrackUI() = 0;
     virtual int GetPosFrame() = 0;
     virtual void TrackViewUp(std::string) = 0;
     virtual void TrackViewDown(std::string) = 0;
     virtual void TrackViewHide(std::string) = 0;
     virtual void PublishUiEvent(E_OPERATION, void *) = 0;
-
+    virtual void SelectTrackDraw(std::string path) = 0;
     virtual void EditTrack(std::string) = 0;
     virtual OConfig* GetConfig() = 0;
+    virtual bool GetSensitive() = 0;
 
 private:
 
