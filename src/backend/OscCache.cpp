@@ -560,6 +560,7 @@ void OscCache::ReadAllFromMixer(IOMixer* x32) {
 }
 
 void OscCache::WriteAllToMixer(IOMixer* x32) {
+    return ;
     for (auto it = m_cache.begin(); it != m_cache.end(); ++it) {
         IOscMessage* msg = it->second;
         switch (msg->GetTypes()[0]) {

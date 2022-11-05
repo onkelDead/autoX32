@@ -94,7 +94,7 @@ public:
     }
     
     void WriteAll() {
-        m_cache.WriteAllToMixer(this);
+        //m_cache.WriteAllToMixer(this);
     }
     
     void DumpCache() {

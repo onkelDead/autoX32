@@ -252,7 +252,10 @@ void OService::OnJackEvent() {
                 EngineWheelMode();
                 break;
             case CTL_MARKER_PRESS:
-//                m_backend->ControllerShowMarker();
+                EngineMarker(true);
+                break;
+            case CTL_MARKER_RELEASE:
+                EngineMarker(0);
                 break;
             case CTL_LOOP_START:
                 std::cout << "SetRange start " << m_project->GetTimeRange()->m_loopstart << std::endl;

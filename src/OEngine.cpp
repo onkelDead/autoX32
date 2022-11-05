@@ -278,7 +278,12 @@ void OEngine::EngineWheelMode() {
 void OEngine::EngineCycle() {
     m_cycle = !m_cycle;
     m_backend->ControllerShowCycle(m_cycle);
-    m_daw->ShortMessage("/loop_toggle");
+    if (!m_cycle) {
+        EngineStop();
+    }
+    else {
+        m_daw->ShortMessage("/loop_toggle");
+    }
 }
 
 void OEngine::EngineMarker(bool val) {

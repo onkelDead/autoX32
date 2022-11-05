@@ -225,7 +225,7 @@ static int process(jack_nframes_t nframes, void *arg) {
         doShuffle = false;
     }
 
-    if (!jack->ctl_out.empty()) {
+    while (!jack->ctl_out.empty()) {
         ctl_command* c;
         jack->ctl_out.front_pop(&c);
         unsigned char *buffer = jack_midi_event_reserve(ctl_buf, 0, c->len);
@@ -463,6 +463,7 @@ int OJack::GetFrame() {
 void OJack::SetFrame(int frame) {
     m_midi_mtc.SetFrame(frame);
 }
+//                m_backend->ControllerShowMarker();
 
 void OJack::QuarterFrame(uint8_t q) {
     int s = m_midi_mtc.QuarterFrame(q);
