@@ -34,37 +34,17 @@
 #include "OQueue.h"
 #include "OTimer.h"
 
-class OService : public OEngine, public IODawHandler, public IOJackHandler, public IOMessageHandler {
+class OService : public OEngine {
 public:
     OService();
     OService(const OService& orig);
     virtual ~OService();
 
-    void OnDawEvent();
-    void OnTimer(void*);
-    void OnJackEvent();
-    void OnMixerEvent();
-    
-    int NewMessageCallback(IOscMessage*);
-    int UpdateMessageCallback(IOscMessage*);
-    void ProcessSelectMessage(int);    
-    
-    virtual void notify_daw(DAW_PATH path) {
-        my_dawqueue.push(path);
-        OnDawEvent();
-    };        
-    
-    virtual void notify_jack(JACK_EVENT jack_event) {
-        m_jackqueue.push(jack_event);
-    }
     
     OConfig *GetConfig() {
         return &m_config;
     }
     
-    int InitMixer();
-    int InitDaw();
-    int InitBackend();
     
     void StartProcessing();
    
@@ -72,13 +52,8 @@ public:
 private:
     
     
-    std::atomic<bool> m_active = false;
     
-    std::string m_session;
-    bool m_record = false;
 
-    OQueue<IOscMessage*> my_messagequeue;
-    OQueue<DAW_PATH> my_dawqueue;
     
     void GetTrackConfig(IOTrackStore* trackstore);
 };

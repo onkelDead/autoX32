@@ -227,11 +227,13 @@ void OMainWnd::on_button_play_clicked() {
 }
 
 void OMainWnd::on_button_home_clicked() {
+    if (!m_sensitive) return;
     EngineHome();
     UpdatePlayhead(true);
 }
 
 void OMainWnd::on_button_end_clicked() {
+    if (!m_sensitive) return;
     EngineEnd();
     UpdatePlayhead(true);
 }

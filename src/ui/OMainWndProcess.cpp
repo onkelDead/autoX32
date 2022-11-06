@@ -18,53 +18,6 @@
 #include <gtkmm.h>
 #include "OMainWnd.h"
 
-void OMainWnd::OnDawEvent() {
-    while (!my_dawqueue.empty()) {
-        DAW_PATH c;
-        my_dawqueue.front_pop(&c);
-        switch (c) {
-            case DAW_PATH::reply:
-                m_project->SetMaxFrames(m_daw->GetMaxFrames());
-                m_project->SetBitRate(m_daw->GetBitRate());
-                UpdateDawTime(false);
-                m_timeview->SetZoomLoop();
-                break;
-            case DAW_PATH::samples:
-                m_backend->SetFrame(m_daw->GetSample() / 400);
-                m_timeview->SetTimeCode(m_backend->GetTimeCode());
-                m_project->UpdatePos(m_backend->GetFrame(), true);
-                UpdatePlayhead(true);
-                m_backend->ControlerShowMtcComplete(0);
-                break;
-            case DAW_PATH::session:
-                m_mixer->PauseCallbackHandler(true);
-                if (!OpenProject(m_daw->GetLocation())) {
-                    std::cout << "OMainWnd: Load session " << m_daw->GetProjectFile() << std::endl;
-                    if (m_config.get_boolean(SETTINGS_LOAD_CACHE))
-                        m_mixer->WriteAll();
-                    else
-                        m_mixer->ReadAll();
-                }
-                else {
-                    std::cout << "OService: no session " << m_daw->GetProjectFile() <<  ", -> created." << std::endl;
-                    m_mixer->ReadAll();
-                    m_project->Save(m_daw->GetLocation());
-                }
-                m_mixer->PauseCallbackHandler(false);
-                set_title("autoX32 - [" + m_daw->GetLocation() + "]");
-                break;
-                
-            default:
-                break;
-        }
-    }
-}
-
-void OMainWnd::notify_daw(DAW_PATH path) {
-    my_dawqueue.push(path);
-    m_DawDispatcher.emit();
-}
-
 void OMainWnd::PublishUiEvent(E_OPERATION what, void *with) {
     operation_t *ue = new operation_t;
     ue->event = what;
@@ -94,33 +47,24 @@ void OMainWnd::OnUIOperation() {
     if (op) {
 
         switch (op->event) {
-            case E_OPERATION::new_channel:
+            case E_OPERATION::new_track:
             {
-                IOscMessage* msg = (IOscMessage*) op->context;
-
-                IOTrackStore *trackstore = m_project->NewTrack(msg);
-                msg->SetTrackstore(trackstore);
-                trackstore->SetPlaying(m_project->GetPlaying());
-
-                if (!m_trackslayout.GetTrackview(msg->GetPath())) {
+                IOTrackStore* trackstore = (IOTrackStore*) op->context;
+                std::string path = trackstore->GetPath();
+                
+                if (!m_trackslayout.GetTrackview(path)) {
                     OTrackView *trackview = new OTrackView(this, m_project->GetDawTime());
-                    trackview->SetPath(msg->GetPath());
+                    trackview->SetPath(path);
                     trackview->SetTrackStore(trackstore);
-                    trackstore->SetName(m_mixer->GetCachedMessage(trackstore->GetConfigRequestName())->GetVal(0)->GetString());
-                    trackstore->SetColor_index(m_mixer->GetCachedMessage(trackstore->GetConfigRequestColor())->GetVal(0)->GetInteger());
                     trackview->SetTrackName(trackstore->GetName());
-                    trackstore->SetView(trackview);
                     m_trackslayout.AddTrack(trackview, trackstore->GetLayout()->m_visible);
                     m_trackslayout.show_all();
                     m_trackslayout.UnselectTrack();
-                    m_trackslayout.SelectTrack(msg->GetPath());
-                    SelectTrack(msg->GetPath(), true);
+                    m_trackslayout.SelectTrack(path);
+                    SelectTrack(path, true);
                     trackview->SetRecord(true);
-                    trackstore->SetRecording(true);
-                }
-                // TODO: get hidden tracks for all relevant parameters.
-                
-                
+                    trackstore->SetView(trackview);
+                }                
             }
                 break;
             case E_OPERATION::draw_trackview:
@@ -146,36 +90,25 @@ void OMainWnd::OnUIOperation() {
             case E_OPERATION::teach:
                 m_sensitive = false;
                 m_btn_teach->set_active(m_teach_active);
-//                if (m_teach_mode) {
-//                    if (m_btn_teach->get_active())
-//                        m_btn_teach->set_active(false);
-//                    else
-//                        m_btn_teach->set_active(true);
-//                } else {
-//                    m_btn_teach->set_active(true);
-//                }
                 m_sensitive = true;
                 break;
-            case E_OPERATION::touch_off:
-                if (!m_teach_mode) {
-                    m_btn_teach->set_active(false);
-                }
-                break;
-            case E_OPERATION::home:
-                on_button_home_clicked();
-                break;
-            case E_OPERATION::end:
-                on_button_end_clicked();
-                break;
 
-            case E_OPERATION::next_track:
+            case E_OPERATION::marker_start:
+                m_sensitive = false;
+                on_btn_loop_start_clicked();
+                m_sensitive = true;
+                break;
+            case E_OPERATION::marker_end:
+                m_sensitive = false;
+                on_btn_loop_end_clicked();
+                m_sensitive = true;
+                break;
+            case E_OPERATION::select_track:
                 
                 SelectTrackUI();
                 break;
-            case E_OPERATION::prev_track:
-                SelectTrackUI();
-                break;
-            case E_OPERATION::unselect:
+
+            case E_OPERATION::unselect_track:
                 m_trackslayout.UnselectTrack();
                 SelectTrackUI();
                 break;
@@ -197,32 +130,6 @@ void OMainWnd::OnUIOperation() {
                 }
             }
                 break;
-//            case E_OPERATION::jump_forward:
-//                if (m_backend->m_scrub)
-//                    m_backend->Shuffle(false);
-//                else
-//                    m_backend->Locate(m_backend->GetFrame() + (m_backend->m_step_mode ? 1800 : 120));
-//                break;
-//            case E_OPERATION::jump_backward:
-//                if (m_backend->m_scrub)
-//                    m_backend->Shuffle(true);
-//                else
-//                    m_backend->Locate(m_backend->GetFrame() - (m_backend->m_step_mode ? 1800 : 120));
-//                break;
-            case E_OPERATION::touch_release:
-            {
-                if (m_btn_teach->get_active()) {
-                    m_btn_teach->set_active(false);
-                }
-                IOTrackStore* sts = m_project->GetTrackSelected();
-                if (sts) {
-                    m_trackslayout.GetTrackview(sts->GetPath())->SetRecord(false);
-                }
-            }
-                break;
-//            case E_OPERATION::drop_track:
-//                remove_track()
-//                break;
             default:
                 break;
         }

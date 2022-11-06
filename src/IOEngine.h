@@ -14,10 +14,18 @@
 #ifndef IOENGINE_H
 #define IOENGINE_H
 
+#include "IODawHandler.h"
+#include "IOMessageHandler.h"
+#include "IOJackHandler.h"
+
 class IOEngine {
 public:
     virtual ~IOEngine(){}
     virtual void SelectTrack(std::string, bool) = 0;
+    
+    virtual int InitDaw(IODawHandler*) = 0;
+    virtual int InitMixer(IOMessageHandler*) = 0;
+    virtual int InitBackend(IOJackHandler*) = 0;
 };
 
 #endif /* IOENGINE_H */

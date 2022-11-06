@@ -34,21 +34,18 @@ int main_service(int argc, char** argv) {
     
 
 
-    if (service->InitDaw()) {
-        std::cerr << "Failed to initialize DAW" << std::endl;
+    if (service->InitDaw(service)) {
         delete service;
         return EXIT_FAILURE;
     }
 
-    if (service->InitMixer()) {
-        std::cerr << "Failed to initialize mixer" << std::endl;
+    if (service->InitMixer(service)) {
         delete service;
         return EXIT_FAILURE;
     }
     
     
-    if (service->InitBackend()) {
-        std::cerr << "Failed to initialize Backend" << std::endl;
+    if (service->InitBackend(service)) {
         delete service;
         return EXIT_FAILURE;
     }    

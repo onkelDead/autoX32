@@ -20,11 +20,48 @@
 #include "IOMixer.h"
 #include "IOBackend.h"
 
-class OEngine : public IOEngine, public IOTimerEvent{
+class OEngine : public IOEngine, public IOTimerEvent, public IODawHandler, public IOMessageHandler, public IOJackHandler {
 public:
     OEngine();
     OEngine(const OEngine& orig);
     virtual ~OEngine();
+    
+    int InitDaw(IODawHandler*);
+    int InitMixer(IOMessageHandler*);
+    int InitBackend(IOJackHandler*);
+
+    void OnTimer(void*);
+    
+    void OnDawEvent();
+    void notify_daw(DAW_PATH path) {
+        my_dawqueue.push(path);
+        OnDawEvent();
+    };        
+    void OnMixerEvent();
+    
+    void OnJackEvent();
+
+    virtual void notify_jack(JACK_EVENT jack_event) {
+        m_jackqueue.push(jack_event);
+    }    
+    
+    int NewMessageCallback(IOscMessage*);
+    int UpdateMessageCallback(IOscMessage*);
+    void ProcessSelectMessage(int);    
+    
+
+    virtual void OnProjectLoad() {};
+    virtual void OnTrackUpdate(IOTrackStore*) {}
+    virtual void OnTrackNew(IOTrackStore*) {}
+    virtual void OnLocate() {}
+    virtual void OnPlay() {}
+    virtual void OnStop() {}
+    virtual void OnTeach(bool) {}
+    virtual void OnUnselectTrack() {}
+    virtual void OnSelectTrack() {}
+    virtual void OnTrackRec() {}
+    virtual void OnMarkerStart() {}
+    virtual void OnMarkerEnd() {}
     
 protected:
     OConfig m_config;
@@ -35,6 +72,7 @@ protected:
     IOBackend* m_backend = nullptr;
 
     OQueue<JACK_EVENT> m_jackqueue;
+    OQueue<IOscMessage*> my_messagequeue;
     
     void StartEngine(IOTimerEvent*);
     void StopEngine();
@@ -76,6 +114,14 @@ protected:
     bool m_wheel_mode = false;
     bool m_cycle = false;
     bool m_marker = false;
+    bool m_record = false;
+
+    std::string m_session;
+
+    OQueue<DAW_PATH> my_dawqueue;
+    
+    std::atomic<bool> m_active = false;
+    
     
 private:
     OTimer m_jackTimer;

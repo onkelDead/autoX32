@@ -48,7 +48,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OMainWnd : public Gtk::Window, public OEngine, IOMainWnd, IOMessageHandler, IODawHandler, IOJackHandler {
+class OMainWnd : public Gtk::Window, public OEngine, IOMainWnd {
 public:
     OMainWnd();
     virtual ~OMainWnd();
@@ -87,32 +87,31 @@ public:
     void on_timeline_pos_changed();
 
     /// thread events
-    void OnJackEvent();
-    void notify_jack(JACK_EVENT);
-    void OnDawEvent();
-    void notify_daw(DAW_PATH);
-    void OnMessageEvent();
-    void OnMixerEvent();
     void OnOverViewEvent();
     void OnUIOperation();
     void GetTrackConfig(IOTrackStore* trackstore);
-    void OnTimer(void*);
     
     void notify_overview();
     void remove_track(std::string path);
 
+    virtual void OnProjectLoad();
+    virtual void OnTrackUpdate(IOTrackStore*);
+    virtual void OnTrackNew(IOTrackStore*);
+    virtual void OnLocate();
+    virtual void OnPlay();
+    virtual void OnStop();
+    virtual void OnTeach(bool);
+    virtual void OnUnselectTrack();
+    virtual void OnSelectTrack();
+    virtual void OnTrackRec();
+    virtual void OnMarkerStart();
+    virtual void OnMarkerEnd();
+    
     /// operations
     void ApplyWindowSettings();
-    void AutoConnect();
     bool ConnectMixer(std::string);
-
-    int NewMessageCallback(IOscMessage*);
-    int UpdateMessageCallback(IOscMessage*);    
-    void ProcessSelectMessage(int);
     
     bool ConnectDaw(std::string host, std::string port, std::string reply_port);
-
-    bool SetupBackend();
 
     gint GetPosFrame();
     
@@ -224,13 +223,6 @@ private:
 
     /// dialogs
     Gtk::AboutDialog m_Dialog;
-
-    Glib::Dispatcher m_DawDispatcher;
-    OQueue<DAW_PATH> my_dawqueue;
-    Glib::Dispatcher m_JackDispatcher;
-    
-    Glib::Dispatcher m_MessageDispatcher;
-    OQueue<IOscMessage*> my_messagequeue;
 
     Glib::Dispatcher m_ViewDispatcher;
     Glib::Dispatcher m_OverViewDispatcher;

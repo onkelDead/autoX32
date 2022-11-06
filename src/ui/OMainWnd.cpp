@@ -23,10 +23,6 @@
 #include "res/autoX32.h"
 #include "res/trackdlg.h"
 
-void OMainWnd::OnTimer(void* user_data)  {
-    m_backend->ReconnectPorts();
-    OnJackEvent();
-}
 
 OMainWnd::OMainWnd() : Gtk::Window() {
 
@@ -47,9 +43,9 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     create_about_dlg();
 
-    m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
+//    m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
 
-    m_MessageDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMessageEvent));
+//    m_MessageDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMessageEvent));
 
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
@@ -57,7 +53,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     show_all_children(true);
     queue_draw();
-    m_mixer->SetMessageHandler(this);
 
     m_lock_play = false;
     m_lock_daw_time = false;
@@ -66,7 +61,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 }
 
 OMainWnd::~OMainWnd() {
-    m_daw->StopSessionMonitor();
     StopEngine();
     if (m_timeview)
         delete m_timeview;
@@ -75,15 +69,20 @@ OMainWnd::~OMainWnd() {
 
 void OMainWnd::on_activate() {
 
-    if (!SetupBackend()) {
+    if (InitDaw(this)) {
         exit(1);
     }
-    AutoConnect();
+    m_lbl_ardour->set_label("Ardour: connected");
     
-    m_backend->ControllerReset();
+    if (InitMixer(this)) {
+        exit(1);
+    }
+    m_lbl_x32->set_label("X32: connected");
     
-    m_mixer->Start();
-        
+    if (InitBackend(this)) {
+        exit(1);
+    }
+    
     StartEngine(this);
 }
 
@@ -144,19 +143,6 @@ void OMainWnd::ApplyWindowSettings() {
     move(m_config.get_int(SETTINGS_WINDOW_LEFT), m_config.get_int(SETTINGS_WINDOW_TOP));
 }
 
-void OMainWnd::AutoConnect() {
-    std::string reply_port = m_config.get_string(SETTINGS_DAW__REPLAY_PORT);
-    if (m_config.get_boolean(SETTINGS_MIXER_AUTOCONNECT)) {
-        ConnectMixer(m_config.get_string(SETTINGS_MIXER_HOST));
-    }
-
-    if (m_config.get_boolean(SETTINGS_DAW_AUTOCONNECT)) {
-        ConnectDaw(m_config.get_string(SETTINGS_DAW_HOST)
-                , m_config.get_string(SETTINGS_DAW_PORT)
-                , reply_port);
-    }
-}
-
 bool OMainWnd::ConnectMixer(std::string host) {
     if (m_mixer->IsConnected()) {
         m_mixer->Disconnect();
@@ -188,6 +174,36 @@ void OMainWnd::NewProject(std::string path) {
 
 void OMainWnd::NewProject() {
 
+}
+
+void OMainWnd::OnProjectLoad() {
+    set_title("autoX32 - [" + m_session + "]");
+    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
+
+    for (size_t i = 0; i < tracks.size(); i++) {
+        for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
+            IOTrackStore* ts = it->second;
+            if (ts->GetLayout()->m_index == i) {
+                ts->GetMessage()->SetTrackstore(ts);
+                OTrackView* trackview = new OTrackView(this, m_project->GetDawTime());
+                trackview->SetTrackStore(ts);
+                ts->SetView(trackview);
+                m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
+                track_entry* e = ts->GetEntryAtPosition(GetPosFrame(), true);
+                ts->SetPlayhead(e);
+                PlayTrackEntry(ts, e);
+                ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
+                ts->SetColor_index(m_mixer->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
+                m_trackslayout.GetTrackview(ts->GetPath())->SetTrackName(ts->GetName());
+            }
+        }
+    }
+    
+    m_trackslayout.show_all();
+    UpdateDawTime(false);
+    m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
+    on_btn_zoom_loop_clicked();
+    
 }
 
 int OMainWnd::OpenProject(std::string location) {
@@ -277,40 +293,6 @@ void OMainWnd::EditTrack(std::string path) {
         m_mixer->SendString(nameMsg->GetPath(), pDialog->GetName());
         m_trackslayout.GetTrackview(path)->SetTrackName(pDialog->GetName());
     }
-}
-
-bool OMainWnd::SetupBackend() {
-
-    ODlgProlog *pDialog = nullptr;
-    ui->get_widget_derived("dlg-prolog", pDialog);
-
-    pDialog->set_icon(get_icon());
-
-    pDialog->SetMidiBackend(GetConfig()->get_int(SETTINGS_MIDI_BACKEND));
-    pDialog->SetLoadCache(GetConfig()->get_boolean(SETTINGS_LOAD_CACHE));
-
-    pDialog->run();
-    if (!pDialog->GetResult()) {
-        return 0;
-    }
-
-    GetConfig()->set_int(SETTINGS_MIDI_BACKEND, pDialog->GetMidiBackend());
-    GetConfig()->set_boolean(SETTINGS_LOAD_CACHE, pDialog->GetLoadCache());
-    
-    switch (pDialog->GetMidiBackend()) {
-        case 0:
-            m_backend = new OAlsa();
-            break;
-        case 1:
-            //m_backend = new OJack(GetConfig());
-            break;
-        default:
-            return 0;
-    }
-
-    m_backend->Connect(this);
-
-    return 1;
 }
 
 gint OMainWnd::GetPosFrame() {

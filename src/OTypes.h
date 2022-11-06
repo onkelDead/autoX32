@@ -73,25 +73,18 @@ enum DAW_PATH {
 
 enum E_OPERATION {
     nothing,
-    new_channel,
+    new_track,
     draw_trackview,
     new_pos,
     play,
     stop,
     teach,
-    touch_off,
-    touch_release,
-    home,
-    end,
-    next_track,
-    prev_track,
-    unselect,
-    toggle_solo,
+    select_track,
+    unselect_track,
     toggle_rec, 
     toggle_recview,
-    jump_forward,
-    jump_backward,
-    drop_track
+    marker_start,
+    marker_end,
 };
 
 typedef struct ui_event_type {

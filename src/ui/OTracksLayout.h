@@ -76,7 +76,7 @@ private:
     std::vector<OTrackView*> m_tracklist;
     Gtk::Grid m_grig;
     Gtk::Box m_bbox;
-    IOTrackStore* m_selected_track;
+    IOTrackStore* m_selected_track = nullptr;
 };
 
 
