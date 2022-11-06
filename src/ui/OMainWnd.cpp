@@ -43,10 +43,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
 
     create_about_dlg();
 
-//    m_DawDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnDawEvent));
-
-//    m_MessageDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnMessageEvent));
-
     m_OverViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnOverViewEvent));
 
     m_ViewDispatcher.connect(sigc::mem_fun(*this, &OMainWnd::OnUIOperation));
