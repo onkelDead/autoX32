@@ -48,3 +48,7 @@ void OMainWnd::OnMarkerStart() {
 void OMainWnd::OnMarkerEnd() {
     PublishUiEvent(E_OPERATION::marker_end, NULL);
 }
+
+void OMainWnd::OnDropTrack() {
+    PublishUiEvent(E_OPERATION::drop_track, NULL);
+}

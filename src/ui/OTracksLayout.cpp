@@ -96,6 +96,11 @@ void OTracksLayout::RemoveTrackView(std::string path) {
     }
 }
 
+void OTracksLayout::RemoveTrackView() {
+    RemoveTrackView(m_selected_path);
+    m_selected_path = "";
+}
+
 gint OTracksLayout::GetTrackIndex(std::string path) {
     gint index = 0;
     if (m_tracklist.size() == 0) {
@@ -258,14 +263,17 @@ gint OTracksLayout::get_count_visible() {
 }
 
 void OTracksLayout::UnselectTrack() {
-    if (m_selected_track) {
-        GetTrackview(m_selected_track->GetPath())->SetSelected(false);
-        m_selected_track = nullptr;
+    if (m_selected_path != "") {
+        GetTrackview(m_selected_path)->SetSelected(false);
+        m_selected_path = "";
         
     }
 }
 
 void OTracksLayout::SelectTrack(std::string path) {
-    m_selected_track = GetTrackview(path)->GetTrackStore();
-    GetTrackview(m_selected_track->GetPath())->SetSelected(true);
+    IOTrackView *view = GetTrackview(path);
+    if (view) {
+        m_selected_path = path;
+        GetTrackview(path)->SetSelected(true);
+    }
 }

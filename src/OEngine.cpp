@@ -312,7 +312,7 @@ void OEngine::OnJackEvent() {
                 EngineSelectPrevTrack();
                 break;
             case CTL_UNSELECT:
-                UnselectTrack();
+                EngineUnselectTrack();
                 break;
             case CTL_DROP_TRACK:
                 EngineDropMode();
@@ -365,7 +365,6 @@ void OEngine::OnJackEvent() {
     }
 }
 
-
 void OEngine::SelectTrack(std::string path, bool selected) {
     UnselectTrack();
     if (selected) {
@@ -406,7 +405,6 @@ void OEngine::UnselectTrack() {
         m_backend->ControllerShowDrop(false);
         m_backend->m_drop_mode = false;
     }
-    OnUnselectTrack();
 }
 
 void OEngine::EngineLocate(bool complete) {
@@ -516,6 +514,11 @@ void OEngine::EngineToggleTrackRecord() {
     OnTrackRec();
 }
 
+void OEngine::EngineUnselectTrack() {
+    UnselectTrack();
+    OnUnselectTrack();
+}
+
 void OEngine::EngineFader() {
     IOTrackStore* sts = m_project->GetTrackSelected();
     if (sts) {
@@ -547,6 +550,7 @@ bool OEngine::EngineDropTrack() {
             UnselectTrack();
             m_project->RemoveTrack(sts->GetPath());
             ret = true;
+            OnDropTrack();
         }
     }
     return ret;

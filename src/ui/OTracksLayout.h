@@ -33,6 +33,7 @@ public:
     OTrackView* GetTrackTail();
     
     void RemoveTrackView(std::string path);
+    void RemoveTrackView();
     void RemoveAllTackViews();
 
     void TrackUp(std::string path);
@@ -76,7 +77,7 @@ private:
     std::vector<OTrackView*> m_tracklist;
     Gtk::Grid m_grig;
     Gtk::Box m_bbox;
-    IOTrackStore* m_selected_track = nullptr;
+    std::string m_selected_path = "";
 };
 
 

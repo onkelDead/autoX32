@@ -54,6 +54,7 @@ void OMainWnd::OnUIOperation() {
                 
                 if (!m_trackslayout.GetTrackview(path)) {
                     OTrackView *trackview = new OTrackView(this, m_project->GetDawTime());
+                    trackstore->SetView(trackview);
                     trackview->SetPath(path);
                     trackview->SetTrackStore(trackstore);
                     trackview->SetTrackName(trackstore->GetName());
@@ -63,10 +64,15 @@ void OMainWnd::OnUIOperation() {
                     m_trackslayout.SelectTrack(path);
                     SelectTrack(path, true);
                     trackview->SetRecord(true);
-                    trackstore->SetView(trackview);
                 }                
             }
                 break;
+            case E_OPERATION::drop_track:
+            {
+                m_trackslayout.RemoveTrackView();
+
+                break;
+            }
             case E_OPERATION::draw_trackview:
             {
                 ((OTrackView*) op->context)->queue_draw();

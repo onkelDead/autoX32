@@ -62,6 +62,7 @@ public:
     virtual void OnTrackRec() {}
     virtual void OnMarkerStart() {}
     virtual void OnMarkerEnd() {}
+    virtual void OnDropTrack() {}
     
 protected:
     OConfig m_config;
@@ -97,6 +98,7 @@ protected:
 
     void EngineSelectNextTrack();
     void EngineSelectPrevTrack();    
+    void EngineUnselectTrack();
     
     void EngineDropMode();
     bool EngineDropTrack();

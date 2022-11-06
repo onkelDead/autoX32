@@ -85,6 +85,7 @@ enum E_OPERATION {
     toggle_recview,
     marker_start,
     marker_end,
+    drop_track,
 };
 
 typedef struct ui_event_type {

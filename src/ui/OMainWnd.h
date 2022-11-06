@@ -106,6 +106,7 @@ public:
     virtual void OnTrackRec();
     virtual void OnMarkerStart();
     virtual void OnMarkerEnd();
+    virtual void OnDropTrack();
     
     /// operations
     void ApplyWindowSettings();
