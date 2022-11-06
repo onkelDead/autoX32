@@ -131,6 +131,7 @@ void OEngine::OnDawEvent() {
         my_dawqueue.front_pop(&c);
         switch (c) {
             case DAW_PATH::reply:
+                m_project->SetMaxFrames(m_daw->GetMaxFrames());
                 m_project->GetTimeRange()->m_loopend = m_daw->GetMaxFrames();
                 m_session = m_daw->GetSessionName();
                 std::cout << "OService::OnDawEvent session name " << m_session << std::endl;
