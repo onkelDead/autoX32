@@ -17,9 +17,11 @@
  */
 
 #include <locale.h>
+#include <string.h>
 
 extern int main_service(int argc, char** argv);
 extern int main_ui(int argc, char** argv);
+extern int main_thin(int argc, char** argv);
 
 int main(int argc, char *argv[]) {
 
@@ -28,7 +30,10 @@ int main(int argc, char *argv[]) {
     if (argc < 2)
         return main_ui(argc, argv);
     
+    if (strcmp(argv[1], "service") == 0)
+        return main_service(argc, argv);
     
-    return main_service(argc, argv);
+    return main_thin(argc, argv);
+    
 
 }

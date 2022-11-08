@@ -63,6 +63,7 @@ public:
     virtual void OnMarkerStart() {}
     virtual void OnMarkerEnd() {}
     virtual void OnDropTrack() {}
+    virtual void OnCenterThin() {}
     
 protected:
     OConfig m_config;
@@ -107,6 +108,8 @@ protected:
     void EngineWheelLeft();
     void EngineWheelRight();
     void EngineWheelMode();
+    
+    void EngineCenterThin();
     
 protected:
     bool m_playing = false;

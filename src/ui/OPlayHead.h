@@ -32,7 +32,9 @@ public:
     
     bool calc_new_pos(daw_time* dt, int frame);
     void set_x_pos(int pos);
-    
+    void SetBorder(int val) {
+        m_border = val;
+    }
 protected:
 
     //Overrides:
@@ -52,6 +54,7 @@ private:
     int m_last_pos = 0;
     bool m_initialized = false;
     bool m_active = false;
+    int m_border = 0;
 };
 
 #endif /* OPLAYHEAD_H */

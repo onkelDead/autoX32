@@ -38,7 +38,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case CTL_BUTTON_TEACH: // Toggle teach
                     if (data[2] == 0x7f)
                         backend->Notify(CTL_TEACH_PRESS);
-                    else 
+                    else
                         backend->Notify(CTL_TEACH_RELEASE);
                     break;
                 case CTL_BUTTON_F1:
@@ -49,6 +49,11 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case CTL_BUTTON_F2:
                     if (data[2]) {
                         backend->Notify(CTL_STEP_MODE);
+                    }
+                    break;
+                case CTL_BUTTON_F3:
+                    if (data[2]) {
+                        backend->Notify(CTL_CENTER_THIN);
                     }
                     break;
                 case CTL_FADER_TOUCH:
@@ -68,8 +73,8 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                             backend->Notify(CTL_SAVE);
                     }
                     break;
-                case CTL_BUTTON_MARKER:  //Marker
-                    if (data[2]) 
+                case CTL_BUTTON_MARKER: //Marker
+                    if (data[2])
                         backend->Notify(CTL_MARKER_PRESS);
                     else
                         backend->Notify(CTL_MARKER_RELEASE);
@@ -106,19 +111,19 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     if (data[2]) {
                         backend->Notify(CTL_UNSELECT);
                     }
-                    break; 
+                    break;
                 case CTL_BUTTON_REC:
                     if (data[2] == 0x7f) {
                         backend->Notify(CTL_TOGGLE_REC);
                     }
-                    break;  
+                    break;
                 case CTL_WHEEL_LEFT_RIGHT:
                     if (data[2] == 0x01) {
                         backend->Notify(CTL_WHEEL_LEFT);
                     }
                     if (data[2] == 0x41) {
                         backend->Notify(CTL_WHEEL_RIGHT);
-                    }                    
+                    }
                     break;
                 case CTL_BUTTON_DROP:
                     if (data[2] == 0x7f) {
@@ -151,7 +156,7 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     break;
                 default:
                     printf("uncaught 0x80 %02x\n", data[1]);
-                    break;                    
+                    break;
             }
         }
         if (data[0] == 0x90) {

@@ -35,7 +35,11 @@
 #define SETTINGS_WINDOW_HEIGHT          "window-height"    
 #define SETTINGS_WINDOW_TOP             "window-top"    
 #define SETTINGS_WINDOW_LEFT            "window-left"    
-    
+#define SETTINGS_THIN_WIDTH           "thin-window-width"    
+#define SETTINGS_THIN_HEIGHT          "thin-window-height"    
+#define SETTINGS_THIN_TOP             "thin-window-top"    
+#define SETTINGS_THIN_LEFT            "thin-window-left"  
+
 #define SETTINGS_SHOW_PATH_ON_TRACK     "show-path-on-track"
     
 #define SETTINGS_RECENT_PROJECTS        "recent-projects"    

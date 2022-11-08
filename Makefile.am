@@ -7,6 +7,7 @@ bin_PROGRAMS = autoX32 check_TrackStore check_OscCmd
 
 autoX32_SOURCES = \
     src/ui/OMainWnd.cpp \
+    src/ui/OThinWnd.cpp \
     src/ui/OMainWndUI.cpp \
     src/ui/OMainWndEvents.cpp \
     src/ui/OMainWndProcess.cpp \
@@ -17,6 +18,7 @@ autoX32_SOURCES = \
     src/ui/OTracksLayout.cpp \
     src/ui/OTrackView.cpp \
     src/ui/OTrackDraw.cpp \
+    src/ui/OTrackDrawThin.cpp \
     src/ui/OOverView.cpp \
     src/ui/OTrackSizer.cpp \
     src/ui/OCustomWidget.cpp \

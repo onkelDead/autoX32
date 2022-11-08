@@ -108,6 +108,7 @@ void OMainWnd::create_view() {
     m_playhead->set_hexpand(false);
     m_playhead->set_size_request(1, -1);
     m_playhead->set_margin_start(160);
+    m_playhead->SetBorder(160);
     
     m_overlay->add_overlay(*m_bbox);
     m_overlay->add_overlay(*m_playhead);

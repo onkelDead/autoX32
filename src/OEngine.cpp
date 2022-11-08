@@ -361,6 +361,9 @@ void OEngine::OnJackEvent() {
             default:
                 std::cout << "uncaught jack event id:" << event << std::endl;
                 break;
+            case CTL_CENTER_THIN:
+                EngineCenterThin();
+                break;
         }
     }
 }
@@ -603,4 +606,8 @@ void OEngine::EngineMarker(bool val) {
         m_marker = true;
     }
     m_backend->ControllerShowMarker(m_marker);
+}
+
+void OEngine::EngineCenterThin() {
+    OnCenterThin();
 }

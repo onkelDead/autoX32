@@ -115,6 +115,6 @@ void OPlayHead::set_x_pos(int pos) {
         
         set_active(true);
         
-        set_margin_start(160 + m_last_pos);
+        set_margin_start(m_border + m_last_pos);
     }
 }

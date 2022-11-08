@@ -312,3 +312,4 @@ bool OMainWnd::PlayTrackEntry(IOTrackStore* trackstore, track_entry* entry) {
     }
     return true;    
 }
+
