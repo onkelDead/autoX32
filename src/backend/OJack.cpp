@@ -363,9 +363,12 @@ int OJack::Connect(IOJackHandler* wnd) {
 }
 
 void OJack::ControllerReset() {
+    ControllerClearMtc();
     ControllerShowPlay(false);
     ControllerShowTeach(false);
+    ControllerShowRec(false);
     ControllerShowTeachMode(false);
+    ControllerShowStepMode(false);
     ControllerShowWheelMode(false);
     ControllerShowCycle(false);
     ControllerShowMarker(false);
@@ -552,6 +555,16 @@ void OJack::ControllerShowLevel(float f) {
         c->buf[2] = (127 * f);
         ctl_out.push(c);
     }
+}
+
+void OJack::ControllerClearMtc() {
+
+    int i;
+    ctl_command* sysex = &s_7seg;    
+    for (i = 8; i >= 0; i--) {
+        sysex->buf[16 - i] = 0;
+    }
+    ctl_out.push(sysex);    
 }
 
 void OJack::ControlerShowMtcComplete(uint8_t s) {

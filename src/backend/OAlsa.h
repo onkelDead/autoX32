@@ -54,6 +54,7 @@ public:
     void ControllerShowSelect(bool);
     void ControllerShowLCDName(std::string, int);
     void ControllerShowLevel(float);
+    void ControllerClearMtc() {}
     void ControlerShowMtcComplete(uint8_t);
     void ControlerShowMtcQuarter(uint8_t);
     void ControllerShowScrub();
