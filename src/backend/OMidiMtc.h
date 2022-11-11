@@ -30,12 +30,14 @@ public:
     uint8_t diggit[4] = {0, 0, 0, 0};
 
 private:
-    uint8_t subframe = 0;
+    uint8_t m_subframe = 0;
 
     uint8_t n1 = 0;
     uint8_t n2 = 0;
     std::string m_timecode = "00:00:00:00";
     bool lock_frame = false;
+    
+    uint32_t m_frame4;
 };
 
 

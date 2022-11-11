@@ -87,7 +87,7 @@ public:
         m_Trackstore = Trackstore;
     }
 
-    IOTrackStore* GetTrackstore() const {
+    inline IOTrackStore* GetTrackstore() const {
         return m_Trackstore;
     }
 

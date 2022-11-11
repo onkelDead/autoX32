@@ -37,14 +37,12 @@ public:
     
     virtual int ProcessMsg(IOscMessage*, int) = 0;
     
-    virtual bool IsPlaying() = 0;
-    virtual void SetPlaying(bool val) = 0;
-    virtual bool IsRecording() = 0;
-    virtual bool SetRecording(bool val) = 0;
-    virtual bool GetRecording() = 0;
-    virtual bool ToggleRecord() = 0;
-    virtual bool IsDirty() = 0;
-    virtual void SetDirty(bool val) = 0;
+    virtual inline bool IsPlaying() = 0;
+    virtual inline void SetPlaying(bool val) = 0;
+    virtual inline bool IsRecording() = 0;
+    virtual inline void SetRecording(bool val) = 0;
+    virtual inline bool IsDirty() = 0;
+    virtual inline void SetDirty(bool val) = 0;
     
     virtual track_entry* GetPlayhead() = 0;
     virtual void SetPlayhead(track_entry* e) = 0;

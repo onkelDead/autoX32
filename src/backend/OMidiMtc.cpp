@@ -11,6 +11,7 @@
  * Created on December 12, 2021, 9:33 AM
  */
 
+#include <stdio.h>
 #include "OMidiMtc.h"
 
 // JackMtc
@@ -20,15 +21,26 @@ void OMidiMtc::FullFrame(uint8_t *frame_data) {
     diggit[2] = frame_data[6];
     diggit[1] = frame_data[7];
     diggit[0] = frame_data[8];
-    subframe = 0;
+    m_subframe = 0;
+
+    uint32_t seconds = 
+            3600 * diggit[3] +
+            60 * diggit[2] +
+            diggit[1];
+            
+
+    m_frame4 = seconds * 120 + diggit[0] * 4;
 }
 
 int OMidiMtc::QuarterFrame(uint8_t data) {
     int ret = 0;
     lock_frame = true;
-    subframe++;
-    if (subframe == 4) {
-        subframe = 0;
+    m_subframe++;
+
+    m_frame4++;
+    
+    if (m_subframe == 4) {
+        m_subframe = 0;
         diggit[0]++;
         ret = 2;
     }
@@ -58,13 +70,7 @@ int OMidiMtc::QuarterFrame(uint8_t data) {
 }
 
 int OMidiMtc::GetFrame() {
-    int ret;
-    while (lock_frame);
-    ret = diggit[3] * 432000 
-            + diggit[2] * 7200 
-            + diggit[1] * 120 
-            + (diggit[0] * 4) + (subframe);
-    return ret;
+    return m_frame4;
 }
 
 void OMidiMtc::SetFrame(int f) {
@@ -75,7 +81,8 @@ void OMidiMtc::SetFrame(int f) {
     diggit[1] = (f / 120) % 60;
     f -= diggit[1] * 120;
     diggit[0] = (f / 4 ) % 30;
-    subframe = 0;
+    m_subframe = 0;
+    m_frame4 = f;
 }
 
 std::string OMidiMtc::GetTimeCode() {

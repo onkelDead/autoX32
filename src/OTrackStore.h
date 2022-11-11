@@ -58,9 +58,9 @@ public:
         return m_record;
     }
 
-    inline bool SetRecording(bool val);
-    inline bool GetRecording();
-    inline bool ToggleRecord();
+    inline void SetRecording(bool val) {
+        m_record = val;
+    }
 
     inline bool IsDirty() {
         return m_dirty;
@@ -163,10 +163,8 @@ private:
     int m_color_index;
 
     // private functions
+    bool IsFileNameValid = false;
     void EvalFileName();
-    
-    inline void Lock();
-    inline void Unlock();
 
     track_entry* NewEntry(int pos = 0);
     inline void InternalRemoveEntry(track_entry*);

@@ -202,39 +202,6 @@ void OMainWnd::OnProjectLoad() {
     
 }
 
-int OMainWnd::OpenProject(std::string location) {
-
-    if (m_project->Load(location))
-        return 1;
-    set_title("autoX32 - [" + location + "]");
-    std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
-
-    for (size_t i = 0; i < tracks.size(); i++) {
-        for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-            IOTrackStore* ts = it->second;
-            if (ts->GetLayout()->m_index == i) {
-                ts->GetMessage()->SetTrackstore(ts);
-                OTrackView* trackview = new OTrackView(this, m_project->GetDawTime());
-                trackview->SetTrackStore(ts);
-                ts->SetView(trackview);
-                m_trackslayout.AddTrack(trackview, ts->GetLayout()->m_visible);
-                track_entry* e = ts->GetEntryAtPosition(GetPosFrame(), true);
-                ts->SetPlayhead(e);
-                PlayTrackEntry(ts, e);
-                ts->SetName(m_mixer->GetCachedMessage(ts->GetConfigRequestName())->GetVal(0)->GetString());
-                ts->SetColor_index(m_mixer->GetCachedMessage(ts->GetConfigRequestColor())->GetVal(0)->GetInteger());
-                m_trackslayout.GetTrackview(ts->GetPath())->SetTrackName(ts->GetName());
-            }
-        }
-    }
-    
-    m_trackslayout.show_all();
-    UpdateDawTime(false);
-    m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);
-    on_btn_zoom_loop_clicked();
-    return 0;
-}
-
 void OMainWnd::CloseProject() {
     m_trackslayout.RemoveAllTackViews();
 

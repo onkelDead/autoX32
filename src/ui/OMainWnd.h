@@ -119,7 +119,6 @@ public:
     void NewProject();    
     void NewProject(std::string);
 
-    int OpenProject(std::string location);
     std::string GetProjectLocation();
     bool SaveProject();
     bool SelectProjectLocation(bool);

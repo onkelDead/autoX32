@@ -106,7 +106,7 @@ void OEngine::StartEngine(IOTimerEvent* handler) {
 
     m_mixer->Start();
 
-    m_jackTimer.setInterval(5);
+    m_jackTimer.setInterval(3);
     m_jackTimer.SetUserData(&m_jackTimer);
     m_jackTimer.setFunc(handler);
     m_jackTimer.start();    
@@ -181,26 +181,27 @@ void OEngine::OnMixerEvent() {
         IOscMessage *msg;
         my_messagequeue.front_pop(&msg);
 
-        IOTrackStore* ts = msg->GetTrackstore();
-        if (ts) {
+        IOTrackStore* trackstore = msg->GetTrackstore();
+        if (trackstore) {
             
             if (m_teach_active) {
-                ts->SetRecording(true);
+                trackstore->SetRecording(true);
             }
             
             int upd = 0;
-            if ((upd = ts->ProcessMsg(msg, m_backend->GetFrame()))) {
-                OnTrackUpdate(ts);
+            if ((upd = trackstore->ProcessMsg(msg, m_backend->GetFrame()))) {
+                OnTrackUpdate(trackstore);
             }
         
-            if (ts == m_project->GetTrackSelected()) {
+            if (trackstore == m_project->GetTrackSelected()) {
                 switch(upd) {
                     case 1:
-                        m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
+                        if (trackstore->IsRecording())
+                            m_backend->ControllerShowLevel(msg->GetVal(0)->GetFloat());
                         break;
                     case 2:
                     case 3:
-                        m_backend->ControllerShowLCDName(ts->GetName(), ts->GetColor_index());
+                        m_backend->ControllerShowLCDName(trackstore->GetName(), trackstore->GetColor_index());
                         break;
                 }
             }
@@ -525,12 +526,12 @@ void OEngine::EngineUnselectTrack() {
 void OEngine::EngineFader() {
     IOTrackStore* sts = m_project->GetTrackSelected();
     if (sts) {
-        if (m_teach_active && !sts->GetRecording()) {
+        if (m_teach_active && !sts->IsRecording()) {
             sts->SetRecording(true);
         }                    
         IOscMessage* msg = sts->GetMessage();
         msg->GetVal(0)->SetFloat((float) m_backend->m_fader_val / 127.);
-        if (sts->GetRecording()) {
+        if (sts->IsRecording()) {
             m_mixer->SendFloat(msg->GetPath(), msg->GetVal(0)->GetFloat());
             sts->ProcessMsg(msg, m_backend->GetFrame());
         }
@@ -561,7 +562,7 @@ bool OEngine::EngineDropTrack() {
 
 void OEngine::EngineWheelLeft() {
     if (!m_wheel_mode) {
-        m_backend->Locate(m_backend->GetFrame() - (m_step_mode ? 1800 : 120));
+        m_backend->Locate(m_backend->GetFrame() - (m_step_mode ? 4 : 120));
     }
     else {
         EngineSelectPrevTrack();
@@ -570,7 +571,7 @@ void OEngine::EngineWheelLeft() {
 
 void OEngine::EngineWheelRight() {
     if (!m_wheel_mode) {
-        m_backend->Locate(m_backend->GetFrame() + (m_step_mode ? 1800 : 120));
+        m_backend->Locate(m_backend->GetFrame() + (m_step_mode ? 4 : 120));
     }
     else {
         EngineSelectNextTrack();
