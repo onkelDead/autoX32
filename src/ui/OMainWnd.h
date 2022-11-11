@@ -95,6 +95,7 @@ public:
     void remove_track(std::string path);
 
     virtual void OnProjectLoad();
+    virtual void OnProjectClose();
     virtual void OnTrackUpdate(IOTrackStore*);
     virtual void OnTrackNew(IOTrackStore*);
     virtual void OnLocate();

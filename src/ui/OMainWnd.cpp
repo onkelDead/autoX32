@@ -172,6 +172,10 @@ void OMainWnd::NewProject() {
 
 }
 
+void OMainWnd::OnProjectClose() {
+    CloseProject();
+}
+
 void OMainWnd::OnProjectLoad() {
     set_title("autoX32 - [" + m_session + "]");
     std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
@@ -180,7 +184,7 @@ void OMainWnd::OnProjectLoad() {
         for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
             IOTrackStore* ts = it->second;
             if (ts->GetLayout()->m_index == i) {
-                ts->GetMessage()->SetTrackstore(ts);
+//                ts->GetMessage()->SetTrackstore(ts);
                 OTrackView* trackview = new OTrackView(this, m_project->GetDawTime());
                 trackview->SetTrackStore(ts);
                 ts->SetView(trackview);

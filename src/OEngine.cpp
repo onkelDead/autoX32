@@ -146,12 +146,14 @@ void OEngine::OnDawEvent() {
             case DAW_PATH::session:
                 m_mixer->PauseCallbackHandler(true);
                 std::cout << "OService: Load session " << m_daw->GetProjectFile() << std::endl;
+                
+                OnProjectClose();
                 if (!m_project->Load(m_daw->GetLocation())) {
-                    if (m_config.get_boolean(SETTINGS_LOAD_CACHE))
-                        m_mixer->WriteAll();
-                    else
-                        m_mixer->ReadAll();
-                    m_mixer->WriteAll();
+//                    if (m_config.get_boolean(SETTINGS_LOAD_CACHE))
+//                        m_mixer->WriteAll();
+//                    else
+//                        m_mixer->ReadAll();
+//                    m_mixer->WriteAll();
                     std::map<std::string, IOTrackStore*> tracks = m_project->GetTracks();
                     for (std::map<std::string, IOTrackStore*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
                         IOTrackStore* ts = it->second;
