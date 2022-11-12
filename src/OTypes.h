@@ -77,6 +77,7 @@ enum E_OPERATION {
     new_track,
     draw_trackview,
     new_pos,
+    pos_next,
     play,
     stop,
     teach,

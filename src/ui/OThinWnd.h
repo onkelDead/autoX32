@@ -43,7 +43,7 @@ public:
     void PublishUiEvent(E_OPERATION, void *);
     void UpdatePlayhead(bool doCalc);
 
-    virtual void OnLocate();
+    virtual void OnLocate(bool);
     virtual void OnUnselectTrack();
     virtual void OnSelectTrack();
     virtual void OnEngineCenterThin();

@@ -54,7 +54,7 @@ public:
     virtual void OnProjectClose() {};
     virtual void OnTrackUpdate(IOTrackStore*) {}
     virtual void OnTrackNew(IOTrackStore*) {}
-    virtual void OnLocate() {}
+    virtual void OnLocate(bool) {}
     virtual void OnPlay() {}
     virtual void OnStop() {}
     virtual void OnTeach(bool) {}

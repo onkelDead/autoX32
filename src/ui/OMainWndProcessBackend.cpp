@@ -13,7 +13,7 @@
 
 #include "OMainWnd.h"
 
-void OMainWnd::OnLocate() {
+void OMainWnd::OnLocate(bool complete) {
     PublishUiEvent(E_OPERATION::new_pos, NULL);
 }
 

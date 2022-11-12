@@ -143,12 +143,19 @@ void OThinWnd::PublishUiEvent(operation_t *ue) {
 
 void OThinWnd::OnUIOperation() {
     operation_t *op;
+    static int phc = 0;
     m_queue_operation.front_pop(&op);
     if (op) {
 
         switch (op->event) {
             case E_OPERATION::new_pos:
                 UpdatePlayhead(false);
+                break;
+            case E_OPERATION::pos_next:
+                if (phc++ > 10) {
+                    UpdatePlayhead(false);
+                    phc = 0;
+                }
                 break;
             case E_OPERATION::select_track:
             {
@@ -174,8 +181,11 @@ void OThinWnd::UpdatePlayhead(bool doCalc) {
     }
 }
 
-void OThinWnd::OnLocate() {
-    PublishUiEvent(E_OPERATION::new_pos, NULL);
+void OThinWnd::OnLocate(bool complete) {
+    if (!complete)
+        PublishUiEvent(E_OPERATION::new_pos, NULL);
+    else
+        PublishUiEvent(E_OPERATION::pos_next, NULL);
 }
 
 void OThinWnd::OnUnselectTrack() {

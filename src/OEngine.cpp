@@ -263,7 +263,8 @@ void OEngine::OnJackEvent() {
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-                EngineLocate(event != MTC_COMPLETE);
+                std::cout << event << std::endl;
+                EngineLocate(event);
                 break;
             case MMC_PLAY:
                 EnginePlay();
@@ -424,7 +425,7 @@ void OEngine::EngineLocate(bool complete) {
     if (sc) {
         m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
     }    
-    OnLocate();
+    OnLocate(complete);
 }
 
 void OEngine::EnginePlay() {
