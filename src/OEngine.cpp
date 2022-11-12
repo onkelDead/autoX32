@@ -263,7 +263,6 @@ void OEngine::OnJackEvent() {
                 break;
             case MTC_QUARTER_FRAME:
             case MTC_COMPLETE:
-                std::cout << event << std::endl;
                 EngineLocate(event);
                 break;
             case MMC_PLAY:

@@ -150,9 +150,10 @@ void OThinWnd::OnUIOperation() {
         switch (op->event) {
             case E_OPERATION::new_pos:
                 UpdatePlayhead(false);
+                phc = 0;
                 break;
             case E_OPERATION::pos_next:
-                if (phc++ > 10) {
+                if (phc++ > 20) {
                     UpdatePlayhead(false);
                     phc = 0;
                 }
@@ -182,10 +183,12 @@ void OThinWnd::UpdatePlayhead(bool doCalc) {
 }
 
 void OThinWnd::OnLocate(bool complete) {
-    if (!complete)
+    if (!complete) {
         PublishUiEvent(E_OPERATION::new_pos, NULL);
-    else
+    }
+    else {
         PublishUiEvent(E_OPERATION::pos_next, NULL);
+    }
 }
 
 void OThinWnd::OnUnselectTrack() {
