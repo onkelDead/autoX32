@@ -27,8 +27,6 @@ public:
     virtual ~OPlayHead();
 
     void set_active(bool val) { m_active = val; }
-    bool get_initialized() { return m_initialized; }
-    void set_initialized(bool val) { m_initialized = val; }
     
     bool calc_new_pos(daw_time* dt, int frame);
     void set_x_pos(int pos);
@@ -52,7 +50,6 @@ private:
     
     int m_pos;
     int m_last_pos = 0;
-    bool m_initialized = false;
     bool m_active = false;
     int m_border = 0;
 };
