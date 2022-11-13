@@ -27,7 +27,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OThinWnd : public Gtk::Window, public OEngine {
+class OThinWnd : public Gtk::Window, public OEngine, IOTimeView {
 public:
     OThinWnd();
     virtual ~OThinWnd();
@@ -39,6 +39,9 @@ public:
     bool on_delete_event(GdkEventAny *any_event) override;
     bool Shutdown();
 
+    virtual void on_timedraw_pos_changed();   
+    virtual void on_timedraw_zoom_changed() {}
+    
     void SelectTrackDraw(std::string path);
     void PublishUiEvent(E_OPERATION, void *);
     void UpdatePlayhead(bool doCalc);

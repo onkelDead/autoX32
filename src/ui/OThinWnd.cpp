@@ -63,6 +63,7 @@ OThinWnd::OThinWnd() : Gtk::Window() {
 
     ApplyWindowSettings();
 
+    thin->SetSignalPosChange(this);
 }
 
 OThinWnd::~OThinWnd() {
@@ -206,3 +207,9 @@ void OThinWnd::OnCenterThin() {
     }
 }
 
+void OThinWnd::on_timedraw_pos_changed() {
+
+    if (thin) {
+        m_backend->Locate(thin->m_click_frame);
+    }
+}

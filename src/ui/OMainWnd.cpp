@@ -53,7 +53,6 @@ OMainWnd::OMainWnd() : Gtk::Window() {
     m_lock_play = false;
     m_lock_daw_time = false;
     m_lock_daw_time_event = false;
-
 }
 
 OMainWnd::~OMainWnd() {

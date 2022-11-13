@@ -18,18 +18,25 @@
 #include <gtkmm/widget.h>
 #include "OCustomWidget.h"
 #include "IOTrackStore.h"
+#include "IOTimeView.h"
 
 class OTrackDrawThin : public OCustomWidget {
 public:
     OTrackDrawThin(daw_time *daw_time);
     virtual ~OTrackDrawThin();
     void SetTrackStore(IOTrackStore*);
-
+    void SetSignalPosChange(IOTimeView *t);
+    int m_click_frame = 0;
+    
 protected:
     //Overrides:
     virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr);
+    virtual bool on_button_press_event(GdkEventButton* event);
+
 private:
     daw_time *m_daw_time;
+    sigc::signal<void> signal_pos_changed;
+
     IOTrackStore *m_trackstore = nullptr;
     gint m_left = 0;
     gint m_right = 0;

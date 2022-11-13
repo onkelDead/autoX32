@@ -141,3 +141,14 @@ float OTrackDrawThin::GetHeight(lo_arg it, char t) {
     }
     return 0;
 }
+
+bool OTrackDrawThin::on_button_press_event(GdkEventButton *event) {
+    m_click_frame = event->x / m_daw_time->scale + m_daw_time->m_viewstart;
+    signal_pos_changed.emit();
+    return true;
+}
+
+void OTrackDrawThin::SetSignalPosChange(IOTimeView *t) {
+    signal_pos_changed.connect(
+            sigc::mem_fun(*t, &IOTimeView::on_timedraw_pos_changed));
+}
