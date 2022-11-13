@@ -139,8 +139,7 @@ void OEngine::OnDawEvent() {
             case DAW_PATH::samples:
                 if (m_backend) {
                     m_backend->SetFrame(m_daw->GetSample() / 400);
-                    m_project->UpdatePos(m_backend->GetFrame(), true);
-                    m_backend->ControlerShowMtcComplete(0);
+                    EngineLocate(false);
                 }
                 break;
             case DAW_PATH::session:
@@ -413,9 +412,9 @@ void OEngine::UnselectTrack() {
     }
 }
 
-void OEngine::EngineLocate(bool complete) {
+void OEngine::EngineLocate(bool partial) {
     bool sc = false;
-    if (complete) {
+    if (partial) {
         sc = m_project->UpdatePos(m_backend->GetFrame(), false);
     } else {
         sc = m_project->UpdatePos(m_backend->GetFrame(), true);
@@ -424,7 +423,7 @@ void OEngine::EngineLocate(bool complete) {
     if (sc) {
         m_backend->ControllerShowLevel(m_project->GetTrackSelected()->GetPlayhead()->val.f);
     }    
-    OnLocate(complete);
+    OnLocate(partial);
 }
 
 void OEngine::EnginePlay() {

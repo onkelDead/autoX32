@@ -46,7 +46,7 @@ public:
     virtual void OnLocate(bool);
     virtual void OnUnselectTrack();
     virtual void OnSelectTrack();
-    virtual void OnEngineCenterThin();
+    virtual void OnCenterThin();
 protected:
     Glib::RefPtr<Gtk::CssProvider> m_refCssProvider;
 

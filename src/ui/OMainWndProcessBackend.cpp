@@ -13,8 +13,13 @@
 
 #include "OMainWnd.h"
 
-void OMainWnd::OnLocate(bool complete) {
-    PublishUiEvent(E_OPERATION::new_pos, NULL);
+void OMainWnd::OnLocate(bool partial) {
+    if (!partial) {
+        PublishUiEvent(E_OPERATION::new_pos, NULL);
+    }
+    else {
+        PublishUiEvent(E_OPERATION::pos_next, NULL);
+    }
 }
 
 void OMainWnd::OnPlay() {

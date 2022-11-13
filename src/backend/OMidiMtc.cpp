@@ -74,6 +74,7 @@ int OMidiMtc::GetFrame() {
 }
 
 void OMidiMtc::SetFrame(int f) {
+    m_frame4 = f;
     diggit[3] = f / 432000;
     f -= diggit[3] * 432000 ;
     diggit[2] = (f / 7200 % 60);
@@ -82,7 +83,7 @@ void OMidiMtc::SetFrame(int f) {
     f -= diggit[1] * 120;
     diggit[0] = (f / 4 ) % 30;
     m_subframe = 0;
-    m_frame4 = f;
+    
 }
 
 std::string OMidiMtc::GetTimeCode() {

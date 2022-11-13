@@ -182,8 +182,8 @@ void OThinWnd::UpdatePlayhead(bool doCalc) {
     }
 }
 
-void OThinWnd::OnLocate(bool complete) {
-    if (!complete) {
+void OThinWnd::OnLocate(bool partial) {
+    if (!partial) {
         PublishUiEvent(E_OPERATION::new_pos, NULL);
     }
     else {
@@ -195,6 +195,14 @@ void OThinWnd::OnUnselectTrack() {
     PublishUiEvent(E_OPERATION::unselect_track, NULL);
 }
 
-void OThinWnd::OnEngineCenterThin() {
-
+void OThinWnd::OnCenterThin() {
+    if (thin) {
+        m_project->GetDawTime()->m_viewstart = m_project->GetTimeRange()->m_loopstart;
+        m_project->GetDawTime()->m_viewend = m_project->GetTimeRange()->m_loopend; 
+        m_project->GetDawTime()->scale = (gfloat) thin->get_width() / (gfloat) (m_project->GetDawTime()->m_viewend - m_project->GetDawTime()->m_viewstart);
+        m_playhead->set_x_pos(m_backend->GetFrame());
+        m_playhead->queue_draw();
+        thin->queue_draw();
+    }
 }
+

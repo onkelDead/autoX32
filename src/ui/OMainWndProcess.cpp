@@ -43,6 +43,8 @@ void OMainWnd::GetTrackConfig(IOTrackStore* trackstore){
 
 void OMainWnd::OnUIOperation() {
     operation_t *op;
+    static int phc = 0;
+
     m_queue_operation.front_pop(&op);
     if (op) {
 
@@ -81,6 +83,13 @@ void OMainWnd::OnUIOperation() {
                 break;
             case E_OPERATION::new_pos:
                 UpdatePlayhead(false);
+                phc = 0;
+                break;
+            case E_OPERATION::pos_next:
+                if (phc++ > 20) {
+                    UpdatePlayhead(false);
+                    phc = 0;
+                }
                 break;
             case E_OPERATION::play:
                 m_sensitive = false;
