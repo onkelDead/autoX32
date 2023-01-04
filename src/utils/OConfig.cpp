@@ -61,6 +61,7 @@ void OConfig::create_default() {
     set_int("window-height", 500);
     set_int("window-top", 200);
     set_int("window-left", 200);
+    set_string(SETTINGS_TRACK_FILTER, "(/ch/.*/mix/(fader|pan|on))|(/dca/.*/fader)");
 }
 
 bool OConfig::get_boolean(const char* path) {
