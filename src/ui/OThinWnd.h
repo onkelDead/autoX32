@@ -16,6 +16,7 @@
 
 #include <giomm/settingsschemasource.h>
 
+#include "IOThinWnd.h"
 #include "OEngine.h"
 #include "OOverView.h"
 #include "OPlayHead.h"
@@ -27,7 +28,7 @@
 #define PACKAGE_VERSION "0.7"
 #define PACKAGE_BUGREPORT "onkel@paraair.de"
 
-class OThinWnd : public Gtk::Window, public OEngine, IOTimeView {
+class OThinWnd : public Gtk::Window, public OEngine, IOTimeView, IOThinWnd {
 public:
     OThinWnd();
     virtual ~OThinWnd();

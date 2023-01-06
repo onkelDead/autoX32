@@ -52,7 +52,7 @@ OThinWnd::OThinWnd() : Gtk::Window() {
     auto screen = Gdk::Screen::get_default();
     refStyleContext->add_provider_for_screen(Gdk::Screen::get_default(), m_refCssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);    
     
-    thin = new OTrackDrawThin(m_project->GetDawTime());
+    thin = new OTrackDrawThin(this, m_project->GetDawTime());
     thin->set_halign(Gtk::ALIGN_FILL);
     thin->set_vexpand(true);
     m_bbox->add(*thin);

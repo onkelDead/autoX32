@@ -11,9 +11,10 @@
  * Created on November 6, 2022, 4:06 PM
  */
 
+#include "OTrackDrawBase.h"
 #include "OTrackDrawThin.h"
 
-OTrackDrawThin::OTrackDrawThin(daw_time *daw_time) : m_daw_time(daw_time) {
+OTrackDrawThin::OTrackDrawThin(IOThinWnd* wnd, daw_time *daw_time) : m_daw_time(daw_time), m_parent(wnd) {
 }
 
 OTrackDrawThin::~OTrackDrawThin() {
@@ -22,7 +23,6 @@ OTrackDrawThin::~OTrackDrawThin() {
 bool OTrackDrawThin::on_draw(const Cairo::RefPtr<Cairo::Context> &cairo) {
     const Gtk::Allocation allocation = get_allocation();
     char valType;
-    std::string path;
 
     int height = allocation.get_height();
     m_width = allocation.get_width();
@@ -31,8 +31,7 @@ bool OTrackDrawThin::on_draw(const Cairo::RefPtr<Cairo::Context> &cairo) {
     if (m_trackstore != nullptr) {
         track_entry *entry = m_trackstore->GetHeadEntry();
         valType = m_trackstore->GetMessage()->GetVal(0)->GetType();
-        
-        path = m_trackstore->GetPath();
+
 
         cairo->set_source_rgb(.4, 0., 0.);
         GetColorByIndex(cairo, m_trackstore->GetColor_index());
@@ -71,7 +70,12 @@ bool OTrackDrawThin::on_draw(const Cairo::RefPtr<Cairo::Context> &cairo) {
             cairo->line_to(m_width, last_val);
             cairo->stroke();
         }
+        
+        if (m_parent->GetConfig()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK)) {
+            draw_text(cairo, 2, 2, m_trackstore->GetName());
+        }
     }
+
     return true;
 }
 
@@ -128,18 +132,6 @@ void OTrackDrawThin::GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, in
             cr->set_source_rgb(65535, 65535, 65535);
             break;
     }
-}
-
-float OTrackDrawThin::GetHeight(lo_arg it, char t) {
-    switch (t) {
-        case 'f':
-            return it.f;
-            break;
-        case 'i':
-            return (float) it.i;
-            break;
-    }
-    return 0;
 }
 
 bool OTrackDrawThin::on_button_press_event(GdkEventButton *event) {

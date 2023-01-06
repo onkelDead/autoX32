@@ -17,6 +17,7 @@ autoX32_SOURCES = \
     src/ui/OTimeDraw.cpp \
     src/ui/OTracksLayout.cpp \
     src/ui/OTrackView.cpp \
+    src/ui/OTrackDrawBase.cpp \
     src/ui/OTrackDraw.cpp \
     src/ui/OTrackDrawThin.cpp \
     src/ui/OOverView.cpp \

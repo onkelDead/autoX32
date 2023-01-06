@@ -20,14 +20,14 @@
 #include <set>
 #include <gtkmm.h>
 #include <gtkmm/widget.h>
-#include <lo/lo.h>
 
 #include "OCustomWidget.h"
+#include "OTrackDrawBase.h"
 #include "OTimeDraw.h"
 #include "IOTrackStore.h"
 #include "IOMainWnd.h"
 
-class OTrackDraw: public OCustomWidget {
+class OTrackDraw: public OTrackDrawBase {
 public:
 	OTrackDraw(IOMainWnd*, daw_time*);
 	virtual ~OTrackDraw();
@@ -45,7 +45,6 @@ protected:
 
 	//Overrides:
 	virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr);
-	virtual void draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rectangle_width, int rectangle_height, std::string text);
 
 	virtual bool on_motion_notify_event(GdkEventMotion *motion_event);
 	virtual bool on_button_press_event(GdkEventButton *event);
@@ -61,7 +60,6 @@ private:
 	IOMainWnd *m_parent;
 	daw_time *m_daw_time;
 
-	float GetHeight(lo_arg it, char t);
         void GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index);
         
 	IOTrackStore *m_trackstore = nullptr;

@@ -32,17 +32,7 @@ m_current_cursor(Gdk::CursorType::ARROW), m_parent(wnd), m_daw_time(daw_time) {
 OTrackDraw::~OTrackDraw() {
 }
 
-float OTrackDraw::GetHeight(lo_arg it, char t) {
-    switch (t) {
-        case 'f':
-            return it.f;
-            break;
-        case 'i':
-            return (float) it.i;
-            break;
-    }
-    return 0;
-}
+
 
 bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     const Gtk::Allocation allocation = get_allocation();
@@ -56,7 +46,7 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 
     track_entry *it = m_trackstore->GetHeadEntry();
     t = m_trackstore->GetMessage()->GetVal(0)->GetType();
-    path = m_trackstore->GetPath();
+    path = m_trackstore->GetName();
 
     if (m_in_drag) {
         cr->set_source_rgb(.3, .3, .3);
@@ -110,23 +100,6 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
 
 
     return true;
-}
-
-void OTrackDraw::draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rectangle_width, int rectangle_height, std::string text) {
-    Pango::FontDescription font;
-
-    font.set_size(7 * Pango::SCALE);
-    font.set_family("Sans");
-    font.set_weight(Pango::WEIGHT_NORMAL);
-
-    auto layout = create_pango_layout(text);
-
-    layout->set_font_description(font);
-
-    cr->set_source_rgb(.8, .8, .8);
-    cr->move_to((rectangle_width) / 2, rectangle_height);
-
-    layout->show_in_cairo_context(cr);
 }
 
 void OTrackDraw::SetRecord(bool val) {
