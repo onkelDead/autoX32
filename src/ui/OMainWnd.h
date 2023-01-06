@@ -94,6 +94,7 @@ public:
     void notify_overview();
     void remove_track(std::string path);
 
+    virtual void OnDawReply();
     virtual void OnProjectLoad();
     virtual void OnProjectClose();
     virtual void OnTrackUpdate(IOTrackStore*);
@@ -108,6 +109,7 @@ public:
     virtual void OnMarkerStart();
     virtual void OnMarkerEnd();
     virtual void OnDropTrack();
+    virtual void OnCenterThin();
     
     /// operations
     void ApplyWindowSettings();

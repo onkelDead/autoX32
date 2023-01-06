@@ -49,7 +49,7 @@ public:
     int UpdateMessageCallback(IOscMessage*);
     void ProcessSelectMessage(int);    
     
-
+    virtual void OnDawReply() {};
     virtual void OnProjectLoad() {};
     virtual void OnProjectClose() {};
     virtual void OnTrackUpdate(IOTrackStore*) {}

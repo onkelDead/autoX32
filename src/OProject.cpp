@@ -278,7 +278,6 @@ void OProject::SetBitRate(int rate) {
 }
 
 void OProject::SetMaxFrames(int max_frames) {
-
     m_daw_time.m_maxframes = max_frames;
     if (m_daw_range.m_loopend == -1) {
         m_daw_range.m_loopend = max_frames;

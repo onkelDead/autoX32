@@ -57,3 +57,7 @@ void OMainWnd::OnMarkerEnd() {
 void OMainWnd::OnDropTrack() {
     PublishUiEvent(E_OPERATION::drop_track, NULL);
 }
+
+void OMainWnd::OnCenterThin() {
+    on_btn_zoom_loop_clicked();
+}

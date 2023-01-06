@@ -171,6 +171,11 @@ void OMainWnd::NewProject() {
 
 }
 
+void OMainWnd::OnDawReply() {
+    std::cout << "OMainWnd::OnDawReply" << std::endl;
+    m_timeview->UpdateDawTime(false);
+}
+
 void OMainWnd::OnProjectClose() {
     CloseProject();
 }
