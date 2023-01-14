@@ -188,6 +188,8 @@ void OTimeDraw::SetZoomLoop() {
     m_daw_time->m_viewend = m_range->m_loopend;
     signal_zoom_changed.emit();
 
+    std::cout << "OTimeDraw::SetZoomLoop: start:" << m_range->m_loopstart << ", end:" << m_range->m_loopend << std::endl;
+    
 }
 
 void OTimeDraw::SetSignalZoomChange(IOTimeView *t) {

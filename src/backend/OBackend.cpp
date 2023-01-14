@@ -147,10 +147,6 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case 0x65:
                     backend->Notify(CTL_SCRUB_OFF);
                     break;
-                case 0x6e:
-                    backend->m_fader_touched = false;
-                    backend->Notify(CTL_TOUCH_RELEASE);
-                    break;
                 case 0x5f:
                     backend->Notify(CTL_TEACH_RELEASE);
                     break;
@@ -160,8 +156,16 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
             }
         }
         if (data[0] == 0x90) {
-            if (data[1] == 0x6e) {
-                backend->m_fader_touched = true;
+            switch(data[1]) {
+                case 0x6e:
+                    if (data[2]) {
+                        backend->m_fader_touched = true;
+                    }
+                    else {
+                        backend->m_fader_touched = false;
+                        backend->Notify(CTL_TOUCH_RELEASE);                        
+                    }
+                    break;
             }
         }
     }

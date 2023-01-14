@@ -27,52 +27,49 @@
 #include "IOTrackStore.h"
 #include "IOMainWnd.h"
 
-class OTrackDraw: public OTrackDrawBase {
+class OTrackDraw : public OTrackDrawBase {
 public:
-	OTrackDraw(IOMainWnd*, daw_time*);
-	virtual ~OTrackDraw();
+    OTrackDraw(IOMainWnd*, daw_time*);
+    virtual ~OTrackDraw();
 
-	void SetTrackStore(IOTrackStore*);
-	IOTrackStore* GetTrackStore();
-        IOscMessage* GetMessage();
-        
-	void SetRecord(bool val);
+    void SetRecord(bool val);
 
-	void SetSelected(bool);
-        bool GetSelected() { return m_selected; }
+    void SetSelected(bool);
+
+    bool GetSelected() {
+        return m_selected;
+    }
 
 protected:
 
-	//Overrides:
-	virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr);
+    //Overrides:
+    virtual bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr);
 
-	virtual bool on_motion_notify_event(GdkEventMotion *motion_event);
-	virtual bool on_button_press_event(GdkEventButton *event);
-	virtual bool on_button_release_event(GdkEventButton *event);
+    virtual bool on_motion_notify_event(GdkEventMotion *motion_event);
+    virtual bool on_button_press_event(GdkEventButton *event);
+    virtual bool on_button_release_event(GdkEventButton *event);
 
 private:
 
-	Glib::RefPtr<Gdk::Cursor> m_default_cursor;
-	Glib::RefPtr<Gdk::Cursor> m_shift_cursor;
-	Glib::RefPtr<Gdk::Cursor> m_zoom_cursor;
-	Gdk::CursorType m_current_cursor;
+    Glib::RefPtr<Gdk::Cursor> m_default_cursor;
+    Glib::RefPtr<Gdk::Cursor> m_shift_cursor;
+    Glib::RefPtr<Gdk::Cursor> m_zoom_cursor;
+    Gdk::CursorType m_current_cursor;
 
-	IOMainWnd *m_parent;
-	daw_time *m_daw_time;
+    IOMainWnd *m_parent;
 
-        void GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index);
-        
-	IOTrackStore *m_trackstore = nullptr;
+    daw_time *m_daw_time;
 
-	bool m_in_drag = 0;
-	guint m_btn_down = 0;
-	gint m_last_x = 0;
-	gint m_down_x = 0;
-	gint m_left = 0;
-	gint m_right = 0;
-	gint m_width = 0;
 
-	bool m_selected = false;
+    bool m_in_drag = 0;
+    guint m_btn_down = 0;
+    gint m_last_x = 0;
+    gint m_down_x = 0;
+    gint m_left = 0;
+    gint m_right = 0;
+    gint m_width = 0;
+
+    bool m_selected = false;
 
 };
 

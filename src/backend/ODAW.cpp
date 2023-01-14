@@ -95,7 +95,7 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
 
 void ODAW::StartSessionMonitor() {
     std::cout << "Session Monitor started." << std::endl;
-    m_checksession.setInterval(1000);
+    m_checksession.setInterval(1000000);
     m_checksession.setFunc(this);
     m_checksession.start();    
 }

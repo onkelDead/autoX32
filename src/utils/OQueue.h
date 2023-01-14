@@ -37,6 +37,8 @@ public:
         return m_queue.empty();
     }
     
+    long unsigned int size() { return m_queue.size(); }
+    
 private:
 
     std::queue<T> m_queue;

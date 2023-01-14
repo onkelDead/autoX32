@@ -19,19 +19,28 @@
 #include <lo/lo.h>
 
 #include "OCustomWidget.h"
+#include "IOTrackStore.h"
 
 class OTrackDrawBase : public OCustomWidget {
 public:
     OTrackDrawBase();
     OTrackDrawBase(const OTrackDrawBase& orig);
     virtual ~OTrackDrawBase();
+
+    void SetTrackStore(IOTrackStore*);
+    IOTrackStore* GetTrackStore();
+
+    IOscMessage* GetMessage();
+
 protected:
     virtual void draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rectangle_width, int rectangle_height, std::string text);
 
     float GetHeight(lo_arg it, char t);
-    
-private:
+    void GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index);
 
+    IOTrackStore *m_trackstore = nullptr;
+
+private:
 };
 
 #endif /* OTRACKDRAWBASE_H */

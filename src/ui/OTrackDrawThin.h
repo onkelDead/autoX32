@@ -24,9 +24,8 @@
 
 class OTrackDrawThin : public OTrackDrawBase {
 public:
-    OTrackDrawThin(IOThinWnd* wnd, daw_time *daw_time);
+    OTrackDrawThin(IOThinWnd* wnd, daw_time*);
     virtual ~OTrackDrawThin();
-    void SetTrackStore(IOTrackStore*);
     void SetSignalPosChange(IOTimeView *t);
     int m_click_frame = 0;
 
@@ -37,14 +36,12 @@ protected:
     
 private:
     IOThinWnd* m_parent;
-    daw_time *m_daw_time;
     sigc::signal<void> signal_pos_changed;
+    daw_time *m_daw_time;
 
-    IOTrackStore *m_trackstore = nullptr;
     gint m_left = 0;
     gint m_right = 0;
     gint m_width = 0;
-    void GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index);
 
 };
 

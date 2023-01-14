@@ -102,11 +102,14 @@ int OEngine::InitBackend(IOJackHandler* jackHandler) {
 }
 
 void OEngine::StartEngine(IOTimerEvent* handler) {
+    
+    m_backend->ReconnectPorts();
+    
     m_daw->StartSessionMonitor();
 
     m_mixer->Start();
 
-    m_jackTimer.setInterval(3);
+    m_jackTimer.setInterval(3000);
     m_jackTimer.SetUserData(&m_jackTimer);
     m_jackTimer.setFunc(handler);
     m_jackTimer.start();    
@@ -120,9 +123,9 @@ void OEngine::StopEngine() {
 }
 
 void OEngine::OnTimer(void* user_data)  {
-    m_backend->ReconnectPorts();
-    OnJackEvent();
+    //m_backend->ReconnectPorts();
     OnMixerEvent();
+    OnJackEvent();
 }
 
 void OEngine::OnDawEvent() {
@@ -178,7 +181,6 @@ void OEngine::OnDawEvent() {
 }
 
 void OEngine::OnMixerEvent() {
-
     while (!my_messagequeue.empty()) {
         IOscMessage *msg;
         my_messagequeue.front_pop(&msg);
@@ -250,9 +252,14 @@ void OEngine::ProcessSelectMessage(int idx) {
 }
 
 void OEngine::OnJackEvent() {
+    if (m_jackqueue.empty()) return;
+    
+#ifdef PERF_ONJACKEVENT    
+    auto start = std::chrono::steady_clock::now();
+#endif    
     IOTrackStore* sts = m_project->GetTrackSelected();
+    JACK_EVENT event;
     while (!m_jackqueue.empty()) {
-        JACK_EVENT event;
         m_jackqueue.front_pop(&event);
         switch (event) {
             case CTL_SHUTDOWN:
@@ -369,6 +376,11 @@ void OEngine::OnJackEvent() {
                 break;
         }
     }
+#ifdef PERF_ONJACKEVENT    
+    auto end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    std::cout << "OEngine::OnJackEvent::Time " << event << " difference = " << duration << "[µs]" << std::endl;        
+#endif
 }
 
 void OEngine::SelectTrack(std::string path, bool selected) {

@@ -44,12 +44,12 @@ void OTimer::start() {
 
     m_thread = new std::thread([&]() {
         while (m_running) {
-            auto now = std::chrono::steady_clock::now();
-            auto delta = now + std::chrono::milliseconds(m_interval);
+            auto start = std::chrono::steady_clock::now();
+            auto delta = start + std::chrono::microseconds(m_interval);
 
             // task execution
             m_task_function->OnTimer(m_userData);
-
+            
             std::this_thread::sleep_until(delta);
         }
         m_stopped = true;

@@ -14,7 +14,7 @@
 #include "OTrackDrawBase.h"
 #include "OTrackDrawThin.h"
 
-OTrackDrawThin::OTrackDrawThin(IOThinWnd* wnd, daw_time *daw_time) : m_daw_time(daw_time), m_parent(wnd) {
+OTrackDrawThin::OTrackDrawThin(IOThinWnd* wnd, daw_time *daw_time) : m_parent(wnd), m_daw_time(daw_time) {
 }
 
 OTrackDrawThin::~OTrackDrawThin() {
@@ -77,61 +77,6 @@ bool OTrackDrawThin::on_draw(const Cairo::RefPtr<Cairo::Context> &cairo) {
     }
 
     return true;
-}
-
-void OTrackDrawThin::SetTrackStore(IOTrackStore *trackstore) {
-    m_trackstore = trackstore;
-}
-
-void OTrackDrawThin::GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index) {
-    switch (index) {
-        case 0:
-        case 8:
-            cr->set_source_rgb(0, 0, 0);
-            break;
-        case 1:
-            cr->set_source_rgb(32768, 0, 0);
-            break;
-        case 2:
-            cr->set_source_rgb(0, 32768, 0);
-            break;
-        case 3:
-            cr->set_source_rgb(32768, 32768, 0);
-            break;
-        case 4:
-            cr->set_source_rgb(0, 0, 32768);
-            break;
-        case 5:
-            cr->set_source_rgb(32768, 0, 32768);
-            break;
-        case 6:
-            cr->set_source_rgb(0, 32768, 32768);
-            break;
-        case 7:
-            cr->set_source_rgb(32768, 32768, 32768);
-            break;
-        case 9:
-            cr->set_source_rgb(65535, 0, 0);
-            break;
-        case 10:
-            cr->set_source_rgb(0, 65535, 0);
-            break;
-        case 11:
-            cr->set_source_rgb(65535, 65535, 0);
-            break;
-        case 12:
-            cr->set_source_rgb(0, 0, 65535);
-            break;
-        case 13:
-            cr->set_source_rgb(65535, 0, 65535);
-            break;
-        case 14:
-            cr->set_source_rgb(0, 65535, 65535);
-            break;
-        case 15:
-            cr->set_source_rgb(65535, 65535, 65535);
-            break;
-    }
 }
 
 bool OTrackDrawThin::on_button_press_event(GdkEventButton *event) {

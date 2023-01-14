@@ -32,8 +32,6 @@ m_current_cursor(Gdk::CursorType::ARROW), m_parent(wnd), m_daw_time(daw_time) {
 OTrackDraw::~OTrackDraw() {
 }
 
-
-
 bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
     const Gtk::Allocation allocation = get_allocation();
     auto refStyleContext = get_style_context();
@@ -95,9 +93,18 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
         cr->stroke();
     }
 
+    
     if (m_parent->GetConfig()->get_boolean(SETTINGS_SHOW_PATH_ON_TRACK))
         draw_text(cr, 2, 2, path);
 
+    
+    cr->set_source_rgb(0.1, 0.1, 0.1);
+    for (int si = m_daw_time->m_viewstart; si < m_daw_time->m_viewend; si++) {
+        int pos = (si - m_daw_time->m_viewstart) * m_daw_time->scale;
+        cr->move_to(pos, 0);
+        cr->line_to(pos, height);
+        cr->stroke();
+    }
 
     return true;
 }
@@ -108,18 +115,6 @@ void OTrackDraw::SetRecord(bool val) {
 
 void OTrackDraw::SetSelected(bool val) {
     m_selected = val;
-}
-
-void OTrackDraw::SetTrackStore(IOTrackStore *trackstore) {
-    m_trackstore = trackstore;
-}
-
-IOTrackStore* OTrackDraw::GetTrackStore() {
-    return m_trackstore;
-}
-
-IOscMessage* OTrackDraw::GetMessage() {
-    return m_trackstore->GetMessage();
 }
 
 bool OTrackDraw::on_button_press_event(GdkEventButton *event) {
@@ -202,55 +197,4 @@ bool OTrackDraw::on_motion_notify_event(GdkEventMotion *motion_event) {
         }
     }
     return true;
-}
-
-void OTrackDraw::GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index) {
-    switch (index) {
-        case 0:
-        case 8:
-            cr->set_source_rgb(0, 0, 0);
-            break;
-        case 1:
-            cr->set_source_rgb(32768, 0, 0);
-            break;
-        case 2:
-            cr->set_source_rgb(0, 32768, 0);
-            break;
-        case 3:
-            cr->set_source_rgb(32768, 32768, 0);
-            break;
-        case 4:
-            cr->set_source_rgb(0, 0, 32768);
-            break;
-        case 5:
-            cr->set_source_rgb(32768, 0, 32768);
-            break;
-        case 6:
-            cr->set_source_rgb(0, 32768, 32768);
-            break;
-        case 7:
-            cr->set_source_rgb(32768, 32768, 32768);
-            break;
-        case 9:
-            cr->set_source_rgb(65535, 0, 0);
-            break;
-        case 10:
-            cr->set_source_rgb(0, 65535, 0);
-            break;
-        case 11:
-            cr->set_source_rgb(65535, 65535, 0);
-            break;
-        case 12:
-            cr->set_source_rgb(0, 0, 65535);
-            break;
-        case 13:
-            cr->set_source_rgb(65535, 0, 65535);
-            break;
-        case 14:
-            cr->set_source_rgb(0, 65535, 65535);
-            break;
-        case 15:
-            cr->set_source_rgb(65535, 65535, 65535);
-            break;
-    }
 }

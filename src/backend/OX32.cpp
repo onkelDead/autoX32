@@ -22,18 +22,24 @@
 
 OX32::OX32() {
     m_cache.SetCallback_handler(this);
+    
+    msg_float = lo_message_new();
+    lo_message_add_float(msg_float, 0.0);
 }
 
 OX32::~OX32() {
+    
     if (IsConnected())
         Disconnect();
+
+    lo_message_free(msg_float);
 }
 
 int OX32::Start() {
 
     m_timer.SetUserData(NULL);
     m_timer.setFunc(this);
-    m_timer.setInterval(1000);
+    m_timer.setInterval(1000000);
     m_timer.start();   
     return 0;
 }
@@ -177,14 +183,16 @@ int OX32::IsConnected() {
 }
 
 void OX32::SendFloat(std::string path, float val) {
-    lo_message msg = lo_message_new();
-    lo_message_add_float(msg, val);
-    lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
+//    lo_message msg = lo_message_new();
+    lo_arg** arg = lo_message_get_argv(msg_float);
+//    lo_message_add_float(msg, val);
+    arg[0]->f = val;
+    lo_message_serialise(msg_float, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
         std::cerr << "OX32::Send: coundn't send float to X32." << std::endl;
         m_IsConnected = 0;
     }
-    lo_message_free(msg);
+//    lo_message_free(msg);
 }
 
 void OX32::SendInt(std::string path, int val) {

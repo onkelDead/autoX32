@@ -24,6 +24,20 @@ OTrackDrawBase::OTrackDrawBase() {
 OTrackDrawBase::~OTrackDrawBase() {
 }
 
+
+void OTrackDrawBase::SetTrackStore(IOTrackStore *trackstore) {
+    m_trackstore = trackstore;
+}
+
+IOTrackStore* OTrackDrawBase::GetTrackStore() {
+    return m_trackstore;
+}
+
+IOscMessage* OTrackDrawBase::GetMessage() {
+    return m_trackstore->GetMessage();
+}
+
+
 float OTrackDrawBase::GetHeight(lo_arg it, char t) {
     switch (t) {
         case 'f':
@@ -51,4 +65,55 @@ void OTrackDrawBase::draw_text(const Cairo::RefPtr<Cairo::Context> &cr, int rect
     cr->move_to((rectangle_width) / 2, rectangle_height);
 
     layout->show_in_cairo_context(cr);
+}
+
+void OTrackDrawBase::GetColorByIndex(const Cairo::RefPtr<Cairo::Context> &cr, int index) {
+    switch (index) {
+        case 0:
+        case 8:
+            cr->set_source_rgb(0, 0, 0);
+            break;
+        case 1:
+            cr->set_source_rgb(32768, 0, 0);
+            break;
+        case 2:
+            cr->set_source_rgb(0, 32768, 0);
+            break;
+        case 3:
+            cr->set_source_rgb(32768, 32768, 0);
+            break;
+        case 4:
+            cr->set_source_rgb(0, 0, 32768);
+            break;
+        case 5:
+            cr->set_source_rgb(32768, 0, 32768);
+            break;
+        case 6:
+            cr->set_source_rgb(0, 32768, 32768);
+            break;
+        case 7:
+            cr->set_source_rgb(32768, 32768, 32768);
+            break;
+        case 9:
+            cr->set_source_rgb(65535, 0, 0);
+            break;
+        case 10:
+            cr->set_source_rgb(0, 65535, 0);
+            break;
+        case 11:
+            cr->set_source_rgb(65535, 65535, 0);
+            break;
+        case 12:
+            cr->set_source_rgb(0, 0, 65535);
+            break;
+        case 13:
+            cr->set_source_rgb(65535, 0, 65535);
+            break;
+        case 14:
+            cr->set_source_rgb(0, 65535, 65535);
+            break;
+        case 15:
+            cr->set_source_rgb(65535, 65535, 65535);
+            break;
+    }
 }
