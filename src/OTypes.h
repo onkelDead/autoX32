@@ -27,6 +27,8 @@ extern "C" {
 }
 #endif
 
+//#define PERF_OProjectUpdatePos
+
 enum JACK_EVENT {
     MTC_COMPLETE,
     MTC_QUARTER_FRAME,

@@ -121,8 +121,8 @@ track_entry* OTrackStore::UpdatePos(int current, bool seek) {
     else {
         if (GetPlayhead() != e) {
             SetPlayhead(e);
+            return e;
         }
-        return e;
     }
     return nullptr;
 }
@@ -213,9 +213,11 @@ track_entry* OTrackStore::InternalGetEntryAtPosition(int pos, bool seek) {
 
     track_entry *entry = m_playhead;
     if (!seek) {
-        while (entry->next && entry->next->time < pos) {
-           entry = entry->next;
-        }
+        if (entry->next == nullptr) return entry;
+        if (entry->next->time <= pos) return entry->next;
+//        while (entry->next && entry->next->time < pos) {
+//           entry = entry->next;
+//        }
         return entry;
     }
     

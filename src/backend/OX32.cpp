@@ -25,6 +25,8 @@ OX32::OX32() {
     
     msg_float = lo_message_new();
     lo_message_add_float(msg_float, 0.0);
+    msg_int = lo_message_new();
+    lo_message_add_int32(msg_int, 0);
 }
 
 OX32::~OX32() {
@@ -33,6 +35,7 @@ OX32::~OX32() {
         Disconnect();
 
     lo_message_free(msg_float);
+    lo_message_free(msg_int);
 }
 
 int OX32::Start() {
@@ -51,6 +54,7 @@ int OX32::Connect(std::string host) {
         printf("failed to create X32 socket");
         return 1;
     }
+    
     memset(&m_Socket, 0, sizeof (m_Socket));
     m_Socket.sin_family = AF_INET;
     m_Socket.sin_addr.s_addr = inet_addr(host.data());
@@ -183,27 +187,23 @@ int OX32::IsConnected() {
 }
 
 void OX32::SendFloat(std::string path, float val) {
-//    lo_message msg = lo_message_new();
     lo_arg** arg = lo_message_get_argv(msg_float);
-//    lo_message_add_float(msg, val);
     arg[0]->f = val;
     lo_message_serialise(msg_float, path.data(), m_out_buffer, &m_out_length);
-    if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
+    if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) { 
         std::cerr << "OX32::Send: coundn't send float to X32." << std::endl;
         m_IsConnected = 0;
     }
-//    lo_message_free(msg);
 }
 
 void OX32::SendInt(std::string path, int val) {
-    lo_message msg = lo_message_new();
-    lo_message_add_int32(msg, val);
-    lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
+    lo_arg** arg = lo_message_get_argv(msg_int);
+    arg[0]->i32 = val;
+    lo_message_serialise(msg_int, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
         std::cerr << "OX32::Send: coundn't send int to X32." << std::endl;
         m_IsConnected = 0;
     }
-    lo_message_free(msg);
 }
 
 void OX32::SendString(std::string path, std::string val) {

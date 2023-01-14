@@ -106,7 +106,8 @@ private:
     void do_work(IOMixer*);
 
     lo_message msg_float;
-
+    lo_message msg_int;
+    
     int m_X32_socket_fd = -1;
     struct sockaddr_in m_Socket;
     struct sockaddr *m_SocketPtr = (struct sockaddr*) &m_Socket;

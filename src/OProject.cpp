@@ -315,23 +315,28 @@ std::map<std::string, IOTrackStore*> OProject::GetTracks() {
     return m_tracks;
 }
 
-bool OProject::UpdatePos(int current, bool seek) {
+bool OProject::UpdatePos(int current_time, bool seek) {
     bool ret = false;
 
+#ifdef PERF_OProjectUpdatePos
     auto start = std::chrono::steady_clock::now();
-
+#endif
+    
     for (std::map<std::string, IOTrackStore*>::iterator it = m_tracks.begin(); it != m_tracks.end(); ++it) {
         IOTrackStore* ts = it->second;
 
-        track_entry* e = ts->UpdatePos(current, seek);
-        if (e)
+        track_entry* e = ts->UpdatePos(current_time, seek);
+        if (e) {
             ret |= PlayTrackEntry(ts, e) && ts == m_selectedTrack;
+        }
     }   
     
+#ifdef PERF_OProjectUpdatePos
     auto end = std::chrono::steady_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
     std::cout << "OProject::UpdatePos::Time " << seek << " difference = " << duration << "[µs]" << std::endl;    
-    
+#endif
+   
     return ret;
 }
 
