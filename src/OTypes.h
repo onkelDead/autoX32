@@ -92,6 +92,12 @@ enum E_OPERATION {
     drop_track,
 };
 
+enum E_TRANSPORT_STATE {
+    PLAY,
+    STOP,
+    OFF
+};
+
 typedef struct ui_event_type {
     E_OPERATION event;
     void* context;

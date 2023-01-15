@@ -96,7 +96,8 @@ int OEngine::InitBackend(IOJackHandler* jackHandler) {
     }
 
     m_backend->ControllerReset();
-
+    m_backend->ControllerShowPlayState(E_TRANSPORT_STATE::STOP);
+    
     std::cout << "Backend initialized" << std::endl;
     return 0;
 }

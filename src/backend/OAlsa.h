@@ -46,7 +46,7 @@ public:
     void QuarterFrame(uint8_t);
 
     void ControllerReset() {}
-    void ControllerShowPlay(bool val);
+    void ControllerShowPlayState(E_TRANSPORT_STATE val);
     void ControllerShowDrop(bool val) {}
     void ControllerShowRec(bool) {};
     void ControllerShowTeach(bool val);

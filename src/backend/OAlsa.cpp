@@ -129,7 +129,7 @@ void OAlsa::Play() {
     int err = snd_seq_event_output_direct(alsa_client, &ev);
     if (err < 0)
         printf("Play: %s\n", snd_strerror(err));
-    ControllerShowPlay(true);
+    ControllerShowPlayState(E_TRANSPORT_STATE::PLAY);
 }
 
 void OAlsa::Stop() {
@@ -147,7 +147,7 @@ void OAlsa::Stop() {
     int err = snd_seq_event_output_direct(alsa_client, &ev);
     if (err < 0)
         printf("Stop: %s\n", snd_strerror(err));
-    ControllerShowPlay(false);
+    ControllerShowPlayState(E_TRANSPORT_STATE::STOP);
 }
 
 void OAlsa::Locate(int frame) {
@@ -187,7 +187,7 @@ void OAlsa::QuarterFrame(uint8_t q) {
 }
 
 
-void OAlsa::ControllerShowPlay(bool val) {
+void OAlsa::ControllerShowPlayState(E_TRANSPORT_STATE val) {
 //    ctl_command* c = new ctl_command;
 //    c->len = 3;
 //    c->buf[0] = 0x8b;
