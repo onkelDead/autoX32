@@ -62,9 +62,12 @@ void OProject::LockPlayhead(bool val) {
 
 int OProject::GetInteger(xmlNodePtr node, const char* name) {
     xmlChar *keyword = xmlGetProp(node, BAD_CAST name);
-    int result = atoi((const char *) keyword);
-    xmlFree(keyword);
-    return result;
+    if (keyword) {
+        int result = atoi((const char *) keyword);
+        xmlFree(keyword);
+        return result;
+    }
+    return 0;
 }
 
 int OProject::Load(std::string location) {
@@ -87,6 +90,16 @@ int OProject::Load(std::string location) {
         return 1;
     }
     context = xmlXPathNewContext(doc);
+    
+    result = xmlXPathEvalExpression(BAD_CAST "//project/states", context);
+    if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
+        nodeset = result->nodesetval;
+        xmlNodePtr node = nodeset->nodeTab[0];
+        m_lock_teach = GetInteger(node, "lock_teach") == 0 ? false : true;
+        m_teach_active = GetInteger(node, "teach_active") == 0 ? false : true;
+    }
+    xmlXPathFreeObject(result);    
+    
     result = xmlXPathEvalExpression(BAD_CAST "//project/range", context);
     if (!xmlXPathNodeSetIsEmpty(result->nodesetval)) {
         nodeset = result->nodesetval;
@@ -173,6 +186,7 @@ void OProject::Save(std::string location) {
     writer = xmlNewTextWriterFilename(projectFile.data(), 0);
     xmlTextWriterStartDocument(writer, NULL, NULL, NULL);
     xmlTextWriterStartElement(writer, BAD_CAST "project");
+    SaveStates(writer);
     SaveRange(writer);
     SaveZoom(writer);
     SaveCache(location);
@@ -199,6 +213,15 @@ daw_range* OProject::GetTimeRange() {
 daw_time* OProject::GetDawTime() {
     return &m_daw_time;
 }
+
+void OProject::SaveStates(xmlTextWriterPtr writer) {
+    xmlTextWriterStartElement(writer, BAD_CAST "states");
+    xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "lock_teach", "%d", m_lock_teach);
+    xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "teach_active", "%d", m_teach_active);
+    xmlTextWriterEndElement(writer);
+    printf("Project::Save: states saved\n");    
+}
+
 
 void OProject::SaveRange(xmlTextWriterPtr writer) {
     xmlTextWriterStartElement(writer, BAD_CAST "range");

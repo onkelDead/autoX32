@@ -104,7 +104,7 @@ void OMainWnd::OnUIOperation() {
                 break;
             case E_OPERATION::teach:
                 m_sensitive = false;
-                m_btn_teach->set_active(m_teach_active);
+                m_btn_teach->set_active(m_project->GetTeachActive());
                 m_sensitive = true;
                 break;
 

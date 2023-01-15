@@ -189,7 +189,7 @@ void OEngine::OnMixerEvent() {
         IOTrackStore* trackstore = msg->GetTrackstore();
         if (trackstore) {
             
-            if (m_teach_active) {
+            if (m_project->GetTeachActive()) {
                 trackstore->SetRecording(true);
             }
             
@@ -212,7 +212,7 @@ void OEngine::OnMixerEvent() {
             }
         }
         else {
-            if (m_teach_active) { // I'm configured for teach-in, so create new track and trackview v
+            if (m_project->GetTeachActive()) { // I'm configured for teach-in, so create new track and trackview v
                 if (std::regex_match (msg->GetPath(), std::regex(m_config.get_string(SETTINGS_TRACK_FILTER)) )) {
                     std::cout << "OService::OnMessageEvent new track " << msg->GetPath() << std::endl;
                     IOTrackStore *trackstore = m_project->NewTrack(msg);
@@ -461,31 +461,32 @@ void OEngine::EngineStop() {
 
 void OEngine::EngineTeach(bool pressed) {
     if (pressed) {
-        if (m_teach_mode) {
-            m_teach_active = !m_teach_active;
+        if (m_project->GetLockTeach()) {
+            m_project->ToggleTeachActive();
         } else {
-            m_teach_active = true;
+            m_project->SetTeachActive(true);
         }
     }
     else {
-        if (!m_teach_mode) {
-            m_teach_active = false;
+        if (!m_project->GetLockTeach()) {
+            m_project->SetTeachActive(false);
         }
     }
-    if (!m_teach_active) {
+    if (!m_project->GetTeachActive()) {
         m_project->StopRecord();
     }
-    m_backend->ControllerShowTeach(m_teach_active);
-    OnTeach(m_teach_mode);
+    m_backend->ControllerShowTeach(m_project->GetTeachActive());
+    OnTeach(m_project->GetLockTeach());
 }
 
 void OEngine::EngineTeachMode() {
-    m_teach_mode = !m_teach_mode;
-    m_backend->ControllerShowTeachMode(m_teach_mode);
-    if (!m_teach_mode) {
-        m_teach_active = false;
+    m_project->ToggleLockTeach();
+    m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
+    if (!m_project->GetLockTeach()) {
+        EngineTeach(true);
+        m_project->SetTeachActive(false);
         m_project->StopRecord();
-        m_backend->ControllerShowTeach(m_teach_mode);
+        m_backend->ControllerShowTeach(m_project->GetLockTeach());
     }    
 }
 
@@ -541,7 +542,7 @@ void OEngine::EngineUnselectTrack() {
 void OEngine::EngineFader() {
     IOTrackStore* sts = m_project->GetTrackSelected();
     if (sts) {
-        if (m_teach_active && !sts->IsRecording()) {
+        if (m_project->GetTeachActive() && !sts->IsRecording()) {
             sts->SetRecording(true);
         }                    
         IOscMessage* msg = sts->GetMessage();

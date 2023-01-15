@@ -53,6 +53,15 @@ public:
     virtual daw_time* GetDawTime() = 0;
     virtual void SetMaxFrames(int max_frames) = 0;
     virtual void SetBitRate(int) = 0;
+    
+    virtual bool GetLockTeach() = 0;
+    virtual void SetLockTeach(bool) = 0;
+    virtual void ToggleLockTeach() = 0;
+    
+    virtual bool GetTeachActive() = 0;
+    virtual void SetTeachActive(bool) = 0;
+    virtual void ToggleTeachActive() = 0;
+
 };
 
 #endif /* IPROJECT_H */

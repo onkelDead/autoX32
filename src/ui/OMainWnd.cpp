@@ -202,6 +202,12 @@ void OMainWnd::OnProjectLoad() {
         }
     }
     
+    m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
+    m_backend->ControllerShowTeach(m_project->GetTeachActive());
+    m_sensitive = false;
+    m_btn_teach->set_active(m_project->GetTeachActive());
+    m_sensitive = true;
+    
     m_trackslayout.show_all();
     UpdateDawTime(false);
     m_daw->SetRange(m_project->GetTimeRange()->m_loopstart, m_project->GetTimeRange()->m_loopend);

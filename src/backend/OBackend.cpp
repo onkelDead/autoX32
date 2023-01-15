@@ -14,14 +14,20 @@
  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <iostream>
 #include <time.h>
 #include "IOBackend.h"
 
+using namespace std;
 static auto time_f6 = std::chrono::steady_clock::now();
 
 int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
     if (len == 3) {
-
+#ifdef LOG_CTRL_EVENTS        
+        std::ios_base::fmtflags f( cout.flags() );  // save flags state
+        cout << "process_ctl_event: c:" << hex << (int)data[0] << " b:" << hex << (int)data[1] << " v:" << hex << (int)data[2] << endl;
+        cout.flags( f );  // restore flags state
+#endif
         if (data[0] == 0xb0) {
             switch (data[1]) {
                 case CTL_BUTTON_PLAY: // PLAY

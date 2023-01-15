@@ -61,3 +61,12 @@ void OMainWnd::OnDropTrack() {
 void OMainWnd::OnCenterThin() {
     on_btn_zoom_loop_clicked();
 }
+
+void OMainWnd::OnTrackUpdate(IOTrackStore* ts) {
+    if (ts->GetView())
+        PublishUiEvent(E_OPERATION::draw_trackview, ((OTrackView*)ts->GetView()));
+}
+
+void OMainWnd::OnTrackNew(IOTrackStore* ts) {
+    PublishUiEvent(E_OPERATION::new_track, ts);
+}

@@ -177,17 +177,21 @@ void OMainWnd::on_menu_fit() {
 
 void OMainWnd::on_btn_teach_clicked() {
 
-    m_btn_teach->set_icon_widget(m_btn_teach->get_active() ? m_img_teach_on : m_img_teach_off);
+    m_btn_teach->set_icon_widget(!m_project->GetTeachActive() ? m_img_teach_on : m_img_teach_off);
     m_btn_teach->show_all();
     
-    if (!m_btn_teach->get_active()) {
+    if (m_project->GetLockTeach()) {
         m_trackslayout.StopTeach();
     }
-    if (!m_sensitive) return;
-    if (m_teach_mode) {
-        EngineTeachMode();
+    if (m_sensitive) {
+        if (m_project->GetLockTeach()) {
+            EngineTeachMode();
+        }
+        EngineTeach(m_btn_teach->get_active());
     }
-    EngineTeach(m_btn_teach->get_active());
+    m_btn_teach->set_icon_widget(m_project->GetTeachActive() ? m_img_teach_on : m_img_teach_off);
+    m_btn_teach->show_all();
+    
 }
 
 void OMainWnd::on_btn_loop_start_clicked() {

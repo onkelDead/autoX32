@@ -77,6 +77,13 @@ public:
     
     std::vector<std::string> m_recent_projects;
 
+    bool GetLockTeach() { return m_lock_teach; }
+    void SetLockTeach(bool val) { m_lock_teach = val; }
+    void ToggleLockTeach() { m_lock_teach = !m_lock_teach; }
+    
+    bool GetTeachActive() { return m_teach_active; }
+    void SetTeachActive(bool val) { m_teach_active = val; }
+    void ToggleTeachActive() { m_teach_active = !m_teach_active; }
     
 private:
 
@@ -88,11 +95,16 @@ private:
     
     bool m_lock_playhead = false;
 
+    bool m_lock_teach = false;    
+    bool m_teach_active = false;
+    
     IOMixer* m_mixer = nullptr;
     
     std::map<std::string, IOTrackStore*> m_tracks;
     IOTrackStore* m_selectedTrack = nullptr;
 
+    
+    void SaveStates(xmlTextWriterPtr writer);
     void SaveRange(xmlTextWriterPtr writer);
     void SaveZoom(xmlTextWriterPtr writer);
     void SaveCache(std::string location);
