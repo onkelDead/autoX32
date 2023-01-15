@@ -12,7 +12,6 @@ autoX32_SOURCES = \
     src/ui/OMainWndEvents.cpp \
     src/ui/OMainWndProcess.cpp \
     src/ui/OMainWndProcessBackend.cpp \
-    src/ui/OMainWndProcessMixer.cpp \
     src/ui/OTimeView.cpp \
     src/ui/OTimeDraw.cpp \
     src/ui/OTracksLayout.cpp \

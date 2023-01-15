@@ -207,6 +207,11 @@ void OThinWnd::OnCenterThin() {
     }
 }
 
+void OThinWnd::OnProjectLoad() {
+    m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
+    m_backend->ControllerShowTeach(m_project->GetTeachActive());
+}
+
 void OThinWnd::on_timedraw_pos_changed() {
 
     if (thin) {

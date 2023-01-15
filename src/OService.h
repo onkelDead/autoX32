@@ -48,6 +48,7 @@ public:
     
     void StartProcessing();
    
+    virtual void OnProjectLoad();
     
 private:
     

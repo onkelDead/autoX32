@@ -68,3 +68,7 @@ void OService::GetTrackConfig(IOTrackStore* trackstore){
     m_mixer->Send(conf_name);
 }
 
+void OService::OnProjectLoad() {
+    m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
+    m_backend->ControllerShowTeach(m_project->GetTeachActive());
+}
