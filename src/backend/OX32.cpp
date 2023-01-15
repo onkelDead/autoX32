@@ -191,7 +191,7 @@ void OX32::SendFloat(std::string path, float val) {
     arg[0]->f = val;
     lo_message_serialise(msg_float, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) { 
-        std::cerr << "OX32::Send: coundn't send float to X32." << std::endl;
+        std::cerr << "OX32::Send: couldn't send float to X32." << std::endl;
         m_IsConnected = 0;
     }
 }
@@ -201,7 +201,7 @@ void OX32::SendInt(std::string path, int val) {
     arg[0]->i32 = val;
     lo_message_serialise(msg_int, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
-        std::cerr << "OX32::Send: coundn't send int to X32." << std::endl;
+        std::cerr << "OX32::Send: couldn't send int to X32." << std::endl;
         m_IsConnected = 0;
     }
 }
@@ -211,7 +211,7 @@ void OX32::SendString(std::string path, std::string val) {
     lo_message_add_string(msg, val.data());
     lo_message_serialise(msg, path.data(), m_out_buffer, &m_out_length);
     if (sendto(m_X32_socket_fd, m_out_buffer, m_out_length, 0, m_SocketPtr, sizeof (m_Socket)) < 0) {
-        std::cerr << "OX32::Send: coundn't send string to X32." << std::endl;
+        std::cerr << "OX32::Send: couldn't send string to X32." << std::endl;
         m_IsConnected = 0;
     }
     lo_message_free(msg);    
