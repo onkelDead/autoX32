@@ -204,6 +204,8 @@ void OMainWnd::OnProjectLoad() {
     
     m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
     m_backend->ControllerShowTeach(m_project->GetTeachActive());
+    m_backend->ControllerShowStepMode(m_project->GetStepMode());
+    m_backend->ControllerShowWheelMode(m_project->GetWheelMode());
     m_sensitive = false;
     m_btn_teach->set_active(m_project->GetTeachActive());
     m_sensitive = true;

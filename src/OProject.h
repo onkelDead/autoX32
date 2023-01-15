@@ -85,6 +85,14 @@ public:
     void SetTeachActive(bool val) { m_teach_active = val; }
     void ToggleTeachActive() { m_teach_active = !m_teach_active; }
     
+    bool GetStepMode() { return m_step_mode; }
+    void SetStepMode(bool val) { m_step_mode = val; }
+    void ToggleStepMode() { m_step_mode = !m_step_mode; }
+    
+    bool GetWheelMode() { return m_wheel_mode; }
+    void SetWheelMode(bool val) { m_wheel_mode = val; }
+    void ToggleWheelMode() { m_wheel_mode = !m_wheel_mode; }    
+    
 private:
 
     bool m_dirty = false;
@@ -97,6 +105,8 @@ private:
 
     bool m_lock_teach = false;    
     bool m_teach_active = false;
+    bool m_step_mode = false;
+    bool m_wheel_mode = false;
     
     IOMixer* m_mixer = nullptr;
     

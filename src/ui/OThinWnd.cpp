@@ -210,6 +210,9 @@ void OThinWnd::OnCenterThin() {
 void OThinWnd::OnProjectLoad() {
     m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
     m_backend->ControllerShowTeach(m_project->GetTeachActive());
+    m_backend->ControllerShowStepMode(m_project->GetStepMode());
+    m_backend->ControllerShowWheelMode(m_project->GetWheelMode());
+    
 }
 
 void OThinWnd::on_timedraw_pos_changed() {

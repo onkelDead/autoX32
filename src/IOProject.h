@@ -61,7 +61,14 @@ public:
     virtual bool GetTeachActive() = 0;
     virtual void SetTeachActive(bool) = 0;
     virtual void ToggleTeachActive() = 0;
-
+    
+    virtual bool GetStepMode() = 0;
+    virtual void SetStepMode(bool) = 0;
+    virtual void ToggleStepMode() = 0;    
+    
+    virtual bool GetWheelMode() = 0;
+    virtual void SetWheelMode(bool) = 0;
+    virtual void ToggleWheelMode() = 0;
 };
 
 #endif /* IPROJECT_H */

@@ -577,8 +577,8 @@ bool OEngine::EngineDropTrack() {
 }
 
 void OEngine::EngineWheelLeft() {
-    if (!m_wheel_mode) {
-        m_backend->Locate(m_backend->GetFrame() - (m_step_mode ? 4 : 120));
+    if (!m_project->GetWheelMode()) {
+        m_backend->Locate(m_backend->GetFrame() - (m_project->GetStepMode() ? 4 : 120));
     }
     else {
         EngineSelectPrevTrack();
@@ -586,8 +586,8 @@ void OEngine::EngineWheelLeft() {
 }
 
 void OEngine::EngineWheelRight() {
-    if (!m_wheel_mode) {
-        m_backend->Locate(m_backend->GetFrame() + (m_step_mode ? 4 : 120));
+    if (!m_project->GetWheelMode()) {
+        m_backend->Locate(m_backend->GetFrame() + (m_project->GetStepMode() ? 4 : 120));
     }
     else {
         EngineSelectNextTrack();
@@ -595,13 +595,13 @@ void OEngine::EngineWheelRight() {
 }
 
 void OEngine::EngineStepMode() {
-    m_step_mode = !m_step_mode;
-    m_backend->ControllerShowStepMode(m_step_mode);
+    m_project->ToggleStepMode();
+    m_backend->ControllerShowStepMode(m_project->GetStepMode());
 }
 
 void OEngine::EngineWheelMode() {
-    m_wheel_mode = !m_wheel_mode;
-    m_backend->ControllerShowWheelMode(m_wheel_mode);
+    m_project->ToggleWheelMode();
+    m_backend->ControllerShowWheelMode(m_project->GetWheelMode());
 }
 
 void OEngine::EngineCycle() {

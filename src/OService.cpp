@@ -71,4 +71,7 @@ void OService::GetTrackConfig(IOTrackStore* trackstore){
 void OService::OnProjectLoad() {
     m_backend->ControllerShowTeachMode(m_project->GetLockTeach());
     m_backend->ControllerShowTeach(m_project->GetTeachActive());
+    m_backend->ControllerShowStepMode(m_project->GetStepMode());
+    m_backend->ControllerShowWheelMode(m_project->GetWheelMode());
+    
 }

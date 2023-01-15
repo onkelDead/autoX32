@@ -114,8 +114,7 @@ protected:
     
 protected:
     bool m_playing = false;
-    bool m_step_mode = false;
-    bool m_wheel_mode = false;
+    
     bool m_cycle = false;
     bool m_marker = false;
     bool m_record = false;

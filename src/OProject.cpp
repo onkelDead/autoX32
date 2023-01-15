@@ -97,6 +97,8 @@ int OProject::Load(std::string location) {
         xmlNodePtr node = nodeset->nodeTab[0];
         m_lock_teach = GetInteger(node, "lock_teach") == 0 ? false : true;
         m_teach_active = GetInteger(node, "teach_active") == 0 ? false : true;
+        m_step_mode = GetInteger(node, "step_mode") == 0 ? false : true;
+        m_wheel_mode = GetInteger(node, "wheel_mode") == 0 ? false : true;
     }
     xmlXPathFreeObject(result);    
     
@@ -218,6 +220,8 @@ void OProject::SaveStates(xmlTextWriterPtr writer) {
     xmlTextWriterStartElement(writer, BAD_CAST "states");
     xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "lock_teach", "%d", m_lock_teach);
     xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "teach_active", "%d", m_teach_active);
+    xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "step_mode", "%d", m_step_mode);
+    xmlTextWriterWriteFormatAttribute(writer, BAD_CAST "wheel_mode", "%d", m_wheel_mode);
     xmlTextWriterEndElement(writer);
     printf("Project::Save: states saved\n");    
 }
