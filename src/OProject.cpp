@@ -138,19 +138,18 @@ int OProject::Load(std::string location) {
                 char* visible = (char*) xmlGetProp(node, BAD_CAST "visible");
                 
                 IOscMessage* msg = m_mixer->GetCachedMessage(path);
-                IOTrackStore *ts = NewTrack(msg);
-                
-                ts->GetLayout()->m_expanded = atoi(expanded);
-                ts->GetLayout()->m_height = atoi(height);
+                IOTrackStore *trackstore = NewTrack(msg);
+                trackstore->GetLayout()->m_expanded = atoi(expanded);
+                trackstore->GetLayout()->m_height = atoi(height);
                 if (layout_index) {
-                    ts->GetLayout()->m_index = atoi(layout_index);
+                    trackstore->GetLayout()->m_index = atoi(layout_index);
                     xmlFree(layout_index);
                 }
                 else
-                    ts->GetLayout()->m_index = c++;
-                ts->GetLayout()->m_visible = visible ? atoi(visible) : true;
+                    trackstore->GetLayout()->m_index = c++;
+                trackstore->GetLayout()->m_visible = visible ? atoi(visible) : true;
                         
-                ts->LoadData(location.c_str());
+                trackstore->LoadData(location.c_str());
                 if (visible)
                     xmlFree(visible);
                 xmlFree(path);
@@ -275,9 +274,15 @@ void OProject::SaveTracks(xmlTextWriterPtr writer, std::string location) {
 
 IOTrackStore* OProject::NewTrack(IOscMessage* msg) {
     std::cout << "New track : " << msg->GetPath() << std::endl;
-    IOTrackStore* ts = new OTrackStore(msg);
-    m_tracks[msg->GetPath()] = ts;
-    return ts;
+    IOTrackStore* trackstore = new OTrackStore(msg);
+    m_tracks[msg->GetPath()] = trackstore;
+    std::string conf_name = trackstore->GetConfigRequestName();
+    m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);
+    conf_name = trackstore->GetConfigRequestColor();
+    m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
+    m_mixer->Send(conf_name);      
+    return trackstore;
 }
 
 void OProject::RemoveTrack(std::string path) {

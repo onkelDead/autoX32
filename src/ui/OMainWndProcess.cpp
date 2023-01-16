@@ -84,6 +84,7 @@ void OMainWnd::OnUIOperation() {
             case E_OPERATION::new_pos:
                 UpdatePlayhead(false);
                 phc = 0;
+                delete op;
                 break;
             case E_OPERATION::pos_next:
                 if (phc++ > 20) {

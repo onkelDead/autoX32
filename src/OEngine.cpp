@@ -219,12 +219,6 @@ void OEngine::OnMixerEvent() {
                     msg->SetTrackstore(trackstore);    
                     trackstore->SetPlaying(m_playing);
                     trackstore->SetRecording(m_record);
-                    std::string conf_name = trackstore->GetConfigRequestName();
-                    m_mixer->AddCacheMessage(conf_name.c_str(), "s")->SetTrackstore(trackstore);
-                    m_mixer->Send(conf_name);
-                    conf_name = trackstore->GetConfigRequestColor();
-                    m_mixer->AddCacheMessage(conf_name.c_str(), "i")->SetTrackstore(trackstore);
-                    m_mixer->Send(conf_name);     
                     SelectTrack(msg->GetPath(), true);
                     OnTrackNew(trackstore);
                 }
