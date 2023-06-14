@@ -35,7 +35,7 @@ jack_port_t *mtc_port;
 jack_port_t *ctl_in_port;
 jack_port_t *ctl_out_port;
 
-static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x7e, 0x06, 0x03, 0xf7};
+static jack_midi_data_t midi_playstop[] = {0xf0, 0x7f, 0x00, 0x06, 0x03, 0xf7};
 
 static bool doLocate = false;
 static jack_midi_data_t locate[] = {0xf0, 0x7f, 0x7e, 0x06, 0x44, 0x06, 0x01, 0, 0, 0, 0, 0, 0xf7};
@@ -276,13 +276,22 @@ void on_port_connect(jack_port_id_t a, jack_port_id_t b, int connect, void* arg)
         if (strcmp(port_name_a, ONKEL_C_OUT_PORT_NAME) == 0) {
             jack->m_config->set_string("controller_out_port", port_name_b);
         }
+        if (strcmp(port_name_a, ONKEL_D_MMC_OUT_PORT_NAME) == 0) {
+            jack->m_config->set_string("mmc_out_port", port_name_b);
+        }
+        if (strcmp(port_name_b, ONKEL_D_MMC_IN_PORT_NAME) == 0) {
+            jack->m_config->set_string("mmc_in_port", port_name_a);
+        }
+        if (strcmp(port_name_b, ONKEL_D_MTC_IN_PORT_NAME) == 0) {
+            jack->m_config->set_string("mtc_in_port", port_name_a);
+        }
+        
     }
-
     if (connect)
-        printf("Connect ");
+        std::cout << "Connect ";
     else
-        printf("Disconnect ");
-    printf("Connect '%s' to '%s'\n", port_name_a, port_name_b);
+        std::cout << "Disconnect ";
+    std::cout << "'" << port_name_a << "' to '" << port_name_b << '"' << std::endl;
 }
 
 void on_register_client(const char* name, int reg, void *arg) {
@@ -330,6 +339,7 @@ int OJack::Connect(IOJackHandler* wnd) {
         fprintf(stderr, "jack server not running?\n");
         return 1;
     }
+    std::cout << "Jack: client created." << std::endl;
 
     jack_set_client_registration_callback(m_jack_client, on_register_client, this);
     jack_set_port_registration_callback(m_jack_client, on_register_port, this);
@@ -339,9 +349,9 @@ int OJack::Connect(IOJackHandler* wnd) {
 
     jack_on_shutdown(m_jack_client, jack_shutdown, 0);
 
-    mmc_in_port = jack_port_register(m_jack_client, "Ardour MMC in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
-    mmc_out_port = jack_port_register(m_jack_client, "Ardour MMC out", JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
-    mtc_port = jack_port_register(m_jack_client, "Ardour MTC in", JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    mmc_in_port = jack_port_register(m_jack_client, ONKEL_D_MMC_IN_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
+    mmc_out_port = jack_port_register(m_jack_client, ONKEL_D_MMC_OUT_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
+    mtc_port = jack_port_register(m_jack_client, ONKEL_D_MTC_IN_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_in_port = jack_port_register(m_jack_client, ONKEL_C_IN_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsInput, 0);
     ctl_out_port = jack_port_register(m_jack_client, ONKEL_C_OUT_PORT, JACK_DEFAULT_MIDI_TYPE, JackPortIsOutput, 0);
 
@@ -350,15 +360,36 @@ int OJack::Connect(IOJackHandler* wnd) {
         return 1;
     }
 
-    if ((errcode = jack_connect(m_jack_client, m_parent->GetConfig()->get_string("controller_in_port"), ONKEL_C_IN_PORT_NAME)) != 0) {
+    std::string ctrl_in_port = m_parent->GetConfig()->get_string("controller_in_port");
+    std::cout << "Jack: connect '" << ONKEL_C_IN_PORT_NAME << "' to '" << ctrl_in_port << std::endl;
+    if ((errcode = jack_connect(m_jack_client, ctrl_in_port.c_str(), ONKEL_C_IN_PORT_NAME)) != 0) {
         std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_IN_PORT_NAME << " failed with error code " << errcode << std::endl;
-//        return 1;
     }
-    if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, m_parent->GetConfig()->get_string("controller_out_port"))) != 0) {
+    
+    std::string ctrl_out_port = m_parent->GetConfig()->get_string("controller_out_port");
+    std::cout << "Jack: connect '" << ONKEL_C_OUT_PORT_NAME << "' to '" << ctrl_out_port << std::endl;
+    if ((errcode = jack_connect(m_jack_client, ONKEL_C_OUT_PORT_NAME, ctrl_out_port.c_str())) != 0) {
         std::cerr << "ERROR: OJack::Connect() on " << ONKEL_C_OUT_PORT_NAME << " failed with error code " << errcode << std::endl;
-//        return 1;
     }
 
+    std::string mmc_in_port = m_parent->GetConfig()->get_string("mmc_in_port");
+    std::cout << "Jack: connect '" << ONKEL_D_MMC_IN_PORT_NAME << "' to '" << mmc_in_port << std::endl;
+    if ((errcode = jack_connect(m_jack_client, mmc_in_port.c_str(), ONKEL_D_MMC_IN_PORT_NAME)) != 0) {
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_D_MMC_IN_PORT_NAME << " failed with error code " << errcode << std::endl;
+    }
+
+    std::string mtc_in_port = m_parent->GetConfig()->get_string("mtc_in_port");
+    std::cout << "Jack: connect '" << ONKEL_D_MTC_IN_PORT_NAME << "' to '" << mtc_in_port << std::endl;
+    if ((errcode = jack_connect(m_jack_client, mtc_in_port.c_str(), ONKEL_D_MTC_IN_PORT_NAME)) != 0) {
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_D_MTC_IN_PORT_NAME << " failed with error code " << errcode << std::endl;
+    }
+    
+    std::string mmc_out_port = m_parent->GetConfig()->get_string("mmc_out_port");
+    std::cout << "Jack: connect '" << ONKEL_D_MMC_OUT_PORT_NAME << "' to '" << mmc_out_port << std::endl;
+    if ((errcode = jack_connect(m_jack_client, ONKEL_D_MMC_OUT_PORT_NAME, mmc_out_port.c_str())) != 0) {
+        std::cerr << "ERROR: OJack::Connect() on " << ONKEL_D_MMC_OUT_PORT_NAME << " failed with error code " << errcode << std::endl;
+    }
+    
     return 0;
 }
 
@@ -389,8 +420,9 @@ void OJack::Disconnect() {
     jack_client_close(m_jack_client);
 }
 
-void OJack::Play() {
-    mmc_out.push(0x03);
+void OJack::Play(bool mmc) {
+    if (mmc)
+        mmc_out.push(0x03);
     ControllerShowPlayState(E_TRANSPORT_STATE::PLAY);
 }
 
@@ -421,8 +453,9 @@ void OJack::ReconnectPorts() {
     }
 }
 
-void OJack::Stop() {
-    mmc_out.push(0x01);
+void OJack::Stop(bool mmc) {
+    if (mmc)
+        mmc_out.push(0x01);
     ControllerShowPlayState(E_TRANSPORT_STATE::STOP);
 }
 
@@ -451,9 +484,9 @@ void OJack::Shuffle(bool s) {
 
         shuffle[6] |= (abs(m_shuffle_speed));
         doShuffle = true;
-        Play();
+        Play(false);
     } else {
-        Stop();
+        Stop(false);
     }
     printf("Shuffle speed %d %d %02x\n", s, m_shuffle_speed, shuffle[6]);
 

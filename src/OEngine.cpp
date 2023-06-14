@@ -268,19 +268,21 @@ void OEngine::OnJackEvent() {
                 EngineLocate(event);
                 break;
             case MMC_PLAY:
-                EnginePlay();
+                EnginePlay(false);
                 break;
             case CTL_PLAY:
                 if (m_playing) {
-                    EngineStop();
+                    EngineStop(true);
                 }
                 else {
-                    EnginePlay();
+                    EnginePlay(true);
                 }
                 break;
             case CTL_STOP:
+                EngineStop(true);
+                break;
             case MMC_STOP:
-                EngineStop();
+                EngineStop(false);
                 break;
             case MMC_RESET:
                 m_daw->ShortMessage("/refresh");
@@ -434,16 +436,16 @@ void OEngine::EngineLocate(bool partial) {
     OnLocate(partial);
 }
 
-void OEngine::EnginePlay() {
+void OEngine::EnginePlay(bool mmc) {
     m_playing = true;
-    m_backend->Play();
+    m_backend->Play(mmc);
     m_project->SetPlaying(m_playing);
     OnPlay();
 }
 
-void OEngine::EngineStop() {
+void OEngine::EngineStop(bool mmc) {
     m_playing = false;
-    m_backend->Stop();
+    m_backend->Stop(mmc);
     m_project->SetPlaying(m_playing);   
     if (m_project->GetTrackSelected()) m_backend->ControllerShowRec(false);
     if (m_cycle) {
@@ -602,7 +604,7 @@ void OEngine::EngineCycle() {
     m_cycle = !m_cycle;
     m_backend->ControllerShowCycle(m_cycle);
     if (!m_cycle) {
-        EngineStop();
+        EngineStop(true);
     }
     else {
         m_daw->ShortMessage("/loop_toggle");

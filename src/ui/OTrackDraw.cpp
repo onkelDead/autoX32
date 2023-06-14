@@ -98,13 +98,13 @@ bool OTrackDraw::on_draw(const Cairo::RefPtr<Cairo::Context> &cr) {
         draw_text(cr, 2, 2, path);
 
     
-    cr->set_source_rgb(0.1, 0.1, 0.1);
-    for (int si = m_daw_time->m_viewstart; si < m_daw_time->m_viewend; si++) {
-        int pos = (si - m_daw_time->m_viewstart) * m_daw_time->scale;
-        cr->move_to(pos, 0);
-        cr->line_to(pos, height);
-        cr->stroke();
-    }
+//    cr->set_source_rgb(0.1, 0.1, 0.1);
+//    for (int si = m_daw_time->m_viewstart; si < m_daw_time->m_viewend; si++) {
+//        int pos = (si - m_daw_time->m_viewstart) * m_daw_time->scale;
+//        cr->move_to(pos, 0);
+//        cr->line_to(pos, height);
+//        cr->stroke();
+//    }
 
     return true;
 }

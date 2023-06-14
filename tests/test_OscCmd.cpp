@@ -454,9 +454,9 @@ int test_backend() {
     test_equal(backend->GetFrame(), 20000, "GetFrame() "); 
     test_equal(backend->GetTimeCode(), "00:02:46:20", "GetTimeCode");
     
-    backend->Play();
+    backend->Play(false);
     sleep(1);
-    backend->Stop();
+    backend->Stop(false);
     sleep(1);
     test_greater(backend->GetFrame(), 20000, "GetFrame() "); 
     

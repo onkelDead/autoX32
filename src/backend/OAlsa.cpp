@@ -114,7 +114,7 @@ int OAlsa::GetFrame() {
     return m_midi_mtc.GetFrame();
 }
 
-void OAlsa::Play() {
+void OAlsa::Play(bool mmc) {
     midi_playstop[4] = 0x03;
 
     snd_seq_event_t ev;
@@ -132,7 +132,7 @@ void OAlsa::Play() {
     ControllerShowPlayState(E_TRANSPORT_STATE::PLAY);
 }
 
-void OAlsa::Stop() {
+void OAlsa::Stop(bool mmc) {
     midi_playstop[4] = 0x01;
 
     snd_seq_event_t ev;

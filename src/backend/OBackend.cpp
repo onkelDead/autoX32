@@ -156,6 +156,12 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                 case 0x5f:
                     backend->Notify(CTL_TEACH_RELEASE);
                     break;
+                case 0x6e:
+                    {
+                        backend->m_fader_touched = false;
+                        backend->Notify(CTL_TOUCH_RELEASE);                        
+                    }                    
+                break;
                 default:
                     printf("uncaught 0x80 %02x\n", data[1]);
                     break;
@@ -167,11 +173,10 @@ int process_ctl_event(uint8_t* data, size_t len, IOBackend* backend) {
                     if (data[2]) {
                         backend->m_fader_touched = true;
                     }
-                    else {
-                        backend->m_fader_touched = false;
-                        backend->Notify(CTL_TOUCH_RELEASE);                        
-                    }
                     break;
+                default:
+                    printf("uncaught 0x90 %02x\n", data[1]);
+                    break;                    
             }
         }
     }

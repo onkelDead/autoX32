@@ -85,8 +85,8 @@ protected:
     
     
     void EngineLocate(bool complete);
-    void EnginePlay();
-    void EngineStop();
+    void EnginePlay(bool mmc);
+    void EngineStop(bool mmc);
     void EngineCycle();
     void EngineHome();
     void EngineEnd();

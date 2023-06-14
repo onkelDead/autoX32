@@ -25,6 +25,12 @@
 #define ONKEL_C_OUT_PORT "Onkel Controller out"
 #define ONKEL_C_OUT_PORT_NAME "autoX32:Onkel Controller out"
 
+#define ONKEL_D_MMC_IN_PORT "Ardour MMC in"
+#define ONKEL_D_MMC_IN_PORT_NAME "autoX32:Ardour MMC in"
+#define ONKEL_D_MMC_OUT_PORT "Ardour MMC out"
+#define ONKEL_D_MMC_OUT_PORT_NAME "autoX32:Ardour MMC out"
+#define ONKEL_D_MTC_IN_PORT "Ardour MTC in"
+#define ONKEL_D_MTC_IN_PORT_NAME "autoX32:Ardour MTC in"
 
 #define CTL_COMMAND(a, b, c) ((a) << 16) + ((b) << 8) + (c)
 
@@ -92,8 +98,8 @@ public:
     virtual void ControllerShowMarker(bool) = 0;
     virtual void ControllerShowCycle(bool) = 0;
     
-    virtual void Play() = 0;
-    virtual void Stop() = 0;
+    virtual void Play(bool) = 0;
+    virtual void Stop(bool) = 0;
     
     virtual void Locate(int) = 0;
     virtual void Shuffle(bool) = 0;

@@ -55,6 +55,7 @@ void OService::StartProcessing() {
     
     StopEngine();
     m_project->Save(m_daw->GetLocation());
+
 }
 
 void OService::GetTrackConfig(IOTrackStore* trackstore){

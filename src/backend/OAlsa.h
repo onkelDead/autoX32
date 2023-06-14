@@ -38,8 +38,8 @@ public:
 
     void OnTimer(void*);
     
-    void Play();
-    void Stop();
+    void Play(bool);
+    void Stop(bool);
     void Locate(int);
     void Shuffle(bool);
     void SetFrame(int);

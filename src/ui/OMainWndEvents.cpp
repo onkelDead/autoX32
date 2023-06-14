@@ -223,10 +223,10 @@ void OMainWnd::on_button_play_clicked() {
     
     if (!m_button_play->get_active()) {
         m_project->SetPlaying(false);
-        m_backend->Stop();
+        m_backend->Stop(true);
     } else {
         m_project->SetPlaying(true);
-        m_backend->Play();
+        m_backend->Play(true);
     }
 }
 

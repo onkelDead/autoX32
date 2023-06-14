@@ -45,9 +45,10 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
     m_parent = wnd;
 
     if (m_server == nullptr) {
+        std::cout << "DAW: New OSC reply server on " << replyport << std::endl;
         m_server = lo_server_thread_new(replyport, daw_err_handler);
         if (m_server == NULL) {
-            std::cerr << "Ardour::Connect failed" << std::endl;
+            std::cerr << "DAW: New OSC reply server failed" << std::endl;
             return 1;
         }
         lo_server_thread_add_method(m_server, NULL, NULL, daw_handler, this);
@@ -57,7 +58,9 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
     if (m_client != nullptr) {
         lo_address_free(m_client);
     }
+    
     m_client = lo_address_new(host, port);
+    std::cout << "DAW: New OSC client for " << host << ":" << port << std::endl;
 
     lo_message msg = lo_message_new();
     lo_message_add_int32(msg, 0);
@@ -67,7 +70,7 @@ int ODAW::Connect(const char *host, const char *port, const char *replyport, IOD
 
     int ret = lo_send_message(m_client, "/set_surface", msg);
     if (ret == -1) {
-        fprintf(stderr, "OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
+        fprintf(stderr, "DAW: OSC client error %d: %s on %s\n", lo_address_errno(m_client), lo_address_errstr(m_client), lo_address_get_hostname(lo_message_get_source(msg)));
     }
     lo_message_free(msg);
     time_t connect_timeout;

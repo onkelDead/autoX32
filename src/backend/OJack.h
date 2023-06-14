@@ -35,8 +35,8 @@ public:
     void Disconnect();
     void ReconnectPorts();
 
-    void Play();
-    void Stop();
+    void Play(bool);
+    void Stop(bool);
     
     void ControllerReset();
     
